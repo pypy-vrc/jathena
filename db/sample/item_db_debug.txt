@@ -1,0 +1,184 @@
+//item_db.txt＠AthenaDB計画 2004/08/30 20:38:16 +0900 (JST)
+//ID,Name,Jname,Type,Price,Sell,Weight,ATK,DEF,Range,Slot,Job,Gender,Loc,wLV,eLV,View,Refine,{UseScript},{EquipScript}
+4149,Gargoyle_Card,ガーゴイルカード,6,20,,10,,,,,,,136,,,,,{},{}
+4150,Goat_Card,ゴートカード,6,20,,10,,,,,,,16,,,,,{},{ bonus bDef,2; bonus bMDef,5; }
+4151,Gajomart_Card,ガジョマートカード,6,20,,10,,,,,,,64,,,,,{},{ bonus2 bExpRate,3,10; bonus2 bSubRace,3,-20; }
+4152,Garapago_Card,ガラパゴカード,6,20,,10,,,,,,,136,,,,,{},{bonus3 bAddMonsterDropItem,530,4,531;bonus3 bAddMonsterDropItem,532,4,500;bonus3 bAddMonsterDropItem,533,4,500; bonus2 bItemHealRate,4,50; }
+4153,Crab_Card,カニカード,6,20,,10,,,,,,,2,,,,,{},{ bonus bAtk,5; bonus2 bAddGroup,8,30;}
+4154,Rice_Cake_Boy_Card,団子童子カード,6,20,,10,,,,,,,136,,,,,{},{bonus3 bAddMonsterDropItem,529,7,500;bonus3 bAddMonsterDropItem,530,7,500; bonus2 bItemHealRate,3,50;}
+4155,Goblin_Leader_Card,ゴブリンリーダーカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bAddGroup,1,30; }
+4156,Steam_Goblin_Card,ゴブリンライダーカード,6,20,,10,,,,,,,2,,,,,{},{bonus2 bCriticalRace,0,7; bonus bAddCriticalDamage,10;}
+4157,Goblin_Archer_Card,ゴブリンアーチャーカード,6,20,,10,,,,,,,2,,,,,{},{bonus2 bCriticalRace,1,7; bonus bAddCriticalDamage,10;}
+4158,Deleter_Card,デリーターカード,6,20,,10,,,,,,,16,,,,,{},{bonus bHPRecovStop,0; bonus3 bDefeatHPDrainValue,10,100,100;}
+4159,Nine_Tale_Card,九尾狐カード,6,20,,10,,,,,,,4,,,,,{},{ bonus bAgi,2; bonus bFlee,20; }
+4160,Antique_Firelock_Card,銃奇兵カード,6,20,,10,,,,,,,64,,,,,{},{ bonus bStr,2; bonus bMaxHPrate,10; bonus bMaxSPrate,10; }
+4161,Grand_Peco_Card,グランペコカード,6,20,,10,,,,,,,768,,,,,{},{ bonus3 bAutoSelfSpell,75,1,2; skill 75,1; }
+4162,Grizzly_Card,グリズリーカード,6,20,,10,,,,,,,16,,,,,{},{bonus bDef,2; bonus2 bAddRevEff,Eff_Blind,1000;}
+4163,Gryphon_Card,グリフォンカード,6,20,,10,,,,,,,2,,,,,{},{ bonus bFlee,2; bonus bCritical,7; bonus3 bAutoSpell,62,5,1; skill 62,5;}
+4164,Gullinbursti_Card,グリンブルスティカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bAddRace,5,10; }
+4165,Gig_Card,ギグカード,6,20,,10,,,,,,,2,,,,,{},{bonus3 bDefeatSPDrainValue,4,100,5; bonus bSPPenaltyUnrig,5; }
+4166,Nightmare_Terror_Card,ナイトメアテラーカード,6,20,,10,,,,,,,16,,,,,{},{bonus bDef,2; bonus2 bAddRevEff,Eff_Curse,1000;}
+4167,Neraid_Card,ネレイドカード,6,20,,10,,,,,,,2,,,,,{},{bonus3 bDefeatSPDrainValue,2,100,5; bonus bSPPenaltyUnrig,5;}
+4168,Dark_Load_Card,ダークロードカード,6,20,,10,,,,,,,64,,,,,{},{ bonus bMaxHPrate,20; bonus bMaxSPrate,20; bonus3 bAutoSpell,83,5,5; skill 83,5; }
+4169,Dark_Illusion_Card,ダークイリュージョンカード,6,20,,10,,,,,,,768,,,,,{},{ bonus bMaxHPrate,-10; bonus bMaxSPrate,-10; bonus bCastrate,-10; }
+4170,Dark_Frame_Card,ダークフレームカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Stone,2000;}
+4171,Dark_Priest_Card,ダークプリーストカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bSPVanish,5,3; }
+4172,The_Paper_Card,一反木綿カード,6,20,,10,,,,,,,2,,,,,{},{ bonus bAddCriticalDamage,15; }
+4173,Demon_Pungus_Card,デーモンパンクカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Sleep,2000;}
+4174,Deviling_Card,デビルリングカード,6,20,,10,,,,,,,4,,,,,{},{ bonus2 bSubEle,0,50; bonus2 bSubEle,1,-50; bonus2 bSubEle,2,-50; bonus2 bSubEle,3,-50; bonus2 bSubEle,4,-50; }
+4175,Poizon_Toad_Card,大口蛙カード,6,20,,10,,,,,,,136,,,,,{},{ bonus3 bAutoSpell,52,1,2;}
+4176,Dullahan_Card,デュラハンカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bCriticalRace,9,7; bonus bAddCriticalDamage,10; }
+4177,Dryad_Card,ドリアードカード,6,20,,10,,,,,,,768,,,,,{},{ bonus3 bAddMonsterDropItem,993,3,15; bonus2 bSubEle,2,10; }
+4178,Dragon_Tale_Card,ドラゴンテイルカード,6,20,,10,,,,,,,4,,,,,{},{ bonus bAgi,1; bonus bFlee,10; bonus2 bAddSkillDamageRate,46,5; bonus2 bAddSkillDamageRate,47,5; }
+4179,Dragon_Fly_Card,ドラゴンフライカード,6,20,,10,,,,,,,4,,,,,{},{ bonus bAgi,1; bonus bFlee,18; }
+4180,Driller_Card,ドリラーカード,6,20,,10,,,,,,,2,,,,,{},{bonus3 bDefeatSPDrainValue,9,100,5; bonus bSPPenaltyUnrig,5; }
+4181,Disguise_Card,ディスガイズカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Silence,1000;}
+4182,Diabolic_Card,ディアボリックカード,6,20,,10,,,,,,,2,,,,,{},{bonus3 bDefeatSPDrainValue,6,100,5; bonus bSPPenaltyUnrig,5; }
+4183,Vagabond_Wolf_Card,さすらい狼カード,6,20,,10,,,,,,,4,,,,,{},{ bonus bStr,1; bonus bFlee,18; }
+4184,Lava_Golem_Card,ラヴァーゴーレムカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bAddGroup,4,30; }
+4185,Rideword_Card,ライドワードカード,6,20,,10,,,,,,,768,,,,,{},{ bonus bInt,1; }
+4186,Raggler_Card,レグルロカード,6,20,,10,,,,,,,64,,,,,{},{ bonus bStr,1; bonus bVit,1; }
+4187,Raydric_Archer_Card,レイドリックアーチャーカード,6,20,,10,,,,,,,136,,,,,{},{ bonus3 bAddMonsterDropItem,7306,6,10; }
+4188,Leib_Olmai_Card,レイブオルマイカード,6,20,,10,,,,,,,768,,,,,{},{ bonus3 bAddMonsterDropItem,990,2,15; bonus2 bSubEle,3,10; }
+4189,Wraith_Dead_Card,デッドリーレイスカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Curse,2000;}
+4190,Wraith_Card,レイスカード,6,20,,10,,,,,,,136,,,,,{},{}
+4191,Loli_Ruri_Card,ロリルリカード,6,20,,10,,,,,,,16,,,,,{},{ bonus3 bRevAutoSelfSpell,28,3,5;  }
+4192,Rotar_Zairo_Card,ロータージャイロカード,6,20,,10,,,,,,,2,,,,,{},{}
+4193,Lude_Card,ルードカード,6,20,,10,,,,,,,136,,,,,{},{ bonus bMaxHP,300; bonus3 bRevAutoSelfSpell,8,1,2; }
+4194,Rybio_Card,リビオカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Stan,1000;}
+4195,Leaf_Cat_Card,leaf_catカード,6,20,,10,,,,,,,768,,,,,{},{ bonus3 bAddMonsterDropItem,991,5,15; bonus2 bSubEle,1,10; }
+4196,Marin_Card,マーリンカード,6,20,,10,,,,,,,136,,,,,{},{ bonus3 bAddMonsterDropItem,909,11,15; bonus3 bAddMonsterDropItem,7126,11,10; }
+4197,Mastering_Card,マスターリングカード,6,20,,10,,,,,,,4,,,,,{},{ bonus bLuk,1; bonus bFlee,18; }
+4198,Maya_Puple_Card,マヤパープルカード,6,20,,10,,,,,,,768,,,,,{},{bonus3 bAutoSpell,24,1,10; skill 24,1;}
+4199,Merman_Card,半漁人カード,6,20,,10,,,,,,,64,,,,,{},{ bonus bHPrecovRate,10; bonus bSPrecovRate,10; }
+4200,Megalith_Card,メガリスカード,6,20,,10,,,,,,,64,,,,,{},{ bonus bMDef,7; }
+4201,Majoruros_Card,ごっついミノタウロスカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Stan,2000;}
+4202,Civil_Servant_Card,ミョグェカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bAddEle,8,20; }
+4203,Mutant_Dragon_Card,ミュータントドラゴンカード,6,20,,10,,,,,,,2,,,,,{},{bonus bAtk,15; bonus3 bAutoSpell2,17,3,2; }
+4204,Mini_Demon_Card,ミニデモカード,6,20,,10,,,,,,,64,,,,,{},{bonus2 bExpRate,2,10; bonus2 bSubRace,2,-20;}
+4205,Mimic_Card,ミミックカード,6,20,,10,,,,,,,136,,,,,{},{ bonus3 bAddMonsterDropItem,603,11,10; }
+4206,Mystcase_Card,ミストケースカード,6,20,,10,,,,,,,768,,,,,{},{ bonus3 bAddMonsterDropItem,644,11,10; }
+4207,Mysteltainn_Card,ミステルテインカード,6,20,,10,,,,,,,32,,,,,{},{ bonus bDef,1;bonus2 bSubSize,1,25; }
+4208,Miyabi_Ningyo_Card,雅人形カード,6,20,,10,,,,,,,64,,,,,{},{bonus bMaxSPrate,10;}
+4209,Violy_Card,バイオリーカード,6,20,,10,,,,,,,136,,,,,{},{ bonus3 bRevAutoSpell2,318,1,2; }
+4210,Wander_Man_Card,彷徨う者カード,6,20,,10,,,,,,,4,,,,,{},{ bonus3 bAutoSpell,219,1,2; skill 219,1; bonus bFlee,20; }
+4211,Vocal_Card,ボーカルカード,6,20,,10,,,,,,,4,,,,,{},{bonus bMdef,3; bonus bFlee,18; }
+4212,Bon_Gun_Card,ボンゴンカード,6,20,,10,,,,,,,136,,,,,{},{ bonus3 bAutoSpell,5,1,2; bonus2 bAddSkillBlow,5,5; bonus2 bSubGroup,9,-100;}
+4213,Brilight_Card,ブリライトカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Silence,2000;}
+4214,Bloody_Murderer_Card,ブラッディーマーダーカード,6,20,,10,,,,,,,2,,,,,{},{bonus bAddCriticalDamage,10; bonus2 bCriticalRace,4,7;}
+4215,Blazzer_Card,ブレイザーカード,6,20,,10,,,,,,,136,,,,,{},{}
+4216,Sasquatch_Card,サスカッチカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Freeze,2000;}
+4217,Live_Peach_Tree_Card,人面桃樹カード,6,20,,10,,,,,,,32,,,,,{},{ bonus3 bAutoSelfSpell2,28,1,2; }
+4218,Succubus_Card,サキュバスカード,6,20,,10,,,,,,,16,,,,,{},{bonus bVit,-3;bonus bMaxHP,1000; bonus bHPrecovRate,-20;}
+4219,Sageworm_Card,セージワームカード,6,20,,10,,,,,,,768,,,,,{},{ bonus3 bAddMonsterDropItem,715,11,10; bonus3 bAddMonsterDropItem,716,11,10; bonus3 bAddMonsterDropItem,717,11,10; }
+4220,Solider_Card,ソリッドタートルカード,6,20,,10,,,,,,,16,,,,,{},{ bonus bDef,2; bonus bMdef,2; }
+4221,Skeleton_General_Card,ジェネラルスケルトンカード,6,20,,10,,,,,,,64,,,,,{},{ bonus2 bExpRate,4,10; bonus2 bSubRace,4,-20; }
+4222,Skel_Prisoner_Card,スケルプリズナーカード,6,20,,10,,,,,,,16,,,,,{},{bonus bDef,2; bonus2 bAddRevEff,Eff_Sleep,1000;}
+4223,Stalactic_Golem_Card,スタラクタイトゴーレムカード,6,20,,10,,,,,,,768,,,,,{},{ bonus bDef,1; bonus2 bResEff,Eff_Stan,2000; }
+4224,Stem_Worm_Card,ステムワームカード,6,20,,10,,,,,,,136,,,,,{},{}
+4225,Stone_Shooter_Card,フレイムシューターカード,6,20,,10,,,,,,,2,,,,,{},{ bonus bHit,10; bonus bAtk,10; }
+4226,Sting_Card,スティングカード,6,20,,10,,,,,,,32,,,,,{},{bonus bDef,2; }
+4227,Spring_Labbit_Card,スプリングラビットカード,6,20,,10,,,,,,,136,,,,,{},{bonus3 bAddMonsterDropItem,2,517,500;bonus3 bAddMonsterDropItem,2,528,500;bonus2 bItemHealRate,5,50;}
+4228,Sleeper_Card,スリーパーカード,6,20,,10,,,,,,,136,,,,,{},{}
+4229,C_Tower_Manager_Card,時計塔管理者カード,6,20,,10,,,,,,,768,,,,,{},{bonus bInt,1; bonus bCastrate,-5; }
+4230,Shinobi_Card,カブキ忍者カード,6,20,,10,,,,,,,136,,,,,{},{ bonus bAgi,1; bonus3 bRevAutoSelfSpell,135,5,2;}
+4231,Increase_Soil_Card,土精カード,6,20,,10,,,,,,,32,,,,,{},{ bonus2 bSubGroup,5,50; }
+4232,Wild_Ginseng_Card,老人参カード,6,20,,10,,,,,,,136,,,,,{},{bonus3 bAddMonsterDropItem,507,3,500;bonus3 bAddMonsterDropItem,508,3,500;bonus3 bAddMonsterDropItem,511,3,500;bonus2 bItemHealRate,2,50;}
+4233,Baby_Leopard_Card,コウカード,6,20,,10,,,,,,,16,,,,,{},{ bonus bLuk,3; }
+4234,Anolian_Card,アノリアンカード,6,20,,10,,,,,,,16,,,,,{},{ bonus3 bRevAutoSelfSpell2,45,1,2;}
+4235,Cookie_Xmas_Card,XMASクッキーカード,6,20,,10,,,,,,,64,,,,,{},{bonus bLuk,2; bonus2 bExpRate,8,10; bonus2 bSubRace,8,-20;}
+4236,Amon_Ra_Card,アモンラーカード,6,20,,10,,,,,,,64,,,,,{},{ bonus bStr,1; bonus bAgi,1; bonus bVit,1; bonus bInt,1; bonus bDex,1; bonus bLuk,1; bonus3 bRevAutoSelfSpell,73,10,2; }
+4237,Owl_Duke_Card,オウルデュークカード,6,20,,10,,,,,,,136,,,,,{},{bonus3 bAutoSelfSpell,66,3,2;}
+4238,Owl_Baron_Card,オウルバロンカード,6,20,,10,,,,,,,136,,,,,{},{bonus3 bAutoSpell,78,1,2;}
+4239,Iron_Fist_Card,アイアンフィストカード,6,20,,10,,,,,,,64,,,,,{},{ bonus2 bExpRate,0,10; bonus2 bSubRace,0,-20; }
+4240,Arclous_Card,アクラウスカード,6,20,,10,,,,,,,32,,,,,{},{bonus bDef,2; bonus bMDef,3; }
+4241,Archangeling_Card,アークエンジェリングカード,6,20,,10,,,,,,,768,,,,,{},{bonus bMaxHP,300; }
+4242,Apocalips_Card,アポカリプスカード,6,20,,10,,,,,,,16,,,,,{},{ bonus bVit,2; bonus bMaxHP,800; }
+4243,Antonio_Card,アンソニカード,6,20,,10,,,,,,,16,,,,,{},{bonus3 bRevAutoSelfSpell,26,1,2;}
+4244,Alarm_Card,アラームカード,6,20,,10,,,,,,,64,,,,,{},{bonus bMaxHP,300; bonus bVit,1; bonus3 bRevAutoSpell,10,1,2;}
+4245,Am_Mut_Card,アムムトカード,6,20,,10,,,,,,,64,,,,,{},{bonus2 bExpRate,7,10; bonus2 bSubRace,7,-20; }
+4246,Assulter_Card,アサルトタートルカード,6,20,,10,,,,,,,2,,,,,{},{bonus bAddCriticalDamage,10; bonus2 bCriticalRace,7,7;}
+4247,Aster_Card,ヒトデカード,6,20,,10,,,,,,,2,,,,,{},{bonus bAtk,5;bonus2 bAddGroup,7,30;}
+4248,Ancient_Mummy_Card,エンシェントマミーカード,6,20,,10,,,,,,,32,,,,,{},{ bonus3 bRevAutoSpell,32,5,2; }
+4249,Ancient_Worm_Card,エンシェントワームカード,6,20,,10,,,,,,,64,,,,,{},{bonus2 bExpRate,6,10;bonus2 bSubRace,6,-20; }
+4250,Executioner_Card,エクスキューショナーカード,6,20,,10,,,,,,,32,,,,,{},{bonus bDef,1; bonus2 bSubSize,2,25;}
+4251,Elder_Card,エルダーカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bAddGroup,5,40; }
+4252,Alligator_Card,アリゲーターカード,6,20,,10,,,,,,,136,,,,,{},{ bonus2 bWeaponAtkRate,11,5; }
+4253,Alice_Card,アリスカード,6,20,,10,,,,,,,32,,,,,{},{ bonus2 bSubRace,10,40; bonus2 bSubRace,11,-40;}
+4254,Tirfing_Card,オーガトゥースカード,6,20,,10,,,,,,,32,,,,,{},{ bonus bDef,1; bonus2 bSubSize,0,25;}
+4255,Orc_Leady_Card,オークレディーカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bAddGroup,2,30; }
+4256,Orc_Archer_Card,オークアーチャーカード,6,20,,10,,,,,,,136,,,,,{},{}
+4257,Wild_Rose_Card,ワイルドローズカード,6,20,,10,,,,,,,64,,,,,{},{ bonus bAgi,1; bonus bLuk,5; }
+4258,Wicked_Nymph_Card,天仙娘々カード,6,20,,10,,,,,,,768,,,,,{},{ bonus bInt,1; bonus bMaxSP,50; }
+4259,Woodern_Golem_Card,ウドゥンゴーレムカード,6,20,,10,,,,,,,16,,,,,{},{ bonus bHPrecovRate,30; bonus bDef,1; }
+4260,Wootan_Fighter_Card,ウータンシューターカード,6,20,,10,,,,,,,768,,,,,{},{ bonus bDef,1; bonus2 bResEff,Eff_Confusion,2000; }
+4261,Wootan_Shooter_Card,ウータンファイターカード,6,20,,10,,,,,,,768,,,,,{},{ bonus bDef,1; }
+4262,Evil_Cloud_Hermit_Card,天邪仙人カード,6,20,,10,,,,,,,136,,,,,{},{}
+4263,Incantetion_Samurai_Card,怨霊武士カード,6,20,,10,,,,,,,2,,,,,{},{ bonus bIgnoreDefRace,11; bonus bHPRecovStop,0; bonus2 bHPPenaltyTime,10000,666; bonus bHPPenaltyUnrig,999;}
+4264,Wind_Ghost_Card,ウインドゴーストカード,6,20,,10,,,,,,,136,,,,,{},{bonus3 bAutoSpell2,84,3,2; }
+4265,Li_Me_Mang_Ryang_Card,虎人カード,6,20,,10,,,,,,,136,,,,,{},{}
+4266,Eclipse_Card,エクリプスカード,6,20,,10,,,,,,,4,,,,,{},{ bonus bVit,1; bonus bFlee,18; }
+4267,Explosion_Card,エクスプロージョンカード,6,20,,10,,,,,,,64,,,,,{},{ bonus2 bExpRate,9,10; bonus2 bSubRace,9,-20;}
+4268,Injustice_Card,インジャスティスカード,6,20,,10,,,,,,,2,,,,,{},{ bonus3 bAutoSpell,136,1,2; }
+4269,Incubus_Card,インキュバスカード,6,20,,10,,,,,,,768,,,,,{},{bonus bMaxSP,150; bonus bInt,-3;bonus bSPrecovRate,-20; }
+4270,Giant_Spider_Card,ジャイアントスパイダーカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Poison,2000;}
+4271,Giant_Honet_Card,ジャイアントホーネットカード,6,20,,10,,,,,,,768,,,,,{},{ bonus3 bAddMonsterDropItem,992,4,15; bonus2 bSubEle,4,10; }
+4272,Dancing_Dragon_Card,小龍舞カード,6,20,,10,,,,,,,136,,,,,{},{ bonus bAgi,1; bonus bCritical,3; }
+4273,Shellfish_Card,お化け貝カード,6,20,,10,,,,,,,2,,,,,{},{ bonus bAtk,5; bonus2 bAddGroup,6,30;}
+4274,Zonbie_Master_Card,ゾンビマスターカード,6,20,,10,,,,,,,2,,,,,{},{ bonus3 bDefeatSPDrainValue,1,100,5; bonus bSPPenaltyUnrig,5; }
+4275,Zonbie_Prisoner_Card,ゾンビプリズナーカード,6,20,,10,,,,,,,64,,,,,{},{ bonus2 bExpRate,1,10; bonus2 bSubRace,1,-20; }
+4276,Load_Of_Death_Card,ロードオブデスカード,6,20,,10,,,,,,,2,,,,,{},{bonus2 bWeaponComaRace,11,300;bonus2 bAddEff,Eff_Stan,300;bonus2 bAddEff,Eff_Curse,300;bonus2 bAddEff,Eff_Silence,300;bonus2 bAddEff,Eff_Poison,300;}
+4277,Zherlthsh_Card,ジルタスカード,6,20,,10,,,,,,,32,,,,,{},{bonus bLuk,2; bonus2 bAddSkillDamageRate,324,10; bonus2 bAddSkillDamageRate,316,10;  }
+4278,Gibbet_Card,ジビットカード,6,20,,10,,,,,,,768,,,,,{},{ bonus bMDef,5; }
+4279,Deleter__Card,デリーターカード,6,20,,10,,,,,,,16,,,,,{},{bonus bSPRecovStop,1;bonus3 bDefeatSPDrainValue,10,100,10; bonus bSPPenaltyUnrig,100; }
+4280,Geographer_Card,ジオグラファーカード,6,20,,10,,,,,,,16,,,,,{},{bonus3 bRevAutoSelfSpell2,34,2,2; }
+4281,Zipper_Bear_Card,チャッキーカード,6,20,,10,,,,,,,2,,,,,{},{ bonus bAtk,30; bonus2 bSPDrainValue,100,-1;}
+4282,Tengu_Card,酒天狗カード,6,20,,10,,,,,,,136,,,,,{},{}
+4283,Greatest_General_Card,天下大将軍カード,6,20,,10,,,,,,,136,,,,,{},{bonus3 bAutoSpell,261,5,5; }
+4284,Chepet_Card,チェペットカード,6,20,,10,,,,,,,2,,,,,{},{bonus3 bAutoSpell,28,5,5; }
+4285,Choco_Card,チョコカード,6,20,,10,,,,,,,4,,,,,{},{ bonus bFlee,10; bonus bFlee2,5; }
+4286,Karakasa_Card,カラ傘カード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_ConFusion,1000; }
+4287,Kapha_Card,河童カード,6,20,,10,,,,,,,4,,,,,{},{ bonus bMDef,8; }
+4288,Carat_Card,ジェスターカード,6,20,,10,,,,,,,768,,,,,{},{ bonus bInt,2; bonus bMaxSp,150; }
+4289,Caterpiller_Card,キャタピラーカード,6,20,,10,,,,,,,2,,,,,{},{ bonus3 bDefeatSPDrainValue,3,100,5; bonus bSPPenaltyUnrig,5; }
+4290,Cat_O_Nine_Tale_Card,キャットナインテールカード,6,20,,10,,,,,,,64,,,,,{},{ bonus bMdef,3; }
+4291,Kobold_Leader_Card,コボルドリーダーカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bAddGroup,3,40; }
+4292,Kobold_Archer_Card,コボルドアーチャーカード,6,20,,10,,,,,,,2,,,,,{},{ bonus2 bCriticalRace,3,7; bonus bAddCriticalDamage,10; }
+4293,Cookie_Card,クッキーカード,6,20,,10,,,,,,,136,,,,,{},{ bonus bLuk,2; bonus2 bAddSkillDamageRate,156,10; }
+4294,Quve_Card,キューブカード,6,20,,10,,,,,,,136,,,,,{},{ bonus bMaxSP,60; bonus3 bRevAutoSpell,29,1,2; }
+4295,Kraben_Card,クラベンカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Blind,2000;}
+4296,Cramp_Card,クランプカード,6,20,,10,,,,,,,768,,,,,{},{bonus bGetZenyNum,100;}
+4297,Cruiser_Card,クルーザーカード,6,20,,10,,,,,,,2,,,,,{},{bonus bAddCriticalDamage,10; bonus2 bCriticalRace,2,7; }
+4298,Cremy_Fear_Card,クリーミーフィアーカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Confusion,2000; }
+4299,Clock_Card,クロックカード,6,20,,10,,,,,,,16,,,,,{},{ bonus3 bRevAutoSelfSpell,249,3,2; }
+4300,Chimera_Card,キメラカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Poison,1000; }
+4301,Killer_Mantis_Card,キラーマンティスカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Poison,2000;}
+4302,Tao_Gunka_Card,タオグンカカード,6,20,,10,,,,,,,16,,,,,{},{ bonus bMaxHPrate,100; bonus bDefRate,-50; bonus bMdefRate,50; }
+4304,Tamruan_Card,タムランカード,6,20,,10,,,,,,,32,,,,,{},{ bonus bDef,2; bonus2 bAddSkillDamageRate,250,10; bonus2 bAddSkillDamageRate,251,10; }
+4305,Turtle_General_Card,タートルジェネラルカード,6,20,,10,,,,,,,2,,,,,{},{bonus bAtkRate,20; bonus3 bAutoSpell,7,10,2; }
+4306,Toad_Card,トードカード,6,20,,10,,,,,,,4,,,,,{},{ bonus bFlee2,1; bonus bFlee,18; }
+4307,Kind_Of_Beatle_Card,ビートルカード,6,20,,10,,,,,,,2,,,,,{},{bonus3 bDefeatSPDrainValue,5,100,5; bonus bSPPenaltyUnrig,5; }
+4308,Tri_Joint_Card,三葉蟲カード,6,20,,10,,,,,,,2,,,,,{},{bonus3 bDefeatSPDrainValue,0,100,5; bonus bSPPenaltyUnrig,5;}
+4309,Parasite_Card,フェアリーフカード,6,20,,10,,,,,,,32,,,,,{},{bonus bDef,1; bonus2 bSubRace,0,5;}
+4310,Panzer_Goblin_Card,パンツァーゴブリンカード,6,20,,10,,,,,,,2,,,,,{},{bonus bAddCriticalDamage,10; bonus2 bCriticalRace,6,7;}
+4311,Permeter_Card,パーメットタートルカード,6,20,,10,,,,,,,768,,,,,{},{bonus2 bSubEle,7,15; bonus2 bSubEle,9,15;}
+4312,Fur_Seal_Card,オットーカード,6,20,,10,,,,,,,2,,,,,{},{ bonus bHit,10; bonus bFlee,3; bonus2 bCriticalRace,1,9; bonus2 bCriticalRace,6,9; }
+4313,Punk_Card,パンクカード,6,20,,10,,,,,,,4,,,,,{},{ bonus3 bRevAutoSelfSpell2,92,1,2; }
+4314,Penomena_Card,ペノメナカード,6,20,,10,,,,,,,32,,,,,{},{ bonus2 bSubRace,0,30; }
+4315,Pest_Card,ペストカード,6,20,,10,,,,,,,16,,,,,{},{ bonus2 bAddRevEff,Eff_Stone,1000; }
+4316,Fake_Angel_Card,フェイクエンジェルカード,6,20,,10,,,,,,,2,,,,,{},{bonus3 bDefeatSPDrainValue,8,100,5; bonus bSPPenaltyUnrig,5;}
+4317,Mobster_Card,チンピラカード,6,20,,10,,,,,,,2,,,,,{},{bonus2 bSPDrainValue,100,-1; bonus bAddCriticalDamage,20;}
+4318,Knight_Of_Windstorm_Card,ストームナイトカード,6,20,,10,,,,,,,2,,,,,{},{ bonus3 bAutoSpell,89,1,2; bonus2 bAddEff,Eff_Freeze,2000; }
+4319,Freezer_Card,フリーズタートルカード,6,20,,10,,,,,,,64,,,,,{},{bonus bMaxHP,300;}
+4320,Bloody_Knight_Card,ブラッディナイトカード,6,20,,10,,,,,,,2,,,,,{},{ bonus3 bAutoSpell,83,1,2; }
+4321,Hylozoist_Card,ハイローゾイストカード,6,20,,10,,,,,,,136,,,,,{},{ bonus bMobClassChange,1000; }
+4322,High_Orc_Card,ハイオークカード,6,20,,10,,,,,,,32,,,,,{},{bonus bDef,1; bonus bShortWeaponDamageReturn,5;}
+4323,Gram_Baby_Card,ハティベベカード,6,20,,10,,,,,,,2,,,,,{},{ bonus3 bAutoSpell,15,3,2; }
+4324,Garm_Card,ハティーカード,6,20,,10,,,,,,,16,,,,,{},{bonus2 bAddRevEff,Eff_Freeze,5000;}
+4325,Harpy_Card,ハーピーカード,6,20,,10,,,,,,,4,,,,,{},{ bonus2 bSubEle,0,15; bonus2 bAddSkillDamageRate,11,5; }
+4326,See_Otter_Card,シーオッターカード,6,20,,10,,,,,,,136,,,,,{},{bonus3 bAddMonsterDropItem,961,5,500;bonus3 bAddMonsterDropItem,544,5,500; bonus2 bItemHealRate,6,50;}
+4327,Blood_Butterfly_Card,パピヨンカード,6,20,,10,,,,,,,136,,,,,{},{ bonus bNoCastCancel,0; bonus bCastrate,30; bonus2 bAddSkillDamageRate,18,5; }
+4328,Hyegun_Card,ヒェグンカード,6,20,,10,,,,,,,4,,,,,{},{ bonus bFlee,15; bonus bCritical,1; }
+4329,Phendark_Card,フェンダークカード,6,20,,10,,,,,,,2,,,,,{},{bonus3 bDefeatSPDrainValue,7,100,5; bonus bSPPenaltyUnrig,5; }
+4330,Dark_Snake_Load_Card,黒蛇王カード,6,20,,10,,,,,,,768,,,,,{},{ bonus bInt,3; bonus2 bResEff,Eff_Blind,10000; bonus2 bResEff,Eff_Curse,10000; }
+4331,Heater_Card,ヒートタートルカード,6,20,,10,,,,,,,136,,,,,{},{bonus bCritical,3; bonus bFlee2,3; }
