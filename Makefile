@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2005/08/29 21:38:19 running_pinata Exp $
+# $Id: Makefile,v 1.1.1.1 2005/08/29 21:38:19 running_pinata Exp $
 
 CC = gcc -pipe
 PACKETDEF = -DPACKETVER=6 -DNEW_006b

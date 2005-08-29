@@ -1,4 +1,4 @@
-// $Id: chat.c,v 1.1 2005/08/29 21:39:43 running_pinata Exp $
+// $Id: chat.c,v 1.1.1.1 2005/08/29 21:39:43 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -3,7 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: zconf_win32.h,v 1.1 2005/08/29 21:39:33 running_pinata Exp $ */
+/* @(#) $Id: zconf_win32.h,v 1.1.1.1 2005/08/29 21:39:33 running_pinata Exp $ */
 
 #ifndef _ZCONF_H
 #define _ZCONF_H

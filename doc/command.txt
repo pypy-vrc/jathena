@@ -46,4 +46,4 @@ Index
      例:
          /b テスト
          /nb テスト
-$Id: command.txt,v 1.1 2005/08/29 21:38:50 running_pinata Exp $
+$Id: command.txt,v 1.1.1.1 2005/08/29 21:38:50 running_pinata Exp $

@@ -1,4 +1,4 @@
-// $Id: char-converter.c,v 1.1 2005/08/29 21:39:38 running_pinata Exp $
+// $Id: char-converter.c,v 1.1.1.1 2005/08/29 21:39:38 running_pinata Exp $
 // original : char2.c 2003/03/14 11:58:35 Rev.1.5
 
 #include <sys/types.h>

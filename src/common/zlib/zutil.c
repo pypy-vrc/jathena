@@ -3,7 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/* @(#) $Id: zutil.c,v 1.1 2005/08/29 21:39:37 running_pinata Exp $ */
+/* @(#) $Id: zutil.c,v 1.1.1.1 2005/08/29 21:39:37 running_pinata Exp $ */
 
 #include "zutil.h"
 

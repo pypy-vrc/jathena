@@ -3,7 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/* @(#) $Id: compress.c,v 1.1 2005/08/29 21:39:33 running_pinata Exp $ */
+/* @(#) $Id: compress.c,v 1.1.1.1 2005/08/29 21:39:33 running_pinata Exp $ */
 
 #define ZLIB_INTERNAL
 #include "zlib.h"

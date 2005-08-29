@@ -1,4 +1,4 @@
-// $Id: login.c,v 1.1 2005/08/29 21:39:39 running_pinata Exp $
+// $Id: login.c,v 1.1.1.1 2005/08/29 21:39:39 running_pinata Exp $
 // original : login2.c 2003/01/28 02:29:17 Rev.1.1.1.1
 #define DUMP_UNKNOWN_PACKET	1
 

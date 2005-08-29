@@ -1,4 +1,4 @@
-// $Id: npc.c,v 1.1 2005/08/29 21:39:52 running_pinata Exp $
+// $Id: npc.c,v 1.1.1.1 2005/08/29 21:39:52 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>

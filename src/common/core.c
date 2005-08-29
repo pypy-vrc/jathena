@@ -1,4 +1,4 @@
-// $Id: core.c,v 1.1 2005/08/29 21:39:30 running_pinata Exp $
+// $Id: core.c,v 1.1.1.1 2005/08/29 21:39:30 running_pinata Exp $
 // original : core.c 2003/02/26 18:03:12 Rev 1.7
 
 #include <time.h>

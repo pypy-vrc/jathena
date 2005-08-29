@@ -29,7 +29,7 @@
  *          Addison-Wesley, 1983. ISBN 0-201-06672-6.
  */
 
-/* @(#) $Id: trees.c,v 1.1 2005/08/29 21:39:36 running_pinata Exp $ */
+/* @(#) $Id: trees.c,v 1.1.1.1 2005/08/29 21:39:36 running_pinata Exp $ */
 
 /* #define GEN_TREES_H */
 

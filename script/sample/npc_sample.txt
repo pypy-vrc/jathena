@@ -2,7 +2,7 @@
 // Athena Sample Script
 //  (c) 2003 Athena Project.
 //
-// $Id: npc_sample.txt,v 1.1 2005/08/29 21:39:20 running_pinata Exp $
+// $Id: npc_sample.txt,v 1.1.1.1 2005/08/29 21:39:20 running_pinata Exp $
 
 // このファイルは、Athenaで使用されるスクリプトの解説と使用例のサンプルと
 // なっています。
