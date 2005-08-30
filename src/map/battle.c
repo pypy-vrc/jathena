@@ -1674,7 +1674,7 @@ static struct Damage battle_calc_mob_weapon_attack(
 	{
 		damage = damage2 = 0;
 		dmg_lv = ATK_FLEE;
-	}else if(flag&BF_LONG && tsd && t_sc_data && t_sc_data[SC_DODGE].timer!=-1 && atn_rand()%100 < 20)//落法
+	}else if(tsd && t_sc_data && (flag&BF_LONG || t_sc_data[SC_SPURT].timer!=-1)&& t_sc_data[SC_DODGE].timer!=-1 && atn_rand()%100 < 20)//落法
 	{
 		int slv = pc_checkskill(tsd,TK_DODGE);
 		damage = damage2 = 0;
@@ -2905,7 +2905,7 @@ static struct Damage battle_calc_pc_weapon_attack(
 	{
 		damage = damage2 = 0;
 		dmg_lv = ATK_FLEE;
-	}else if(flag&BF_LONG && tsd && t_sc_data && t_sc_data[SC_DODGE].timer!=-1 && atn_rand()%100 < 20)//落法
+	}else if(tsd && t_sc_data && (flag&BF_LONG || t_sc_data[SC_SPURT].timer!=-1)&& t_sc_data[SC_DODGE].timer!=-1 && atn_rand()%100 < 20)//落法
 	{
 		int slv = pc_checkskill(tsd,TK_DODGE);
 		damage = damage2 = 0;
@@ -3231,7 +3231,7 @@ static struct Damage battle_calc_pc_weapon_attack(
 			
 		if(target->type == BL_PC)
 		{
-			hp = sd->status.max_hp * 10 / 100;
+			hp = sd->status.max_hp * 8 / 100;
 			if((sd->status.hp/sd->status.max_hp) <= 20)
 				hp = sd->status.hp;
 		}else 
@@ -3483,18 +3483,22 @@ struct Damage battle_calc_magic_attack(
 			{
 				MATK_FIX(skill_lv*1,100);
 			}
-			//ele = status_get_sevenwind_element(bl);
+			//ele = status_get_attack_element(bl);
 			if(skill_lv==7)
 				status_change_start(bl,SC_SMA,skill_lv,0,0,0,3000,0);
 			break;
 		case SL_STUN://エスタン
 			MATK_FIX(skill_lv*5,100);
-			ele = status_get_sevenwind_element(bl);
+			ele = status_get_attack_element(bl);
 			if(skill_lv==7)
 				status_change_start(bl,SC_SMA,skill_lv,0,0,0,3000,0);
 			break;
 		case SL_SMA://エスマ
-			ele = status_get_sevenwind_element(bl);
+			if(sd)
+			{
+				MATK_FIX(40+sd->status.base_level,100);
+			}
+			ele = status_get_attack_element(bl);
 			if(sc_data && sc_data[SC_SMA].timer!=-1)
 				status_change_end(bl,SC_SMA,-1);
 			break;

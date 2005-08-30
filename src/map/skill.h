@@ -426,10 +426,10 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_MEAL_INCLUK			=229,
 	//
 	SC_RUN 					= 230,
-	SC_RUN_STR 				= 231,
+	SC_SPURT 				= 231,
 	SC_TKCOMBO 				= 232,	//テコンのコンボ用
 	SC_DODGE				= 233,
-	SC_SEVENWIND			= 234,
+	//SC_SEVENWIND			= 234,
 	SC_TRIPLEATTACK_RATE_UP	= 235,//三段発動率アップ
 	SC_COUNTER_RATE_UP		= 236,	//カウンターキック発動率アップ
 	SC_SUN_WARM				= 237,
@@ -480,6 +480,8 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_DEVIL				= 279,
 	SC_DOUBLECASTING 		= 280,	//ダブルキャスティング
 	SC_ELEMENTFIELD			= 281,//属性場
+	SC_DARKELEMENT			= 282,//闇
+	SC_ATTENELEMENT			= 283,//念
 };
 
 enum {
@@ -1124,9 +1126,10 @@ enum {
 	SI_READYCOUNTER			=141,//カウンター準備？
 	SI_DODGE				=143,// 落法？ 走り高跳び?
 	SI_RUN					=145,//駆け足? それとも駆け足用のSTR?
-	//SI_					=146,//暗? 属性かもしれないが…
+	SI_DARKELEMENT			=146,//暗? 属性かもしれないが…
 	SI_ADRENALINE2			=147,
-	//SI_					=148,//念? 属性かもしれないが…
+	SI_ATTENELEMENT			=148,//念? 属性かもしれないが…
+	SI_SOULLINK				=149,//魂状態？
 	SI_DEVIL				=152,//太陽と月と星の悪魔
 	SI_KAITE				=153,//カイト
 	SI_KAIZEL				=156,//カイゼル
@@ -1145,7 +1148,6 @@ enum {
 	SI_OVERTHRUSTMAX		=188,//オーバートラストマックス
 	//SI_			=191,
 };
-
 
 extern int SkillStatusChangeTable[];
 extern int StatusIconChangeTable[];

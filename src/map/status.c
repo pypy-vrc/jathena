@@ -543,7 +543,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 			sd->paramb[5]+= sd->sc_data[SC_MEAL_INCLUK].val1;
 			
 		//駆け足のSTR +10
-		if(sd->sc_data[SC_RUN_STR].timer!=-1)
+		if(sd->sc_data[SC_SPURT].timer!=-1)
 			sd->paramb[0] += 10;
 			
 		//ギルドスキル 臨戦態勢
@@ -756,7 +756,10 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	//太陽と月と星の悪魔
 	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0)
 	{
-		aspd_rate -= skill*3;
+		aspd_rate -= skill*4;
+		if(sd->sc_data[SC_DEVIL].timer!=-1 || sd->sc_data[SC_DEVIL].val1<skill)
+			status_change_start(&sd->bl,SC_DEVIL,skill,0,0,0,5000,0);
+		clif_status_change(&sd->bl,SI_DEVIL,1);
 	}
 	
 	//太陽と月と星の融合
@@ -1405,7 +1408,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 		before.cart_weight != before.cart_weight || before.cart_max_weight != before.cart_max_weight )
 		clif_updatestatus(sd,SP_CARTINFO);*/
 
-	if(sd->status.hp<sd->status.max_hp>>2 && pc_checkskill(sd,SM_AUTOBERSERK)>0 &&
+	if(sd->status.hp<sd->status.max_hp>>2 && pc_checkskill(sd,SM_AUTOBERSERK)>0 && sd->sc_data[SC_AUTOBERSERK].timer!=-1 && 
 		(sd->sc_data[SC_PROVOKE].timer==-1 || sd->sc_data[SC_PROVOKE].val2==0 ) && !pc_isdead(sd))
 		// オートバーサーク発動
 		status_change_start(&sd->bl,SC_PROVOKE,10,1,0,0,0,0);
@@ -2517,7 +2520,7 @@ int status_get_amotion(struct block_list *bl)
 				sc_data[SC_QUAGMIRE].timer == -1 && sc_data[SC_DONTFORGETME].timer == -1)	// スピアクィッケン
 				aspd_rate -= sc_data[SC_SPEARSQUICKEN].val2;
 			if(sc_data[SC_ASSNCROS].timer!=-1 && // 夕陽のアサシンクロス
-				sc_data[SC_TWOHANDQUICKEN].timer==-1 && sc_data[SC_ONEHAND].timer==-1 && 
+				sc_data[SC_TWOHANDQUICKEN].timer==-1 && sc_data[SC_ONEHAND].timer==-1 &&
 				sc_data[SC_ADRENALINE].timer==-1 && sc_data[SC_ADRENALINE2].timer==-1 && sc_data[SC_SPEARSQUICKEN].timer==-1 &&
 				sc_data[SC_DONTFORGETME].timer == -1)
 				aspd_rate -= 5+sc_data[SC_ASSNCROS].val1+sc_data[SC_ASSNCROS].val2+sc_data[SC_ASSNCROS].val3;
@@ -2608,8 +2611,6 @@ int status_get_attack_element(struct block_list *bl)
 		ret=0;
 
 	if(sc_data) {
-		if( sc_data[SC_SEVENWIND].timer!=-1)	//暖かい風
-			ret=sc_data[SC_SEVENWIND].val2;
 		
 		if( sc_data[SC_FROSTWEAPON].timer!=-1)	// フロストウェポン
 			ret=1;
@@ -2623,6 +2624,10 @@ int status_get_attack_element(struct block_list *bl)
 			ret=5;
 		if( sc_data[SC_ASPERSIO].timer!=-1)		// アスペルシオ
 			ret=6;
+		if( sc_data[SC_DARKELEMENT].timer!=-1)		// 闇属性
+			ret=7;
+		if( sc_data[SC_ATTENELEMENT].timer!=-1)		// 念属性
+			ret=8;
 	}
 	return ret;
 }
@@ -2634,8 +2639,6 @@ int status_get_attack_element2(struct block_list *bl)
 		struct status_change *sc_data = ((struct map_session_data *)bl)->sc_data;
 
 		if(sc_data) {
-			if( sc_data[SC_SEVENWIND].timer!=-1)	//暖かい風
-				ret=sc_data[SC_SEVENWIND].val2;
 			
 			if( sc_data[SC_FROSTWEAPON].timer!=-1)	// フロストウェポン
 				ret=1;
@@ -2649,47 +2652,17 @@ int status_get_attack_element2(struct block_list *bl)
 				ret=5;
 			if( sc_data[SC_ASPERSIO].timer!=-1)		// アスペルシオ
 				ret=6;
+			if( sc_data[SC_DARKELEMENT].timer!=-1)		// 闇属性
+				ret=7;
+			if( sc_data[SC_ATTENELEMENT].timer!=-1)		// 念属性
+				ret=8;
+
 		}
 		return ret;
 	}
 	return 0;
 }
-//暖かい風属性取得
-int status_get_sevenwind_element(struct block_list *bl)
-{
-	int ret = 0;
-	struct status_change *sc_data=status_get_sc_data(bl);
 
-	nullpo_retr(0, bl);
-	
-	if(bl->type==BL_PET && (struct pet_data *)bl)
-		ret=0;
-
-	if(sc_data) {
-		if( sc_data[SC_SEVENWIND].timer!=-1)
-			ret=sc_data[SC_SEVENWIND].val2;
-	}
-
-	return ret;
-}
-//暖かい風属性取得
-int status_get_sevenwind_element2(struct block_list *bl)
-{
-	int ret = 0;
-	struct status_change *sc_data=status_get_sc_data(bl);
-
-	nullpo_retr(0, bl);
-	
-	if(bl->type==BL_PET && (struct pet_data *)bl)
-		ret=0;
-
-	if(sc_data) {
-		if( sc_data[SC_SEVENWIND].timer!=-1)
-			ret=sc_data[SC_SEVENWIND].val2;
-	}
-
-	return ret;
-}
 int status_get_party_id(struct block_list *bl)
 {
 	nullpo_retr(0, bl);
@@ -2879,7 +2852,6 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	short *sc_count, *option, *opt1, *opt2, *opt3;
 	int opt_flag = 0, calc_flag = 0, updateflag = 0, race, mode, elem, undead_flag;
 	int scdef=0;
-	int sevenwind_ele[]={2,4,1,3,8,7,6};//暖かい風の属性
 
 	nullpo_retr(0, bl);
 	if(bl->type == BL_SKILL)
@@ -2993,7 +2965,7 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 
 	if(sc_data[type].timer != -1){	/* すでに同じ異常になっている場合タイマ解除 */
 		if(sc_data[type].val1 > val1 && type != SC_COMBO && type != SC_DANCING && type != SC_DEVOTION &&
-			type != SC_SPEEDPOTION0 && type != SC_SPEEDPOTION1 && type != SC_SPEEDPOTION2 && type != SC_SEVENWIND)
+			type != SC_SPEEDPOTION0 && type != SC_SPEEDPOTION1 && type != SC_SPEEDPOTION2 && type!= SC_DEVIL)
 			return 0;
 		if ((type >=SC_STAN && type <= SC_BLIND) || type == SC_DPOISON)
 			return 0;/* 継ぎ足しができない状態異常である時は状態異常を行わない */
@@ -3185,8 +3157,8 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			break;
 		case SC_EDP:			/* エンチャントデッドリーポイズン */
 		{
-			struct map_session_data *sd = (struct map_session_data *)bl;
-			clif_displaymessage(sd->fd, " 武器に猛毒属性が付与されました");
+		//	struct map_session_data *sd = (struct map_session_data *)bl;
+		//	clif_displaymessage(sd->fd, " 武器に猛毒属性が付与されました");
 			val2 = val1 + 2;			/* 猛毒付与確率(%) */
 			//  calc_flagは必要ない
 			break;
@@ -3274,9 +3246,11 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_SEISMICWEAPON:		/* サイズミックウェポン */
 			skill_encchant_eremental_end(bl,SC_SEISMICWEAPON);
 			break;
-		case SC_SEVENWIND:			/* 暖かい風 */
-			skill_encchant_eremental_end(bl,SC_SEVENWIND);
-			val2 = sevenwind_ele[val1-1];
+		case SC_DARKELEMENT:		/* やみ属性 */
+			skill_encchant_eremental_end(bl,SC_DARKELEMENT);
+			break;
+		case SC_ATTENELEMENT:		/* 念属性 */
+			skill_encchant_eremental_end(bl,SC_ATTENELEMENT);
 			break;
 		case SC_DEVOTION:			/* ディボーション */
 			calc_flag = 1;
@@ -3801,7 +3775,7 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_MEAL_INCINT:
 		case SC_MEAL_INCDEX:
 		case SC_MEAL_INCLUK:
-		case SC_RUN_STR://駆け足用STR
+		case SC_SPURT://駆け足用STR
 			calc_flag = 1;
 			break;
 		case SC_SUN_COMFORT://#太陽の安楽#
@@ -3870,16 +3844,17 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			calc_flag = 1;
 			break;
 		
+		case SC_AUTOBERSERK:
 		case SC_READYSTORM:
 		case SC_READYDOWN:
 		case SC_READYTURN:
 		case SC_READYCOUNTER:
 		case SC_DODGE:
-		case SC_AUTOBERSERK:
 		case SC_DODGE_DELAY:
 		case SC_DOUBLECASTING://ダブルキャスティング
 			break;
-	
+		case SC_DEVIL:
+			break;
 		default:
 			if(battle_config.error_log)
 				printf("UnknownStatusChange [%d]\n", type);
@@ -4138,7 +4113,7 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_MEAL_INCINT:
 			case SC_MEAL_INCDEX:
 			case SC_MEAL_INCLUK:
-			case SC_RUN_STR:
+			case SC_SPURT:
 				calc_flag = 1;
 				break;
 			case SC_RUN://駆け足
@@ -4233,8 +4208,8 @@ int status_change_end( struct block_list* bl , int type,int tid )
 				break;
 			case SC_EDP:		// エフェクトが実装されたら削除する
 			{
-				struct map_session_data *sd = (struct map_session_data *)bl;
-				clif_displaymessage(sd->fd, " 猛毒属性が解除されました");
+			//	struct map_session_data *sd = (struct map_session_data *)bl;
+			//	clif_displaymessage(sd->fd, " 猛毒属性が解除されました");
 				break;
 			}
 			case SC_BERSERK:			/* バーサーク */
@@ -4722,7 +4697,9 @@ int status_change_timer(int tid, unsigned int tick, int id, int data)
 	case SC_AUTOBERSERK:
 		sc_data[type].timer=add_timer( 1000*600+tick,status_change_timer, bl->id, data );
 		return 0;
-
+	case SC_DEVIL:
+		clif_status_change(bl,SI_DEVIL,1);
+		sc_data[type].timer=add_timer( 1000*5+tick,status_change_timer, bl->id, data );
 	case SC_DANCING: //ダンススキルの時間SP消費
 		{
 			int s=0;

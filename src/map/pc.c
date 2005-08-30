@@ -650,6 +650,7 @@ int pc_authok(int id,struct mmo_charstatus *st)
 		}
 		return 1;
 	}
+	
 	memcpy(&sd->status,st,sizeof(*st));
 
 	if(sd->status.char_id != sd->char_id){
@@ -3711,8 +3712,8 @@ int pc_checkallowskill(struct map_session_data *sd)
 		return -1;
 	}
 	
-	if((sd->weapontype1 != 0 || sd->weapontype2 != 0) && sd->sc_data[SC_RUN_STR].timer!=-1){
-		status_change_end(&sd->bl,SC_RUN_STR,-1);	// 駆け足STR
+	if((sd->weapontype1 != 0 || sd->weapontype2 != 0) && sd->sc_data[SC_SPURT].timer!=-1){
+		status_change_end(&sd->bl,SC_SPURT,-1);	// 駆け足STR
 		return -1;
 	}
 
@@ -4672,7 +4673,6 @@ int pc_damage(struct block_list *src,struct map_session_data *sd,int damage)
 	if(sd->status.hp>0){
 		// まだ生きているならHP更新
 		clif_updatestatus(sd,SP_HP);
-
 		if(sd->status.hp<sd->status.max_hp>>2 && sd->sc_data && sd->sc_data[SC_AUTOBERSERK].timer!=-1 && pc_checkskill(sd,SM_AUTOBERSERK)>0 &&
 			(sd->sc_data[SC_PROVOKE].timer==-1 || sd->sc_data[SC_PROVOKE].val2==0 ))
 			// オートバーサーク発動
@@ -4696,7 +4696,7 @@ int pc_damage(struct block_list *src,struct map_session_data *sd,int damage)
 	{
 		sd->status.hp = 1;
 		clif_skill_nodamage(&sd->bl,&sd->bl,PR_KYRIE,sd->sc_data[SC_KAIZEL].val1,1);
-		status_change_start(&sd->bl,SC_KYRIE,sd->sc_data[SC_KAIZEL].val1,0,0,0,10000,0);
+		status_change_start(&sd->bl,SC_KYRIE,sd->sc_data[SC_KAIZEL].val1,0,0,0,180000,0);
 		status_change_end(&sd->bl,SC_KAIZEL,-1);	
 			clif_updatestatus(sd,SP_HP);
 		return 0;
@@ -5331,7 +5331,7 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 
 //#ifndef TKSGSL
 	if((sd->sex == 0 && job == 19) || (sd->sex == 1 && job == 20) ||
-	   job == 13 || job == 21 || job ==22 || sd->status.class == b_class) //♀はバードになれない、♂はダンサーになれない、結婚衣裳もお断り
+	   job == 13 || job == 21 || job ==22 || job ==26 ||sd->status.class == b_class) //♀はバードになれない、♂はダンサーになれない、結婚衣裳もお断り
 		return 1;
 //#else
 //♀はバードになれない、♂はダンサーになれない、結婚衣裳もお断り 拡張１次もお断り

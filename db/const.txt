@@ -74,7 +74,6 @@ Job_Crusader2	21
 Job_SuperNovice	23
 Job_TaeKwonBoy	24
 Job_StarGladiator	25
-Job_StarGladiator2	26
 Job_SoulLinker	27
 
 mf_nomemo	0

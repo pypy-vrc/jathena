@@ -263,7 +263,7 @@ int SkillStatusChangeTable[]={	/* skill.hのenumのSC_***とあわせること */
 /* 410- */
 	-1,SC_RUN,SC_READYSTORM,-1,SC_READYDOWN,-1,SC_READYTURN,-1,SC_READYCOUNTER,-1,
 /* 420- */
-	SC_DODGE,-1,-1,-1,-1,SC_SEVENWIND,-1,-1,SC_SUN_WARM,SC_MOON_WARM,
+	SC_DODGE,-1,-1,-1,-1,-1,-1,-1,SC_SUN_WARM,SC_MOON_WARM,
 /* 430- */
 	SC_STAR_WARM,SC_SUN_COMFORT,SC_MOON_COMFORT,SC_STAR_COMFORT,-1,-1,-1,-1,-1,-1,
 /* 440- */
@@ -343,15 +343,15 @@ int StatusIconChangeTable[] = {
 /* 230- */
 	SI_RUN,SI_BLANK,SI_BLANK,SI_DODGE,SI_BLANK,SI_BLANK,SI_BLANK,SI_SUN_WARM,SI_MOON_WARM,SI_STAR_WARM,
 /* 240- */
-	SI_SUN_COMFORT,SI_MOON_COMFORT,SI_STAR_COMFORT,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
+	SI_SUN_COMFORT,SI_MOON_COMFORT,SI_STAR_COMFORT,SI_BLANK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,
 /* 250- */
-	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
+	SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,
 /* 260- */
 	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_KAIZEL,SI_KAAHI,SI_KAUPE,SI_KAITE,SI_BLANK,SI_BLANK,
 /* 270- */
 	SI_BLANK,SI_BLANK,SI_ONEHAND,SI_READYSTORM,SI_READYDOWN,SI_READYTURN,SI_READYCOUNTER,SI_BLANK,SI_BLANK,SI_DEVIL,
 /* 280- */
-	SI_DOUBLECASTING,SI_ELEMENTFIELD,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
+	SI_DOUBLECASTING,SI_ELEMENTFIELD,SI_DARKELEMENT,SI_ATTENELEMENT,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 };
 	
 static const int dirx[8]={0,-1,-1,-1,0,1,1,1};
@@ -1719,7 +1719,7 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 		skillid == MG_LIGHTNINGBOLT) &&
 		(sc_data = status_get_sc_data(src)) &&
 		sc_data[SC_DOUBLECASTING].timer != -1 &&
-		rand() % 100 < 40+10*skilllv) {
+		atn_rand() % 100 < 30+10*skilllv) {
 		if (!(flag & 1))
 			skill_castend_delay (src, bl, skillid, skilllv, tick + dmg.div_*dmg.amotion, flag|1);
 	}
@@ -3133,7 +3133,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			if(sd->sc_data[SC_RUN].timer!=-1)	
 			{
 				if(skilllv>=7 && sd->weapontype1 == 0 && sd->weapontype2 == 0)
-					status_change_start(&dstsd->bl,SC_RUN_STR,10,0,0,0,150000,0);
+					status_change_start(&dstsd->bl,SC_SPURT,10,0,0,0,150000,0);
 				status_change_end(bl,SC_RUN,-1);
 			}else{
 				//clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -3141,84 +3141,6 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			}
 		}
 		break;
-		/*
-	case TK_READYSTORM:
-		if(sd)//旋風準備ON/OFF
-		{
-			char output[64];
-			if(sd->sc_data[].timer!=-1)
-			{
-				sd->tk_readystorm_on = 0;
-				strcpy(output,"旋風準備:OFF");
-			}else{ 
-				sd->tk_readystorm_on = 1;
-				strcpy(output,"旋風準備:ON");
-			}
-			clif_disp_onlyself(sd,output,strlen(output));
-		}
-		break;
-	case TK_READYDOWN:
-		if(sd)//下段準備ON/OFF
-		{
-			char output[64];
-			if(sd->tk_readydown_on)
-			{
-				sd->tk_readydown_on = 0;
-				strcpy(output,"下段準備:OFF");
-			}else{ 
-				sd->tk_readydown_on = 1;
-				strcpy(output,"下段準備:ON");
-			}
-			clif_disp_onlyself(sd,output,strlen(output));
-		}
-		break;
-	case TK_READYTURN:
-		if(sd)//回転準備ON/OFF
-		{
-			char output[64];
-			if(sd->tk_readyturn_on)
-			{
-				sd->tk_readyturn_on = 0;
-				strcpy(output,"回転準備:OFF");
-			}else{ 
-				sd->tk_readyturn_on = 1;
-				strcpy(output,"回転準備:ON");
-			}
-			clif_disp_onlyself(sd,output,strlen(output));
-		}
-		break;
-	case TK_READYCOUNTER:
-		if(sd)//カウンター準備ON/OFF
-		{
-			char output[64];
-			if(sd->tk_readycounter_on)
-			{
-				sd->tk_readycounter_on = 0;
-				strcpy(output,"カウンター準備:OFF");
-			}else{ 
-				sd->tk_readycounter_on = 1;
-				strcpy(output,"カウンター準備:ON");
-			}
-			clif_disp_onlyself(sd,output,strlen(output));
-		}
-		break;
-	case TK_DODGE:
-		if(sd)//落法ON/OFF
-		{
-			char output[64];
-			if(sd->tk_dodge_on)
-			{
-				sd->tk_dodge_on = 0;
-				strcpy(output,"落法:OFF");
-			}else{ 
-				sd->tk_dodge_on = 1;
-				strcpy(output,"落法:ON");
-			}
-			clif_disp_onlyself(sd,output,strlen(output));
-		}
-		break;
-		*/
-/* 	case PF_DOUBLECASTING: */
 	case TK_READYSTORM:
 	case TK_READYDOWN:
 	case TK_READYTURN:
@@ -3245,6 +3167,31 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		status_change_start(bl,GetSkillStatusChangeTable(skillid),skilllv,0,0,0,skill_get_time(skillid,skilllv),0);
 	case TK_SEVENWIND: //暖かい風
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		switch(skilllv){
+			case 1:
+				status_change_start(src,SC_SEISMICWEAPON,0,0,0,0,skill_get_time(skillid,skilllv),0);
+				break;
+			case 2:
+				status_change_start(src,SC_LIGHTNINGLOADER,0,0,0,0,skill_get_time(skillid,skilllv),0);
+				break;
+			case 3:
+				status_change_start(src,SC_FROSTWEAPON,0,0,0,0,skill_get_time(skillid,skilllv),0);
+				break;
+			case 4:
+				status_change_start(src,SC_FLAMELAUNCHER,0,0,0,0,skill_get_time(skillid,skilllv),0);
+				break;
+			case 5:
+				status_change_start(src,SC_ATTENELEMENT,0,0,0,0,skill_get_time(skillid,skilllv),0);
+				break;
+			case 6:
+				status_change_start(src,SC_DARKELEMENT,0,0,0,0,skill_get_time(skillid,skilllv),0);
+				break;
+			case 7:
+				status_change_start(src,SC_ASPERSIO,0,0,0,0,skill_get_time(skillid,skilllv),0);
+				break;
+		}
+		break;
 	case SL_KAIZEL://カイゼル
 	case SL_KAAHI://カアヒ
 	case SL_KAITE://カイト
@@ -4935,6 +4882,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case SL_SOULLINKER://#ソウルリンカーの魂#
 	case SL_HIGH://#一次上位職業の魂#
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		status_change_start(bl,SC_SMA,skilllv,0,0,0,3000,0);
 		status_change_start(bl,GetSkillStatusChangeTable(skillid),skilllv,0,0,0,skill_get_time(skillid,skilllv),0);
 		break;
 	case PF_DOUBLECASTING:		/* ダブルキャスティング */
@@ -6618,7 +6566,7 @@ int skill_check_condition(struct map_session_data *sd,int type)
 		if(sd->skillid!=TK_RUN && sd->sc_data[SC_RUN].timer!=-1)	
 		{
 			if(pc_checkskill(sd,TK_RUN)>=7 && sd->weapontype1 == 0 && sd->weapontype2 == 0)
-				status_change_start(&sd->bl,SC_RUN_STR,10,0,0,0,150000,0);
+				status_change_start(&sd->bl,SC_SPURT,10,0,0,0,150000,0);
 			status_change_end(&sd->bl,SC_RUN,-1);
 		}
 	}
@@ -6653,16 +6601,32 @@ int skill_check_condition(struct map_session_data *sd,int type)
 	if(sd->dsprate!=100)
 		sp=sp*sd->dsprate/100;	/* 消費SP修正 */
 
-	//ホーリーライトの消費量増加(プーリストの魂時)
-	if(skill == AL_HOLYLIGHT && sd->sc_data[SC_PRIEST].timer!=-1)
+	switch(sd->skillid)
 	{
-		sp = sp * 5;
-	}
-	
-	//駆け足ストップ
-	if(sd->skillid==TK_RUN && sd->sc_data[SC_RUN].timer!=-1)
-	{
-		sp = 0;
+		case AL_HOLYLIGHT://ホーリーライトの消費量増加(プーリストの魂時)
+			if(sd->sc_data[SC_PRIEST].timer!=-1)
+				sp = sp * 5;
+			break;
+		case TK_RUN:
+			if(sd->sc_data[SC_RUN].timer!=-1)
+				sp = 0;
+			break;
+		case SL_SMA: //エスマ
+		case SL_STUN: //エスタン
+		case SL_STIN: //エスティン
+		{
+			int kaina_lv = pc_checkskill(sd,SL_KAINA);
+			
+			if(kaina_lv==0)
+				break;
+			if(sd->status.base_level>=90)
+				sp -= sp*7*kaina_lv/100;
+			else if(sd->status.base_level>=80)
+				sp -= sp*5*kaina_lv/100;
+			else if(sd->status.base_level>=70)
+				sp -= sp*3*kaina_lv/100;
+		}
+			break;
 	}
 	
 	switch(skill) {
@@ -8630,8 +8594,10 @@ int skill_encchant_eremental_end(struct block_list *bl,int type)
 		status_change_end(bl,SC_LIGHTNINGLOADER,-1);
 	if( type!=SC_SEISMICWEAPON && sc_data[SC_SEISMICWEAPON].timer!=-1 )	/* サイスミックウェポン解除 */
 		status_change_end(bl,SC_SEISMICWEAPON,-1);
-	if( type!=SC_SEVENWIND && sc_data[SC_SEVENWIND].timer!=-1 )	/* 暖かい風解除 */
-		status_change_end(bl,SC_SEVENWIND,-1);
+	if( type!=SC_SEISMICWEAPON && sc_data[SC_DARKELEMENT].timer!=-1 )	//闇
+		status_change_end(bl,SC_DARKELEMENT,-1);
+	if( type!=SC_SEISMICWEAPON && sc_data[SC_ATTENELEMENT].timer!=-1 )	//念
+		status_change_end(bl,SC_ATTENELEMENT,-1);
 		
 	return 0;
 }
