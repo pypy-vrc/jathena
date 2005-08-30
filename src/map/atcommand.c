@@ -26,6 +26,7 @@
 #include "script.h"
 #include "npc.h"
 #include "status.h"
+#include "ranking.h"
 //#include "trade.h"
 //#include "core.h"
 #include "db.h"
@@ -45,8 +46,8 @@
 	//NV,SW,MG,AC,AL,MC,TF,KN,PR,WZ,BS,HT,AS,KNp,CR,MO,SA,RG,AM,BA,DC,CRp,  ,SNV,TK,SG,SG2,SL,(NJ,GS) ???
 int max_job_table[3][28] = 
 	{{10,50,50,50,50,50,50,50,50,50,50,50,50, 50,50,50,50,50,50,50,50, 50, 1, 99,50,50,50,50}, //通常
-	 {10,50,50,50,50,50,50,70,70,70,70,70,70, 70,70,70,70,70,70,70,70, 70, 1,  1,50,50,50,50}, //転生
-	 {10,50,50,50,50,50,50,50,50,50,50,50,50, 50,50,50,50,50,50,50,50, 50, 1,  1,50,50,50,50}};//養子
+	 {10,50,50,50,50,50,50,70,70,70,70,70,70, 70,70,70,70,70,70,70,70, 70, 1, 99,50,50,50,50}, //転生
+	 {10,50,50,50,50,50,50,50,50,50,50,50,50, 50,50,50,50,50,50,50,50, 50, 1, 99,50,50,50,50}};//養子
 
 char msg_table[200][1024];	/* Server message */
 
@@ -178,6 +179,12 @@ ATCOMMAND_FUNC(help4);
 ATCOMMAND_FUNC(econ);
 ATCOMMAND_FUNC(ecoff);
 ATCOMMAND_FUNC(icon);
+ATCOMMAND_FUNC(ranking);
+ATCOMMAND_FUNC(blacksmith);
+ATCOMMAND_FUNC(alchemist);
+ATCOMMAND_FUNC(taekwon);
+ATCOMMAND_FUNC(resetfeel);
+ATCOMMAND_FUNC(resethate);
 
 /*==========================================
  *AtCommandInfo atcommand_info[]構造体の定義
@@ -323,6 +330,12 @@ static AtCommandInfo atcommand_info[] = {
 	{ AtCommand_Econ,					"@econ",			0, atcommand_econ  },
 	{ AtCommand_Ecoff,					"@ecoff",			0, atcommand_ecoff },
 	{ AtCommand_Icon,					"@icon",			0, atcommand_icon  },
+	{ AtCommand_Ranking,				"@ranking",			0, atcommand_ranking	},
+	{ AtCommand_Blacksmith,				"@blacksmith",		0, atcommand_blacksmith	},
+	{ AtCommand_Alchemist,				"@alchemist",		0, atcommand_alchemist	},
+	{ AtCommand_TaeKwon,				"@taekwon",			0, atcommand_taekwon	},
+	{ AtCommand_ResetFeel,				"@resetfeel",		0, atcommand_resetfeel	},
+	{ AtCommand_ResetHate,				"@resethate",		0, atcommand_resethate	},
 
 		// add here
 	{ AtCommand_MapMove,				"@mapmove",			0, NULL },
@@ -907,7 +920,7 @@ atcommand_storage(
 	const int fd, struct map_session_data* sd,
 	const char* command, const char* message)
 {
-			storage_storageopen(sd);
+	storage_storageopen(sd);
 	return 0;
 }
 
@@ -4794,8 +4807,9 @@ atcommand_econ(
 {
 	struct guild *g = NULL;
 	char temp[100];
+	nullpo_retr( -1, sd );
 	if(sd->status.guild_id == 0)
-		return 0;
+		return -1;
 		
 	
 	g = guild_search(sd->status.guild_id);
@@ -4820,8 +4834,9 @@ atcommand_ecoff(
 {
 	struct guild *g = NULL;
 	char temp[100];
+	nullpo_retr( -1, sd );
 	if(sd->status.guild_id == 0)
-		return 0;
+		return -1;
 		
 	g = guild_search(sd->status.guild_id);
 
@@ -4844,6 +4859,7 @@ atcommand_icon(
 	const char* command, const char* message)
 {
 	int	a1=0,a2=1;
+	nullpo_retr( -1, sd );
 
 	if (sscanf(message, "%d %d", &a1, &a2) < 2)
 		return -1;
@@ -4852,3 +4868,108 @@ atcommand_icon(
 	
 	return 0;
 }
+
+/*==========================================
+ * アイコン表示 デバック用
+ *------------------------------------------
+ */
+int
+atcommand_blacksmith(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	nullpo_retr( -1, sd );
+	ranking_display_ranking(sd,RK_BLACKSMITH,0,MAX_RANKER-1);
+	
+	return 0;
+}
+
+/*==========================================
+ * アイコン表示 デバック用
+ *------------------------------------------
+ */
+int
+atcommand_alchemist(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	nullpo_retr( -1, sd );
+	ranking_display_ranking(sd,RK_ALCHEMIST,0,MAX_RANKER-1);
+	
+	return 0;
+}
+
+/*==========================================
+ * アイコン表示 デバック用
+ *------------------------------------------
+ */
+int
+atcommand_taekwon(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	nullpo_retr( -1, sd );
+	ranking_display_ranking(sd,RK_TAEKWON,0,MAX_RANKER-1);
+	return 0;
+}
+
+int
+atcommand_ranking(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	int i;
+	nullpo_retr( -1, sd );
+	if (sscanf(message, "%d", &i) < 1)
+		return -1;
+	if(i<0 || i>=MAX_RANKER)
+		return -1;
+	ranking_display_ranking(sd,i,0,MAX_RANKER-1);
+	return 0;
+}
+
+/*==========================================
+ * 感情をリセット
+ *------------------------------------------
+ */
+int
+atcommand_resetfeel(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	int	i=0;
+	nullpo_retr( -1, sd );
+
+	if (sscanf(message, "%d", &i) < 1)
+		return -1;
+		
+	if(i>=0 && i<3){
+		sd->feel_map[i].m = -1;
+		strcpy(sd->feel_map[i].name,"");
+	}
+	
+	return 0;
+}
+
+/*==========================================
+ * 憎悪をリセット
+ *------------------------------------------
+ */
+int
+atcommand_resethate(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	int	i=0;
+	nullpo_retr( -1, sd );
+
+	if (sscanf(message, "%d", &i) < 1)
+		return -1;
+		
+	if(i>=0 && i<3)
+		sd->hate_mob[i] = -1;
+
+	return 0;
+}
+
+

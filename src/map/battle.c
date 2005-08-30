@@ -3494,7 +3494,7 @@ struct Damage battle_calc_magic_attack(
 				status_change_start(bl,SC_SMA,skill_lv,0,0,0,3000,0);
 			break;
 		case SL_SMA://ƒGƒXƒ}
-			if(sd)
+			if(sd && skill_lv==10)
 			{
 				MATK_FIX(40+sd->status.base_level,100);
 			}
@@ -4742,6 +4742,7 @@ int battle_config_read(const char *cfgName)
 		battle_config.tk_counter_rate_up_keeptime = 2000;
 		battle_config.allow_skill_without_day = 1;
 		battle_config.debug_new_disp_status_icon_system = 0;
+		battle_config.save_hate_mob = 0;
 	}
 	
 	fp=fopen(cfgName,"r");
@@ -5042,7 +5043,7 @@ int battle_config_read(const char *cfgName)
 			{ "tk_counter_rate_up_keeptime",		&battle_config.tk_counter_rate_up_keeptime			},
 			{ "allow_skill_without_day",			&battle_config.allow_skill_without_day				},
 			{ "debug_new_disp_status_icon_system",	&battle_config.debug_new_disp_status_icon_system	},
-			
+			{ "save_hate_mob",						&battle_config.save_hate_mob						},
 		};
 		
 		if(line[0] == '/' && line[1] == '/')

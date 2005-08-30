@@ -482,6 +482,8 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_ELEMENTFIELD			= 281,//属性場
 	SC_DARKELEMENT			= 282,//闇
 	SC_ATTENELEMENT			= 283,//念
+	SC_MIRACLE				= 284,//太陽と月と星の奇跡
+	SC_ANGEL				= 285,//太陽と月と星の天使
 };
 
 enum {
@@ -1119,7 +1121,7 @@ enum {
 	SI_HEADCRUSH			=124,	/* ヘッドクラッシュ */
 	SI_JOINTBEAT			=125,	/* ジョイントビート */
 	//SI_					=130,
-	SI_STEELBODY2			=132,//金剛アイコン
+	SI_AUTOBERSERK			=132,//金剛アイコン
 	SI_READYSTORM			=135,//旋風準備？
 	SI_READYDOWN			=137,//下段準備？
 	SI_READYTURN			=139,//回転準備？

@@ -1,4 +1,4 @@
-// $Id: map.c,v 1.1 2005/08/29 21:39:49 running_pinata Exp $
+// $Id: map.c,v 1.2 2005/08/30 19:33:51 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -2198,6 +2198,7 @@ int do_init(int argc,char *argv[])
 	do_init_pet();
 	do_init_status();
 	do_init_friend();
+	do_init_ranking();
 	npc_event_do_oninit();	// npcのOnInitイベント実行
 
 	// for httpd support

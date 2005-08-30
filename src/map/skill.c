@@ -349,7 +349,7 @@ int StatusIconChangeTable[] = {
 /* 260- */
 	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_KAIZEL,SI_KAAHI,SI_KAUPE,SI_KAITE,SI_BLANK,SI_BLANK,
 /* 270- */
-	SI_BLANK,SI_BLANK,SI_ONEHAND,SI_READYSTORM,SI_READYDOWN,SI_READYTURN,SI_READYCOUNTER,SI_BLANK,SI_BLANK,SI_DEVIL,
+	SI_BLANK,SI_BLANK,SI_ONEHAND,SI_READYSTORM,SI_READYDOWN,SI_READYTURN,SI_READYCOUNTER,SI_BLANK,SI_AUTOBERSERK,SI_DEVIL,
 /* 280- */
 	SI_DOUBLECASTING,SI_ELEMENTFIELD,SI_DARKELEMENT,SI_ATTENELEMENT,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 };
@@ -3146,20 +3146,8 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case TK_READYTURN:
 	case TK_READYCOUNTER:
 	case TK_DODGE:
-		status_change_start(bl,GetSkillStatusChangeTable(skillid),skilllv,0,0,0,skill_get_time(skillid,skilllv),0);
-		break;
 	case SM_AUTOBERSERK:
-		if(sd)//オートバーサークON/OFF
-		{
-			char output[64];
-			if(sd->sc_data[SC_AUTOBERSERK].timer!=-1)
-				strcpy(output,"オートバーサーク:OFF");
-			else
-				strcpy(output,"オートバーサーク:ON");
-			clif_disp_onlyself(sd,output,strlen(output));
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			status_change_start(bl,GetSkillStatusChangeTable(skillid),skilllv,0,0,0,skill_get_time(skillid,skilllv),0);
-		}
+		status_change_start(bl,GetSkillStatusChangeTable(skillid),skilllv,0,0,0,skill_get_time(skillid,skilllv),0);
 		break;
 	case SG_SUN_WARM://太陽の温もり
 	case SG_MOON_WARM://月の温もり
@@ -4793,6 +4781,8 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 					struct pc_base_job s_class;
 					s_class = pc_calc_base_job(dstsd->status.class);
 					sd->hate_mob[skilllv-1] = s_class.job;
+					if(battle_config.save_hate_mob)
+						pc_setglobalreg(sd,"PC_HATE_MOB_STAR",sd->hate_mob[skilllv-1]+1);
 				}
 			}else if(dstmd)//登録相手がMOB
 			{
@@ -4800,15 +4790,27 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 				{
 					case 1:
 						if(sd->hate_mob[0] == -1 && status_get_size(bl)==0)
+						{
 							sd->hate_mob[0] = dstmd->class;
+							if(battle_config.save_hate_mob)
+								pc_setglobalreg(sd,"PC_HATE_MOB_SUN",sd->hate_mob[0]+1);
+						}
 						break;
 					case 2:
 						if(sd->hate_mob[1] == -1 && status_get_size(bl)==1 && status_get_max_hp(bl)>=6000)
+						{
 							sd->hate_mob[1] = dstmd->class;
+							if(battle_config.save_hate_mob)
+								pc_setglobalreg(sd,"PC_HATE_MOB_MOON",sd->hate_mob[1]+1);
+						}
 						break;
 					case 3:
 						if(sd->hate_mob[2] == -1 && status_get_size(bl)==2 && status_get_max_hp(bl)>=20000)
+						{
 							sd->hate_mob[2] = dstmd->class;
+							if(battle_config.save_hate_mob)
+								pc_setglobalreg(sd,"PC_HATE_MOB_STAR",sd->hate_mob[2]+1);
+						}
 						break;
 				}
 			}
@@ -6601,14 +6603,15 @@ int skill_check_condition(struct map_session_data *sd,int type)
 	if(sd->dsprate!=100)
 		sp=sp*sd->dsprate/100;	/* 消費SP修正 */
 
+	//特殊なSP消費処理
 	switch(sd->skillid)
 	{
 		case AL_HOLYLIGHT://ホーリーライトの消費量増加(プーリストの魂時)
-			if(sd->sc_data[SC_PRIEST].timer!=-1)
+			if(sd->sc_data && sd->sc_data[SC_PRIEST].timer!=-1)
 				sp = sp * 5;
 			break;
 		case TK_RUN:
-			if(sd->sc_data[SC_RUN].timer!=-1)
+			if(sd->sc_data && sd->sc_data[SC_RUN].timer!=-1)
 				sp = 0;
 			break;
 		case SL_SMA: //エスマ
@@ -6627,6 +6630,15 @@ int skill_check_condition(struct map_session_data *sd,int type)
 				sp -= sp*3*kaina_lv/100;
 		}
 			break;
+		case MO_CHAINCOMBO:
+		case MO_COMBOFINISH:
+		case CH_TIGERFIST:
+		case CH_CHAINCRUSH:
+			//モンクの魂　連携スキルのSP消費現象
+			if(sd->sc_data && sd->sc_data[SC_MONK].timer!=-1)
+				sp -= sp*sd->sc_data[SC_MONK].val1/10;
+			break;
+		
 	}
 	
 	switch(skill) {
@@ -7473,6 +7485,10 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 				return 0;
 			target_id = tbl->id;
 		}
+		break;
+	case AS_SONICBLOW:
+		if(sc_data && sc_data[SC_ASSASIN].timer!=-1)
+			delay = delay/2;
 		break;
 	case TK_STORMKICK://旋風蹴り
 	case TK_DOWNKICK://下段蹴り
@@ -9304,7 +9320,7 @@ int skill_produce_mix( struct map_session_data *sd,
 	int nameid, int slot1, int slot2, int slot3 )
 {
 	int slot[3];
-	int i,sc,ele,idx,equip,wlv,make_per,flag;
+	int i,sc,ele,idx,equip,wlv,make_per,flag,cnt=0;
 
 	nullpo_retr(0, sd);
 
@@ -9326,11 +9342,13 @@ int skill_produce_mix( struct map_session_data *sd,
 		if(slot[i]==1000){	/* 星のかけら */
 			pc_delitem(sd,j,1,1);
 			sc++;
+			cnt++;
 		}
 		if(slot[i]>=994 && slot[i]<=997 && ele==0){	/* 属性石 */
 			static const int ele_table[4]={3,1,4,2};
 			pc_delitem(sd,j,1,1);
 			ele=ele_table[slot[i]-994];
+			cnt++;
 		}
 	}
 
@@ -9446,7 +9464,10 @@ int skill_produce_mix( struct map_session_data *sd,
 				clif_produceeffect(sd,2,nameid);/* 暫定で製薬エフェクト */
 				clif_misceffect(&sd->bl,5);
 				break;
-			default:  /* 武器製造、コイン製造 */
+			default:  /* 武器製造 コイン製造 */
+				if( tmp_item.card[0]==0x00ff && wlv==3 && cnt==3)
+					ranking_gain_point(sd,RK_BLACKSMITH,10);
+					
 				clif_produceeffect(sd,0,nameid); /* 武器製造エフェクト */
 				clif_misceffect(&sd->bl,3);
 				break;

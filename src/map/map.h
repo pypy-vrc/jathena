@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include "mmo.h"
 #include "script.h"
+#include "ranking.h"
 
 #ifdef TKSGSL
 #define MAX_VALID_PC_CLASS 28
@@ -38,7 +39,7 @@
 #define LOOTITEM_SIZE 10
 #define MAX_SKILL_ID 500
 #define MAX_SKILL_LEVEL 100
-#define MAX_STATUSCHANGE 285
+#define MAX_STATUSCHANGE 290
 #define MAX_SKILLUNITGROUP	32
 #define MAX_MOBSKILLUNITGROUP	8
 #define MAX_SKILLUNITGROUPTICKSET	32
@@ -60,6 +61,9 @@
 #define MAX_BONUS_AUTOSPELL  16	//オートスペルの容量
 #define	MAX_ADDRATE_AUTOSPELL 5
 #define MAX_BAN_AUTOSPELL	  5
+#define MAX_RANKING 3	//ランキング数
+#define MAX_RANKER  10	//ランキング人数
+
 
 #ifndef DEFAULT_AUTOSAVE_INTERVAL
 #define DEFAULT_AUTOSAVE_INTERVAL 60*1000
@@ -447,25 +451,8 @@ struct map_session_data {
 	int inchealresthptick,inchealrestsptick;
 	short tk_doridori_counter_hp;
 	short tk_doridori_counter_sp;
-	short sm_autoberserk_on;//オートバーサークON/OFF
-	/*
-	short tk_readystorm_on;//旋風準備ON/OFF
-	short tk_readydown_on;//下段準備ON/OFF
-	short tk_readyturn_on;//回転準備ON/OFF
-	short tk_readycounter_on;//カウンター準備ON/OFF
-	short tk_dodge_on;//落法ON/OFF
-	*/
-	/*
-	{
-		unsgined ranker_wp : 1;	//武器がランカー作か?
-		unsgined ranker_wp_ : 1;//武器がランカー作か?
-		unsgined tk_ranker : 1;	//テコンランカーか？
-	}flag;
-	*/
-	//ranking
-	int bs_point;//BSのランキング用ポイント
-	int am_point;//アルケミのランキング用ポイント
-	int tk_point;//テコンのランキング用ポイント
+	
+	int ranking_point[MAX_RANKING];
 	int tk_rank_target_class;//テコン
 	int tk_capture_count;//捕獲数
 

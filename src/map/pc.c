@@ -636,7 +636,7 @@ int pc_authok(int id,struct mmo_charstatus *st)
 	struct map_session_data *sd = NULL;
 	struct party *p = NULL;
 	struct guild *g = NULL;
-	int i;
+	int i,hate;
 	unsigned long tick = gettick();
 
 	sd = map_id2sd(id);
@@ -699,8 +699,6 @@ int pc_authok(int id,struct mmo_charstatus *st)
 	sd->tk_doridori_counter_hp = 0;
 	sd->tk_doridori_counter_sp = 0;
 
-	sd->sm_autoberserk_on = 1;
-
 	sd->spiritball = 0;
 	sd->wis_all = 0;
 
@@ -740,8 +738,6 @@ int pc_authok(int id,struct mmo_charstatus *st)
 	
 	sd->sc_count=0;
 	sd->status.option&=OPTION_MASK;
-	//オートバーサクをON
-	status_change_start(&sd->bl,SC_AUTOBERSERK,1,0,0,0,0,0);
 
 	// スキルユニット関係の初期化
 	memset(sd->skillunit,0,sizeof(sd->skillunit));
@@ -791,19 +787,28 @@ int pc_authok(int id,struct mmo_charstatus *st)
 
 	//スパノビ用死にカウンターのスクリプト変数からの読み出しとsdへのセット
 	sd->die_counter = pc_readglobalreg(sd,"PC_DIE_COUNTER");
-
+	
 	//拳聖用場所データの読み込み
 	for(i=0;i<3;i++){
 		strcpy(sd->feel_map[i].name,"");
 		sd->feel_map[i].m = map_mapname2mapid(sd->feel_map[i].name);
 		sd->hate_mob[i]=-1;
 	}
-	/*
-	//太陽と月と星の憎しみ まだ保存は保留か
-	sd->hate_mob[0] = pc_readglobalreg(sd,"PC_HATE_MOB_SUN");
-	sd->hate_mob[1] = pc_readglobalreg(sd,"PC_HATE_MOB_MOON");
-	sd->hate_mob[2] = pc_readglobalreg(sd,"PC_HATE_MOB_STAR");
-	*/
+
+	//ランキング用ポイントのスクリプト変数からの読み出しとsdへのセット
+	ranking_readreg(sd);
+	//暫定
+	for(i=0;i<MAX_RANKING;i++)
+		ranking_update_ranking(sd,i);
+	
+	
+	//太陽と月と星の憎しみ
+	if(battle_config.save_hate_mob){
+		//なかった場合０になるので-1 保存も+1すること
+		sd->hate_mob[0] = pc_readglobalreg(sd,"PC_HATE_MOB_SUN")  - 1;
+		sd->hate_mob[1] = pc_readglobalreg(sd,"PC_HATE_MOB_MOON") - 1;
+		sd->hate_mob[2] = pc_readglobalreg(sd,"PC_HATE_MOB_STAR") - 1;
+	}
 	
 	// ステータス初期計算など
 	status_calc_pc(sd,1);
@@ -4511,10 +4516,15 @@ int pc_allskillup(struct map_session_data *sd)
 				sd->status.skill[i].lv=skill_get_max(i);
 		}
 		for(i=304;i<MAX_SKILL;i++)
-			sd->status.skill[i].lv=skill_get_max(i);
+		{
+			if(i != SG_DEVIL)//太陽と月と星の悪魔　除外 (ペナルティの永続暗闇がきついので)
+				sd->status.skill[i].lv=skill_get_max(i);
+		}
 	}
 	else {
 		for(i=0;(id=skill_tree[s][c][i].id)>0;i++){
+			if(id == SG_DEVIL) //ここで除外処理
+				continue;
 			if(sd->status.skill[id].id==0 && (!(skill_get_inf2(id)&0x01) || battle_config.quest_skill_learn) )
 				sd->status.skill[id].lv=skill_get_max(id);
 		}
@@ -4696,7 +4706,7 @@ int pc_damage(struct block_list *src,struct map_session_data *sd,int damage)
 	{
 		sd->status.hp = 1;
 		clif_skill_nodamage(&sd->bl,&sd->bl,PR_KYRIE,sd->sc_data[SC_KAIZEL].val1,1);
-		status_change_start(&sd->bl,SC_KYRIE,sd->sc_data[SC_KAIZEL].val1,0,0,0,180000,0);
+		status_change_start(&sd->bl,SC_KYRIE,sd->sc_data[SC_KAIZEL].val1,0,0,0,3000,0);
 		status_change_end(&sd->bl,SC_KAIZEL,-1);	
 			clif_updatestatus(sd,SP_HP);
 		return 0;

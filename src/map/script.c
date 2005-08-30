@@ -38,6 +38,7 @@
 #include "party.h"
 #include "atcommand.h"
 #include "status.h"
+#include "itemdb.h"
 
 #ifdef MEMWATCH
 #include "memwatch.h"
@@ -4472,6 +4473,28 @@ int buildin_successrefitem(struct script_state *st)
 		clif_additem(sd,i,1,0);
 		pc_equipitem(sd,i,ep);
 		clif_misceffect(&sd->bl,3);
+		
+		//ブラックスミス 名声値
+		if(sd->status.inventory[i].refine==10 && (*((unsigned long *)(&sd->status.inventory[i].card[2]))) == sd->status.char_id)
+		{
+			switch(itemdb_wlv(sd->status.inventory[i].nameid))
+			{
+				case 1:
+					ranking_gain_point(sd,RK_BLACKSMITH,1);
+					break;
+				case 2:
+					ranking_gain_point(sd,RK_BLACKSMITH,25);
+					break;
+				case 3:
+					ranking_gain_point(sd,RK_BLACKSMITH,1000);
+					break;
+				case 4:
+					//ranking_gain_point(sd,RK_BLACKSMITH,2500);
+					break;
+				default:
+					break;
+			};	
+		}
 	}
 
 	return 0;
@@ -4998,7 +5021,6 @@ int buildin_monster(struct script_state *st)
 	if((g = guild_search(guild_id))!=NULL){
 		if(md){
 			md->guild_id = guild_id;
-	//		printf("mob has guild_id:%d\n",guild_id);
 			//ガーディアンならギルドスキル適用
 			md->guardup_lv = guild_checkskill(g,GD_GUARDUP);
 		}

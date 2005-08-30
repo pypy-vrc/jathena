@@ -1,17 +1,35 @@
 #ifndef _RANKING_H_
 #define _RANKING_H_
+
 #include "map.h"
 
-#define MAX_RANKING 10
+struct Ranking_Data
+{
+	char name[24];
+	int  point;
+	int  char_id;
+};
 
-int ranking_check_bsrank(int id);
-int ranking_check_amrank(int id);
-int ranking_check_tkrank(int id);
+//PCのランキングを返す
+int ranking_get_rank(struct map_session_data * sd,int ranking_id);
 
-int ranking_get_bs_point(struct map_session_data * sd);
-int ranking_get_am_point(struct map_session_data * sd);
-int ranking_get_tk_point(struct map_session_data * sd);
+//PCのランキングを返す
+int ranking_get_point(struct map_session_data * sd,int ranking_id);
+int ranking_set_point(struct map_session_data * sd,int ranking_id,int point);
+int ranking_gain_point(struct map_session_data * sd,int ranking_id,int point);
 
+int ranking_swap(int ranking_id,int i,int j);
+int ranking_update(struct map_session_data * sd,int ranking_id);
+int ranking_display_ranking(struct map_session_data * sd,int ranking_id,int begin,int end);
 
+//ランキング
+enum {
+	RK_BLACKSMITH 	= 0,//ブラックスミス
+	RK_ALCHEMIST 	= 1,//アルケミスト
+	RK_TAEKWON		= 2,//テコンランカー
+};
+
+int do_init_ranking();
 
 #endif
+

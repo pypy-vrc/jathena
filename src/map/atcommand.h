@@ -147,6 +147,12 @@ enum AtCommandType {
 	AtCommand_Econ,
 	AtCommand_Ecoff,
 	AtCommand_Icon,
+	AtCommand_Ranking,
+	AtCommand_Blacksmith,
+	AtCommand_Alchemist,
+	AtCommand_TaeKwon,
+	AtCommand_ResetFeel,
+	AtCommand_ResetHate,
 	AtCommand_Unknown,
 	AtCommand_MAX,
 };

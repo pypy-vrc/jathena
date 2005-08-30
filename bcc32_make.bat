@@ -107,7 +107,7 @@ copy char.exe ..\..\char-server.exe > NUL
 
 @echo マップサーバーコンパイル
 cd ..\map
-bcc32 -j255 %__warning__% %__define__% %__include__% map.c npc.c battle.c chat.c chrif.c clif.c guild.c intif.c itemdb.c mob.c atcommand.c party.c path.c pc.c pet.c status.c script.c skill.c storage.c trade.c vending.c friend.c date.c %__common__%
+bcc32 -j255 %__warning__% %__define__% %__include__% map.c npc.c battle.c chat.c chrif.c clif.c guild.c intif.c itemdb.c mob.c atcommand.c party.c path.c pc.c pet.c status.c script.c skill.c storage.c trade.c vending.c friend.c date.c ranking.c %__common__%
 copy map.exe ..\..\map-server.exe > NUL
 
 cd ..\..\

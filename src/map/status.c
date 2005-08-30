@@ -756,7 +756,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	//太陽と月と星の悪魔
 	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0)
 	{
-		aspd_rate -= skill*4;
+		aspd_rate -= skill*3;
 		if(sd->sc_data[SC_DEVIL].timer!=-1 || sd->sc_data[SC_DEVIL].val1<skill)
 			status_change_start(&sd->bl,SC_DEVIL,skill,0,0,0,5000,0);
 		clif_status_change(&sd->bl,SI_DEVIL,1);
@@ -3863,14 +3863,9 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	
 	if(battle_config.debug_new_disp_status_icon_system)
 	{
-		if(bl->type==BL_PC && type==SC_STEELBODY)
-			clif_status_change(bl,SI_STEELBODY2,1);	/* 金剛は２つあるのでアイコン表示 */
 		if(bl->type==BL_PC && StatusIconChangeTable[type] != SI_BLANK)
 			clif_status_change(bl,StatusIconChangeTable[type],1);	// アイコン表示
 	}else{
-		
-		if(bl->type==BL_PC && type==SC_STEELBODY)
-			clif_status_change(bl,SI_STEELBODY2,1);	/* 金剛は２つあるのでアイコン表示 */
 		
 		if(bl->type==BL_PC && type<SC_SENDMAX)
 			clif_status_change(bl,type,1);	/* アイコン表示 */
@@ -4301,16 +4296,11 @@ int status_change_end( struct block_list* bl , int type,int tid )
 		
 		if(battle_config.debug_new_disp_status_icon_system)
 		{
-		if(bl->type==BL_PC && type==SC_STEELBODY)
-			clif_status_change(bl,SI_STEELBODY2,0);	/* 金剛は２つあるのでアイコン消去 */
 			if(bl->type==BL_PC && StatusIconChangeTable[type] != SI_BLANK)
 			clif_status_change(bl,StatusIconChangeTable[type],0);	// アイコン消去
 		}
 		else
 		{
-			if(bl->type==BL_PC && type==SC_STEELBODY)
-				clif_status_change(bl,SI_STEELBODY2,0);	/* 金剛は２つあるのでアイコン消去 */
-				
 			if(bl->type==BL_PC && type<SC_SENDMAX)
 				clif_status_change(bl,type,0);	/* アイコン消去 */
 			else if(bl->type==BL_PC && type>=SC_SENDMAX)
