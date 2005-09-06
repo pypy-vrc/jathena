@@ -1,4 +1,4 @@
-// $Id: map.c,v 1.2 2005/08/30 19:33:51 running_pinata Exp $
+// $Id: map.c,v 1.3 2005/09/06 19:24:51 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -342,6 +342,8 @@ struct skill_unit *map_find_skill_unit_oncell(struct block_list *target,int x,in
 	struct block_list *bl;
 	int i,c;
 	struct skill_unit *unit;
+
+	nullpo_retr(0, target);
 	m = target->m;
 
 	if (x < 0 || y < 0 || (x >= map[m].xs) || (y >= map[m].ys))
@@ -391,12 +393,12 @@ void map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int 
 	///////////////////////////////
 	// find maximum runindex
 	int tmax = abs(y1-y0);
-	
+
 	if(x0 != x1 && y0 != y1 && abs(x1-x0) != abs(y1-y0)) {
 		printf("map_foreachinpath: not supported size\n");
 		return;
 	}
-	if(tmax  < abs(x1-x0))	
+	if(tmax  < abs(x1-x0))
 		tmax = abs(x1-x0);
 	// pre-calculate delta values for x and y destination
 	// should speed up cause you don't need to divide in the loop
@@ -427,7 +429,7 @@ void map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int 
 				bl = map[m].block[bx+by*map[m].bxs];		// a block with the elements
 				for(i=0;i<c1 && bl;i++,bl=bl->next){		// go through all elements
 					if( bl && ( !type || bl->type==type ) && bl_list_count<BL_LIST_MAX )
-					{	
+					{
 						// check if block xy is on the line
 						if( (bl->x-x0)*(y1-y0) == (bl->y-y0)*(x1-x0) )
 						// and if it is within start and end point
@@ -450,7 +452,7 @@ void map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int 
 							bl_list[bl_list_count++]=bl;
 					}
 				}//end for mobs
-			}	
+			}
 		}
 	}//end for index
 
@@ -914,13 +916,13 @@ int map_addflooritem(struct item *item_data,int amount,int m,int x,int y,struct 
 struct charid2nick *char_search(int char_id)
 {
 	struct charid2nick *p;
-	
+
 	p=numdb_search(charid_db,char_id);
 	if(p==NULL){	// データベースにない
 		chrif_searchcharid(char_id);
 		return NULL;
 	}
-	
+
 	return p;
 }
 
@@ -1718,7 +1720,7 @@ static int map_cache_write(struct map_data *m)
 				len_new = m->xs * m->ys;
 				write_buf = m->gat;
 				map_cache.map[i].compressed     = 0;
-				map_cache.map[i].compressed_len = 0;	
+				map_cache.map[i].compressed_len = 0;
 			}
 			if(len_new <= len_old) {
 				// サイズが同じか小さくなったので場所は変わらない
@@ -1939,7 +1941,7 @@ int map_delmap(char *mapname)
 
 	fd=va_arg(ap,int);
 
-	if( p->ip != 0 && 
+	if( p->ip != 0 &&
 		p->port != 0 &&
 		!(battle_config.hide_GM_session && pc_numisGM(p->account_id))
 	)
@@ -2060,7 +2062,7 @@ void map_socket_ctrl_panel_func(int fd,char* usage,char* user,char* status)
 	strcpy( usage,
 		( sd->func_parse == clif_parse )? "map user" :
 		( sd->func_parse == chrif_parse )? "char server" : "unknown" );
-	
+
 	if( sd->func_parse == clif_parse && sd->auth )
 	{
 		struct map_session_data *sd2 = sd->session_data;
@@ -2125,7 +2127,7 @@ void do_final(void)
 	do_final_friend();
 
 	for(i=0;i<=map_num;i++){
-		if(map[i].gat) {	
+		if(map[i].gat) {
 			free(map[i].gat);
 			map[i].gat=NULL;
 		}
@@ -2183,7 +2185,7 @@ int do_init(int argc,char *argv[])
 	add_timer_func_list(map_freeblock_timer,"map_freeblock_timer");
 	add_timer_func_list(map_clearflooritem_timer,"map_clearflooritem_timer");
 	add_timer_interval(gettick()+1000,map_freeblock_timer,0,0,60*1000);
-	
+
 	do_init_chrif();
 	do_init_clif();
 	do_init_script(); // parse_script を呼び出す前にこれを呼ぶ

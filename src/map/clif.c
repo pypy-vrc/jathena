@@ -215,6 +215,7 @@ void clif_parse_FriendAddRequest(int fd,struct map_session_data *sd, int cmd);
 void clif_parse_FriendAddReply(int fd,struct map_session_data *sd, int cmd);
 void clif_parse_FriendDeleteRequest(int fd,struct map_session_data *sd, int cmd);
 void clif_parse_debug(int fd,struct map_session_data *sd, int cmd);
+void clif_parse_noaction(int fd,struct map_session_data *sd, int cmd);
 
 struct {
 	void (*func)();
@@ -339,6 +340,7 @@ struct {
 	{clif_parse_FriendAddReply,"friendaddreply"},
 	{clif_parse_FriendDeleteRequest,"frienddeleterequest"},
 	{clif_parse_debug,"debug"},
+	{clif_parse_noaction,"noaction"},
 
 	{NULL,NULL}
 };
@@ -1103,9 +1105,9 @@ static int clif_npc0078(struct npc_data *nd,unsigned char *buf)
 	WBUFW(buf,6)=nd->speed;
 	WBUFW(buf,12)=nd->option;
 	WBUFW(buf,14)=nd->class;
-	if( (nd->bl.subtype!=WARP) && 
-		(nd->class == 722) && 
-		(nd->u.scr.guild_id > 0) && 
+	if( (nd->bl.subtype!=WARP) &&
+		(nd->class == 722) &&
+		(nd->u.scr.guild_id > 0) &&
 		((g=guild_search(nd->u.scr.guild_id))) )
 	{
 		WBUFL(buf,22)=g->emblem_id;
@@ -2825,7 +2827,7 @@ int clif_misceffect2(struct block_list *bl,int type)
 	return 0;
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int clif_misceffect3(struct block_list *bl,int type)
@@ -3183,7 +3185,7 @@ int clif_tradestart(struct map_session_data *sd,int type)
 	struct map_session_data *target_sd;
 
 	nullpo_retr(0, sd);
-	
+
 	if((target_sd=map_id2sd(sd->trade_partner)) == NULL)
 		return -1;
 
@@ -5684,7 +5686,7 @@ int clif_hpmeter(struct map_session_data *sd)
 	unsigned char buf[16];
 	unsigned char buf2[16];
 	int i;
-	
+
 	nullpo_retr(0, sd);
 
 	WBUFW(buf,0)=0x107;
@@ -5699,7 +5701,7 @@ int clif_hpmeter(struct map_session_data *sd)
 			WFIFOSET(i,packet_db[0x107].len);
 		}
 	}
-	
+
 	WBUFW(buf2,0)=0x106;
 	WBUFL(buf2,2)=sd->status.account_id;
 	WBUFW(buf2,6)=(sd->status.hp > 0x7fff)? 0x7fff:sd->status.hp;
@@ -5711,7 +5713,7 @@ int clif_hpmeter(struct map_session_data *sd)
 			WFIFOSET(i,packet_db[0x106].len);
 		}
 	}
-	
+
 	return 0;
 }
 /*==========================================
@@ -6515,7 +6517,7 @@ int clif_guild_notice(struct map_session_data *sd,struct guild *g)
 
 	nullpo_retr(0, sd);
 	nullpo_retr(0, g);
-	
+
 	fd=sd->fd;
 	if(*g->mes1==0 && *g->mes2==0)
 		return 0;
@@ -6606,7 +6608,7 @@ int clif_guild_explusionlist(struct map_session_data *sd)
 	struct guild *g;
 
 	nullpo_retr(0, sd);
-	
+
 	fd=sd->fd;
 	g=guild_search(sd->status.guild_id);
 	if(g==NULL)
@@ -6652,7 +6654,7 @@ int clif_guild_skillup(struct map_session_data *sd,int skill_num,int lv)
 	int fd;
 
 	nullpo_retr(0, sd);
-	
+
 	fd=sd->fd;
 	WFIFOW(fd,0) = 0x10e;
 	WFIFOW(fd,2) = skill_num;
@@ -6672,7 +6674,7 @@ int clif_guild_reqalliance(struct map_session_data *sd,int account_id,const char
 	int fd;
 
 	nullpo_retr(0, sd);
-	
+
 	fd=sd->fd;
 	WFIFOW(fd,0)=0x171;
 	WFIFOL(fd,2)=account_id;
@@ -6847,7 +6849,7 @@ void clif_sitting(struct map_session_data *sd)
 	clif_send(WFIFOP(fd,0),packet_db[0x8a].len,&sd->bl,AREA);
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int clif_disp_onlyself(struct map_session_data *sd,char *mes,int len)
@@ -7234,7 +7236,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd, int cmd)
 
 	// option系初期化(クライアントに対する...)
 	// 同一パケを2回送ることでも十分ですが、気持ち悪いので0で初期化という形に
-	clif_changeoption_clear(&sd->bl);	
+	clif_changeoption_clear(&sd->bl);
 	// option
 	clif_changeoption(&sd->bl);
 	if(sd->sc_data[SC_TRICKDEAD].timer != -1)
@@ -7294,7 +7296,7 @@ void clif_parse_WalkToXY(int fd,struct map_session_data *sd, int cmd)
 		(sd->sc_data[SC_DANCING].timer !=-1 && sd->sc_data[SC_DANCING].val4) //合奏スキル演奏中は動けない
 		) //
 		return;
-		
+
 	if( (sd->status.option&2) && pc_checkskill(sd,RG_TUNNELDRIVE) <= 0)
 		return;
 
@@ -7426,7 +7428,7 @@ void clif_parse_GlobalMessage(int fd,struct map_session_data *sd, int cmd)
 	len=RFIFOW(fd,GETPACKETPOS(cmd,0));
 	if (is_atcommand(fd, sd, RFIFOP(fd, GETPACKETPOS(cmd,1)),0) != AtCommand_None)
 		return;
-	if( sd->sc_data && 
+	if( sd->sc_data &&
 		(sd->sc_data[SC_BERSERK].timer!=-1 ||	//バーサーク時は会話も不可
 		sd->sc_data[SC_NOCHAT].timer!=-1 ) )	//チャット禁止
 		return;
@@ -7543,7 +7545,7 @@ void clif_parse_ActionRequest(int fd,struct map_session_data *sd, int cmd)
 
 	target_id = RFIFOL(fd,GETPACKETPOS(cmd,0));
 	action_type = RFIFOB(fd,GETPACKETPOS(cmd,1));
-	
+
 	// decode for jRO 2005-05-09dRagexe
 	if( packet_db[cmd].pos[0]==0 )
 	{
@@ -7561,7 +7563,7 @@ void clif_parse_ActionRequest(int fd,struct map_session_data *sd, int cmd)
 			if(sd->vender_id != 0) return;
 			if(bl && mob_gvmobcheck(sd,bl)==0)
 				return;
-	
+
 			if(!battle_config.sdelay_attack_enable && pc_checkskill(sd,SA_FREECAST) <= 0 ) {
 				if(DIFF_TICK(tick , sd->canact_tick) < 0) {
 					clif_skill_fail(sd,1,4,0);
@@ -7659,8 +7661,8 @@ void clif_parse_Restart(int fd,struct map_session_data *sd, int cmd)
 void clif_parse_Wis(int fd,struct map_session_data *sd, int cmd)
 {
 	int len=RFIFOW(fd,GETPACKETPOS(cmd,0));
-	
-	if( sd && sd->sc_data && 
+
+	if( sd && sd->sc_data &&
 		(sd->sc_data[SC_BERSERK].timer!=-1 ||	//バーサーク時は会話も不可
 		sd->sc_data[SC_NOCHAT].timer!=-1 ) )	//チャット禁止
 		return;
@@ -7743,7 +7745,7 @@ void clif_parse_UseItem(int fd,struct map_session_data *sd, int cmd)
 	int i = RFIFOW(fd,GETPACKETPOS(cmd,0))-2, id;
 
 	nullpo_retv(sd);
-	
+
 	id = (i >=0 && i < MAX_INVENTORY)? sd->status.inventory[i].nameid : -1;
 
 	if(pc_isdead(sd)) {
@@ -7786,7 +7788,7 @@ void clif_parse_EquipItem(int fd,struct map_session_data *sd, int cmd)
 	}
 	index = RFIFOW(fd,GETPACKETPOS(cmd,0))-2;
 	id = (index >=0 && index < MAX_INVENTORY)? sd->status.inventory[index].nameid : -1;
-	
+
 	if( (sd->npc_id!=0 && sd->npc_allowuseitem!=0 && sd->npc_allowuseitem!=id )
 	 || sd->vender_id != 0 || sd->deal_mode != 0) return;
 	if(sd->sc_data && ( sd->sc_data[SC_BLADESTOP].timer!=-1 || sd->sc_data[SC_BERSERK].timer!=-1 )) return;
@@ -8137,7 +8139,7 @@ void clif_parse_UseSkillToId(int fd,struct map_session_data *sd, int cmd)
 	//ギルドスキルはギルマスのみ
 	if(skillnum>=GD_SKILLBASE && sd != guild_get_guildmaster_sd(guild_search(sd->status.guild_id)))
 		return ;
-		
+
 	bl=map_id2bl(target_id);
 	if(bl && mob_gvmobcheck(sd,bl)==0)
 		return;
@@ -8151,7 +8153,7 @@ void clif_parse_UseSkillToId(int fd,struct map_session_data *sd, int cmd)
 		return;
 	}
 
-	if((sd->sc_data[SC_TRICKDEAD].timer != -1 && skillnum != NV_TRICKDEAD) || 
+	if((sd->sc_data[SC_TRICKDEAD].timer != -1 && skillnum != NV_TRICKDEAD) ||
 		sd->sc_data[SC_BERSERK].timer!=-1 ||
 		sd->sc_data[SC_NOCHAT].timer!=-1 ||
 		sd->sc_data[SC_WEDDING].timer!=-1
@@ -8266,7 +8268,7 @@ void clif_parse_UseSkillMap(int fd,struct map_session_data *sd, int cmd)
 	if(map[sd->bl.m].flag.noskill) return;
 	if(sd->chatID) return;
 
-	if(sd->npc_id!=0 || sd->vender_id != 0 || (sd->sc_data && 
+	if(sd->npc_id!=0 || sd->vender_id != 0 || (sd->sc_data &&
 		(sd->sc_data[SC_TRICKDEAD].timer != -1 ||
 		sd->sc_data[SC_BERSERK].timer!=-1 ||
 		sd->sc_data[SC_NOCHAT].timer!=-1 ||
@@ -9049,7 +9051,7 @@ void clif_parse_sn_explosionspirits(int fd,struct map_session_data *sd, int cmd)
 			else
 				printf("SuperNovice explosionspirits!! %d %d %d 000\n",sd->bl.id,s_class.job,sd->status.base_exp);
 		}
-		
+
 		if(s_class.job == 23 && sd->status.base_exp > 0 && nextbaseexp > 0 && (int)((double)1000*sd->status.base_exp/nextbaseexp)%100==0){
 			clif_skill_nodamage(&sd->bl,&sd->bl,MO_EXPLOSIONSPIRITS,5,1);
 			status_change_start(&sd->bl,SkillStatusChangeTable[MO_EXPLOSIONSPIRITS],5,0,0,0,skill_get_time(MO_EXPLOSIONSPIRITS,5),0 );
@@ -9162,10 +9164,10 @@ void clif_parse_wisall(int fd,struct map_session_data *sd, int cmd)
 void clif_parse_GMkillall(int fd,struct map_session_data *sd, int cmd)
 {
 	char message[50];
-	
+
 	nullpo_retv(sd);
 	memset( message, 0, sizeof( message ) );
-	
+
 	strncpy(message,sd->status.name,24);
 	is_atcommand(fd,sd,strcat(message," : @kickall"),0);
 	return;
@@ -9177,10 +9179,10 @@ void clif_parse_GMkillall(int fd,struct map_session_data *sd, int cmd)
 void clif_parse_GMsummon(int fd,struct map_session_data *sd, int cmd)
 {
 	char message[100];
-	
+
 	nullpo_retv(sd);
 	memset( message, 0, sizeof( message ) );
-	
+
 	strncpy(message,sd->status.name,24);
 	strcat(message," : @recall ");
 	strncat(message,RFIFOP(fd,GETPACKETPOS(cmd,0)),24);
@@ -9210,9 +9212,9 @@ void clif_parse_GMitemmonster( int fd, struct map_session_data *sd, int cmd )
 void clif_parse_GMshift(int fd,struct map_session_data *sd, int cmd)
 {
 	char message[100];
-	
+
 	nullpo_retv(sd);
-	
+
 	strncpy(message,sd->status.name,24);
 	strcat(message," : @jumpto ");
 	strncat(message,RFIFOP(fd,GETPACKETPOS(cmd,0)),24);
@@ -9265,6 +9267,14 @@ void clif_parse_debug(int fd,struct map_session_data *sd, int cmd)
 		printf("%02X ",RFIFOB(fd,i));
 	}
 	printf("\n");
+}
+/*==========================================
+ * 0x021d
+ *------------------------------------------
+ */
+void clif_parse_noaction(int fd,struct map_session_data *sd, int cmd)
+{
+	return;
 }
 /*==========================================
  * クライアントからのパケット解析

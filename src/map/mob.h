@@ -27,7 +27,7 @@ struct mob_db {
 	int size,race,element,mode;
 	int speed,adelay,amotion,dmotion;
 	int mexp,mexpper;
-	struct { int nameid,p; } dropitem[8];
+	struct { int nameid,p; } dropitem[10];
 	struct { int nameid,p; } mvpitem[3];
 	int view_class,sex;
 	short hair,hair_color,weapon,shield,head_top,head_mid,head_buttom,option,trans,group_id;

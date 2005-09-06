@@ -8,6 +8,7 @@ enum AtCommandType {
 	AtCommand_LocalBroadcast,
 	AtCommand_MapMove,
 	AtCommand_ResetState,
+	AtCommand_ResetSkill,
 	AtCommand_RuraP,
 	AtCommand_Rura,
 	AtCommand_Where,

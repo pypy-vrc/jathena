@@ -1040,7 +1040,7 @@ unsigned char* parse_syntax(unsigned char *p) {
 			syntax.curly[syntax.curly_count++].type = TYPE_NULL;
 			p=parse_line(p);
 			syntax.curly_count--;
-		
+
 			// 条件判断開始のラベル形成する
 			sprintf(label,"__FR%x_J",syntax.curly[pos].index);
 			l=add_str(label);
@@ -1246,7 +1246,7 @@ unsigned char* parse_syntax(unsigned char *p) {
 unsigned char* parse_syntax_close(unsigned char *p) {
 	// if(...) for(...) hoge(); のように、１度閉じられたら再度閉じられるか確認する
 	int flag;
-	
+
 	do {
 		p = parse_syntax_close_sub(p,&flag);
 	} while(flag);
@@ -2757,6 +2757,7 @@ int buildin_monster(struct script_state *st);
 int buildin_areamonster(struct script_state *st);
 int buildin_killmonster(struct script_state *st);
 int buildin_killmonsterall(struct script_state *st);
+int buildin_areakillmonster(struct script_state *st);
 int buildin_doevent(struct script_state *st);
 int buildin_donpcevent(struct script_state *st);
 int buildin_addtimer(struct script_state *st);
@@ -2845,6 +2846,7 @@ int buildin_getguildrelation(struct script_state *st);
 int buildin_unequip(struct script_state *st);
 int buildin_allowuseitem(struct script_state *st);
 int buildin_equippeditem(struct script_state *st);
+int buildin_getmapname(struct script_state *st);
 
 struct script_function buildin_func[] = {
 	{buildin_mes,"mes","s"},
@@ -2929,6 +2931,7 @@ struct script_function buildin_func[] = {
 	{buildin_areamonster,"areamonster","siiiisii*"},
 	{buildin_killmonster,"killmonster","ss"},
 	{buildin_killmonsterall,"killmonsterall","s"},
+	{buildin_areakillmonster,"areakillmonster","siiii"},
 	{buildin_doevent,"doevent","s"},
 	{buildin_donpcevent,"donpcevent","s"},
 	{buildin_addtimer,"addtimer","is"},
@@ -3017,6 +3020,7 @@ struct script_function buildin_func[] = {
 	{buildin_unequip,"unequip","*"},
 	{buildin_allowuseitem,"allowuseitem","*"},
 	{buildin_equippeditem,"equippeditem","i*"},
+	{buildin_getmapname,"getmapname","s"},
 	{NULL,NULL,NULL}
 };
 
@@ -4473,7 +4477,7 @@ int buildin_successrefitem(struct script_state *st)
 		clif_additem(sd,i,1,0);
 		pc_equipitem(sd,i,ep);
 		clif_misceffect(&sd->bl,3);
-		
+
 		//ブラックスミス 名声値
 		if(sd->status.inventory[i].refine==10 && (*((unsigned long *)(&sd->status.inventory[i].card[2]))) == sd->status.char_id)
 		{
@@ -4496,7 +4500,7 @@ int buildin_successrefitem(struct script_state *st)
 					break;
 				default:
 					break;
-			};	
+			};
 		}
 	}
 
@@ -5028,7 +5032,7 @@ int buildin_monster(struct script_state *st)
 			md->guardup_lv = guild_checkskill(g,GD_GUARDUP);
 		}
 	}
-	
+
 	//ランダム召還じゃないならドロップあり
 	if(class!=-1) return 0;
 
@@ -5119,6 +5123,21 @@ int buildin_killmonsterall(struct script_state *st)
 		return 0;
 	map_foreachinarea(buildin_killmonsterall_sub,
 		m,0,0,map[m].xs,map[m].ys,BL_MOB);
+	return 0;
+}
+int buildin_areakillmonster(struct script_state *st)
+{
+	char *mapname;
+	int m,x0,y0,x1,y1;
+	mapname=conv_str(st,& (st->stack->stack_data[st->start+2]));
+	x0=conv_num(st,& (st->stack->stack_data[st->start+3]));
+	y0=conv_num(st,& (st->stack->stack_data[st->start+4]));
+	x1=conv_num(st,& (st->stack->stack_data[st->start+5]));
+	y1=conv_num(st,& (st->stack->stack_data[st->start+6]));
+	if( (m=map_mapname2mapid(mapname))<0 )
+		return 0;
+	map_foreachinarea(buildin_killmonsterall_sub,
+		m,x0-x1,y0-y1,x0+x1,y0+y1,BL_MOB);
 	return 0;
 }
 /*==========================================
@@ -5364,7 +5383,7 @@ int buildin_getusersname(struct script_state *st)
 {
 	struct map_session_data *pl_sd = NULL;
 	int i=0,disp_num=1;
-	
+
 	for (i=0;i<fd_max;i++)
 		if(session[i] && (pl_sd=session[i]->session_data) && pl_sd->state.auth){
 			if( !(battle_config.hide_GM_session && pc_isGM(pl_sd)) ){
@@ -5778,7 +5797,7 @@ int buildin_globalmes(struct script_state *st)
 
 	mes=conv_str(st,& (st->stack->stack_data[st->start+2]));	// メッセージの取得
 	if(mes==NULL) return 0;
-	
+
 	if(st->end>st->start+3){	// NPC名の取得(123#456)
 		name=conv_str(st,& (st->stack->stack_data[st->start+3]));
 	} else {
@@ -6234,7 +6253,7 @@ int buildin_agitstart(struct script_state *st)
 	if(agit_flag==1) return 1;      // Agit already Start.
 	agit_flag=1;
 	guild_agit_start();
-	
+
 	return 0;
 }
 
@@ -6579,7 +6598,7 @@ int buildin_marriage(struct script_state *st)
 	char *partner=conv_str(st,& (st->stack->stack_data[st->start+2]));
 	struct map_session_data *sd=script_rid2sd(st);
 	struct map_session_data *p_sd=map_nick2sd(partner);
-	
+
 	//養子キャラか判定追加 新職用
 	if(sd==NULL || p_sd==NULL || pc_isadoptee(sd) || pc_isadoptee(sd) || pc_marriage(sd,p_sd) < 0){
 		push_val(st->stack,C_INT,0);
@@ -6755,7 +6774,7 @@ int buildin_classchange(struct script_state *st)
 {
 	int class,type;
 	struct block_list *bl=map_id2bl(st->oid);
-	
+
 	if(bl==NULL) return 0;
 
 	class=conv_num(st,& (st->stack->stack_data[st->start+2]));
@@ -7158,5 +7177,24 @@ int buildin_allowuseitem(struct script_state *st)
 			i=conv_num(st,data);
 	}
 	sd->npc_allowuseitem = i;
+	return 0;
+}
+/*==========================================
+ * 指定キャラの居るマップ名取得
+ *------------------------------------------
+ */
+int buildin_getmapname(struct script_state *st)
+{
+	struct map_session_data *sd=script_rid2sd(st);
+	struct map_session_data *pl_sd;
+	char *char_name = conv_str(st,& (st->stack->stack_data[st->start+2]));
+
+	if( strlen(char_name) >= 4 ){
+		if((pl_sd = map_nick2sd(char_name)) != NULL)
+			push_str(st->stack,C_STR,pl_sd->mapname);
+		else
+			push_str(st->stack,C_STR,"");
+	}else
+		push_str(st->stack,C_STR,sd->mapname);
 	return 0;
 }

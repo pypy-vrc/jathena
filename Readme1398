@@ -1,4 +1,59 @@
 ----------------------------------------
+//1406 by huge
+・GCCやVC++でwarningが出ていた箇所を修正。
+・/resetstate /resetskill が、制限無く使えていたのを修正。
+・上の関係で、@resetstate / @resetskill を追加。
+・@charjobで追加職を指定すると、鯖が落ちるのを修正。
+・mob.cで、扱うMOB_IDの最大値をdefineで指定できるように修正。
+・mob_db.txtの仕様変更。
+	※使われていないItem1,Item2を削除し、Drop9,Card枠を新規に追加。つまりeAthena方式。
+	   今までのをそのまま使用すると、MVP MOBに影響が出ます。
+	※添付したmob_dbは、http://www.usamimi.info/~huge/にて編集を行っているDBの、jRO基準のを入れました。
+・mob_db2.txtの扱いを変更
+	※記述のある部分のみ書き換えるように。空白の場合は0にせず、mob_db.txtで読んだ時の値を使います。
+・confで敵のドロップ率を0にしていた時にスティールすると鯖が落ちる問題を修正。(thx Rayceさん)
+・練気功で溜めた気がタイマーで消えないのを修正。(timerは怖くて弄れないから誤魔化し；)
+・指定キャラの居るマップ名を取得するスクリプトを追加。	getmapname("キャラ名");自分の名前は、strcharinfo(0)で。
+	これを使って、指定マップのみのアイテム使用可否の設定もできそう。
+・scriptの、killmonsterの範囲版をとりあえずで実装。
+	areakillmonster <gatname>,x0,y0,x1,y1;
+	gatnameにはマップ名を。x0,y0座標を中心に、x1,y1の範囲に居るmobを殲滅します。eventは指定できません。
+・0x021dパケットに対する無反応。
+・いくつかのNULLチェック。
+・余計そうなTabやスペースなどの整理。
+・前に自分で書いたbattle_athena.confのmvp_announceの説明文が恥ずかしいから修正。
+・ついでにversion更新。
+
+	(conf/)
+		atcommand_athena.conf
+		battle_athena.conf
+	(db/)
+		packet_db.txt
+		mob_db.txt
+	(doc/)
+		script_ref.txt
+弄った箇所が多いので、変更ファイル名のみ
+	(src/common/)
+		version.h
+	(src/map/)
+		atcommand.c
+		atcommand.h
+		battle.c
+		clif.c
+		friend.c
+		guild.c
+		map.c
+		mob.c
+		mob.h
+		npc.c
+		party.c
+		pc.c
+		ranking.c
+		script.c
+		skill.c
+		vending.c
+
+----------------------------------------
 //1405 by ＡＡＡ
 ・駆け足　実装
   スパーク状態のアイコン実装(暫定)

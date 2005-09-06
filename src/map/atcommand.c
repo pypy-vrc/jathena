@@ -44,7 +44,7 @@
 
 //JOB TABLE
 	//NV,SW,MG,AC,AL,MC,TF,KN,PR,WZ,BS,HT,AS,KNp,CR,MO,SA,RG,AM,BA,DC,CRp,  ,SNV,TK,SG,SG2,SL,(NJ,GS) ???
-int max_job_table[3][28] = 
+int max_job_table[3][28] =
 	{{10,50,50,50,50,50,50,50,50,50,50,50,50, 50,50,50,50,50,50,50,50, 50, 1, 99,50,50,50,50}, //通常
 	 {10,50,50,50,50,50,50,70,70,70,70,70,70, 70,70,70,70,70,70,70,70, 70, 1, 99,50,50,50,50}, //転生
 	 {10,50,50,50,50,50,50,50,50,50,50,50,50, 50,50,50,50,50,50,50,50, 50, 1, 99,50,50,50,50}};//養子
@@ -185,6 +185,8 @@ ATCOMMAND_FUNC(alchemist);
 ATCOMMAND_FUNC(taekwon);
 ATCOMMAND_FUNC(resetfeel);
 ATCOMMAND_FUNC(resethate);
+ATCOMMAND_FUNC(resetstate);
+ATCOMMAND_FUNC(resetskill);
 
 /*==========================================
  *AtCommandInfo atcommand_info[]構造体の定義
@@ -336,6 +338,8 @@ static AtCommandInfo atcommand_info[] = {
 	{ AtCommand_TaeKwon,				"@taekwon",			0, atcommand_taekwon	},
 	{ AtCommand_ResetFeel,				"@resetfeel",		0, atcommand_resetfeel	},
 	{ AtCommand_ResetHate,				"@resethate",		0, atcommand_resethate	},
+	{ AtCommand_ResetState,				"@resetstate",		0, atcommand_resetstate },
+	{ AtCommand_ResetSkill,				"@resetskill",		0, atcommand_resetskill },
 
 		// add here
 	{ AtCommand_MapMove,				"@mapmove",			0, NULL },
@@ -420,7 +424,7 @@ is_atcommand(const int fd, struct map_session_data* sd, const char* message, int
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 AtCommandType
@@ -436,7 +440,7 @@ atcommand(
 	}
 	if (!*p || *p != '@')
 		return AtCommand_None;
-	
+
 	if(p[0] == '@' && p[1] == '@')
 		return AtCommand_None;
 
@@ -446,7 +450,7 @@ atcommand(
 		int i = 0;
 		sscanf(p, "%100s", command);
 		command[100] = '\0';
-		
+
 		while (atcommand_info[i].type != AtCommand_Unknown) {
 			if (strcmpi(command, atcommand_info[i].command) == 0 &&
 				level >= atcommand_info[i].level)
@@ -457,21 +461,21 @@ atcommand(
 			return AtCommand_Unknown;
 		memcpy(info, &atcommand_info[i], sizeof atcommand_info[i]);
 	}
-	
+
 	return info->type;
 }
 
 //struct Atcommand_Config atcommand_config;
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 static int atkillmonster_sub(struct block_list *bl,va_list ap)
 {
 	int flag = va_arg(ap,int);
 	nullpo_retr(0, bl);
-	
+
 	if (flag)
 		mob_damage(NULL,(struct mob_data *)bl,((struct mob_data *)bl)->hp,2);
 	else
@@ -488,18 +492,18 @@ static int atmobsearch_sub(struct block_list *bl,va_list ap)
 	static int number=0;
 	struct mob_data *md;
 	char output[128];
-	
+
 	nullpo_retr(0, bl);
-	
+
 	if(!ap){
 		number=0;
 		return 0;
 	}
 	mob_id = va_arg(ap,int);
 	fd = va_arg(ap,const int);
-	
+
 	md = (struct mob_data *)bl;
-	
+
 	if(md && fd && (mob_id==-1 || (md->class==mob_id))){
 		snprintf(output, sizeof output, msg_table[94],
 				++number,bl->x, bl->y,md->name);
@@ -532,7 +536,7 @@ static int atcommand_cleanmap_sub(struct block_list *bl,va_list ap)
 	return 0;
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 /* Read Message Data */
@@ -579,7 +583,7 @@ static AtCommandInfo* getAtCommandInfoByType(const AtCommandType type)
 */
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 static AtCommandInfo*
@@ -593,14 +597,14 @@ get_atcommandinfo_byname(const char* name)
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int atcommand_config_read(const char *cfgName)
 {
 	int i;
 	char line[1024],w1[1024],w2[1024];
-	
+
 	if (battle_config.atc_gmonly > 0) {
 		AtCommandInfo* p = NULL;
 		FILE* fp = fopen(cfgName,"r");
@@ -617,7 +621,7 @@ int atcommand_config_read(const char *cfgName)
 			p = get_atcommandinfo_byname(w1);
 			if (p != NULL)
 				p->level = atoi(w2);
-			
+
 			if (strcmpi(w1, "import") == 0)
 				atcommand_config_read(w2);
 			}
@@ -631,7 +635,7 @@ int atcommand_config_read(const char *cfgName)
 
 // @rura+
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -643,7 +647,7 @@ atcommand_rurap(
 	char character[100];
 	int x = 0, y = 0;
 	struct map_session_data *pl_sd = NULL;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
@@ -667,13 +671,13 @@ atcommand_rurap(
 			clif_displaymessage(fd,msg_table[2]);
 			}
 		}
-	
+
 	return 0;
 }
 
 // @rura
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -683,12 +687,12 @@ atcommand_rura(
 {
 	char map[100];
 	int x = 0, y = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
-	
+
 	if (sscanf(message, "%99s %d %d", map, &x, &y) < 1)
 		return -1;
 			if (x >= 0 && x < 400 && y >= 0 && y < 400) {
@@ -698,12 +702,12 @@ atcommand_rura(
 	} else {
 		clif_displaymessage(fd, msg_table[2]);
 			}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -736,12 +740,12 @@ atcommand_where(
 	snprintf(output, sizeof output, "%s %s %d %d",
 		character, pl_sd->mapname, pl_sd->bl.x, pl_sd->bl.y);
 	clif_displaymessage(fd, output);
-*/	
+*/
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -751,12 +755,12 @@ atcommand_jumpto(
 {
 	char character[100];
 //	struct map_session_data *pl_sd = NULL;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
-	
+
 	memset(character, '\0', sizeof character);
 	if (sscanf(message, "%99[^\n]", character) < 1)
 		return -1;
@@ -778,7 +782,7 @@ atcommand_jumpto(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -787,7 +791,7 @@ atcommand_jump(
 	const char* command, const char* message)
 {
 	int x = 0, y = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (sscanf(message, "%d %d", &x, &y) < 2)
@@ -800,12 +804,12 @@ atcommand_jump(
 	} else {
 		clif_displaymessage(fd, msg_table[2]);
 	}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -845,7 +849,7 @@ atcommand_whop(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -862,12 +866,12 @@ atcommand_save(
 			chrif_save(sd);
 			storage_storage_save(sd);
 	clif_displaymessage(fd, msg_table[6]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -880,12 +884,12 @@ atcommand_load(
 	pc_setpos(sd, sd->status.save_point.map,
 		sd->status.save_point.x, sd->status.save_point.y, 0);
 	clif_displaymessage(fd, msg_table[7]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -907,12 +911,12 @@ atcommand_speed(
 		clif_updatestatus(sd, SP_SPEED);
 		clif_displaymessage(fd, msg_table[8]);
 		}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -925,7 +929,7 @@ atcommand_storage(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -936,12 +940,12 @@ atcommand_guildstorage(
 	nullpo_retr(-1, sd);
 
 	if (sd->status.guild_id > 0)
-				storage_guild_storageopen(sd);
+		storage_guild_storageopen(sd);
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -950,30 +954,30 @@ atcommand_option(
 	const char* command, const char* message)
 {
 	int param1 = 0, param2 = 0, param3 = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
-	
+
 	if (sscanf(message, "%d %d %d", &param1, &param2, &param3) < 1)
 		return -1;
 	sd->opt1 = param1;
 	sd->opt2 = param2;
 	if (!(sd->status.option & CART_MASK) && param3 & CART_MASK) {
-				clif_cart_itemlist(sd);
-				clif_cart_equiplist(sd);
+		clif_cart_itemlist(sd);
+		clif_cart_equiplist(sd);
 		clif_updatestatus(sd, SP_CARTINFO);
-			}
+	}
 	sd->status.option = param3;
-			clif_changeoption(&sd->bl);
-			clif_displaymessage(fd,msg_table[9]);
-	
+	clif_changeoption(&sd->bl);
+	clif_displaymessage(fd,msg_table[9]);
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -989,9 +993,9 @@ atcommand_hide(
 	} else {
 		sd->status.option |= OPTION_HIDE;
 		clif_displaymessage(fd, msg_table[11]);
-			}
-			clif_changeoption(&sd->bl);
-	
+	}
+	clif_changeoption(&sd->bl);
+
 	return 0;
 }
 
@@ -1017,12 +1021,12 @@ atcommand_jobchange(
 		if(pc_jobchange(sd, job, upper) == 0)
 			clif_displaymessage(fd, msg_table[12]);
 	}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1034,12 +1038,12 @@ atcommand_die(
 
 	pc_damage(NULL, sd, sd->status.hp + 1);
 	clif_displaymessage(fd, msg_table[13]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1049,7 +1053,7 @@ atcommand_kill(
 {
 	char character[100];
 	struct map_session_data *pl_sd = NULL;
-	
+
 	if (!message || !*message)
 		return -1;
 	memset(character, '\0', sizeof character);
@@ -1058,16 +1062,16 @@ atcommand_kill(
 		if (pc_isGM(sd) > pc_isGM(pl_sd)) {
 			pc_damage(NULL, pl_sd, pl_sd->status.hp + 1);
 			clif_displaymessage(fd, msg_table[14]);
-			}
+		}
 	} else {
 		clif_displaymessage(fd, msg_table[15]);
-		}
-	
+	}
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1082,19 +1086,19 @@ atcommand_alive(
 
 	sd->status.hp = sd->status.max_hp;
 	sd->status.sp = sd->status.max_sp;
-			pc_setstand(sd);
+	pc_setstand(sd);
 	if (battle_config.pc_invincible_time > 0)
 		pc_setinvincibletimer(sd, battle_config.pc_invincible_time);
 	clif_updatestatus(sd, SP_HP);
 	clif_updatestatus(sd, SP_SP);
 	clif_resurrection(&sd->bl, 1);
 	clif_displaymessage(fd, msg_table[16]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1103,14 +1107,14 @@ atcommand_kami(
 	const char* command, const char* message)
 {
 	char output[200];
-	
+
 	if (!message || !*message)
 		return -1;
 	sscanf(message, "%199[^\n]", output);
 	intif_GMmessage(output,
 		strlen(output) + 1,
 		(*(command + 5) == 'b') ? 0x10 : 0);
-	
+
 	return 0;
 }
 
@@ -1124,6 +1128,8 @@ int atcommand_onlymes(
 {
 	char temp0[200];
 
+	nullpo_retr(-1, sd);
+
 	sscanf(message, "%199[^#\n]", temp0);
 	clif_webchat_message("[mes]",sd->status.name,temp0);
 
@@ -1131,7 +1137,7 @@ int atcommand_onlymes(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1140,7 +1146,7 @@ atcommand_heal(
 	const char* command, const char* message)
 {
 	int hp = 0, sp = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message) {
@@ -1156,17 +1162,17 @@ atcommand_heal(
 		if (sd->status.sp + sp > sd->status.max_sp) {
 			sp = sd->status.max_sp - sd->status.sp;
 		}
-		}
+	}
 	clif_heal(fd, SP_HP, (hp > 0x7fff) ? 0x7fff : hp);
 	clif_heal(fd, SP_SP, (sp > 0x7fff) ? 0x7fff : sp);
 	pc_heal(sd, hp, sp);
 	clif_displaymessage(fd, msg_table[17]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1186,7 +1192,7 @@ atcommand_item(
 		return -1;
 	if (number <= 0)
 		number = 1;
-	
+
 	if ((item_id = atoi(item_name)) > 0) {
 		if (battle_config.item_check) {
 			item_id =
@@ -1194,12 +1200,12 @@ atcommand_item(
 				 itemdb_available(item_id)) ? item_id : 0);
 		} else {
 			item_data = itemdb_search(item_id);
-				}
+		}
 	} else if ((item_data = itemdb_searchname(item_name)) != NULL) {
 		item_id = (!battle_config.item_check ||
 			itemdb_available(item_data->nameid)) ? item_data->nameid : 0;
 	}
-	
+
 	if (item_id > 0) {
 		int loop = 1, get_count = number,i;
 		if (item_data->type == 4 || item_data->type == 5 ||
@@ -1214,17 +1220,17 @@ atcommand_item(
 			if ((flag = pc_additem((struct map_session_data*)sd,
 					&item_tmp, get_count)))
 				clif_additem((struct map_session_data*)sd, 0, 0, flag);
-				}
+		}
 		clif_displaymessage(fd, msg_table[18]);
-			} else {
+	} else {
 		clif_displaymessage(fd, msg_table[19]);
-			}
-	
+	}
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1232,19 +1238,19 @@ atcommand_item2(
 	const int fd, struct map_session_data* sd,
 	const char* command, const char* message)
 {
-			struct item item_tmp;
-			struct item_data *item_data;
+	struct item item_tmp;
+	struct item_data *item_data;
 	char item_name[100];
 	int item_id = 0, number = 0;
 	int identify = 0, refine = 0, attr = 0;
 	int c1 = 0, c2 = 0, c3 = 0, c4 = 0;
 	int flag = 0;
-	
+
 	if (sscanf(message, "%99s %d %d %d %d %d %d %d %d", item_name, &number,
 		&identify, &refine, &attr, &c1, &c2, &c3, &c4) >= 9) {
 		if (number <= 0)
 			number = 1;
-		
+
 		if ((item_id = atoi(item_name)) > 0) {
 			if (battle_config.item_check) {
 				item_id =
@@ -1252,16 +1258,16 @@ atcommand_item2(
 					  itemdb_available(item_id)) ? item_id : 0);
 			} else {
 				item_data = itemdb_search(item_id);
-					}
+			}
 		} else if ((item_data = itemdb_searchname(item_name)) != NULL) {
 			item_id =
 				(!battle_config.item_check ||
 				 itemdb_available(item_data->nameid)) ? item_data->nameid : 0;
 		}
-		
+
 		if (item_id > 0) {
 			int loop = 1, get_count = number, i = 0;
-			
+
 			if (item_data->type == 4 || item_data->type == 5 ||
 				item_data->type == 7 || item_data->type == 8) {
 				loop = number;
@@ -1274,10 +1280,10 @@ atcommand_item2(
 					refine = 0;
 				if (refine > 10)
 					refine = 10;
-				} else {
+			} else {
 				identify = 1;
 				refine = attr = 0;
-				}
+			}
 			for (i = 0; i < loop; i++) {
 				memset(&item_tmp, 0, sizeof(item_tmp));
 				item_tmp.nameid = item_id;
@@ -1297,12 +1303,12 @@ atcommand_item2(
 		}
 	} else {
 		return -1;
-			}
+	}
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1318,13 +1324,13 @@ atcommand_itemreset(
 		if (sd->status.inventory[i].amount &&
 			sd->status.inventory[i].equip == 0)
 			pc_delitem(sd, i, sd->status.inventory[i].amount, 0);
-		}
+	}
 	clif_displaymessage(fd, msg_table[20]);
-	
+
 	return 0;
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1357,7 +1363,7 @@ atcommand_charitemreset(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1365,13 +1371,13 @@ atcommand_itemcheck(
 	const int fd, struct map_session_data* sd,
 	const char* command, const char* message)
 {
-			pc_checkitem(sd);
-	
+	pc_checkitem(sd);
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1385,12 +1391,12 @@ atcommand_baselevelup(
 
 	if (!message || !*message)
 		return -1;
-	
+
 	level = atoi(message);
 	if (level > 1000 || level < -1000) return -1;
 	if (level >= 1) {
 		for (i = 1; i <= level; i++)
-				sd->status.status_point += (sd->status.base_level + i + 14) / 5 ;
+			sd->status.status_point += (sd->status.base_level + i + 14) / 5 ;
 		sd->status.base_level += level;
 		clif_updatestatus(sd, SP_BASELEVEL);
 		clif_updatestatus(sd, SP_NEXTBASEEXP);
@@ -1405,13 +1411,13 @@ atcommand_baselevelup(
 		clif_updatestatus(sd, SP_NEXTBASEEXP);
 		status_calc_pc(sd, 0);
 		clif_displaymessage(fd, msg_table[22]);
-							}
-	
+	}
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1433,15 +1439,16 @@ atcommand_joblevelup(
 	/*
 	if (s_class.job == 0)
 		up_level -= 40;
-		
+
 	if (s_class.upper == 1 && s_class.type == 2) //転生職はJobレベルの最高が70
 			up_level += 20;
 	if(s_class.job == 23) //スパノビはjobレベルの最高が99
 			up_level += 49;
 	*/
 	up_level = max_job_table[s_class.upper][s_class.job];
-	
-	if (level > 1000 || level < -1000) return -1;
+
+	if (level > 1000 || level < -1000)
+		return -1;
 	if (sd->status.job_level == up_level && level > 0) {
 		clif_displaymessage(fd, msg_table[23]);
 	} else if (level >= 1) {
@@ -1461,16 +1468,16 @@ atcommand_joblevelup(
 		clif_updatestatus(sd, SP_NEXTJOBEXP);
 		status_calc_pc(sd, 0);
 		clif_displaymessage(fd, msg_table[25]);
-						}
-	
+	}
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
- 
+
 int
 atcommand_help(
 	const int fd, struct map_session_data* sd,
@@ -1501,15 +1508,15 @@ atcommand_help(
 		fclose(fp);
 	} else
 		clif_displaymessage(fd, msg_table[27]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
- 
+
 int
 atcommand_help1(
 	const int fd, struct map_session_data* sd,
@@ -1540,15 +1547,15 @@ atcommand_help1(
 		fclose(fp);
 	} else
 		clif_displaymessage(fd, msg_table[27]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
- 
+
 int
 atcommand_help2(
 	const int fd, struct map_session_data* sd,
@@ -1579,15 +1586,15 @@ atcommand_help2(
 		fclose(fp);
 	} else
 		clif_displaymessage(fd, msg_table[27]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
- 
+
 int
 atcommand_help3(
 	const int fd, struct map_session_data* sd,
@@ -1618,15 +1625,15 @@ atcommand_help3(
 		fclose(fp);
 	} else
 		clif_displaymessage(fd, msg_table[27]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
- 
+
 int
 atcommand_help4(
 	const int fd, struct map_session_data* sd,
@@ -1657,12 +1664,12 @@ atcommand_help4(
 		fclose(fp);
 	} else
 		clif_displaymessage(fd, msg_table[27]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1671,12 +1678,12 @@ atcommand_gm(
 	const char* command, const char* message)
 {
 	char password[100];
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
-	
+
 	sscanf(message, "%99[^\n]", password);
 	if (sd->status.party_id)
 		clif_displaymessage(fd, msg_table[28]);
@@ -1685,18 +1692,18 @@ atcommand_gm(
 	else {
 		if (sd->status.pet_id > 0 && sd->pd)
 			intif_save_petdata(sd->status.account_id, &sd->pet);
-				pc_makesavestatus(sd);
-				chrif_save(sd);
-				storage_storage_save(sd);
+		pc_makesavestatus(sd);
+		chrif_save(sd);
+		storage_storage_save(sd);
 		clif_displaymessage(fd, msg_table[30]);
 		chrif_changegm(sd->status.account_id, password, strlen(password) + 1);
-		}
+	}
 
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1706,32 +1713,31 @@ atcommand_pvpoff(
 {
 	struct map_session_data *pl_sd = NULL;
 	int i = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (map[sd->bl.m].flag.pvp) {
-				map[sd->bl.m].flag.pvp = 0;
+		map[sd->bl.m].flag.pvp = 0;
 		clif_send0199(sd->bl.m, 0);
-		for (i = 0; i < fd_max; i++) {	//人数分ループ
-			if (session[i] && (pl_sd = session[i]->session_data) &&
-				pl_sd->state.auth) {
+		for (i=0;i<fd_max;i++) {	//人数分ループ
+			if (session[i] && (pl_sd = session[i]->session_data) && pl_sd->state.auth) {
 				if (sd->bl.m == pl_sd->bl.m) {
 					clif_pvpset(pl_sd, 0, 0, 2);
 					if (pl_sd->pvp_timer != -1) {
 						delete_timer(pl_sd->pvp_timer, pc_calc_pvprank_timer);
-								pl_sd->pvp_timer = -1;
-							}
-						}
+						pl_sd->pvp_timer = -1;
 					}
 				}
-		clif_displaymessage(fd, msg_table[31]);
+			}
 		}
+		clif_displaymessage(fd, msg_table[31]);
+	}
 
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1741,32 +1747,30 @@ atcommand_pvpon(
 {
 	struct map_session_data *pl_sd = NULL;
 	int i = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!map[sd->bl.m].flag.pvp) {
-				map[sd->bl.m].flag.pvp = 1;
+		map[sd->bl.m].flag.pvp = 1;
 		clif_send0199(sd->bl.m, 1);
-		for (i = 0; i < fd_max; i++) {
-			if (session[i] && (pl_sd = session[i]->session_data) &&
-				pl_sd->state.auth) {
+		for (i=0;i<fd_max;i++) {
+			if (session[i] && (pl_sd = session[i]->session_data) && pl_sd->state.auth) {
 				if (sd->bl.m == pl_sd->bl.m && pl_sd->pvp_timer == -1) {
-					pl_sd->pvp_timer = add_timer(gettick() + 200,
-						pc_calc_pvprank_timer, pl_sd->bl.id, 0);
+					pl_sd->pvp_timer = add_timer(gettick() + 200,pc_calc_pvprank_timer, pl_sd->bl.id, 0);
 					pl_sd->pvp_rank = 0;
 					pl_sd->pvp_lastusers = 0;
 					pl_sd->pvp_point = 5;
-						}
-					}
 				}
-		clif_displaymessage(fd, msg_table[32]);
+			}
 		}
+		clif_displaymessage(fd, msg_table[32]);
+	}
 
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1785,7 +1789,7 @@ atcommand_gvgoff(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1804,7 +1808,7 @@ atcommand_gvgon(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1843,7 +1847,7 @@ atcommand_model(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1874,12 +1878,12 @@ atcommand_go(
 				//{	"einbech.gat",	 150,  50	},	//	18=アインベフ
 				//{	"lighthalzen.gat",214,  322	},	//	19=リヒタルゼン
 			};
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
-	
+
 	town = atoi(message);
 	if (town >= 0 && town < sizeof(data) / sizeof(data[0])) {
 		pc_setpos((struct map_session_data*)sd,
@@ -1891,7 +1895,7 @@ atcommand_go(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1907,7 +1911,7 @@ atcommand_monster(
 	int y = 0;
 	int count = 0;
 	int i = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
@@ -1915,7 +1919,7 @@ atcommand_monster(
 	if (sscanf(message, "%99s %99s %d %d %d", name, monster,
 		&number, &x, &y) < 2)
 		return -1;
-	
+
 	if ((mob_id = atoi(monster)) == 0)
 		mob_id = mobdb_searchname(monster);
 	if (number <= 0)
@@ -1923,7 +1927,7 @@ atcommand_monster(
 	if (battle_config.etc_log)
 		printf("%s monster=%s name=%s id=%d count=%d (%d,%d)\n",
 			command, monster, name, mob_id, number, x, y);
-	
+
 	for (i = 0; i < number; i++) {
 		int mx = 0, my = 0;
 		if (x <= 0)
@@ -1944,12 +1948,12 @@ atcommand_monster(
 	} else {
 					clif_displaymessage(fd,msg_table[40]);
 				}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 void
@@ -1958,7 +1962,7 @@ atcommand_killmonster_sub(
 	const int drop)
 {
 	int map_id = 0;
-	
+
 	nullpo_retv(sd);
 
 	if (!message || !*message) {
@@ -1977,7 +1981,7 @@ atcommand_killmonster_sub(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -1986,12 +1990,12 @@ atcommand_killmonster(
 	const char* command, const char* message)
 {
 	atcommand_killmonster_sub(fd, sd, message, 1);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2000,12 +2004,12 @@ atcommand_killmonster2(
 	const char* command, const char* message)
 {
 	atcommand_killmonster_sub(fd, sd, message, 0);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2015,14 +2019,14 @@ atcommand_refine(
 {
 	int i = 0, position = 0, refine = 0, current_position = 0;
 	struct map_session_data* p;
-	
+
 	nullpo_retr(-1, sd);
 
 	p = (struct map_session_data*)sd;
 
 	if (!message || !*message)
 		return -1;
-	
+
 	if (sscanf(message, "%d %d", &position, &refine) >= 2) {
 		for (i = 0; i < MAX_INVENTORY; i++) {
 			if (sd->status.inventory[i].nameid &&	// 該当個所の装備を精錬する
@@ -2047,12 +2051,12 @@ atcommand_refine(
 				}
 			}
 		}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2068,7 +2072,7 @@ atcommand_produce(
 
 	if (!message || !*message)
 		return -1;
-	
+
 	if (sscanf(message, "%99s %d %d", item_name, &attribute, &star) > 0) {
 		if ((item_id = atoi(item_name)) == 0) {
 			struct item_data *item_data = itemdb_searchname(item_name);
@@ -2106,7 +2110,7 @@ atcommand_produce(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2115,10 +2119,10 @@ atcommand_memo(
 	const char* command, const char* message)
 {
 	int position = 0;
-	
+
 	if (!message || !*message)
 		return -1;
-	
+
 	position = atoi(message);
 	if (position < MIN_PORTAL_MEMO || position > MAX_PORTAL_MEMO)
 		position = MIN_PORTAL_MEMO;
@@ -2127,7 +2131,7 @@ atcommand_memo(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2151,12 +2155,12 @@ atcommand_gat(
  			map_getcell(sd->bl.m, sd->bl.x + 2, sd->bl.y + y, CELL_GETTYPE));
 		clif_displaymessage(fd, output);
 			}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2165,12 +2169,12 @@ atcommand_packet(
 	const char* command, const char* message)
 {
 	int x = 0, y = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
-	
+
 	if (sscanf(message,"%d %d", &x, &y) < 2)
 			return 1;
 	clif_status_change(&sd->bl, x, y);
@@ -2178,7 +2182,7 @@ atcommand_packet(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2187,7 +2191,7 @@ atcommand_statuspoint(
 	const char* command, const char* message)
 {
 	int point = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
@@ -2204,7 +2208,7 @@ atcommand_statuspoint(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2230,7 +2234,7 @@ atcommand_skillpoint(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2239,7 +2243,7 @@ atcommand_zeny(
 	const char* command, const char* message)
 {
 	int zeny = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
@@ -2257,7 +2261,7 @@ atcommand_zeny(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2267,7 +2271,7 @@ atcommand_param(
 {
 	int i = 0, value = 0, index = -1, new_value = 0;
 	int max_parameter[6];
-	
+
 	const char* param[] = {
 		"@str", "@agi", "@vit", "@int", "@dex", "@luk", NULL
 	};
@@ -2278,18 +2282,18 @@ atcommand_param(
 	status[3] = &sd->status.int_;
 	status[4] = &sd->status.dex;
 	status[5] = &sd->status.luk;
-	
+
 	max_parameter[0] = battle_config.max_parameter_str;
 	max_parameter[1] = battle_config.max_parameter_agi;
 	max_parameter[2] = battle_config.max_parameter_vit;
 	max_parameter[3] = battle_config.max_parameter_int;
 	max_parameter[4] = battle_config.max_parameter_dex;
 	max_parameter[5] = battle_config.max_parameter_luk;
-	
+
 	if (!message || !*message)
 		return -1;
 	value = atoi(message);
-	
+
 	for (i = 0; param[i] != NULL; i++) {
 		if (strcmpi(command, param[i]) == 0) {
 			index = i;
@@ -2298,24 +2302,24 @@ atcommand_param(
 	}
 	if (index < 0 || index > MAX_STATUS_TYPE)
 		return -1;
-	
+
 	new_value = (int)(*status[index]) + value;
 	if (new_value < 1)
 		value = 1 - *status[index];
 	if (new_value > max_parameter[index])
 		value = max_parameter[index] - *status[index];
 	*status[index] += value;
-	
+
 	clif_updatestatus(sd, SP_STR + index);
 	clif_updatestatus(sd, SP_USTR + index);
 	status_calc_pc(sd, 0);
 	clif_displaymessage(fd, msg_table[42]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2325,7 +2329,7 @@ atcommand_guildlevelup(
 {
 	int level = 0;
 	struct guild *guild_info = NULL;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
@@ -2347,12 +2351,12 @@ atcommand_guildlevelup(
 			GBI_GUILDLV, &level, 2);
 	else
 		clif_displaymessage(fd, msg_table[45]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2400,7 +2404,7 @@ int atcommand_hatch(
 	return 0;
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2439,7 +2443,7 @@ atcommand_petfriendly(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2448,12 +2452,12 @@ atcommand_pethungry(
 	const char* command, const char* message)
 {
 	int hungry = 0;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
-	
+
 	hungry = atoi(message);
 	if (sd->status.pet_id > 0 && sd->pd) {
 		if (hungry >= 0 && hungry <= 100) {
@@ -2468,7 +2472,7 @@ atcommand_pethungry(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2519,7 +2523,7 @@ int atcommand_charpetrename(
 	return 0;
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2529,12 +2533,12 @@ atcommand_recall(
 {
 	char character[100];
 //	struct map_session_data *pl_sd = NULL;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
-	
+
 	memset(character, '\0', sizeof character);
 	if(sscanf(message, "%99[^\n]", character) < 1)
 		return -1;
@@ -2666,10 +2670,10 @@ atcommand_character_job(
 	char character[100];
 	struct map_session_data* pl_sd = NULL;
 	int job = 0, upper = -1;
-	
+
 	if (!message || !*message)
 		return -1;
-	
+
 	memset(character, '\0', sizeof character);
 	if (sscanf(message, "%d %d %99[^\n]", &job, &upper, character) < 3){ //upper指定してある
 		upper = -1;
@@ -2679,21 +2683,24 @@ atcommand_character_job(
 	if ((pl_sd = map_nick2sd(character)) != NULL) {
 		if (pc_isGM(sd) > pc_isGM(pl_sd)) {
 			if ((job >= 0 && job < MAX_VALID_PC_CLASS)) {
+				if(job >= 24){			//養子のみの対応のための一時対処
+					upper = 2;
+				}
 				pc_jobchange(pl_sd, job, upper);
 				clif_displaymessage(fd, msg_table[48]);
 			} else {
 				clif_displaymessage(fd, msg_table[49]);
-				}
 			}
+		}
 	} else {
 		clif_displaymessage(fd, msg_table[50]);
 	}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2703,7 +2710,7 @@ atcommand_revive(
 {
 	char character[100];
 	struct map_session_data *pl_sd = NULL;
-	
+
 	if (!message || !*message)
 		return -1;
 	memset(character, '\0', sizeof character);
@@ -2720,12 +2727,12 @@ atcommand_revive(
 	} else {
 		clif_displaymessage(fd, msg_table[52]);
 			}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2735,7 +2742,7 @@ atcommand_character_stats(
 {
 	char character[100];
 	struct map_session_data *pl_sd = NULL;
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
@@ -2749,7 +2756,7 @@ atcommand_character_stats(
 			const char* format;
 			int value;
 		} output_table[14];
-		
+
 		output_table[0].format  = "Base Level - %d";	output_table[0].value = pl_sd->status.base_level;
 		output_table[1].format  = "Job Level - %d";		output_table[1].value = pl_sd->status.job_level;
 		output_table[2].format  = "Hp - %d";			output_table[2].value = pl_sd->status.hp;
@@ -2775,12 +2782,12 @@ atcommand_character_stats(
 	} else {
 				clif_displaymessage(fd,msg_table[54]);
 			}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2791,7 +2798,7 @@ atcommand_character_option(
 	char character[100];
 	int opt1 = 0, opt2 = 0, opt3 = 0;
 	struct map_session_data* pl_sd = NULL;
-	
+
 	if (!message || !*message)
 		return -1;
 	memset(character, '\0', sizeof character);
@@ -2809,12 +2816,12 @@ atcommand_character_option(
 	} else {
 		clif_displaymessage(fd, msg_table[56]);
 				}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2826,7 +2833,7 @@ atcommand_character_save(
 	char character[100];
 	struct map_session_data* pl_sd = NULL;
 	int x = 0, y = 0;
-	
+
 	if (!message || !*message)
 		return -1;
 	memset(character, '\0', sizeof character);
@@ -2840,12 +2847,12 @@ atcommand_character_save(
 	} else {
 		clif_displaymessage(fd, msg_table[58]);
 		}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2863,12 +2870,12 @@ atcommand_night(
 			clif_displaymessage(pl_sd->fd, msg_table[59]);
 			}
 		}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2886,12 +2893,12 @@ atcommand_day(
 			clif_displaymessage(pl_sd->fd, msg_table[60]);
 				}
 			}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2911,12 +2918,12 @@ atcommand_doom(
 		}
 			}
 		}
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2938,12 +2945,12 @@ atcommand_doommap(
 	}
 				}
 	clif_displaymessage(fd, msg_table[62]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 static void
@@ -2961,7 +2968,7 @@ atcommand_raise_sub(struct map_session_data* sd)
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2975,12 +2982,12 @@ atcommand_raise(
 			atcommand_raise_sub(session[i]->session_data);
 		}
 	clif_displaymessage(fd, msg_table[64]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -2999,7 +3006,7 @@ atcommand_raisemap(
 				atcommand_raise_sub(pl_sd);
 	}
 	clif_displaymessage(fd, msg_table[64]);
-	
+
 	return 0;
 }
 
@@ -3015,7 +3022,7 @@ atcommand_character_baselevel(
 	struct map_session_data *pl_sd = NULL;
 	char character[100];
 	int level = 0, i = 0;
-	
+
 	if (!message || !*message) //messageが空ならエラーを返して終了
 		return -1; //エラーを返して終了
 	memset(character, '\0', sizeof character);
@@ -3060,7 +3067,7 @@ atcommand_character_joblevel(
 	int max_level = 50, level = 0;
 	//転生や養子の場合の元の職業を算出する
 	struct pc_base_job pl_s_class;
-	
+
 	if (!message || !*message)
 		return -1;
 	memset(character, '\0', sizeof character);
@@ -3076,7 +3083,7 @@ atcommand_character_joblevel(
 			//スパノビはjobレベルの最高が99
 			if(pl_s_class.job == 23)
 				max_level += 49;
-			
+
 			if (pl_sd->status.job_level == max_level && level > 0) {
 				clif_displaymessage(fd, msg_table[67]);
 			} else if (level >= 1) {
@@ -3104,7 +3111,7 @@ atcommand_character_joblevel(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3114,7 +3121,7 @@ atcommand_kick(
 {
 	struct map_session_data *pl_sd = NULL;
 	char character[100];
-	
+
 	if (!message || !*message)
 		return -1;
 	memset(character, '\0', sizeof character);
@@ -3130,7 +3137,7 @@ atcommand_kick(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3151,12 +3158,12 @@ atcommand_kickall(
 			}
 		}
 	clif_GM_kick(sd, sd, 0);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3170,7 +3177,7 @@ atcommand_allskill(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3223,7 +3230,7 @@ int atcommand_charquestskill(
 	return 0;
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3284,7 +3291,7 @@ int atcommand_charlostskill(
 	return 0;
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3310,7 +3317,7 @@ atcommand_spiritball(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3327,7 +3334,7 @@ atcommand_party(
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3348,9 +3355,9 @@ atcommand_guild(
 	battle_config.guild_emperium_check = prev;
 	return 0;
 }
-	
+
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3365,12 +3372,12 @@ atcommand_agitstart(
 	agit_flag = 1;
 	guild_agit_start();
 	clif_displaymessage(fd, msg_table[72]);
-	
+
 	return 0;
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3385,7 +3392,7 @@ atcommand_agitend(
 	agit_flag = 0;
 	guild_agit_end();
 	clif_displaymessage(fd, msg_table[74]);
-		
+
 	return 0;
 }
 /*==========================================
@@ -3453,7 +3460,7 @@ atcommand_mapexit(
 			}
 		}
 	clif_GM_kick(sd, sd, 0);
-	
+
 	exit(1);
 	return 0;
 }
@@ -3497,7 +3504,7 @@ atcommand_idsearch(
 	return 0;
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3515,7 +3522,7 @@ atcommand_itemidentify(
 			pc_item_identify(sd, i);
 		}
 	clif_displaymessage(fd, msg_table[80]);
-	
+
 	return 0;
 }
 static int atshuffle_sub(struct block_list *bl,va_list ap)
@@ -3594,7 +3601,7 @@ atcommand_misceffect(
 	return 0;
 }
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 int
@@ -3609,14 +3616,14 @@ atcommand_summon(
 	int id = 0;
 	struct mob_data *md;
 	unsigned int tick=gettick();
-	
+
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
 	if (sscanf(message, "%99s", name) < 1)
 		return -1;
-	
+
 	if ((mob_id = atoi(name)) == 0)
 		mob_id = mobdb_searchname(name);
 	if(mob_id == 0)
@@ -4097,9 +4104,9 @@ atcommand_clock(
 	time_t t;
 	t = time(NULL);
 	tm = localtime(&t);
-	
+
 	sprintf(output, msg_table[96],tm->tm_hour,tm->tm_min,tm->tm_sec);
-	
+
 	clif_displaymessage(fd, output);
 	return 0;
 }
@@ -4108,7 +4115,7 @@ atcommand_clock(
  * @giveitem (item_id or item_name) amount charname
  *------------------------------------------
  */
-static void 
+static void
 atcommand_giveitem_sub(struct map_session_data *sd,struct item_data *item_data,int number)
 
 
@@ -4494,7 +4501,7 @@ atcommand_reloadgmaccount(
 }
 /*==========================================
  * @reloadstatusdb
- *   job_db1.txt job_db2.txt job_db2-2.txt 
+ *   job_db1.txt job_db2.txt job_db2-2.txt
  *   refine_db.txt size_fix.txt
  *   のリロード
  *------------------------------------------
@@ -4510,7 +4517,7 @@ atcommand_reloadstatusdb(
 }
 /*==========================================
  * @reloadpcdb
- *   exp.txt skill_tree.txt attr_fix.txt 
+ *   exp.txt skill_tree.txt attr_fix.txt
  *   のリロード
  *------------------------------------------
  */
@@ -4756,10 +4763,10 @@ atcommand_mannerpoint(
 
 	if (sscanf(message, "%d %99[^\n]", &manner, character) < 2)
 		return -1;
-		
+
 	if(battle_config.nomanner_mode)
 		return 0;
-		
+
 	if ((pl_sd = map_nick2sd(character)) != NULL) {
 		pl_sd->status.manner -= manner;
 		status_change_start(&pl_sd->bl,SC_NOCHAT,0,0,0,0,0,0);
@@ -4807,11 +4814,11 @@ atcommand_econ(
 {
 	struct guild *g = NULL;
 	char temp[100];
-	nullpo_retr( -1, sd );
+	nullpo_retr(-1, sd);
+
 	if(sd->status.guild_id == 0)
 		return -1;
-		
-	
+
 	g = guild_search(sd->status.guild_id);
 
 	if(g && sd != g->member[0].sd){
@@ -4819,7 +4826,7 @@ atcommand_econ(
 		sprintf(temp,msg_table[128],g->master);
 		clif_displaymessage(fd, temp);
 	}
-	
+
 	return 0;
 }
 
@@ -4834,10 +4841,11 @@ atcommand_ecoff(
 {
 	struct guild *g = NULL;
 	char temp[100];
-	nullpo_retr( -1, sd );
+	nullpo_retr(-1, sd);
+
 	if(sd->status.guild_id == 0)
 		return -1;
-		
+
 	g = guild_search(sd->status.guild_id);
 
 	if(g && sd != g->member[0].sd){
@@ -4845,7 +4853,7 @@ atcommand_ecoff(
 		sprintf(temp,msg_table[129],g->master);
 		clif_displaymessage(fd, temp);
 	}
-	
+
 	return 0;
 }
 
@@ -4863,14 +4871,14 @@ atcommand_icon(
 
 	if (sscanf(message, "%d %d", &a1, &a2) < 2)
 		return -1;
-	
+
 	clif_status_change(&sd->bl,a1,a2);	/* アイコン表示 */
-	
+
 	return 0;
 }
 
 /*==========================================
- * アイコン表示 デバック用
+ * BSランキング
  *------------------------------------------
  */
 int
@@ -4879,13 +4887,14 @@ atcommand_blacksmith(
 	const char* command, const char* message)
 {
 	nullpo_retr( -1, sd );
+
 	ranking_display(sd,RK_BLACKSMITH,0,MAX_RANKER-1);
-	
+
 	return 0;
 }
 
 /*==========================================
- * アイコン表示 デバック用
+ * アルケミランキング
  *------------------------------------------
  */
 int
@@ -4894,13 +4903,14 @@ atcommand_alchemist(
 	const char* command, const char* message)
 {
 	nullpo_retr( -1, sd );
+
 	ranking_display(sd,RK_ALCHEMIST,0,MAX_RANKER-1);
-	
+
 	return 0;
 }
 
 /*==========================================
- * アイコン表示 デバック用
+ * テコンランキング
  *------------------------------------------
  */
 int
@@ -4909,7 +4919,9 @@ atcommand_taekwon(
 	const char* command, const char* message)
 {
 	nullpo_retr( -1, sd );
+
 	ranking_display(sd,RK_TAEKWON,0,MAX_RANKER-1);
+
 	return 0;
 }
 
@@ -4942,12 +4954,12 @@ atcommand_resetfeel(
 
 	if (sscanf(message, "%d", &i) < 1)
 		return -1;
-		
+
 	if(i>=0 && i<3){
 		sd->feel_map[i].m = -1;
 		strcpy(sd->feel_map[i].name,"");
 	}
-	
+
 	return 0;
 }
 
@@ -4965,11 +4977,31 @@ atcommand_resethate(
 
 	if (sscanf(message, "%d", &i) < 1)
 		return -1;
-		
+
 	if(i>=0 && i<3)
 		sd->hate_mob[i] = -1;
 
 	return 0;
 }
-
-
+/*==========================================
+ * resetstate/resetskill
+ *------------------------------------------
+ */
+int
+atcommand_resetstate(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	nullpo_retr(-1, sd);
+	pc_resetstate(sd);
+	return 0;
+}
+int
+atcommand_resetskill(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	nullpo_retr(-1, sd);
+	pc_resetskill(sd);
+	return 0;
+}

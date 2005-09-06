@@ -775,6 +775,15 @@ AthenaNPCScript
 			<gatname>に存在するモンスターをすべて殺します。killmonsterとは違ってそのマップに始めから配置されていたモンスターまで全て殺すことができます。
 
 
+		areakillmonster命令
+			areakillmonster <gatname>,<x0>,<y0>,<x1>,<y1>;
+
+			gatname		文字列
+			x0,y0,x1,y1		数値
+
+			<gatname>の、x0,y0を中心に、x1,y1の範囲に存在するモンスターをすべて殺します。そのマップに始めから配置されていたモンスターまで全て殺すことができます。
+
+
 		addtimer命令
 			addtimer <ms>,<event>;
 
@@ -1631,6 +1640,13 @@ AthenaNPCScript
 			+2	同盟ギルド
 			+4	gld1側敵対ギルド
 			+8	gld2側敵対ギルド
+
+		getmapname関数
+			getmapname(<Char_name>)
+
+			Char_name	キャラ名
+
+			指定したキャラが居るマップのgatnameが返ります。
 
 
 	＊定数ラベル
