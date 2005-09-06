@@ -869,6 +869,14 @@ static struct Damage battle_calc_pet_weapon_attack(
 				damage = damage*150/100;
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 				break;
+			case KN_CHARGEATK:			//チャージアタック
+				damage = damage*100/100;
+				break;
+			case AS_VENOMKNIFE:			//ベナムナイフ
+				damage = damage*300/100;
+				flag=(flag&~BF_RANGEMASK)|BF_LONG;
+				//s_ele = 5;
+				break;
 			case KN_PIERCE:	// ピアース
 				damage = damage*(100+ 10*skill_lv)/100;
 				hitrate = hitrate*(100+5*skill_lv)/100;
@@ -1411,6 +1419,14 @@ static struct Damage battle_calc_mob_weapon_attack(
 				damage = damage*150/100;
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 				break;
+			case KN_CHARGEATK:			//チャージアタック
+				damage = damage*100/100;
+				break;
+			case AS_VENOMKNIFE:			//ベナムナイフ
+				damage = damage*300/100;
+				flag=(flag&~BF_RANGEMASK)|BF_LONG;
+				//s_ele = 5;
+				break;
 			case KN_PIERCE:	// ピアース
 				damage = damage*(100+ 10*skill_lv)/100;
 				hitrate=hitrate*(100+5*skill_lv)/100;
@@ -1897,6 +1913,18 @@ static struct Damage battle_calc_pc_weapon_attack(
 	if(skill_num != CR_GRANDCROSS||skill_num !=NPC_DARKGRANDCROSS) //グランドクロスでないなら
 		sd->state.attack_type = BF_WEAPON; //攻撃タイプは武器攻撃
 
+	//ベナムナイフ消費
+	if(sd && skill_num == AS_VENOMKNIFE){
+		if(sd->equip_index[10] >= 0 && sd->inventory_data[sd->equip_index[10]]->nameid!=1771)
+		{
+			pc_delitem(sd,sd->equip_index[10],1,0);
+		}else{
+			clif_arrow_fail(sd,0);
+			memset(&wd,0,sizeof(wd));
+			return wd;
+		}
+	}
+	
 	// ターゲット
 	if(target->type==BL_PC) //対象がPCなら
 		tsd=(struct map_session_data *)target; //tsdに代入(tmdはNULL)
@@ -2389,9 +2417,10 @@ static struct Damage battle_calc_pc_weapon_attack(
 				damage2 = damage2*100/100;
 				break;
 			case AS_VENOMKNIFE:			//ベナムナイフ
-				damage = damage*100/100;
-				damage2 = damage2*100/100;
+				damage = damage*300/100;
+				damage2 = damage2*300/100;
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
+				//s_ele = 5;
 				break;
 			case KN_PIERCE:	// ピアース
 				damage = damage*(100+ 10*skill_lv)/100;
@@ -4053,6 +4082,19 @@ int battle_weapon_attack( struct block_list *src,struct block_list *target,
 			return 0;
 		}
 	}
+	/*
+	//ベナムナイフ消費
+	if(sd && sd->skillid == AS_VENOMKNIFE){
+		if(sd->equip_index[10] >= 0 && sd->inventory_data[sd->equip_index[10]]->nameid!=1771)
+		{
+			pc_delitem(sd,sd->equip_index[10],1,0);
+		}else{
+			clif_arrow_fail(sd,0);
+			//clif_skill_fail(sd,skill,0,0);
+			return 0;
+		}
+	}
+	*/
 	if(flag&0x8000) {
 		if(sd && battle_config.pc_attack_direction_change)
 			sd->dir = sd->head_dir = map_calc_dir(src, target->x,target->y );

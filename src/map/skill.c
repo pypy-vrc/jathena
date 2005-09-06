@@ -777,20 +777,13 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 				clif_skill_fail(sd,skillid,0,0);
 		}
 		break;
-
 	
 	case AS_VENOMKNIFE:			//ベナムナイフ
 		if(atn_rand()%100< 60*sc_def_vit/100 )
 			status_change_start(bl,SC_POISON,skilllv,0,0,0,skill_get_time2(skillid,skilllv),0);
 		else{
-			if(sd && skillid==AS_VENOMKNIFE)
-				clif_skill_fail(sd,AS_VENOMKNIFE,0,0);
+			clif_skill_fail(sd,TF_POISON,0,0);
 		}
-		//ナイフの消費
-		if(sd->equip_index[8]>=0 && sd->inventory_data[sd->equip_index[8]]->nameid==1771)
-			pc_lossequipitem(sd,8,0);
-		else if(sd->equip_index[9]>=0 && sd->inventory_data[sd->equip_index[9]]->nameid==1771)
-			pc_lossequipitem(sd,9,0);
 		break;
 	case AS_SONICBLOW:		/* ソニックブロー */
 		if( atn_rand()%100 < (2*skilllv+10)*sc_def_vit/100 )
@@ -7035,9 +7028,8 @@ int skill_check_condition(struct map_session_data *sd,int type)
 		}
 		break;
 	case AS_VENOMKNIFE:
-		if((sd->equip_index[8]>=0 && sd->inventory_data[sd->equip_index[8]]->nameid!=1771)
-		 	&& (sd->equip_index[9]>=0 && sd->inventory_data[sd->equip_index[9]]->nameid!=1771))
-		 {
+		if(sd->equip_index[10]>=0 && sd->inventory_data[sd->equip_index[10]]->nameid!=1771)
+		{
 			clif_skill_fail(sd,skill,0,0);
 			return 0;
 		}
