@@ -7725,11 +7725,22 @@ void clif_parse_DropItem(int fd,struct map_session_data *sd, int cmd)
 		clif_clearchar_area(&sd->bl,1);
 		return;
 	}
+	if(sd->sc_data)
+		sd->sc_data[SC_ACTION_DELAY].val2++;
+	
+	if(sd->sc_data && sd->sc_data[SC_ACTION_DELAY].val2==6)
+	{
+		printf("%s様(ID:%d)のアイテムドロップ間隔が異常です\n",sd->status.name,sd->status.char_id);	
+	}
+	
 	if( sd->npc_id != 0 || sd->vender_id != 0 || sd->deal_mode != 0 || sd->opt1 > 0 ||
 		(sd->sc_data && (sd->sc_data[SC_AUTOCOUNTER].timer!=-1 || //オートカウンター
 		sd->sc_data[SC_BLADESTOP].timer!=-1 || //白刃取り
-		sd->sc_data[SC_BERSERK].timer!=-1)) ) //バーサーク
+		sd->sc_data[SC_BERSERK].timer!=-1   || //バーサーク
+		sd->sc_data[SC_ACTION_DELAY].timer!=-1)) )
 		return;
+
+	status_change_start(&sd->bl,SC_ACTION_DELAY,0,0,0,0,300,0);
 	item_index = RFIFOW(fd,GETPACKETPOS(cmd,0))-2;
 	item_amount = RFIFOW(fd,GETPACKETPOS(cmd,1));
 

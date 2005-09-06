@@ -3082,6 +3082,8 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	}
 	
 	switch(type){	/* 異常の種類ごとの処理 */
+		case SC_ACTION_DELAY:
+			break;
 		case SC_PROVOKE:			/* プロボック */
 			calc_flag = 1;
 			if(tick <= 0) tick = 1000;	/* (オートバーサーク) */

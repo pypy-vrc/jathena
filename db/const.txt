@@ -5,7 +5,7 @@
 //–ˆ“ús‚È‚¤ê‡‚ÍGvGWeekDay‚ð127‚É‚·‚é
 //ŒŽ—j‚Æ…—j‚È‚ç10A“y“ú‚È‚ç65
 
-GvGWeekDay	127
+GvGWeekDay	1
 
 
 //--------------GvGŽžŠÔ (0Žž`23Žž)‚ÌÝ’è-------------------
@@ -14,14 +14,14 @@ GvGWeekDay	127
 
 //–ˆ‰ñ“¯‚¶ŽžŠÔ‚Ìê‡i—j“ú‚²‚Æ‚É•Ï‚¦‚½‚¢‚Æ‚«‚Í—¼•û0j
 GvGTimeST	0
-GvGTimeED	23
+GvGTimeED	0
 
 //--------------GvGŽžŠÔ (0Žž`23Žž)‚ÌŒÂ•Ê‚ÌÝ’è-------------------
 //—á‚ÍŒŽ`‹à20`22ŽžA“y“ú‚Í“y—j22Žž‚©‚ç“ú—j2Žž‚Ü‚Å
 
 //“ú—j
-GvGTime0ST	0
-GvGTime0ED	2
+GvGTime0ST	20
+GvGTime0ED	22
 
 //ŒŽ—j
 GvGTime1ST	20

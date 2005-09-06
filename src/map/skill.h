@@ -490,6 +490,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_ANGEL				= 285,//太陽と月と星の天使
 	SC_HIGHJUMP				= 286,//ハイジャンプ
 	SC_DOUBLE				= 287,//ダブルストレイフィング状態
+	SC_ACTION_DELAY			= 288,//ダブルストレイフィング状態
 };
 
 enum {

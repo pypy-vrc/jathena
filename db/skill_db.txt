@@ -386,7 +386,7 @@
 334,10,6,4,0,1,1,1,yes,0,0,0,magic,0	//WE_MALE#君だけは護るよ#
 335,10,6,4,0,1,1,1,yes,0,0,0,magic,0	//WE_FEMALE#あなたに尽くします#
 336,10,6,4,0,1,1,1,yes,0,0,1,magic,0	//WE_CALLPARTNER#あなたに逢いたい#
-
+337,9,6,1,0,0,1,1,no,0,0,0,weapon,0	//ITM_TOMAHAWK#トマホーク投げ#
 //338					//NPC_DARKCROSS#ダーククロス#
 339,0,6,4,7,0,10,1,no,33,256,0,magic,0		//NPC_DARKGRANDCROSS#闇グランドクロス#
 340,8,8,1,7,0,10,1:1:2:2:3:3:4:4:5:5,yes,0,0,0,magic,0	//NPC_DARKSOULSTRIKE#闇ソウルストライク#
@@ -536,7 +536,7 @@
 482,0,6,4,0,1,5,0,yes,0,0,0,magic,0	//PF_DOUBLECASTING#ダブルキャスティング#
 483,0,0,0,0,0,0,0,no,0,0,0,none,0	//HW_GANBANTEIN#ガンバンテイン#
 484,0,0,0,0,0,0,0,no,0,0,0,none,0	//HW_GRAVITATION#グラビテーションフィールド#
-485,0,0,0,0,0,0,0,no,0,0,0,none,0	//WS_CARTTERMINATION#カートターミネーション#
+485,-2,6,1,0,0,10,1,no,0,0,0,weapon,0	//WS_CARTTERMINATION#カートターミネーション#
 486,0,6,4,0,1,5,1,no,0,16,0,weapon,0	//WS_OVERTHRUSTMAX#オーバートラストマックス#
 487,0,0,0,0,0,0,0,no,0,0,0,none,0	//CG_LONGINGFREEDOM#私を束縛しないで#
 488,0,0,0,0,0,0,0,no,0,0,0,none,0	//CG_HERMODE#ヘルモードの杖#
