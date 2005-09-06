@@ -1,4 +1,20 @@
 ----------------------------------------
+//1411 by yukito
+・login.cとchar.cのAUTH_FIFO_SIZEをmmo.hに移動
+・ログイン処理の改善(バグ報告スレ4[79] Rayce氏報告分を修正)
+
+(src/common)
+mmo.h
+(src/char)
+char.c
+char.h
+(src/login)
+login.c
+	-cmp_authfifo()
+	-parse_fromchar()
+	-parse_login()
+
+----------------------------------------
 //1410 by Nameless
 
 新型CPU (AMD 64x2 / SanDiegoコア)によりCPU命令セットが変わったようなので

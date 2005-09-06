@@ -1,4 +1,4 @@
-// $Id: char.c,v 1.1 2005/08/29 21:39:28 running_pinata Exp $
+// $Id: char.c,v 1.2 2005/09/06 19:29:10 running_pinata Exp $
 // original : char2.c 2003/03/14 11:58:35 Rev.1.5
 #define DUMP_UNKNOWN_PACKET	1
 
@@ -71,7 +71,6 @@ static struct dbt *char_online_db;
 #define CHAR_STATE_WAITAUTH 0
 #define CHAR_STATE_AUTHOK 1
 
-#define AUTH_FIFO_SIZE 256
 struct {
   int account_id,char_id,login_id1,login_id2,ip,tick,delflag,sex;
 } auth_fifo[AUTH_FIFO_SIZE];

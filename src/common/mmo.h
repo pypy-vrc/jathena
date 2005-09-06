@@ -12,6 +12,7 @@
 #	define RETCODE "\n"	// (LFÅFUnixånÅj
 #endif
 
+#define AUTH_FIFO_SIZE 256
 #define FIFOSIZE_SERVERLINK	128*1024
 
 #define MAX_MAP_PER_SERVER 512
