@@ -484,6 +484,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_ATTENELEMENT			= 283,//念
 	SC_MIRACLE				= 284,//太陽と月と星の奇跡
 	SC_ANGEL				= 285,//太陽と月と星の天使
+	SC_HIGHJUMP				= 286,//ハイジャンプ
 };
 
 enum {
@@ -1146,6 +1147,7 @@ enum {
 	SI_STAR_COMFORT			=171,//星の安楽
 	SI_PRESERVE				=181,//プリザーブ
 	SI_CHASEWALK_STR		=182,//チェイスウォークのSTR?
+	SI_SPURT				=182,//スパート状態にも使おう
 	SI_DOUBLECASTING		=186,
 	SI_OVERTHRUSTMAX		=188,//オーバートラストマックス
 	//SI_			=191,

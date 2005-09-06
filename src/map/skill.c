@@ -263,7 +263,7 @@ int SkillStatusChangeTable[]={	/* skill.h‚Ìenum‚ÌSC_***‚Æ‚ ‚í‚¹‚é‚±‚Æ */
 /* 410- */
 	-1,SC_RUN,SC_READYSTORM,-1,SC_READYDOWN,-1,SC_READYTURN,-1,SC_READYCOUNTER,-1,
 /* 420- */
-	SC_DODGE,-1,-1,-1,-1,-1,-1,-1,SC_SUN_WARM,SC_MOON_WARM,
+	SC_DODGE,-1,-1,-1,-1,-1,SC_HIGHJUMP,-1,SC_SUN_WARM,SC_MOON_WARM,
 /* 430- */
 	SC_STAR_WARM,SC_SUN_COMFORT,SC_MOON_COMFORT,SC_STAR_COMFORT,-1,-1,-1,-1,-1,-1,
 /* 440- */
@@ -341,7 +341,7 @@ int StatusIconChangeTable[] = {
 /* 220- */
 	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 /* 230- */
-	SI_RUN,SI_BLANK,SI_BLANK,SI_DODGE,SI_BLANK,SI_BLANK,SI_BLANK,SI_SUN_WARM,SI_MOON_WARM,SI_STAR_WARM,
+	SI_RUN,SI_SPURT,SI_BLANK,SI_DODGE,SI_BLANK,SI_BLANK,SI_BLANK,SI_SUN_WARM,SI_MOON_WARM,SI_STAR_WARM,
 /* 240- */
 	SI_SUN_COMFORT,SI_MOON_COMFORT,SI_STAR_COMFORT,SI_BLANK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,SI_SOULLINK,
 /* 250- */
@@ -3153,6 +3153,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case TK_RUN://‹ì‚¯‘«
 		if(sd && sd->sc_data)
 		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			if(sd->sc_data[SC_RUN].timer!=-1)	
 			{
 				if(skilllv>=7 && sd->weapontype1 == 0 && sd->weapontype2 == 0)
@@ -5233,7 +5234,7 @@ int skill_castend_pos2( struct block_list *src, int x,int y,int skillid,int skil
 		break;
 	case TK_HIGHJUMP://‘–‚è‚’µ‚Ñ
 		if(sd){
-			pc_movepos(sd,x,y);
+			status_change_start(src,SkillStatusChangeTable[skillid],skilllv,x,y,0,skill_get_time(skillid,skilllv),0 );
 		}else if( src->type==BL_MOB )
 			mob_warp((struct mob_data *)src,-1,x,y,0);
 		break;
@@ -6594,6 +6595,13 @@ int skill_check_condition(struct map_session_data *sd,int type)
 				status_change_start(&sd->bl,SC_SPURT,10,0,0,0,150000,0);
 			status_change_end(&sd->bl,SC_RUN,-1);
 		}
+		
+		//‘–‚è‚’µ‚Ñ‚ÉƒXƒLƒ‹‚ğg‚Á‚½¸”s
+		if(sd->skillid!=TK_HIGHJUMP && sd->sc_data[SC_HIGHJUMP].timer!=-1)
+		{
+			clif_skill_fail(sd,sd->skillid,0,0);
+			return 0;
+		}
 	}
 	skill = sd->skillid;
 	skilldb_id = skill_get_skilldb_id(skill);
@@ -7691,6 +7699,8 @@ int skill_use_pos( struct map_session_data *sd,
 	range = skill_get_range(skill_num,skill_lv);
 	if(range < 0)
 		range = status_get_range(&sd->bl) - (range + 1);
+		
+	if(sd->skillid != TK_HIGHJUMP)
 	if (!battle_check_range(&sd->bl,&bl,range + 1))
 		return 0;
 

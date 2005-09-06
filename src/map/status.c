@@ -824,6 +824,9 @@ int status_calc_pc(struct map_session_data* sd,int first)
 				}
 			}
 		}
+		
+		if(sd->sc_data[SC_RUN].timer!=-1)/*駆け足による速度変化*/
+			sd->speed = sd->speed / 2;
 		if(sd->sc_data[SC_CHASEWALK].timer!=-1)/*チェイスウォークによる速度変化*/
 			sd->speed = sd->speed * sd->sc_data[SC_CHASEWALK].val3 /100;
 		if(sd->sc_data[SC_WINDWALK].timer!=-1) 	//ウィンドウォーク時はLv*2%減算
@@ -3788,15 +3791,14 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_MEAL_INCDEX:
 		case SC_MEAL_INCLUK:
 		case SC_SPURT://駆け足用STR
-			calc_flag = 1;
-			break;
 		case SC_SUN_COMFORT://#太陽の安楽#
 		case SC_MOON_COMFORT://#月の安楽#
 		case SC_STAR_COMFORT://#星の安楽#
 		case SC_FUSION://#太陽と月と星の融合#
+		case SC_RUN://駆け足
 			calc_flag = 1;
 			break;
-		case SC_RUN://駆け足
+		case SC_HIGHJUMP:
 			break;
 		case SC_TKCOMBO://テコン系用コンボ
 		case SC_SUN_WARM://#太陽の温もり#
@@ -3971,6 +3973,24 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	if(bl->type==BL_PC && updateflag)
 		clif_updatestatus(sd,updateflag);	/* ステータスをクライアントに送る */
 
+	//計算後に走らせる？
+	switch(type){
+		case SC_RUN://駆け足
+			if(bl->type==BL_PC)
+			{
+				struct map_session_data * sd = (struct map_session_data *)bl;
+				pc_runtodir(sd);
+			}
+			break;
+		case SC_HIGHJUMP:
+			if(bl->type==BL_PC)
+			{
+				struct map_session_data * sd = (struct map_session_data *)bl;
+				pc_highjumptoxy(sd,val2,val3);
+			}
+			break;
+	}
+	
 	return 0;
 }
 /*==========================================
@@ -4123,7 +4143,18 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_SPURT:
 				calc_flag = 1;
 				break;
+			case SC_HIGHJUMP:
+				if(bl->type == BL_PC && sc_data)
+				{
+					//無理やり位置移動
+					//pc_movepos((struct map_session_data *)bl,sc_data[SC_HIGHJUMP].val2,sc_data[SC_HIGHJUMP].val3);
+				}
+				break;
 			case SC_RUN://駆け足
+				if(bl->type == BL_PC)
+					pc_stop_walking((struct map_session_data *)bl,0);
+				calc_flag = 1;
+				break;
 			case SC_SUN_WARM://#太陽の温もり#
 			case SC_MOON_WARM://#月の温もり#
 			case SC_STAR_WARM://#星の温もり#
@@ -4697,11 +4728,13 @@ int status_change_timer(int tid, unsigned int tick, int id, int data)
 	case SC_READYCOUNTER:
 	case SC_DODGE:
 	case SC_AUTOBERSERK:
+	case SC_RUN:
 		sc_data[type].timer=add_timer( 1000*600+tick,status_change_timer, bl->id, data );
 		return 0;
 	case SC_DEVIL:
 		clif_status_change(bl,SI_DEVIL,1);
 		sc_data[type].timer=add_timer( 1000*5+tick,status_change_timer, bl->id, data );
+		break;
 	case SC_DANCING: //ダンススキルの時間SP消費
 		{
 			int s=0;

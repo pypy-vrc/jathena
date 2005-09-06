@@ -2962,6 +2962,11 @@ int pc_setpos(struct map_session_data *sd,char *mapname_org,int x,int y,int clrt
 	if(strstr(mapname,".gat")==NULL && strlen(mapname)<16){
 		strcat(mapname,".gat");
 	}
+	
+	//マップ移動　蝿などあれば駆け足を止める
+	if(sd->sc_data && sd->sc_data[SC_RUN].timer!=-1)
+		status_change_end(&sd->bl,SC_RUN,-1);
+		
 	m=map_mapname2mapid(mapname);
 	if(m<0){
 		int ip,port;
@@ -3372,7 +3377,7 @@ int pc_can_reach(struct map_session_data *sd,int x,int y)
 static int calc_next_walk_step(struct map_session_data *sd)
 {
 	nullpo_retr(0, sd);
-
+	
 	if(sd->walkpath.path_pos>=sd->walkpath.path_len)
 		return -1;
 	if(sd->walkpath.path[sd->walkpath.path_pos]&1)
@@ -3417,10 +3422,20 @@ static int pc_walk(int tid,unsigned int tick,int id,int data)
 			pc_walktoxy_sub(sd);
 			return 0;
 		}
+		
+		//目的地に着いた場合　継続判定
+		if(sd->sc_data[SC_RUN].timer!=-1 && sd->bl.x == sd->to_x  && sd->bl.y == sd->to_y  )
+		{
+			pc_runtodir(sd);
+			return 0;
+		}
 	} else { // マス目境界へ到着
 		if(sd->walkpath.path[sd->walkpath.path_pos]>=8)
+		{
+			puts("sd->walkpath.path[sd->walkpath.path_pos]>=8");
 			return 1;
-
+		}
+		
 		x = sd->bl.x;
 		y = sd->bl.y;
 		if(map_getcell(sd->bl.m,x,y,CELL_CHKNOPASS))
@@ -3490,6 +3505,7 @@ static int pc_walk(int tid,unsigned int tick,int id,int data)
 			npc_touch_areanpc(sd,sd->bl.m,x,y);
 		else
 			sd->areanpc_id=0;
+		
 	}
 	if((i=calc_next_walk_step(sd))>0) {
 		i = i>>1;
@@ -3523,7 +3539,7 @@ static int pc_walktoxy_sub(struct map_session_data *sd)
 
 	clif_walkok(sd);
 	sd->state.change_walk_target=0;
-
+	
 	if((i=calc_next_walk_step(sd))>0){
 		i = i>>2;
 		sd->walktimer=add_timer(gettick()+i,pc_walk,sd->bl.id,0);
@@ -3533,7 +3549,6 @@ static int pc_walktoxy_sub(struct map_session_data *sd)
 	return 0;
 }
 
-
 /*==========================================
  * pc歩 行要求
  *------------------------------------------
@@ -3542,7 +3557,11 @@ int pc_walktoxy(struct map_session_data *sd,int x,int y)
 {
 
 	nullpo_retr(0, sd);
-
+	
+	if(sd->sc_data[SC_RUN].timer!=-1 ||
+	   sd->sc_data[SC_HIGHJUMP].timer!=-1)
+		return 0;
+		
 	sd->to_x=x;
 	sd->to_y=y;
 
@@ -3643,6 +3662,63 @@ int pc_movepos(struct map_session_data *sd,int dst_x,int dst_y)
 		sd->areanpc_id=0;
 
 	return 0;
+}
+
+/*==========================================
+ * pc駆け足要求
+ *------------------------------------------
+ */
+int pc_runtodir(struct map_session_data *sd)
+{
+	int i,to_x,to_y,dir_x,dir_y;
+	nullpo_retr(0, sd);
+	
+	to_x = sd->bl.x;
+	to_y = sd->bl.y;
+	dir_x = dirx[sd->dir];
+	dir_y = diry[sd->dir];
+	for(i = 0;i<AREA_SIZE;i++)
+	{
+		if(map_getcell(sd->bl.m,to_x+dir_x,to_y+dir_y,CELL_CHKNOPASS))
+			break;
+			
+		if(map_getcell(sd->bl.m,to_x+dir_x,to_y+dir_y,CELL_CHKPASS))
+		{
+			to_x += dir_x;
+			to_y += dir_y;
+			continue;
+		}
+		break;
+	}
+	
+	//進めない場合　駆け足終了
+	if(to_x == sd->bl.x && to_y == sd->bl.y)
+	{
+		if(sd->sc_data && sd->sc_data[SC_RUN].timer!=-1)
+			status_change_end(&sd->bl,SC_RUN,-1);
+	}
+	else{
+		sd->to_x = to_x;
+		sd->to_y = to_y;
+		pc_walktoxy_sub(sd);
+	}
+	
+	return 1;
+}
+
+/*==========================================
+ * pc走り高跳び要求
+ *------------------------------------------
+ */
+int pc_highjumptoxy(struct map_session_data *sd,int x,int y)
+{
+	nullpo_retr(0, sd);
+
+	sd->to_x = x;
+	sd->to_y = y;
+	pc_walktoxy_sub(sd);
+
+	return 1;
 }
 
 //
