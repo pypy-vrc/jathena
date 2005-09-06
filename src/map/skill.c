@@ -3319,6 +3319,8 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			/* MVPmobと不死には効かない */
 			if((bl->type==BL_MOB && status_get_mode(bl)&0x20) || battle_check_undead(status_get_race(bl),status_get_elem_type(bl))) //不死には効かない
 			{
+				if(sd)
+					clif_skill_fail(sd,skillid,0,0);
 				map_freeblock_unlock();
 				return 1;
 			}
@@ -3443,6 +3445,30 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		if(sd) {
 			clif_skill_produce_mix_list(sd,32);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+	case AM_TWILIGHT1:
+		if(sd)
+		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			//clif_misceffect(&sd->bl,);
+			skill_am_twilight1(sd);
+		}
+		break;
+	case AM_TWILIGHT2:
+		if(sd)
+		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			//clif_misceffect(&sd->bl,);
+			skill_am_twilight2(sd);
+		}
+		break;
+	case AM_TWILIGHT3:
+		if(sd)
+		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			//clif_misceffect(&sd->bl,);
+			skill_am_twilight3(sd);
 		}
 		break;
 	case ASC_CDP:				/* デッドリーポイズン作成 */
@@ -3855,20 +3881,24 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		break;
 
 	case AL_TELEPORT:			/* テレポート */
-		if( sd ){
-			if(map[sd->bl.m].flag.noteleport){	/* テレポ禁止 */
-				clif_skill_teleportmessage(sd,0);
-				break;
-			}
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if( sd->skilllv==1 )
-				clif_skill_warppoint(sd,sd->skillid,"Random","","","");
-			else{
-				clif_skill_warppoint(sd,sd->skillid,"Random",
-					sd->status.save_point.map,"","");
-			}
-		}else if( bl->type==BL_MOB )
-			mob_warp((struct mob_data *)bl,-1,-1,-1,3);
+		{
+			int alive = 1;
+			map_foreachinarea(skill_landprotector,src->m,src->x,src->y,src->x,src->y,BL_SKILL,skillid,&alive);
+			if( sd && alive){
+				if(map[sd->bl.m].flag.noteleport){	/* テレポ禁止 */
+					clif_skill_teleportmessage(sd,0);
+					break;
+				}
+				clif_skill_nodamage(src,bl,skillid,skilllv,1);
+				if( sd->skilllv==1 )
+					clif_skill_warppoint(sd,sd->skillid,"Random","","","");
+				else{
+					clif_skill_warppoint(sd,sd->skillid,"Random",
+						sd->status.save_point.map,"","");
+				}
+			}else if( bl->type==BL_MOB  && alive)
+				mob_warp((struct mob_data *)bl,-1,-1,-1,3);
+		}
 		break;
 
 	case AL_HOLYWATER:			/* アクアベネディクタ */
@@ -5388,11 +5418,17 @@ int skill_castend_map( struct map_session_data *sd,int skill_num, const char *ma
 
 	switch(skill_num){
 	case AL_TELEPORT:		/* テレポート */
-		if(strcmp(map,"Random")==0)
-			pc_randomwarp(sd,3);
-		else
-			pc_setpos(sd,sd->status.save_point.map,
-				sd->status.save_point.x,sd->status.save_point.y,3);
+		{
+			int alive = 1;
+			map_foreachinarea(skill_landprotector,sd->bl.m,sd->bl.x,sd->bl.y,sd->bl.x,sd->bl.y,BL_SKILL,AL_TELEPORT,&alive);
+			if( sd && alive){
+				if(strcmp(map,"Random")==0)
+				pc_randomwarp(sd,3);
+				else
+				pc_setpos(sd,sd->status.save_point.map,
+					sd->status.save_point.x,sd->status.save_point.y,3);
+			}
+		}
 		break;
 
 	case AL_WARP:			/* ワープポータル */
@@ -6713,9 +6749,18 @@ int skill_check_condition(struct map_session_data *sd,int type)
 			return 1;			/* 解除する場合はSP消費しない */
 		break;
 	case AL_TELEPORT:
-		if(map[sd->bl.m].flag.noteleport) {
-			clif_skill_teleportmessage(sd,0);
-			return 0;
+		{
+			int alive = 1;
+			map_foreachinarea(skill_landprotector,sd->bl.m,sd->bl.x,sd->bl.y,sd->bl.x,sd->bl.y,BL_SKILL,AL_TELEPORT,&alive);
+			if(alive==0){	
+				clif_skill_teleportmessage(sd,0);
+				return 0;
+			}
+			
+			if(map[sd->bl.m].flag.noteleport) {
+				clif_skill_teleportmessage(sd,0);
+				return 0;
+			}
 		}
 		break;
 	case AL_WARP:
@@ -7602,10 +7647,81 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 			return 0;
 		}
 		break;
+	case SL_KAIZEL://カイゼル
+	case SL_KAAHI://カアヒ
+	case SL_KAITE://カイト
+	case SL_KAUPE://カウプ
+		if(bl != &sd->bl && sd->sc_data[SC_SOULLINKER].timer==-1)
+		{
+			clif_skill_fail(sd,sd->skillid,0,0);
+			return 0;
+		}
+		break;
 	case HT_POWER:
 		if(status_get_race(bl)!=2){
 			clif_skill_fail(sd,sd->skillid,0,0);
 			return 0;
+		}
+	case AM_TWILIGHT1:
+		if(sd->sc_data[SC_ALCHEMIST].timer==-1){
+			clif_skill_fail(sd,sd->skillid,0,0);
+			return 0;
+		}
+		break;
+	case AM_TWILIGHT2:
+		{
+			int f=0;
+			if(sd->status.party_id>0 && sd->sc_data[SC_ALCHEMIST].timer!=-1)
+			{
+				struct party *pt = party_search(sd->status.party_id);
+				if(pt!=NULL)
+				{
+					int i;
+					struct map_session_data* psd = NULL;
+	
+					for(i=0;i<MAX_PARTY;i++)
+					{
+						psd = pt->member[i].sd;
+						if(psd->status.class == PC_CLASS_SNV || psd->status.class == PC_CLASS_SNV3)
+						{
+							f = 1;
+							break;
+						}
+					}
+				}
+			}
+			if(f==0){
+				clif_skill_fail(sd,sd->skillid,0,0);
+				return 0;
+			}
+		}
+		break;
+	case AM_TWILIGHT3:
+		{
+			int f=0;
+			if(sd->status.party_id && sd->sc_data[SC_ALCHEMIST].timer!=-1)
+			{
+				struct party *pt = party_search(sd->status.party_id);
+				if(pt!=NULL)
+				{
+					int i;
+					struct map_session_data* psd = NULL;
+	
+					for(i=0;i<MAX_PARTY;i++)
+					{
+						psd = pt->member[i].sd;
+						if(psd->status.class == PC_CLASS_TK)
+						{
+							f = 1;
+							break;
+						}
+					}
+				}
+			}
+			if(f==0){
+				clif_skill_fail(sd,sd->skillid,0,0);
+				return 0;
+			}
 		}
 		break;
 	}
@@ -9589,6 +9705,148 @@ int skill_produce_mix( struct map_session_data *sd,
 	return 0;
 }
 
+//
+int skill_am_twilight_sub(struct map_session_data* sd,int nameid,int make_per)
+{
+
+	if(atn_rand()%10000 < make_per){
+		/* 成功 */
+		int flag;
+		struct item tmp_item;
+		memset(&tmp_item,0,sizeof(tmp_item));
+		tmp_item.nameid=nameid;
+		tmp_item.amount=1;
+		tmp_item.identify=1;
+		tmp_item.card[0]=0x00fe;
+		tmp_item.card[1]=0;
+		*((unsigned long *)(&tmp_item.card[2]))=sd->char_id;	/* キャラID */
+		//
+		//clif_produceeffect(sd,2,nameid);/* 製薬エフェクト */
+		//clif_misceffect(&sd->bl,5); /* 他人にも成功を通知 */
+		//スリムの場合
+		if(nameid ==545 || nameid ==546 || nameid == 547)
+		{
+			//連続成功数増加
+			sd->am_pharmacy_success++;
+			// +10成功したら合計ポイント+64?
+			//現在 規定成功数ごとにポイントを貰えるように設定
+			switch(sd->am_pharmacy_success)
+			{
+				case 3:
+					ranking_gain_point(sd,RK_ALCHEMIST,1);
+					ranking_setglobalreg(sd,RK_ALCHEMIST);
+					ranking_update(sd,RK_ALCHEMIST);
+					break;
+				case 5:
+					ranking_gain_point(sd,RK_ALCHEMIST,3);
+					ranking_setglobalreg(sd,RK_ALCHEMIST);
+					ranking_update(sd,RK_ALCHEMIST);
+					break;
+				case 7:
+					ranking_gain_point(sd,RK_ALCHEMIST,10);
+					ranking_setglobalreg(sd,RK_ALCHEMIST);
+					ranking_update(sd,RK_ALCHEMIST);
+					break;
+				case 10:
+					ranking_gain_point(sd,RK_ALCHEMIST,50);
+					ranking_setglobalreg(sd,RK_ALCHEMIST);
+					ranking_update(sd,RK_ALCHEMIST);
+					sd->am_pharmacy_success = 0;
+					break;
+				
+				}
+		}
+		if((flag = pc_additem(sd,&tmp_item,1))) {
+			clif_additem(sd,0,0,flag);
+			map_addflooritem(&tmp_item,1,sd->bl.m,sd->bl.x,sd->bl.y,NULL,NULL,NULL,0);
+		}
+	} else {
+		// 失敗
+		//clif_produceeffect(sd,3,nameid);/* 製薬失敗エフェクト */
+		//clif_misceffect(&sd->bl,6); /* 他人にも失敗を通知 */
+		//スリム以外の失敗でもスリム連続成功　リセット
+		//if(nameid ==545 || nameid ==546 || nameid == 547)
+		sd->am_pharmacy_success = 0;
+	}
+	return 1;
+}
+
+int skill_am_twilight1(struct map_session_data* sd)
+{
+	int i,make_per = 0;
+	//白ポ
+	make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*100
+				+pc_checkskill(sd,AM_PHARMACY)*300+sd->status.job_level*20
+				+sd->status.dex*10+sd->status.int_*5+2000;
+	
+	if(make_per < 1) make_per = 1;
+
+	if( battle_config.pp_rate!=100 )
+		make_per=make_per*battle_config.pp_rate/100;
+
+	//養子の成功率70%
+	if(sd->status.class >= PC_CLASS_NV3 && sd->status.class <= PC_CLASS_SNV3)
+		make_per = make_per*70/100;
+
+	for(i=0;i<200;i++)
+		skill_am_twilight_sub(sd,504,make_per);
+	
+	return 1;
+}
+int skill_am_twilight2(struct map_session_data* sd)
+{
+	int i,make_per = 0;
+	//白スリム
+	make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*100
+				+pc_checkskill(sd,AM_PHARMACY)*300+sd->status.job_level*20
+				+sd->status.dex*10+sd->status.int_*5-1000;
+
+	if(make_per < 1) make_per = 1;
+
+	if( battle_config.pp_rate!=100 )
+		make_per=make_per*battle_config.pp_rate/100;
+
+	//養子の成功率70%
+	if(sd->status.class >= PC_CLASS_NV3 && sd->status.class <= PC_CLASS_SNV3)
+		make_per = make_per*70/100;
+
+	for(i=0;i<200;i++)
+		skill_am_twilight_sub(sd,547,make_per);
+}
+int skill_am_twilight3(struct map_session_data* sd)
+{
+	int i,make_per = 0,make_per2 = 0;
+	//アルコール
+	make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*100
+				+pc_checkskill(sd,AM_PHARMACY)*300+sd->status.job_level*20
+				+sd->status.dex*10+sd->status.int_*5+1000;
+	//その他
+	make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*100
+				+pc_checkskill(sd,AM_PHARMACY)*300+sd->status.job_level*20
+				+sd->status.dex*10+sd->status.int_*5;
+
+	if(make_per < 1) make_per = 1;
+
+	if( battle_config.pp_rate!=100 )
+		make_per=make_per*battle_config.pp_rate/100;
+
+	//養子の成功率70%
+	if(sd->status.class >= PC_CLASS_NV3 && sd->status.class <= PC_CLASS_SNV3)
+		make_per = make_per*70/100;
+
+	for(i=0;i<100;i++)
+	{
+		skill_am_twilight_sub(sd,970,make_per);
+	}
+	for(i=0;i<50;i++)
+	{
+		skill_am_twilight_sub(sd,7135,make_per);
+	}
+	for(i=0;i<50;i++)
+	{
+		skill_am_twilight_sub(sd,7136,make_per);
+	}
+}
 int skill_arrow_create( struct map_session_data *sd,int nameid)
 {
 	int i,j,flag,index=-1;
@@ -9817,9 +10075,9 @@ int skill_bonus_autospell(struct block_list * src,struct block_list * bl,int mod
 			}
 		}
 	}else{
-		if(mode == 	AS_ATTACK)
+		if(mode&EAS_ATTACK || mode&EAS_LONG_ATTACK)
 			return 	skill_use_bonus_autospell(src,bl,sd->autospell.id[0],sd->autospell.lv[0],sd->autospell.rate[0],sd->autospell.flag[0],tick,flag);
-		else if(mode == AS_REVENGE)
+		else if(mode&EAS_REVENGE || mode&EAS_LONG_REVENGE)
 				skill_use_bonus_autospell(src,bl,sd->autospell.id[1],sd->autospell.lv[1],sd->autospell.rate[1],sd->autospell.flag[1],tick,flag);
 	}
 	return 1;

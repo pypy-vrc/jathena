@@ -217,6 +217,9 @@ int skill_status_change_clear(struct block_list *bl,int type);
 int skill_can_produce_mix( struct map_session_data *sd, int nameid, int trigger );
 int skill_produce_mix( struct map_session_data *sd,
 	int nameid, int slot1, int slot2, int slot3 );
+int skill_am_twilight1(struct map_session_data* sd);
+int skill_am_twilight2(struct map_session_data* sd);
+int skill_am_twilight3(struct map_session_data* sd);
 
 int skill_arrow_create( struct map_session_data *sd,int nameid);
 int skill_can_repair( struct map_session_data *sd, int nameid );
