@@ -37,6 +37,7 @@ int pc_authok(int,struct mmo_charstatus *);
 int pc_authfail(int);
 
 int pc_isequip(struct map_session_data *sd,int n);
+int pc_check_noequip(struct map_session_data *sd, int inv_index);
 int pc_equippoint(struct map_session_data *sd,int n);
 
 int pc_checkskill(struct map_session_data *sd,int skill_id);

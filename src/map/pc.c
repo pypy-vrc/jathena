@@ -612,9 +612,7 @@ int pc_isequip(struct map_session_data *sd,int n)
 		return 0;
 	if(((1<<s_class.job)&item->class) == 0)
 		return 0;
-	if(map[sd->bl.m].flag.pvp && (item->flag.no_equip==1 || item->flag.no_equip==3))
-		return 0;
-	if(map[sd->bl.m].flag.gvg && (item->flag.no_equip==2 || item->flag.no_equip==3))
+	if(pc_check_noequip(sd, n))
 		return 0;
 	if(item->equip & 0x0002 && sc_data && sc_data[SC_STRIPWEAPON].timer != -1)
 		return 0;
@@ -625,6 +623,65 @@ int pc_isequip(struct map_session_data *sd,int n)
 	if(item->equip & 0x0100 && sc_data && sc_data[SC_STRIPHELM].timer != -1)
 		return 0;
 	return 1;
+}
+
+/**
+ * noequip.txtでpvp,gvgで使用不可指定されているアイテムかどうかのチェック。
+ * @param sd マップセッションデータ
+ * @param inv_index 所持アイテムのインデックス
+ * @return 現在のフィールドで使用できるアイテムの場合 0
+ *         現在のフィールドで使用できないアイテムの場合 1
+ */
+int pc_check_noequip(struct map_session_data *sd, int inv_index) {
+	int card_id,i;
+	struct item_data *item_data, *card_data;
+
+	if(inv_index<0) {
+		return 1;
+	}
+	item_data = sd->inventory_data[inv_index];
+	if(item_data == NULL) {
+		return 1;
+	}
+
+	// pvp
+	if(map[sd->bl.m].flag.pvp) {
+		if(item_data->flag.no_equip == 1 || item_data->flag.no_equip == 3) {
+			return 1;
+		}
+		// カードチェック
+		for(i=0;i<item_data->slot;i++) {
+			if((card_id = sd->status.inventory[inv_index].card[i]) == 0) {
+				break;
+			}
+			card_data = itemdb_search(card_id);
+			if(card_data == NULL) {
+				return 1;
+			}
+			if(card_data->flag.no_equip == 1 || card_data->flag.no_equip == 3) {
+				return 1;
+			}
+		}
+	}
+	// gvg
+	if(map[sd->bl.m].flag.gvg) {
+		if(item_data->flag.no_equip == 2 || item_data->flag.no_equip == 3) {
+			return 1;
+		}
+		for(i=0;i<item_data->slot;i++) {
+			if((card_id = sd->status.inventory[inv_index].card[i]) == 0) {
+				break;
+			}
+			card_data = itemdb_search(card_id);
+			if(card_data == NULL) {
+				return 1;
+			}
+			if(card_data->flag.no_equip == 2 || card_data->flag.no_equip == 3) {
+				return 1;
+			}
+		}
+	}
+	return 0;
 }
 
 /*==========================================
@@ -6453,12 +6510,11 @@ int pc_checkitem(struct map_session_data *sd)
 		}
 		//装備制限チェック
 		nullpo_retr(0, it);
-		if(sd->status.inventory[i].equip && map[sd->bl.m].flag.pvp && (it->flag.no_equip==1 || it->flag.no_equip==3)){//PvP制限
-			sd->status.inventory[i].equip=0;
-			calc_flag = 1;
-		}else if(sd->status.inventory[i].equip && map[sd->bl.m].flag.gvg && (it->flag.no_equip==2 || it->flag.no_equip==3)){//GvG制限
-			sd->status.inventory[i].equip=0;
-			calc_flag = 1;
+		if(sd->status.inventory[i].equip) {
+			if(pc_check_noequip(sd, i)) {
+				sd->status.inventory[i].equip=0;
+				calc_flag = 1;
+			}
 		}
 	}
 
