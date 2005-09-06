@@ -3,6 +3,7 @@
 #include "ranking.h"
 #include "nullpo.h"
 #include "clif.h"
+#include <stdlib.h>
 
 struct Ranking_Data ranking_data[MAX_RANKING][MAX_RANKER];
 
@@ -22,7 +23,7 @@ char ranking_reg[][32] =
 
 //PCのランキングを返す
 // 0 : ランク外
-int ranking_get_rank(struct map_session_data * sd,int ranking_id)
+int ranking_get_pc_rank(struct map_session_data * sd,int ranking_id)
 {
 	int i;
 	
@@ -40,6 +41,29 @@ int ranking_get_rank(struct map_session_data * sd,int ranking_id)
 	
 	return 0;
 }
+
+//idからランキングを求める
+// 0 : ランク外
+int ranking_get_id2rank(int ranking_id,int char_id)
+{	
+	int i;
+	
+	if(char_id <=0)
+		return 0;
+
+	//ランキング対象がない
+	if(ranking_id<0 || MAX_RANKING <= ranking_id)
+		return 0;
+
+	for(i = 0;i<MAX_RANKER;i++)
+	{
+		if(ranking_data[ranking_id][i].char_id == char_id)
+			return i+1;
+	}
+	
+	return 0;
+}
+
 
 //PCのランキングを返す
 int ranking_get_point(struct map_session_data * sd,int ranking_id)
@@ -91,10 +115,23 @@ int ranking_gain_point(struct map_session_data * sd,int ranking_id,int point)
 	return ranking_update_ranking(sd,ranking_id);
 }
 
+int ranking_swap(int ranking_id,int i,int j)
+{
+	struct Ranking_Data tmp;
+	if(ranking_data[ranking_id][i].point < ranking_data[ranking_id][j].point)
+	{
+		tmp = ranking_data[ranking_id][i];
+		ranking_data[ranking_id][i] = ranking_data[ranking_id][j];
+		ranking_data[ranking_id][j] = tmp;
+		return 1;	
+	}
+	return 0;
+}
+
 int ranking_update_ranking(struct map_session_data * sd,int ranking_id)
 {
 	
-	int i=0,tmp_name[24],now_rank=MAX_RANKER,new_rank=0,is_ranker=0;
+	int i=0,update_flag=0;
 	
 	nullpo_retr(0, sd);
 	
@@ -109,13 +146,13 @@ int ranking_update_ranking(struct map_session_data * sd,int ranking_id)
 		if(sd->status.char_id == ranking_data[ranking_id][i].char_id)
 		{
 			ranking_data[ranking_id][i].point = sd->ranking_point[ranking_id];
-			now_rank  = i;
+			update_flag = 1;
 			break;
 		}
 	}
 	
 	//順位にはなかった
-	if(MAX_RANKER == now_rank)
+	if(MAX_RANKER == i)
 	{
 		//最下位より高得点なら最下位にランクイン
 		if(ranking_data[ranking_id][i].point<sd->ranking_point[ranking_id])
@@ -123,28 +160,36 @@ int ranking_update_ranking(struct map_session_data * sd,int ranking_id)
 			strcpy(ranking_data[ranking_id][MAX_RANKER-1].name,sd->status.name);
 			ranking_data[ranking_id][MAX_RANKER-1].point = sd->ranking_point[ranking_id];
 			ranking_data[ranking_id][MAX_RANKER-1].char_id = sd->status.char_id;
-			now_rank--;
+			update_flag = 1;
 		}
 	}
-	
-	for(i=now_rank;i>0;i--)
-	{
-		if(ranking_swap(ranking_id,i-1,i)==0)
-			break;
-	}
+	if(update_flag)
+		ranking_sort(ranking_id);
+
 	return 1;
 }
-int ranking_swap(int ranking_id,int i,int j)
+
+int compare_ranking_data(const struct Ranking_Data *a,const struct Ranking_Data *b )
 {
-	struct Ranking_Data tmp;
-	if(ranking_data[ranking_id][i].point < ranking_data[ranking_id][j].point)
-	{
-		tmp = ranking_data[ranking_id][i];
-		ranking_data[ranking_id][i] = ranking_data[ranking_id][j];
-		ranking_data[ranking_id][j] = tmp;
-		return 1;	
-	}
-	return 0;
+	if((a->point - b->point)>0)
+		return -1;
+		
+	if(a->point == b->point)
+		return 0;
+
+    return 1;
+}
+
+int ranking_sort(int ranking_id)
+{
+	int i;
+	//ランキング対象がない
+	if(ranking_id<0 || MAX_RANKING <= ranking_id)
+		return 0;
+		
+	qsort(ranking_data[ranking_id],MAX_RANKER,sizeof(struct Ranking_Data),(int (*)(const void*,const void*))compare_ranking_data);
+	
+	return 1;
 }
 
 int ranking_display_ranking(struct map_session_data * sd,int ranking_id,int begin,int end)
@@ -152,7 +197,7 @@ int ranking_display_ranking(struct map_session_data * sd,int ranking_id,int begi
 	int i;
 	char output[128];
 	nullpo_retr(0, sd);
-	
+	memset(output,0,sizeof(output));
 	//ランキング対象がない
 	if(ranking_id<0 || MAX_RANKING <= ranking_id)
 		return 0;

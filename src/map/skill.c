@@ -984,7 +984,6 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 			status_change_start(bl,SC_STAN,7,0,0,0,3000,0);
 		break;
 
-
 	}
 //	if(sd && skillid != MC_CARTREVOLUTION && attack_type&BF_WEAPON){	/* カードによる追加効果 */
 	if(sd && attack_type&BF_WEAPON){	/* カードによる追加効果 */
@@ -1719,7 +1718,7 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 		status_change_end(bl,SC_AUTOCOUNTER,-1);
 	}
 	/* ダブルキャスティング */
-	if (( skillid == MG_COLDBOLT || skillid == MG_FIREBOLT ||	skillid == MG_LIGHTNINGBOLT) &&
+	if (( skillid == MG_COLDBOLT || skillid == MG_FROSTDIVER ||	skillid == MG_LIGHTNINGBOLT) &&
 		(sc_data = status_get_sc_data(src)) &&
 		sc_data[SC_DOUBLECASTING].timer != -1 &&
 		atn_rand() % 100 < 30+10*skilllv) {
@@ -8323,8 +8322,6 @@ int skill_idun_heal(struct block_list *bl, va_list ap )
 
 int skill_tarot_card_of_fate(struct block_list *src,struct block_list *target,int skillid,int skilllv,int tick,int flag,int wheel)
 {
-//	struct map_session_data* sd=NULL;
-//	struct mob_data* md=NULL;
 	struct map_session_data* tsd=NULL;
 	struct mob_data* tmd=NULL;
 	int card_num;
@@ -8335,13 +8332,7 @@ int skill_tarot_card_of_fate(struct block_list *src,struct block_list *target,in
 		return 0;
 	if(target==NULL)
 		return 0;
-	/*
-	if(src->type == BL_PC)
-		sd = (struct map_session_data*)src;
-	else if(src->type == BL_MOB)
-		md = (struct mob_data*)src;
-	else return 0;
-	*/
+		
 	if(target->type == BL_PC)
 		tsd = (struct map_session_data*)target;
 	else if(target->type == BL_MOB)
@@ -9483,6 +9474,38 @@ int skill_produce_mix( struct map_session_data *sd,
 			case AM_PHARMACY:
 				clif_produceeffect(sd,2,nameid);/* 製薬エフェクト */
 				clif_misceffect(&sd->bl,5); /* 他人にも成功を通知 */
+				//スリムの場合
+				if(nameid ==545 || nameid ==546 || nameid == 547)
+				{
+					//連続成功数増加
+					sd->am_pharmacy_success++;
+					// +10成功したら合計ポイント+64?
+					//現在 規定成功数ごとにポイントを貰えるように設定
+					switch(sd->am_pharmacy_success)
+					{
+						case 3:
+							ranking_gain_point(sd,RK_ALCHEMIST,1);
+							break;
+						case 5:
+							ranking_gain_point(sd,RK_ALCHEMIST,3);
+							break;
+						case 7:
+							ranking_gain_point(sd,RK_ALCHEMIST,10);
+							break;
+						case 10:
+							ranking_gain_point(sd,RK_ALCHEMIST,50);
+							sd->am_pharmacy_success = 0;
+							break;	
+					}
+					/*
+					//10回連続成功達成
+					if(sd->am_pharmacy_success==10)
+					{
+						ranking_gain_point(sd,RK_ALCHEMIST,50);
+						sd->am_pharmacy_success = 0;
+					}
+					*/
+				}
 				break;
 			case ASC_CDP:
 				clif_produceeffect(sd,2,nameid);/* 暫定で製薬エフェクト */
@@ -9507,6 +9530,18 @@ int skill_produce_mix( struct map_session_data *sd,
 			case AM_PHARMACY:
 				clif_produceeffect(sd,3,nameid);/* 製薬失敗エフェクト */
 				clif_misceffect(&sd->bl,6); /* 他人にも失敗を通知 */
+				/*
+				//3回以上連続成功
+				if(sd->am_pharmacy_success>=7)
+					ranking_gain_point(sd,RK_ALCHEMIST,10);
+				else if(sd->am_pharmacy_success>=5)
+					ranking_gain_point(sd,RK_ALCHEMIST,3);
+				else if(sd->am_pharmacy_success>=3)
+					ranking_gain_point(sd,RK_ALCHEMIST,1);
+				*/
+				//スリム以外の失敗でもスリム連続成功　リセット
+				//if(nameid ==545 || nameid ==546 || nameid == 547)
+				sd->am_pharmacy_success = 0;
 				break;
 			case ASC_CDP:
 				clif_produceeffect(sd,3,nameid); /* 暫定で製薬エフェクト */

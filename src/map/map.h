@@ -453,8 +453,11 @@ struct map_session_data {
 	short tk_doridori_counter_sp;
 	
 	int ranking_point[MAX_RANKING];
+	short am_pharmacy_success;
+	short tk_capture_count;//•ßŠl”
 	int tk_rank_target_class;//ƒeƒRƒ“
-	int tk_capture_count;//•ßŠl”
+	short ranker_weapon_bonus;
+	short ranker_weapon_bonus_;
 
 	int pvp_point,pvp_rank,pvp_timer,pvp_lastusers;
 

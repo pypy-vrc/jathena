@@ -126,6 +126,8 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	b_class = sd->view_class;
 	sd->view_class = sd->status.class;
 	b_base_atk = sd->base_atk;
+	sd->ranker_weapon_bonus  = 0;
+	sd->ranker_weapon_bonus_ = 0;
 
 	pc_calc_skilltree(sd);	// スキルツリーの計算
 
@@ -402,6 +404,9 @@ int status_calc_pc(struct map_session_data* sd,int first)
 						sd->star_ = (sd->status.inventory[index].card[1]>>8);	// 星のかけら
 						if(sd->star_ == 15) sd->star_ = 40;
 						wele_= (sd->status.inventory[index].card[1]&0x0f);	// 属 性
+						//ランキングボーナス
+						if(ranking_get_id2rank(RK_BLACKSMITH,*((unsigned long *)(&sd->status.inventory[index].card[2]))) )
+							sd->ranker_weapon_bonus_ = 10;
 					}
 					sd->attackrange_ += sd->inventory_data[index]->range;
 					sd->state.lr_flag = 1;
@@ -419,6 +424,9 @@ int status_calc_pc(struct map_session_data* sd,int first)
 						sd->star += (sd->status.inventory[index].card[1]>>8);	// 星のかけら
 						if(sd->star == 15) sd->star = 40;
 						wele = (sd->status.inventory[index].card[1]&0x0f);	// 属 性
+						//ランキングボーナス
+						if(ranking_get_id2rank(RK_BLACKSMITH,*((unsigned long *)(&sd->status.inventory[index].card[2]))) )
+							sd->ranker_weapon_bonus = 10;
 					}
 					sd->attackrange += sd->inventory_data[index]->range;
 					run_script(sd->inventory_data[index]->equip_script,0,sd->bl.id,0);

@@ -3106,19 +3106,20 @@ static struct Damage battle_calc_pc_weapon_attack(
 
 	if(damage < 0) damage = 0;
 	if(damage2 < 0) damage2 = 0;
-
+	
 	// 属 性の適用
 	damage = battle_attr_fix(damage,s_ele, status_get_element(target));
 	damage2 = battle_attr_fix(damage2,s_ele_, status_get_element(target));
 	
 	// 星のかけら、気球の適用
-	damage += sd->star;
+	damage  += sd->star;
 	damage2 += sd->star_;
-	damage += sd->spiritball*3;
+	damage  += sd->spiritball*3;
 	damage2 += sd->spiritball*3;
-	damage += sd->bonus_damage;
+	damage  += sd->bonus_damage;
 	damage2 += sd->bonus_damage;
-	
+	damage  += sd->ranker_weapon_bonus;
+	damage2 += sd->ranker_weapon_bonus_;
 //	if(sc_data && sc_data[SC_AURABLADE].timer!=-1){	/* オーラブレード 必中じゃなくなった */
 //		damage += sc_data[SC_AURABLADE].val1 * 20;
 //		damage2 += sc_data[SC_AURABLADE].val1 * 20;

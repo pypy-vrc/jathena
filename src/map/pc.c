@@ -801,6 +801,8 @@ int pc_authok(int id,struct mmo_charstatus *st)
 	for(i=0;i<MAX_RANKING;i++)
 		ranking_update_ranking(sd,i);
 	
+	//ファーマシー連続成功カウンタ 起動時0に
+	sd->am_pharmacy_success = 0;
 	
 	//太陽と月と星の憎しみ
 	if(battle_config.save_hate_mob){
@@ -5988,10 +5990,12 @@ int pc_equipitem(struct map_session_data *sd,int n,int pos)
 	sd->status.inventory[n].equip=pos;
 
 	if(sd->status.inventory[n].equip & 0x0002) {
+		
 		if(sd->inventory_data[n])
 			sd->weapontype1 = sd->inventory_data[n]->look;
 		else
 			sd->weapontype1 = 0;
+
 		pc_calcweapontype(sd);
 		clif_changelook(&sd->bl,LOOK_WEAPON,sd->status.weapon);
 	}
