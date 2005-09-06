@@ -325,7 +325,7 @@ int StatusIconChangeTable[] = {
 /* 140- */
 	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 /* 150- */
-	SI_BLANK,SI_BLANK,SI_BLANK,SI_ELEMENTFIELD,SI_ELEMENTFIELD,SI_ELEMENTFIELD,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
+	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 /* 160- */
 	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 /* 170- */
@@ -5541,6 +5541,24 @@ struct skill_unit_group *skill_unitsetting( struct block_list *src, int skillid,
 	case HP_BASILICA:
 		val1 = src->id;
 		break;
+	case SA_VOLCANO:		/* ボルケーノ */
+	case SA_DELUGE:			/* デリュージ */
+	case SA_VIOLENTGALE:	/* バイオレントゲイル */
+		if(src->type == BL_PC){
+			struct map_session_data* sd = (struct map_session_data*)src;
+			if(sd->sc_data && sd->sc_data[SC_ELEMENTFIELD].timer!=-1)
+			{
+				//struct TimerData* ptd = get_timer(sd->sc_data[SC_ELEMENTFIELD].timer);
+				//レベルの低いものを使った場合持続時間減少？
+				//if(ptd->tick > skill_get_time(skillid,skilllv))
+				//	ptd->tick = skill_get_time(skillid,skilllv);
+				//属性場の残り時間算出
+				limit = sd->sc_data[SC_ELEMENTFIELD].val2 -  (gettick() - sd->sc_data[SC_ELEMENTFIELD].val3);
+			}else{
+				status_change_start(src,SC_ELEMENTFIELD,1,skill_get_time(skillid,skilllv),gettick(),0,skill_get_time(skillid,skilllv),0 );
+			}
+		}
+		break;
 	}
 
 	nullpo_retr(NULL, group=skill_initunitgroup(src,layout->count,skillid,skilllv,skill_get_unit_id(skillid,flag&1)));
@@ -7071,6 +7089,18 @@ int skill_check_condition(struct map_session_data *sd,int type)
 		}
 		break;
 	}
+	
+	//属性場用 出ている間はコスト無し
+	switch(skill)
+	{
+		case SA_VOLCANO:		/* ボルケーノ */
+		case SA_DELUGE:			/* デリュージ */
+		case SA_VIOLENTGALE:	/* バイオレントゲイル */
+			if(sd->sc_data && sd->sc_data[SC_ELEMENTFIELD].timer != -1)
+				goto ITEM_NOCOST;
+			break;
+	}
+	
 	//GVG PVP以外のマップでの特殊処理
 	if(map[sd->bl.m].flag.pvp==0 && map[sd->bl.m].flag.gvg==0)
 	{

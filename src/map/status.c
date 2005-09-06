@@ -3808,6 +3808,7 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_KAAHI://#カアヒ#
 		case SC_KAUPE://#カウプ#
 		case SC_SMA://#エスマ#
+		case SC_ELEMENTFIELD: //属性場
 			break;
 		case SC_KAITE://#カイト#
 			/* アスムが掛かっていたら解除して */
@@ -4141,6 +4142,11 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_MEAL_INCDEX:
 			case SC_MEAL_INCLUK:
 			case SC_SPURT:
+			case SC_SUN_COMFORT://#太陽の安楽#
+			case SC_MOON_COMFORT://#月の安楽#
+			case SC_STAR_COMFORT://#星の安楽#
+			case SC_FUSION://#太陽と月と星の融合#
+			case SC_ADRENALINE2://#フルアドレナリンラッシュ#
 				calc_flag = 1;
 				break;
 			case SC_HIGHJUMP:
@@ -4165,14 +4171,6 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_DODGE:
 			case SC_DODGE_DELAY:
 			case SC_AUTOBERSERK:
-				break;
-			case SC_SUN_COMFORT://#太陽の安楽#
-			case SC_MOON_COMFORT://#月の安楽#
-			case SC_STAR_COMFORT://#星の安楽#
-			case SC_FUSION://#太陽と月と星の融合#
-			case SC_ADRENALINE2://#フルアドレナリンラッシュ#
-				calc_flag = 1;
-				break;
 			case SC_KAIZEL://#カイゼル#
 			case SC_KAAHI://#カアヒ#
 			case SC_KAUPE://#カウプ#
@@ -4181,6 +4179,7 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_SWOO://#エスウ#
 			case SC_SKE://#エスク#
 			case SC_SKA://#エスカ#
+			case SC_ELEMENTFIELD: //属性場
 				break;
 			case SC_ALCHEMIST://#アルケミストの魂#
 			case SC_MONK://#モンクの魂#
