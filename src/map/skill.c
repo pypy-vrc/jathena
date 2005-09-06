@@ -1718,9 +1718,7 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 		status_change_end(bl,SC_AUTOCOUNTER,-1);
 	}
 	/* ダブルキャスティング */
-	if (( skillid == MG_COLDBOLT || skillid == MG_FROSTDIVER ||
-		  skillid == MG_FIREBOLT || skillid == MG_FIREBALL ||
-		  skillid == MG_LIGHTNINGBOLT) &&
+	if (( skillid == MG_COLDBOLT || skillid == MG_FIREBOLT || skillid == MG_LIGHTNINGBOLT) &&
 		(sc_data = status_get_sc_data(src)) &&
 		sc_data[SC_DOUBLECASTING].timer != -1 &&
 		atn_rand() % 100 < 30+10*skilllv) {
