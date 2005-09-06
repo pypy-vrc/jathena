@@ -24,7 +24,9 @@ set __base__=-DTXT_ONLY
 @rem Zlib.dllをコンパイルする(通常はコメントアウト)
 :set __ZLIB__=-DLOCALZLIB
 
-@rem Login_ID2でごにょごにょ(通常はコメントアウト)
+@rem Login_ID2で、IPを見るようにします(通常はコメントアウト)
+@rem Passwordの代わりにIPを見て接続します、最新の日蔵が使えるようになりますが
+@rem ケーブルTV等グローバルIPが外部に出ないプロバイダからは接続不可になります
 :set __SKIP__=-DCMP_AUTHFIFO_IP -DCMP_AUTHFIFO_LOGIN2
 
 @rem httpd を完全に無効にする場合コメントアウトをはずす(通常はコメントアウト)
@@ -36,7 +38,7 @@ set __base__=-DTXT_ONLY
 @rem CPU最適化スイッチ 以下の例を参考にCPU名を記入してください。
 set _model_=Pentium4
 
-@rem 1500サンプル 統計の結果をコンパイルに反映させます
+@rem 3200サンプル 統計の結果をコンパイルに反映させます
 if "%_model_%"=="Athlon" set __cpu__=-6 -O2
 if "%_model_%"=="Athlon_XP" set __cpu__=-5
 if "%_model_%"=="Athlon_MP" set __cpu__=-5
@@ -60,6 +62,7 @@ if "%_model_%"=="PentiumM" set __cpu__=-5 -O1
 if "%_model_%"=="Crusoe" set __cpu__=-4 -Oc
 if "%_model_%"=="Opteron" set __cpu__=-5 -O2 -Oi -f -tWM
 if "%_model_%"=="Athlon_64" set __cpu__=-6 -Oi -tWM
+if "%_model_%"=="Athlon_64x2" set __cpu__=-6 -vi -Oi -f -ff -tWM
 if "%_model_%"=="Turion64" set __cpu__=-4 -Oc -Ov -Oi
 if "%_model_%"=="Itanium64" set __cpu__=-4 -Oc -Ov -Oi
 if "%_model_%"=="Prescott" set __cpu__=-5 -Oc -Ov -tWM
@@ -67,8 +70,8 @@ if "%_model_%"=="Prescott2" set __cpu__=-5 -Oc -Ov -Oi -f -ff -tWM
 if "%_model_%"=="Smithfield" set __cpu__=-6 -Oc -Ov -Oi -tWM
 if "%_model_%"=="Prestonia" set __cpu__=-6 -Oc -Ov -Oi -f -ff -tWM
 if "%_model_%"=="Manchester" set __cpu__=-6 -Oi -f -ff -tWM
-if "%_model_%"=="Pentium4X" set __cpu__=-5 -po -pr -Oc -Oi -f -ff -tWM
-if "%_model_%"=="Athlon_X" set __cpu__=-5 -po -pr -Oc -Oi -f -ff -tWM
+if "%_model_%"=="Pentium4X" set __cpu__=-5 -Oc -vi -Oi -f -ff -tWM
+if "%_model_%"=="Athlon_X" set __cpu__=-5 -Oc -vi -Oi -f -ff -tWM
 
 set __define__=%__cpu__% -DPACKETVER=6 -DNEW_006b -DFD_SETSIZE=4096 %__base__% %__NO_HTTPD__% %__ZLIB__% %__SKIP__% %__TKSGSL__%
 set __include__=-I../common/
