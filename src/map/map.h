@@ -159,17 +159,20 @@ struct skill_timerskill {
 enum 	{
 		EAS_ATTACK   	= 0x0001,//攻撃用
 		EAS_REVENGE   	= 0x0002,//反撃用
-		EAS_SELF   		= 0x0004,//自分に使う
-		EAS_TARGET_RAND = 0x0008,//自分か攻撃対象に使う
-		EAS_FLUCT  		= 0x0010,//旧AS用 1～3のあれ
-		EAS_USERANDAM  	= 0x0020,//1～指定までランダム
-		EAS_USEMAX		= 0x0040,//MAXレベルがあればそれを
-		EAS_USEBETTER	= 0x0080,//指定以上のものがあればそれを(MAXじゃなくても可能)
-		EAS_NOSP 	 	= 0x0100,// SP0
-		EAS_SPCOST1	 	= 0x0200,// SP2/3
-		EAS_SPCOST2	 	= 0x0400,// SP1/2
-		EAS_SPCOST3	 	= 0x0800,// SP1.5倍
-		EAS_ENABLE 	 	= 0x1000,// 使わない…
+		EAS_LONG_ATTACK = 0x0004,//攻撃用
+		EAS_LONG_REVENGE= 0x0008,//反撃用
+		EAS_TARGET 		= 0x0010,//自分に使う
+		EAS_SELF   		= 0x0020,//自分に使う
+		EAS_TARGET_RAND = 0x0040,//自分か攻撃対象に使う
+		//EAS_TARGET_ = 0x0080,//自分か攻撃対象に使う
+		EAS_FLUCT  		= 0x0100,//旧AS用 1～3のあれ
+		EAS_RANDOM  	= 0x0200,//1～指定までランダム
+		EAS_USEMAX		= 0x0400,//MAXレベルがあればそれを
+		EAS_USEBETTER	= 0x0800,//指定以上のものがあればそれを(MAXじゃなくても可能)
+		EAS_NOSP 	 	= 0x1000,// SP0
+		EAS_SPCOST1	 	= 0x2000,// SP2/3
+		EAS_SPCOST2	 	= 0x4000,// SP1/2
+		EAS_SPCOST3	 	= 0x8000,// SP1.5倍
 };
 
 struct npc_data;

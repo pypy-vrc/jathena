@@ -439,13 +439,15 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 
 
 	//PCの反撃
-	if(sd && sd->bl.type == BL_PC && src!=bl && sd->status.hp > 0 && damage > 0 )//&& flag&BF_WEAPON)
+	if(sd && sd->bl.type == BL_PC && src!=bl && sd->status.hp > 0 && damage > 0)
 	{
 		struct map_session_data *target=(struct map_session_data *)src;
-
 		nullpo_retr(damage, target);
 		//オートスペル
-		skill_bonus_autospell(&sd->bl,&target->bl,AS_REVENGE,0,0);
+		if(flag&BF_LONG)
+			skill_bonus_autospell(&sd->bl,&target->bl,EAS_LONG_REVENGE,0,0);
+		else
+			skill_bonus_autospell(&sd->bl,&target->bl,EAS_REVENGE,0,0);
 	}
 
 	//PCの反撃
@@ -1045,6 +1047,10 @@ static struct Damage battle_calc_pet_weapon_attack(
 			case AS_SPLASHER:		/* ベナムスプラッシャー */
 				damage = damage*(500+50*skill_lv)/100;
 				break;
+			case TK_JUMPKICK: //飛び蹴り
+				damage = damage*(30+10*skill_lv)/100;
+				status_change_end_by_jumpkick(target);
+				break;
 			case PA_SHIELDCHAIN:	// シールドチェイン
 				damage = damage*(100+ 10*skill_lv)/100;
 				hitrate = hitrate*(100+(55-5*skill_lv))/100;
@@ -1582,6 +1588,10 @@ static struct Damage battle_calc_mob_weapon_attack(
 			case AS_SPLASHER:		/* ベナムスプラッシャー */
 				damage = damage*(500+50*skill_lv)/100;
 				break;
+			case TK_JUMPKICK: //飛び蹴り
+				damage = damage*(30+10*skill_lv)/100;
+				status_change_end_by_jumpkick(target);
+				break;
 			case PA_SHIELDCHAIN:	/* シールドチェイン */
 				damage = damage*(100+ 10*skill_lv)/100;
 				hitrate = hitrate*(100+(55-5*skill_lv))/100;
@@ -1987,13 +1997,19 @@ static struct Damage battle_calc_pc_weapon_attack(
 			tclass = s_class.job;
 		}else if(tmd != NULL)//対象が敵
 			tclass = tmd->class;
-
-		if(tclass == sd->hate_mob[0] && pc_checkskill(sd,SG_SUN_ANGER)>0)//太陽の怒り
-			atk_rate = (sd->status.base_level + sd->status.dex + sd->status.luk)/(12-3*pc_checkskill(sd,SG_SUN_ANGER));
-		else if(tclass == sd->hate_mob[1] && pc_checkskill(sd,SG_MOON_ANGER)>0)//月の怒り
-			atk_rate = (sd->status.base_level + sd->status.dex + sd->status.luk)/(12-3*pc_checkskill(sd,SG_MOON_ANGER));
-		else if(tclass == sd->hate_mob[2] && pc_checkskill(sd,SG_STAR_ANGER)>0)//星の怒り
+		
+		if(sd->sc_data[SC_MIRACLE].timer!=-1)//太陽と月と星の奇跡
+		{
+			//全ての敵が月
 			atk_rate = (sd->status.base_level + sd->status.dex + sd->status.luk + sd->status.str)/(12-3*pc_checkskill(sd,SG_STAR_ANGER));
+		}else{
+			if(tclass == sd->hate_mob[0] && pc_checkskill(sd,SG_SUN_ANGER)>0)//太陽の怒り
+				atk_rate = (sd->status.base_level + sd->status.dex + sd->status.luk)/(12-3*pc_checkskill(sd,SG_SUN_ANGER));
+			else if(tclass == sd->hate_mob[1] && pc_checkskill(sd,SG_MOON_ANGER)>0)//月の怒り
+				atk_rate = (sd->status.base_level + sd->status.dex + sd->status.luk)/(12-3*pc_checkskill(sd,SG_MOON_ANGER));
+			else if(tclass == sd->hate_mob[2] && pc_checkskill(sd,SG_STAR_ANGER)>0)//星の怒り
+				atk_rate = (sd->status.base_level + sd->status.dex + sd->status.luk + sd->status.str)/(12-3*pc_checkskill(sd,SG_STAR_ANGER));
+		}
 
 		if(atk_rate > 0)
 		{
@@ -2690,6 +2706,7 @@ static struct Damage battle_calc_pc_weapon_attack(
 					damage = damage*(30+10*skill_lv)/100;
 					damage2 = damage2*(30+10*skill_lv)/100;
 				}
+				status_change_end_by_jumpkick(target);
 				break;
 			case PA_SHIELDCHAIN:	/* シールドチェイン */
 				damage = damage*(100+ 10*skill_lv)/100;
@@ -3231,8 +3248,13 @@ static struct Damage battle_calc_pc_weapon_attack(
 
 	//物理攻撃スキルによるオートスペル発動(item_bonus)
 	if(battle_config.weapon_attack_autospell && src && src->type == BL_PC && src != target 	&& (damage+damage2)> 0)
-			skill_bonus_autospell(src,target,AS_ATTACK,0,0);
-
+	{
+		//オートスペル
+		if(flag&BF_LONG)
+			skill_bonus_autospell(src,target,EAS_LONG_ATTACK,0,0);
+		else
+			skill_bonus_autospell(src,target,EAS_ATTACK,0,0);
+	}
 	//太陽と月と星の融合 HP2%消費
 	if(sd->sc_data && sd->sc_data[SC_FUSION].timer!=-1)
 	{
@@ -3630,7 +3652,7 @@ struct Damage battle_calc_magic_attack(
 	//魔法でもオートスペル発動(item_bonus)
 	if(battle_config.magic_attack_autospell && bl && bl->type == BL_PC && bl != target 	&& damage > 0)
 	{
-		skill_bonus_autospell(bl,target,AS_ATTACK,0,0);
+		skill_bonus_autospell(bl,target,EAS_ATTACK,0,0);
 	}
 
 	//魔法でもHP/SP回復(月光剣など)
@@ -3804,7 +3826,7 @@ struct Damage  battle_calc_misc_attack(
 	//miscでもオートスペル発動(bonus)
 	if(battle_config.misc_attack_autospell && bl->type == BL_PC && bl != target && damage > 0)
 	{
-		skill_bonus_autospell(bl,target,AS_ATTACK,0,0);
+		skill_bonus_autospell(bl,target,EAS_ATTACK,0,0);
 	}
 
 	//miscでもHP/SP回復(月光剣など)
@@ -4140,7 +4162,7 @@ int battle_weapon_attack( struct block_list *src,struct block_list *target,
 	if(sd && sd->bl.type == BL_PC && src != target 	&& (wd.damage > 0 || wd.damage2 > 0))
 	{
 		//オートスペル
-		skill_bonus_autospell(src,target,AS_ATTACK,0,0);
+		skill_bonus_autospell(src,target,EAS_ATTACK,0,0);
 	}
 
 	if(sd && sd->bl.type == BL_PC && src != target &&
@@ -4183,7 +4205,7 @@ int battle_weapon_attack( struct block_list *src,struct block_list *target,
 
 		//反射ダメージのオートスペル
 		if(battle_config.weapon_reflect_autospell && target->type == BL_PC)
-			skill_bonus_autospell(target,src,AS_ATTACK,0,0);
+			skill_bonus_autospell(target,src,EAS_ATTACK,0,0);
 
 		if(battle_config.weapon_reflect_drain)
 			battle_attack_drain(target,src,rdamage,0,battle_config.weapon_reflect_drain_per_enable);

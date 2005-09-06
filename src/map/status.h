@@ -63,6 +63,7 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 int status_change_end( struct block_list* bl , int type,int tid );
 int status_change_timer(int tid, unsigned int tick, int id, int data);
 int status_change_timer_sub(struct block_list *bl, va_list ap );
+int status_change_end_by_jumpkick( struct block_list* bl);
 
 int status_calc_pc_itemeffect_finish(struct map_session_data* sd);
 // ステータス計算 pc.c から分離

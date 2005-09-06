@@ -351,7 +351,7 @@ int StatusIconChangeTable[] = {
 /* 270- */
 	SI_BLANK,SI_BLANK,SI_ONEHAND,SI_READYSTORM,SI_READYDOWN,SI_READYTURN,SI_READYCOUNTER,SI_BLANK,SI_AUTOBERSERK,SI_DEVIL,
 /* 280- */
-	SI_DOUBLECASTING,SI_ELEMENTFIELD,SI_DARKELEMENT,SI_ATTENELEMENT,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
+	SI_DOUBLECASTING,SI_ELEMENTFIELD,SI_DARKELEMENT,SI_ATTENELEMENT,SI_SOULLINK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 };
 
 static const int dirx[8]={0,-1,-1,-1, 0, 1,1,1};
@@ -2384,6 +2384,7 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 			if(sd->canact_tick < sd->canmove_tick)
 				sd->canact_tick = sd->canmove_tick;
 			pc_movepos(sd,sd->to_x,sd->to_y);
+			clif_skill_poseffect(&sd->bl,skillid,skilllv,sd->bl.x,sd->bl.y,tick);
 		}
 		else
 			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
@@ -4089,7 +4090,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case AM_BERSERKPITCHER:		/* バーサークピッチャー */
 		{
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			status_change_start(bl,SC_SPEEDPOTION2,1,0,0,0,900,0 );
+			status_change_start(bl,SC_SPEEDPOTION3,1,0,0,0,900,0 );
 		}
 		break;
 	case AM_CP_WEAPON:
@@ -4158,7 +4159,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			if(dstsd && dstsd->sc_data[SC_ROGUE].timer!=-1)
 				break;
 			//ソウルリンカーは無効
-			if(dstsd && dstsd->status.class == (PC_CLASS_BASE3+27))
+			if(dstsd && dstsd->status.class == PC_CLASS_SL)
 				break;
 
 			for(i=0;i<136;i++){
@@ -6867,13 +6868,16 @@ int skill_check_condition(struct map_session_data *sd,int type)
 
 		break;
 	case SG_SUN_WARM:
-		if(sd && sd->bl.m != sd->feel_map[0].m){
-			clif_skill_fail(sd,skill,0,0);
-			return 0;
+		if(sd && sd->sc_data[SC_MIRACLE].timer==-1)
+		{
+			if(sd->bl.m != sd->feel_map[0].m){
+				clif_skill_fail(sd,skill,0,0);
+				return 0;
+			}
 		}
 		break;
 	case SG_SUN_COMFORT:
-		if(sd)
+		if(sd && sd->sc_data[SC_MIRACLE].timer==-1)
 		{
 			if(sd->bl.m == sd->feel_map[0].m && (battle_config.allow_skill_without_day || is_day_of_sun()))
 				break;
@@ -6882,13 +6886,16 @@ int skill_check_condition(struct map_session_data *sd,int type)
 		}
 		break;
 	case SG_MOON_WARM:
-		if(sd && sd->bl.m != sd->feel_map[1].m){
-			clif_skill_fail(sd,skill,0,0);
-			return 0;
+		if(sd && sd->sc_data[SC_MIRACLE].timer==-1)
+		{
+			if(sd->bl.m != sd->feel_map[1].m){
+				clif_skill_fail(sd,skill,0,0);
+				return 0;
+			}
 		}
 		break;
 	case SG_MOON_COMFORT:
-		if(sd)
+		if(sd && sd->sc_data[SC_MIRACLE].timer==-1)
 		{
 			if(sd->bl.m == sd->feel_map[1].m && (battle_config.allow_skill_without_day || is_day_of_moon()))
 				break;
@@ -6897,13 +6904,16 @@ int skill_check_condition(struct map_session_data *sd,int type)
 		}
 		break;
 	case SG_STAR_WARM:
-		if(sd && sd->bl.m != sd->feel_map[2].m){
-			clif_skill_fail(sd,skill,0,0);
-			return 0;
+		if(sd && sd->sc_data[SC_MIRACLE].timer==-1)
+		{
+			if(sd->bl.m != sd->feel_map[2].m){
+				clif_skill_fail(sd,skill,0,0);
+				return 0;
+			}
 		}
 		break;
 	case SG_STAR_COMFORT:
-		if(sd)
+		if(sd && sd->sc_data[SC_MIRACLE].timer==-1)
 		{
 			if(sd->bl.m == sd->feel_map[2].m && (battle_config.allow_skill_without_day || is_day_of_star()))
 				break;
@@ -9700,10 +9710,6 @@ int skill_use_bonus_autospell(struct block_list * src,struct block_list * bl,int
 	if(sd->bl.type != BL_PC)
 		return 0;
 
-	//AS自体が無効
-	//if(!(asflag&EAS_ENABLE))
-	// 	return 0;
-
 	//発動判定
 	if(skillid <= 0 || skilllv <= 0 || atn_rand()%100 > rate)
 			return 0;
@@ -9719,6 +9725,10 @@ int skill_use_bonus_autospell(struct block_list * src,struct block_list * bl,int
 		return 0;
 
 	//スペル対象
+	//指定あるがいらないな
+	//if(asflag&EAS_TARGET)
+	//	spell_target = (struct block_list *)bl;//相手
+	//else 
 	if(asflag&EAS_SELF)
 		spell_target = (struct block_list *)sd;//自分
 	else if(asflag&EAS_TARGET_RAND)
@@ -9747,14 +9757,12 @@ int skill_use_bonus_autospell(struct block_list * src,struct block_list * bl,int
 		if (j >= 50) skilllv -= 2;
 		else if(j >= 15) skilllv--;
 		if(skilllv < 1) skilllv = 1;
-	}else if(asflag&EAS_USERANDAM)//1～指定までのランダム
+	}else if(asflag&EAS_RANDOM)//1～指定までのランダム
 		skilllv = atn_rand()%skilllv+1;
 
 	//SP消費
 	sp = skill_get_sp(skillid,skilllv);
-	if(battle_config.equip_autospell_nocost)
-		sp = 0;
-	else if(asflag&EAS_NOSP)
+	if(asflag&EAS_NOSP)
 		sp = 0;
 	else if(asflag&EAS_SPCOST1)
 		sp = sp*2/3;

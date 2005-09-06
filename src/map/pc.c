@@ -1862,7 +1862,6 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 					sd->hp_drain_value_race[i] += val;
 				}
 			}else{
-
 				sd->hp_drain_rate_race[type2]   += type3;
 				sd->hp_drain_value_race[type2] += val;
 
@@ -1892,13 +1891,13 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			break;
 		if(battle_config.expand_autospell)
 		{
-			pc_bonus_autospell(sd,type2,type3,val,EAS_FLUCT|EAS_ENABLE|EAS_ATTACK);
+			pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_FLUCT|EAS_ATTACK|EAS_LONG_ATTACK|EAS_NOSP);
 		}else{
 
 			sd->autospell.id[0] = type2;
 			sd->autospell.lv[0] = type3;
 			sd->autospell.rate[0] = val;
-			sd->autospell.flag[0] = EAS_FLUCT|EAS_ENABLE|EAS_ATTACK;
+			sd->autospell.flag[0] = EAS_TARGET|EAS_FLUCT|EAS_ATTACK|EAS_LONG_ATTACK|EAS_NOSP;
 			sd->autospell.count = 2;
 		}
 		break;
@@ -1907,13 +1906,13 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			break;
 		if(battle_config.expand_autospell)
 		{
-			pc_bonus_autospell(sd,type2,type3,val,EAS_ENABLE|EAS_ATTACK|EAS_USEBETTER);
+			pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_ATTACK|EAS_LONG_ATTACK|EAS_USEMAX|EAS_NOSP);
 		}else{
 
 			sd->autospell.id[0] = type2;
 			sd->autospell.lv[0] = type3;
 			sd->autospell.rate[0] = val;
-			sd->autospell.flag[0] = EAS_ENABLE|EAS_ATTACK|EAS_USEBETTER;
+			sd->autospell.flag[0] = EAS_TARGET|EAS_ATTACK|EAS_LONG_ATTACK|EAS_USEMAX|EAS_NOSP;
 			sd->autospell.count = 2;
 		}
 		break;
@@ -1922,12 +1921,12 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			break;
 		if(battle_config.expand_autospell)
 		{
-			pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_ENABLE|EAS_ATTACK);
+			pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_ATTACK|EAS_LONG_ATTACK|EAS_NOSP);
 		}else{
 			sd->autospell.id[0] = type2;
 			sd->autospell.lv[0] = type3;
 			sd->autospell.rate[0] = val;
-			sd->autospell.flag[0] = EAS_SELF|EAS_ENABLE|EAS_ATTACK;
+			sd->autospell.flag[0] = EAS_SELF|EAS_ATTACK|EAS_LONG_ATTACK|EAS_NOSP;
 			sd->autospell.count = 2;
 		}
 		break;
@@ -1936,12 +1935,12 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			break;
 		if(battle_config.expand_autospell)
 		{
-			pc_bonus_autospell(sd,type2,type3,val,EAS_ENABLE|EAS_SELF|EAS_ATTACK|EAS_USEBETTER);
+			pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_ATTACK|EAS_LONG_ATTACK|EAS_USEMAX|EAS_NOSP);
 		}else{
 			sd->autospell.id[0] = type2;
 			sd->autospell.lv[0] = type3;
 			sd->autospell.rate[0] = val;
-			sd->autospell.flag[0] = EAS_ENABLE|EAS_SELF|EAS_ATTACK|EAS_USEBETTER;
+			sd->autospell.flag[0] = EAS_SELF|EAS_ATTACK|EAS_LONG_ATTACK|EAS_USEMAX|EAS_NOSP;
 			sd->autospell.count = 2;
 		}
 		break;
@@ -1950,12 +1949,12 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			break;
 		if(battle_config.expand_autospell)
 		{
-			pc_bonus_autospell(sd,type2,type3,val,EAS_ENABLE|EAS_REVENGE);
+			pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_REVENGE|EAS_LONG_REVENGE|EAS_NOSP);
 		}else{
 			sd->autospell.id[1] = type2;
 			sd->autospell.lv[1] = type3;
 			sd->autospell.rate[1] = val;
-			sd->autospell.flag[1] = EAS_ENABLE|EAS_REVENGE;
+			sd->autospell.flag[1] = EAS_TARGET|EAS_REVENGE|EAS_LONG_REVENGE|EAS_NOSP;
 			sd->autospell.count = 2;
 		}
 		break;
@@ -1964,13 +1963,13 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			break;
 		if(battle_config.expand_autospell)
 		{
-			pc_bonus_autospell(sd,type2,type3,val,EAS_ENABLE|EAS_REVENGE|EAS_USEBETTER);
+			pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_REVENGE|EAS_LONG_REVENGE|EAS_USEMAX|EAS_NOSP);
 		}else{
 
 			sd->autospell.id[1] = type2;
 			sd->autospell.lv[1] = type3;
 			sd->autospell.rate[1] = val;
-			sd->autospell.flag[1] = EAS_ENABLE|EAS_REVENGE|EAS_USEBETTER;
+			sd->autospell.flag[1] = EAS_TARGET|EAS_REVENGE|EAS_LONG_REVENGE|EAS_USEMAX|EAS_NOSP;
 			sd->autospell.count = 2;
 		}
 		break;
@@ -1979,13 +1978,13 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			break;
 		if(battle_config.expand_autospell)
 		{
-			pc_bonus_autospell(sd,type2,type3,val,EAS_ENABLE|EAS_SELF|EAS_REVENGE);
+			pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_REVENGE|EAS_LONG_REVENGE|EAS_NOSP);
 		}else{
 
 			sd->autospell.id[1] = type2;
 			sd->autospell.lv[1] = type3;
 			sd->autospell.rate[1] = val;
-			sd->autospell.flag[1] = EAS_ENABLE|EAS_SELF|EAS_REVENGE;
+			sd->autospell.flag[1] = EAS_SELF|EAS_REVENGE|EAS_LONG_REVENGE|EAS_NOSP;
 			sd->autospell.count = 2;
 		}
 		break;
@@ -1994,12 +1993,12 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			break;
 		if(battle_config.expand_autospell)
 		{
-			pc_bonus_autospell(sd,type2,type3,val,EAS_ENABLE|EAS_SELF|EAS_REVENGE|EAS_USEBETTER);
+			pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_REVENGE|EAS_LONG_REVENGE|EAS_USEMAX|EAS_NOSP);
 		}else{
 			sd->autospell.id[1] = type2;
 			sd->autospell.lv[1] = type3;
 			sd->autospell.rate[1] = val;
-			sd->autospell.flag[1] = EAS_ENABLE|EAS_SELF|EAS_REVENGE|EAS_USEBETTER;
+			sd->autospell.flag[1] = EAS_SELF|EAS_REVENGE|EAS_LONG_REVENGE|EAS_USEMAX|EAS_NOSP;
 			sd->autospell.count = 2;
 		}
 		break;
@@ -2019,6 +2018,27 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 }
 
 /*==========================================
+ * 装 備品による能力等のボーナス設定
+ *------------------------------------------
+ */
+int pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type4,int val)
+{
+	//int i;
+	switch(type){
+	case SP_AUTOSPELL:
+		if(sd->state.lr_flag == 2)
+			break;
+		pc_bonus_autospell(sd,type2,type3,type4,val);
+		break;
+	default:
+		if(battle_config.error_log)
+			printf("pc_bonus4: unknown type %d %d %d %d!\n",type,type2,type3,type4,val);
+		break;
+	}
+
+	return 0;
+}
+/*==========================================
  * オートスペル
  *------------------------------------------
  */
@@ -2030,6 +2050,8 @@ int pc_bonus_autospell(struct map_session_data* sd,int skillid,int skilllv,int r
 	if(sd->bl.type != BL_PC)
 		return 0;
 
+	//printf("skillid:%d,skilllv:%d,rate:%d,flag:%d\n",skillid,skilllv,rate,flag);
+	
 	if(!battle_config.allow_same_autospell){
 		for(i=0;i<sd->autospell.count;i++){
 			if(sd->autospell.card_id[i] == current_equip_card_id)
@@ -2040,12 +2062,12 @@ int pc_bonus_autospell(struct map_session_data* sd,int skillid,int skilllv,int r
 	//一杯
 	if(sd->autospell.count == MAX_BONUS_AUTOSPELL)
 	 	return 0;
-
+	 	
 	//後ろに追加
 	sd->autospell.id[sd->autospell.count] = skillid;
 	sd->autospell.lv[sd->autospell.count] = skilllv;
 	sd->autospell.rate[sd->autospell.count] = rate;
-	sd->autospell.flag[sd->autospell.count] = flag|EAS_ENABLE;
+	sd->autospell.flag[sd->autospell.count] = flag;
 	sd->autospell.card_id[sd->autospell.count] = current_equip_card_id;
 	sd->autospell.count++;
 

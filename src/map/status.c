@@ -1172,7 +1172,8 @@ int status_calc_pc(struct map_session_data* sd,int first)
 		if(sd->sc_data[SC_POISONPOTION].timer!=-1){
 			aspd_rate -= 25;
 		}
-		if(	sd->sc_data[i=SC_SPEEDPOTION2].timer!=-1 ||
+		if(	sd->sc_data[i=SC_SPEEDPOTION3].timer!=-1 ||
+			sd->sc_data[i=SC_SPEEDPOTION2].timer!=-1 ||
 			sd->sc_data[i=SC_SPEEDPOTION1].timer!=-1 ||
 			sd->sc_data[i=SC_SPEEDPOTION0].timer!=-1)	// 増 速ポーション
 			aspd_rate -= sd->sc_data[i].val2;
@@ -3473,9 +3474,24 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 				status_change_end(bl,SC_SPEEDPOTION1,-1);
 			if(type!=SC_SPEEDPOTION2 && sc_data[SC_SPEEDPOTION2].timer!=-1)
 				status_change_end(bl,SC_SPEEDPOTION2,-1);
+			if(sc_data[SC_SPEEDPOTION3].timer!=-1)
+				status_change_end(bl,SC_SPEEDPOTION3,-1);
 			calc_flag = 1;
 			tick = 1000 * tick;
 			val2 = 5*(2+type-SC_SPEEDPOTION0);
+			break;
+		case SC_SPEEDPOTION3: //バーサークピッチャー
+			if(type!=SC_SPEEDPOTION0 && sc_data[SC_SPEEDPOTION0].timer!=-1)
+				status_change_end(bl,SC_SPEEDPOTION0,-1);
+			if(type!=SC_SPEEDPOTION1 && sc_data[SC_SPEEDPOTION1].timer!=-1)
+				status_change_end(bl,SC_SPEEDPOTION1,-1);
+			if(type!=SC_SPEEDPOTION2 && sc_data[SC_SPEEDPOTION2].timer!=-1)
+				status_change_end(bl,SC_SPEEDPOTION2,-1);
+			if(type!=SC_SPEEDPOTION3 && sc_data[SC_SPEEDPOTION3].timer!=-1)
+				status_change_end(bl,SC_SPEEDPOTION3,-1);
+			calc_flag = 1;
+			tick = 1000 * tick;
+			val2 = 20;
 			break;
 
 		case SC_INCATK:		//item 682用
@@ -3809,6 +3825,8 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_KAUPE://#カウプ#
 		case SC_SMA://#エスマ#
 		case SC_ELEMENTFIELD: //属性場
+		case SC_MIRACLE://太陽と月と星の奇跡
+		case SC_ANGEL://太陽と月と星の天使
 			break;
 		case SC_KAITE://#カイト#
 			/* アスムが掛かっていたら解除して */
@@ -4043,6 +4061,108 @@ int skill_status_change_clear(struct block_list *bl,int type)
  * ステータス異常終了
  *------------------------------------------
  */
+int status_change_end_by_jumpkick( struct block_list* bl)
+{
+	struct status_change* sc_data = NULL;
+
+	nullpo_retr(0, bl);
+	//モンスターは使わないだろうから無視
+	if(bl->type!=BL_PC)
+		return 0;
+	
+	if(bl->type!=BL_PC && bl->type!=BL_MOB) {
+		if(battle_config.error_log)
+			printf("status_change_end: neither MOB nor PC !\n");
+		return 0;
+	}
+	
+	//ソウルリンカーは無視
+	if(bl->type==BL_PC)
+	{
+		if(((struct map_session_data*)bl)->status.class == PC_CLASS_SL)
+			return 0;
+	}
+	
+	nullpo_retr(0, sc_data=status_get_sc_data(bl));
+	
+	if(sc_data)
+	{
+		//プリザーブでは切れない
+		if(sc_data[SC_PRESERVE].timer!=-1)
+			return 0;
+		//バーサークピッチャー
+		if(sc_data[SC_SPEEDPOTION3].timer!=-1)
+			status_change_end(bl,SC_SPEEDPOTION3,-1);
+		//
+		if(sc_data[SC_SUN_WARM].timer!=-1)
+			status_change_end(bl,SC_SUN_WARM,-1);
+		if(sc_data[SC_MOON_WARM].timer!=-1)
+			status_change_end(bl,SC_MOON_WARM,-1);
+		if(sc_data[SC_STAR_WARM].timer!=-1)
+			status_change_end(bl,SC_STAR_WARM,-1);
+		if(sc_data[SC_SUN_COMFORT].timer!=-1)
+			status_change_end(bl,SC_SUN_COMFORT,-1);
+		if(sc_data[SC_MOON_COMFORT].timer!=-1)
+			status_change_end(bl,SC_MOON_COMFORT,-1);
+		if(sc_data[SC_STAR_COMFORT].timer!=-1)
+			status_change_end(bl,SC_STAR_COMFORT,-1);
+		if(sc_data[SC_FUSION].timer!=-1)
+			status_change_end(bl,SC_FUSION,-1);
+		//魂解除
+		if(sc_data[SC_ALCHEMIST].timer!=-1)
+			status_change_end(bl,SC_ALCHEMIST,-1);
+		if(sc_data[SC_MONK].timer!=-1)
+			status_change_end(bl,SC_MONK,-1);
+		if(sc_data[SC_STAR].timer!=-1)
+			status_change_end(bl,SC_STAR,-1);
+		if(sc_data[SC_SAGE].timer!=-1)
+			status_change_end(bl,SC_SAGE,-1);
+		if(sc_data[SC_CRUSADER].timer!=-1)
+			status_change_end(bl,SC_CRUSADER,-1);
+		if(sc_data[SC_SUPERNOVICE].timer!=-1)
+			status_change_end(bl,SC_SUPERNOVICE,-1);
+		if(sc_data[SC_KNIGHT].timer!=-1)
+			status_change_end(bl,SC_KNIGHT,-1);
+		if(sc_data[SC_WIZARD].timer!=-1)
+			status_change_end(bl,SC_WIZARD,-1);
+		if(sc_data[SC_PRIEST].timer!=-1)
+			status_change_end(bl,SC_PRIEST,-1);
+		if(sc_data[SC_BARDDANCER].timer!=-1)
+			status_change_end(bl,SC_BARDDANCER,-1);
+		if(sc_data[SC_ROGUE].timer!=-1)
+			status_change_end(bl,SC_ROGUE,-1);
+		if(sc_data[SC_ASSASIN].timer!=-1)
+			status_change_end(bl,SC_ASSASIN,-1);
+		if(sc_data[SC_BLACKSMITH].timer!=-1)
+			status_change_end(bl,SC_BLACKSMITH,-1);
+		if(sc_data[SC_HUNTER].timer!=-1)
+			status_change_end(bl,SC_HUNTER,-1);
+		if(sc_data[SC_SOULLINKER].timer!=-1)
+			status_change_end(bl,SC_SOULLINKER,-1);
+		if(sc_data[SC_HIGH].timer!=-1)
+			status_change_end(bl,SC_HIGH,-1);
+		//
+		if(sc_data[SC_ADRENALINE2].timer!=-1)
+			status_change_end(bl,SC_ADRENALINE2,-1);
+		if(sc_data[SC_KAIZEL].timer!=-1)
+			status_change_end(bl,SC_KAIZEL,-1);
+		if(sc_data[SC_KAAHI].timer!=-1)
+			status_change_end(bl,SC_KAAHI,-1);
+		if(sc_data[SC_KAUPE].timer!=-1)
+			status_change_end(bl,SC_KAUPE,-1);
+		if(sc_data[SC_KAITE].timer!=-1)
+			status_change_end(bl,SC_KAITE,-1);
+		if(sc_data[SC_ONEHAND].timer!=-1)
+			status_change_end(bl,SC_ONEHAND,-1);
+			
+	}
+	
+	return 0;
+}
+/*==========================================
+ * ステータス異常終了
+ *------------------------------------------
+ */
 int status_change_end( struct block_list* bl , int type,int tid )
 {
 	struct status_change* sc_data;
@@ -4108,6 +4228,7 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_SPEEDPOTION0:		/* 増速ポーション */
 			case SC_SPEEDPOTION1:
 			case SC_SPEEDPOTION2:
+			case SC_SPEEDPOTION3:
 			case SC_RIDING:
 			case SC_BLADESTOP_WAIT:
 			case SC_CONCENTRATION:		/* コンセントレーション */
@@ -4180,6 +4301,8 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_SKE://#エスク#
 			case SC_SKA://#エスカ#
 			case SC_ELEMENTFIELD: //属性場
+			case SC_MIRACLE://太陽と月と星の奇跡
+			case SC_ANGEL://太陽と月と星の天使
 				break;
 			case SC_ALCHEMIST://#アルケミストの魂#
 			case SC_MONK://#モンクの魂#

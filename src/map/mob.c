@@ -2246,14 +2246,19 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 
 		//太陽と月と星の憎悪
 		tk_exp_rate = 0;
-
-		if((battle_config.allow_skill_without_day || is_day_of_sun()) && md->class == tmpsd[i]->hate_mob[0])
-			tk_exp_rate = 10*pc_checkskill(tmpsd[i],SG_SUN_BLESS);
-		else if((battle_config.allow_skill_without_day || is_day_of_moon()) && md->class == tmpsd[i]->hate_mob[1])
-			tk_exp_rate = 10*pc_checkskill(tmpsd[i],SG_MOON_BLESS);
-		else if((battle_config.allow_skill_without_day || is_day_of_star()) && md->class == tmpsd[i]->hate_mob[2])
+		
+		if(tmpsd[i]->sc_data[SC_MIRACLE].timer!=-1)
+		{
 			tk_exp_rate = 20*pc_checkskill(tmpsd[i],SG_STAR_BLESS);
-
+		}else{
+			if((battle_config.allow_skill_without_day || is_day_of_sun()) && md->class == tmpsd[i]->hate_mob[0])
+				tk_exp_rate = 10*pc_checkskill(tmpsd[i],SG_SUN_BLESS);
+			else if((battle_config.allow_skill_without_day || is_day_of_moon()) && md->class == tmpsd[i]->hate_mob[1])
+				tk_exp_rate = 10*pc_checkskill(tmpsd[i],SG_MOON_BLESS);
+			else if((battle_config.allow_skill_without_day || is_day_of_star()) && md->class == tmpsd[i]->hate_mob[2])
+				tk_exp_rate = 20*pc_checkskill(tmpsd[i],SG_STAR_BLESS);
+		}
+		
 		if((pid=tmpsd[i]->status.party_id)>0){	// パーティに入っている
 			int j=0;
 			for(j=0;j<pnum;j++)	// 公平パーティリストにいるかどうか

@@ -281,6 +281,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_SPEEDPOTION0			=37,
 	SC_SPEEDPOTION1			=38,
 	SC_SPEEDPOTION2			=39,
+	SC_SPEEDPOTION3			=40,
 	SC_STRIPWEAPON			=50,
 	SC_STRIPSHIELD			=51,
 	SC_STRIPARMOR			=52,
@@ -429,7 +430,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_SPURT 				= 231,
 	SC_TKCOMBO 				= 232,	//テコンのコンボ用
 	SC_DODGE				= 233,
-	//SC_SEVENWIND			= 234,
+	//			= 234,
 	SC_TRIPLEATTACK_RATE_UP	= 235,//三段発動率アップ
 	SC_COUNTER_RATE_UP		= 236,	//カウンターキック発動率アップ
 	SC_SUN_WARM				= 237,
@@ -478,7 +479,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_DODGE_DELAY			= 277,
 	SC_AUTOBERSERK			= 278,
 	SC_DEVIL				= 279,
-	SC_DOUBLECASTING 		= 280,	//ダブルキャスティング
+	SC_DOUBLECASTING 		= 280,//ダブルキャスティング
 	SC_ELEMENTFIELD			= 281,//属性場
 	SC_DARKELEMENT			= 282,//闇
 	SC_ATTENELEMENT			= 283,//念

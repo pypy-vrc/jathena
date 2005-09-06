@@ -2733,6 +2733,7 @@ int buildin_statusup2(struct script_state *st);
 int buildin_bonus(struct script_state *st);
 int buildin_bonus2(struct script_state *st);
 int buildin_bonus3(struct script_state *st);
+int buildin_bonus4(struct script_state *st);
 int buildin_skill(struct script_state *st);
 int buildin_guildskill(struct script_state *st);
 int buildin_getskilllv(struct script_state *st);
@@ -2907,6 +2908,7 @@ struct script_function buildin_func[] = {
 	{buildin_bonus,"bonus","ii"},
 	{buildin_bonus2,"bonus2","iii"},
 	{buildin_bonus3,"bonus3","iiii"},
+	{buildin_bonus4,"bonus4","iiiii"},
 	{buildin_skill,"skill","ii*"},
 	{buildin_guildskill,"guildskill","ii*"},
 	{buildin_getskilllv,"getskilllv","i"},
@@ -4611,6 +4613,25 @@ int buildin_bonus3(struct script_state *st)
 	val=conv_num(st,& (st->stack->stack_data[st->start+5]));
 	sd=script_rid2sd(st);
 	pc_bonus3(sd,type,type2,type3,val);
+
+	return 0;
+}
+/*==========================================
+ * 装備品による能力値ボーナス
+ *------------------------------------------
+ */
+int buildin_bonus4(struct script_state *st)
+{
+	int type,type2,type3,type4,val;
+	struct map_session_data *sd;
+
+	type=conv_num(st,& (st->stack->stack_data[st->start+2]));
+	type2=conv_num(st,& (st->stack->stack_data[st->start+3]));
+	type3=conv_num(st,& (st->stack->stack_data[st->start+4]));
+	type4=conv_num(st,& (st->stack->stack_data[st->start+5]));
+	val=conv_num(st,& (st->stack->stack_data[st->start+6]));
+	sd=script_rid2sd(st);
+	pc_bonus4(sd,type,type2,type3,type4,val);
 
 	return 0;
 }
