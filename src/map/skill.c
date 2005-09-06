@@ -62,7 +62,7 @@ int SkillStatusChangeTable[]={	/* skill.hのenumのSC_***とあわせること */
 /* 40- */
 	-1,-1,-1,-1,-1,
 	SC_CONCENTRATE,		/* 集中力向上 */
-	-1,-1,-1,-1,
+	SC_DOUBLE,-1,-1,-1,
 /* 50- */
 	-1,
 	SC_HIDING,			/* ハイディング */
@@ -2201,9 +2201,13 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 	switch(skillid)
 	{
 	/* 武器攻撃系スキル */
+	case AC_DOUBLE:			/* ダブルストレイフィング */
+		status_change_start(src,SC_DOUBLE,skilllv,0,0,0,skill_get_time(skillid,skilllv),0);
+		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+	/* 武器攻撃系スキル */
 	case SM_BASH:			/* バッシュ */
 	case MC_MAMMONITE:		/* メマーナイト */
-	case AC_DOUBLE:			/* ダブルストレイフィング */
 	case AS_SONICBLOW:		/* ソニックブロー */
 	case KN_PIERCE:			/* ピアース */
 	case KN_SPEARBOOMERANG:	/* スピアブーメラン */
@@ -2265,6 +2269,10 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 	case WS_CARTTERMINATION:	/* カートターミネーション */
 	case CR_ACIDDEMONSTRATION:	/* アシッドデモンストレーション */
 	case ITM_TOMAHAWK:			/* トマホーク投げ */
+		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+	case HT_POWER:			/* ピーストストレイフィング*/
+		status_change_end(src,SC_DOUBLE,-1);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 	case NPC_DARKBREATH:
@@ -6921,27 +6929,8 @@ int skill_check_condition(struct map_session_data *sd,int type)
 			return 0;
 		}
 		break;
-	case AM_BERSERKPITCHER:
-		if(sd && sd->sc_data[SC_ALCHEMIST].timer==-1){//アルケミストの魂状態
-			clif_skill_fail(sd,skill,0,0);
-			return 0;
-		}
-		break;
-	case BS_ADRENALINE2:
-		if(sd && sd->sc_data[SC_BLACKSMITH].timer==-1){//ブラックスミスの魂状態
-			clif_skill_fail(sd,skill,0,0);
-			return 0;
-		}
-		break;
-
 	case SG_FUSION:
 		if(sd && sd->sc_data[SC_STAR].timer==-1){//ケンセイの魂状態
-			clif_skill_fail(sd,skill,0,0);
-			return 0;
-		}
-		break;
-	case KN_ONEHAND:
-		if(sd && sd->sc_data[SC_KNIGHT].timer==-1){//ナイトの魂状態
 			clif_skill_fail(sd,skill,0,0);
 			return 0;
 		}
@@ -7609,6 +7598,12 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 			return 0;
 		}
 		if (skill_check_unit_range2(sd->bl.m,sd->bl.x,sd->bl.y,sd->skillid,sd->skilllv)) {
+			clif_skill_fail(sd,sd->skillid,0,0);
+			return 0;
+		}
+		break;
+	case HT_POWER:
+		if(status_get_race(bl)!=2){
 			clif_skill_fail(sd,sd->skillid,0,0);
 			return 0;
 		}

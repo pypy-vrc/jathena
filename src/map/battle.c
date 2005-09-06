@@ -848,6 +848,10 @@ static struct Damage battle_calc_pet_weapon_attack(
 				div_=2;
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 				break;
+			case HT_POWER:	// ビーストストレイフィング
+				damage = damage*(180+ 20*skill_lv)/100;
+				div_=1;
+				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 			case AC_SHOWER:	// アローシャワー
 				damage = damage*(75 + 5*skill_lv)/100;
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
@@ -1380,6 +1384,10 @@ static struct Damage battle_calc_mob_weapon_attack(
 			case AC_DOUBLE:	// ダブルストレイフィング
 				damage = damage*(180+ 20*skill_lv)/100;
 				div_=2;
+				flag=(flag&~BF_RANGEMASK)|BF_LONG;
+				break;
+			case HT_POWER:	// ビーストストレイフィング
+				damage = damage*(180+ 20*skill_lv)/100;
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 				break;
 			case AC_SHOWER:	// アローシャワー
@@ -2293,6 +2301,22 @@ static struct Damage battle_calc_pc_weapon_attack(
 				damage = damage*(180+ 20*skill_lv)/100;
 				damage2 = damage2*(180+ 20*skill_lv)/100;
 				div_=2;
+				if(sd->arrow_ele > 0) {
+					s_ele = sd->arrow_ele;
+					s_ele_ = sd->arrow_ele;
+				}
+				flag=(flag&~BF_RANGEMASK)|BF_LONG;
+				sd->state.arrow_atk = 1;
+				break;
+			case HT_POWER:	// ビーストストレイフィング
+				if(!sd->state.arrow_atk && sd->arrow_atk > 0) {
+					int arr = atn_rand()%(sd->arrow_atk+1);
+					damage += arr;
+					damage2 += arr;
+				}
+				damage = damage*(180+ 20*skill_lv)/100;
+				damage2 = damage2*(180+ 20*skill_lv)/100;
+				div_=1;
 				if(sd->arrow_ele > 0) {
 					s_ele = sd->arrow_ele;
 					s_ele_ = sd->arrow_ele;

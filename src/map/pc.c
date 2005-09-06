@@ -982,6 +982,159 @@ int pc_calc_skilltree(struct map_session_data *sd)
 			}
 		}while(flag);
 	}
+	
+	//埋め込み
+	//アルケミストの魂
+	if(sd->sc_data && sd->sc_data[SC_ALCHEMIST].timer!=-1)
+	{
+		if(pc_checkskill(sd,AM_PHARMACY)==10)
+		{
+			if(pc_checkskill(sd,AM_TWILIGHT1)==0)//カードスキル扱い
+			{
+				sd->status.skill[AM_TWILIGHT1].id=AM_TWILIGHT1;
+				sd->status.skill[AM_TWILIGHT1].lv=1;
+				sd->status.skill[AM_TWILIGHT1].flag=1;
+			}
+			if(pc_checkskill(sd,AM_TWILIGHT2)==0)//カードスキル扱い
+			{
+				sd->status.skill[AM_TWILIGHT2].id=AM_TWILIGHT2;
+				sd->status.skill[AM_TWILIGHT2].lv=1;
+				sd->status.skill[AM_TWILIGHT2].flag=1;
+			}
+			if(pc_checkskill(sd,AM_TWILIGHT3)==0)//カードスキル扱い
+			{
+				sd->status.skill[AM_TWILIGHT3].id=AM_TWILIGHT3;
+				sd->status.skill[AM_TWILIGHT3].lv=1;
+				sd->status.skill[AM_TWILIGHT3].flag=1;
+			}
+		}
+		
+		if(pc_checkskill(sd,AM_BERSERKPITCHER)==0)//カードスキル扱い
+		{
+			sd->status.skill[AM_BERSERKPITCHER].id=AM_BERSERKPITCHER;
+			sd->status.skill[AM_BERSERKPITCHER].lv=1;
+			sd->status.skill[AM_BERSERKPITCHER].flag=1;
+		}
+	}
+	//ナイトの魂
+	if(sd->sc_data && sd->sc_data[SC_KNIGHT].timer!=-1)
+	{
+		if(pc_checkskill(sd,KN_TWOHANDQUICKEN)==10)
+		{
+			if(pc_checkskill(sd,KN_ONEHAND)==0)//カードスキル扱い
+			{
+				sd->status.skill[KN_ONEHAND].id=KN_ONEHAND;
+				sd->status.skill[KN_ONEHAND].lv=1;
+				sd->status.skill[KN_ONEHAND].flag=1;
+			}
+		}
+	}
+	//ブラックスミスの魂
+	if(sd->sc_data && sd->sc_data[SC_BLACKSMITH].timer!=-1)
+	{
+		if(pc_checkskill(sd,BS_ADRENALINE)==5)
+		{
+			if(pc_checkskill(sd,BS_ADRENALINE2)==0)//カードスキル扱い
+			{
+				sd->status.skill[BS_ADRENALINE2].id=BS_ADRENALINE2;
+				sd->status.skill[BS_ADRENALINE2].lv=1;
+				sd->status.skill[BS_ADRENALINE2].flag=1;
+			}
+		}
+	}
+	//ハンターの魂
+	if(sd->sc_data && sd->sc_data[SC_HUNTER].timer!=-1)
+	{
+		if(pc_checkskill(sd,AC_DOUBLE)==10)
+		{
+			if(pc_checkskill(sd,HT_POWER)==0)//カードスキル扱い
+			{
+				sd->status.skill[HT_POWER].id=HT_POWER;
+				sd->status.skill[HT_POWER].lv=1;
+				sd->status.skill[HT_POWER].flag=1;
+			}
+		}
+		
+	}
+	
+	//バード　ダンサーの魂
+	if(sd->sc_data && sd->sc_data[SC_BARDDANCER].timer!=-1)
+	{
+		int lv;
+		if((lv = pc_checkskill(sd,BA_WHISTLE))>0)
+		{
+			if(pc_checkskill(sd,DC_HUMMING)==0)//カードスキル扱い
+			{
+				sd->status.skill[DC_HUMMING].id=DC_HUMMING;
+				sd->status.skill[DC_HUMMING].lv=lv;
+				sd->status.skill[DC_HUMMING].flag=1;
+			}
+		}else if((lv = pc_checkskill(sd,DC_HUMMING))>0)
+		{
+			if(pc_checkskill(sd,BA_WHISTLE)==0)//カードスキル扱い
+			{
+				sd->status.skill[BA_WHISTLE].id=BA_WHISTLE;
+				sd->status.skill[BA_WHISTLE].lv=lv;
+				sd->status.skill[BA_WHISTLE].flag=1;
+			}
+		}
+		//
+		if((lv = pc_checkskill(sd,BA_ASSASSINCROSS))>0)
+		{
+			if(pc_checkskill(sd,DC_DONTFORGETME)==0)//カードスキル扱い
+			{
+				sd->status.skill[DC_DONTFORGETME].id=DC_DONTFORGETME;
+				sd->status.skill[DC_DONTFORGETME].lv=lv;
+				sd->status.skill[DC_DONTFORGETME].flag=1;
+			}
+		}else if((lv = pc_checkskill(sd,DC_DONTFORGETME))>0)
+		{
+			if(pc_checkskill(sd,BA_ASSASSINCROSS)==0)//カードスキル扱い
+			{
+				sd->status.skill[BA_ASSASSINCROSS].id=BA_ASSASSINCROSS;
+				sd->status.skill[BA_ASSASSINCROSS].lv=lv;
+				sd->status.skill[BA_ASSASSINCROSS].flag=1;
+			}
+		}
+		//
+		if((lv = pc_checkskill(sd,BA_POEMBRAGI))>0)
+		{
+			if(pc_checkskill(sd,DC_FORTUNEKISS)==0)//カードスキル扱い
+			{
+				sd->status.skill[DC_FORTUNEKISS].id=DC_FORTUNEKISS;
+				sd->status.skill[DC_FORTUNEKISS].lv=lv;
+				sd->status.skill[DC_FORTUNEKISS].flag=1;
+			}
+			
+		}else if((lv = pc_checkskill(sd,DC_FORTUNEKISS))>0)
+		{
+			if(pc_checkskill(sd,BA_POEMBRAGI)==0)//カードスキル扱い
+			{
+				sd->status.skill[BA_POEMBRAGI].id=BA_POEMBRAGI;
+				sd->status.skill[BA_POEMBRAGI].lv=lv;
+				sd->status.skill[BA_POEMBRAGI].flag=1;
+			}
+			
+		}
+		//
+		if((lv = pc_checkskill(sd,BA_APPLEIDUN))>0)
+		{
+			if(pc_checkskill(sd,DC_SERVICEFORYOU)==0)//カードスキル扱い
+			{
+				sd->status.skill[DC_SERVICEFORYOU].id=DC_SERVICEFORYOU;
+				sd->status.skill[DC_SERVICEFORYOU].lv=lv;
+				sd->status.skill[DC_SERVICEFORYOU].flag=1;
+			}
+		}else if((lv = pc_checkskill(sd,DC_SERVICEFORYOU))>0)
+		{
+			if(pc_checkskill(sd,BA_APPLEIDUN)==0)//カードスキル扱い
+			{
+				sd->status.skill[BA_APPLEIDUN].id=BA_APPLEIDUN;
+				sd->status.skill[BA_APPLEIDUN].lv=lv;
+				sd->status.skill[BA_APPLEIDUN].flag=1;
+			}
+		}
+	}
 //	if(battle_config.etc_log)
 //		printf("calc skill_tree\n");
 	return 0;

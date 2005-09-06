@@ -2981,7 +2981,8 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 
 	if(sc_data[type].timer != -1){	/* すでに同じ異常になっている場合タイマ解除 */
 		if(sc_data[type].val1 > val1 && type != SC_COMBO && type != SC_DANCING && type != SC_DEVOTION &&
-			type != SC_SPEEDPOTION0 && type != SC_SPEEDPOTION1 && type != SC_SPEEDPOTION2 && type!= SC_DEVIL)
+			type != SC_SPEEDPOTION0 && type != SC_SPEEDPOTION1 && type != SC_SPEEDPOTION2 && type != SC_SPEEDPOTION3 &&
+			type!= SC_DEVIL && type!=SC_DOUBLE  && type != SC_TKCOMBO && type!=SC_DODGE && type!=SC_SPURT)
 			return 0;
 		if ((type >=SC_STAN && type <= SC_BLIND) || type == SC_DPOISON)
 			return 0;/* 継ぎ足しができない状態異常である時は状態異常を行わない */
@@ -3187,6 +3188,7 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_ASPERSIO:			/* アスペルシオ */
 			skill_encchant_eremental_end(bl,SC_ASPERSIO);
 			break;
+		case SC_DOUBLE://ダブルストレイフィング
 		case SC_SUFFRAGIUM:			/* サフラギム */
 		case SC_BENEDICTIO:			/* 聖体 */
 		case SC_MAGNIFICAT:			/* マグニフィカート */
@@ -3843,25 +3845,37 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			if(bl->type!=BL_MOB)
 				return 0;
 			break;
-		case SC_ALCHEMIST://#アルケミストの魂#
 		case SC_MONK://#モンクの魂#
 		case SC_STAR://#ケンセイの魂#
 		case SC_SAGE://#セージの魂#
 		case SC_CRUSADER://#クルセイダーの魂#
-		case SC_KNIGHT://#ナイトの魂#
 		case SC_WIZARD://#ウィザードの魂#	
 		case SC_PRIEST://#プリーストの魂#
-		case SC_BARDDANCER://#バードとダンサーの魂#
 		case SC_ROGUE://#ローグの魂#
 		case SC_ASSASIN://#アサシンの魂#
+		case SC_SOULLINKER://#ソウルリンカーの魂#
+			if(bl->type == BL_PC){
+				if(battle_config.disp_job_soul_state_change)
+				{
+					char output[64];
+					strcpy(output,"魂状態になりました");
+					clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+				}
+			}
+			break;
+		case SC_KNIGHT://#ナイトの魂#
+		case SC_ALCHEMIST://#アルケミストの魂#
+		case SC_BARDDANCER://#バードとダンサーの魂#
 		case SC_BLACKSMITH://#ブラックスミスの魂#
 		case SC_HUNTER://#ハンターの魂#
-		case SC_SOULLINKER://#ソウルリンカーの魂#
 		case SC_HIGH://#一次上位職業の魂#
-			if(battle_config.disp_job_soul_state_change && bl->type == BL_PC){
-				char output[64];
-				strcpy(output,"魂状態になりました");
-				clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+			if(bl->type == BL_PC){
+				if(battle_config.disp_job_soul_state_change)
+				{
+					char output[64];
+					strcpy(output,"魂状態になりました");
+					clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+				}
 			}
 			calc_flag = 1;
 			break;
@@ -3869,10 +3883,13 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			if(sd && sd->status.base_level >=90 
 				&& atn_rand()%10000 < battle_config.repeal_die_counter_rate)//1%で死亡フラグ消す？
 				sd->repeal_die_counter = 1;
-			if(battle_config.disp_job_soul_state_change && bl->type == BL_PC){
-				char output[64];
-				strcpy(output,"魂状態になりました");
-				clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+			if(bl->type == BL_PC){
+				if(battle_config.disp_job_soul_state_change)
+				{
+					char output[64];
+					strcpy(output,"魂状態になりました");
+					clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+				}
 			}
 			calc_flag = 1;
 			break;
@@ -4282,6 +4299,8 @@ int status_change_end( struct block_list* bl , int type,int tid )
 					pc_stop_walking((struct map_session_data *)bl,0);
 				calc_flag = 1;
 				break;
+				/*
+			case SC_DOUBLE:
 			case SC_SUN_WARM://#太陽の温もり#
 			case SC_MOON_WARM://#月の温もり#
 			case SC_STAR_WARM://#星の温もり#
@@ -4304,39 +4323,49 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_MIRACLE://太陽と月と星の奇跡
 			case SC_ANGEL://太陽と月と星の天使
 				break;
-			case SC_ALCHEMIST://#アルケミストの魂#
+				*/
 			case SC_MONK://#モンクの魂#
 			case SC_STAR://#ケンセイの魂#
 			case SC_SAGE://#セージの魂#
 			case SC_CRUSADER://#クルセイダーの魂#
-			case SC_KNIGHT://#ナイトの魂#
 			case SC_WIZARD://#ウィザードの魂#	
 			case SC_PRIEST://#プリーストの魂#
-			case SC_BARDDANCER://#バードとダンサーの魂#
 			case SC_ROGUE://#ローグの魂#
 			case SC_ASSASIN://#アサシンの魂#
-			case SC_BLACKSMITH://#ブラックスミスの魂#
-			case SC_HUNTER://#ハンターの魂#
 			case SC_SOULLINKER://#ソウルリンカーの魂#
-				if(battle_config.disp_job_soul_state_change && bl->type == BL_PC){
-					char output[64];
-					strcpy(output,"魂状態が終了しました");
-					clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+				if(bl->type == BL_PC){
+					if(battle_config.disp_job_soul_state_change)
+					{
+						char output[64];
+						strcpy(output,"魂状態が終了しました");
+						clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+					}
 				}
 				break;
+			case SC_KNIGHT://#ナイトの魂#
+			case SC_ALCHEMIST://#アルケミストの魂#
+			case SC_BARDDANCER://#バードとダンサーの魂#
+			case SC_BLACKSMITH://#ブラックスミスの魂#
+			case SC_HUNTER://#ハンターの魂#
 			case SC_HIGH://#一次上位職業の魂#
-				if(battle_config.disp_job_soul_state_change && bl->type == BL_PC){
-					char output[64];
-					strcpy(output,"魂状態が終了しました");
-					clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+				if(bl->type == BL_PC){
+					if(battle_config.disp_job_soul_state_change)
+					{
+						char output[64];
+						strcpy(output,"魂状態が終了しました");
+						clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+					}
 				}
 				calc_flag = 1;
 				break;
 			case SC_SUPERNOVICE://#スーパーノービスの魂#
-				if(battle_config.disp_job_soul_state_change && bl->type == BL_PC){
-					char output[64];
-					strcpy(output,"魂状態が終了しました");
-					clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+				if(bl->type == BL_PC){
+					if(battle_config.disp_job_soul_state_change)
+					{
+						char output[64];
+						strcpy(output,"魂状態が終了しました");
+						clif_disp_onlyself((struct map_session_data*)bl,output,strlen(output));
+					}
 				}
 				if(bl->type==BL_PC)
 					((struct map_session_data*)bl)->repeal_die_counter = 0;

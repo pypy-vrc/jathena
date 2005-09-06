@@ -486,6 +486,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_MIRACLE				= 284,//太陽と月と星の奇跡
 	SC_ANGEL				= 285,//太陽と月と星の天使
 	SC_HIGHJUMP				= 286,//ハイジャンプ
+	SC_DOUBLE				= 287,//ダブルストレイフィング状態
 };
 
 enum {
@@ -1005,7 +1006,7 @@ enum {
 	AM_TWILIGHT1 = 496,
 	AM_TWILIGHT2 = 497,
 	AM_TWILIGHT3 = 498,
-	//HT_POWER
+	HT_POWER 	 = 499,
 
 //	move to common/mmo.h
 //	GD_APPROVAL=10000,
