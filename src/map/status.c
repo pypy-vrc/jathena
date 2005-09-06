@@ -1991,7 +1991,7 @@ int status_get_atk(struct block_list *bl)
 		if(guardup_lv>0)
 		{
 			atk = mob_db[((struct mob_data*)bl)->class].atk1;
-			atk += atk*20*guardup_lv/100;
+			atk += 1000*guardup_lv;
 		}else 
 			atk = mob_db[((struct mob_data*)bl)->class].atk1;
 			
@@ -2060,7 +2060,7 @@ int status_get_atk2(struct block_list *bl)
 			if(guardup_lv>0)
 			{
 				atk2 = mob_db[((struct mob_data*)bl)->class].atk2;
-				atk2 += atk2*20*guardup_lv/100;
+				atk2 += 1000*guardup_lv;
 			}else 
 				atk2 = mob_db[((struct mob_data*)bl)->class].atk2;
 				
@@ -3903,9 +3903,12 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_READYCOUNTER:
 		case SC_DODGE:
 		case SC_DODGE_DELAY:
-		case SC_DOUBLECASTING://ダブルキャスティング
-			break;
 		case SC_DEVIL:
+		case SC_DOUBLECASTING://ダブルキャスティング
+		case SC_SHRINK://シュリンク
+		case SC_CLOSECONFINE://クローズコンファイン
+		case SC_SIGHTBLASTER://サイトブラスター
+		case SC_ELEMENTALCHG://エルレメンタルチェンジ
 			break;
 		default:
 			if(battle_config.error_log)

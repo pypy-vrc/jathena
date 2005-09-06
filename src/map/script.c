@@ -5053,6 +5053,9 @@ int buildin_monster(struct script_state *st)
 	else if(st->end > st->start+8)
 		event=conv_str(st,& (st->stack->stack_data[st->start+8]));
 
+	if ((class>=0 && class<=1000) || class >MOB_ID_MAX)
+		return 0;
+
 	id = mob_once_spawn(map_id2sd(st->rid),map,x,y,str,class,amount,event);
 
 	md = (struct mob_data *)map_id2bl(id);

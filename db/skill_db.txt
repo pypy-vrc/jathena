@@ -550,6 +550,23 @@
 498,0,6,4,0,1,1,0,no,0,0,0,none,0	//AM_TWILIGHT3#トワイライトファーマシー3#
 499,-3,8,1,0,0,1,1,no,0,0,0,weapon,0	//HT_POWER#ビーストストレイピング#
 
+//,-1,8,1,0,0,1,1,no,0,1,0,weapon,0	//KN_CHARGEATK#チャージアタック#
+//,0,0,4,0,1,1,0,no,0,1,0,weapon,0	//CR_SHRINK#シュリンク#
+//,0,0,0,0,0,1,0,no,0,1,0,weapon,0	//AS_SONICACCEL#ソニックアクセラレーション#
+//,10,8,1,0,0,1,1,no,0,1,0,none,0	//AS_VENOMKNIFE#ベナムナイフ#
+//,0,0,0,0,0,0,0,no,0,0,0,none,0	//RG_CLOSECONFINE#クローズコンファイン#
+//,0,6,4,3,1,1,1,yes,0,1,0,magic,0	//WZ_SIGHTBLASTER#サイトブラスター#
+//,0,0,0,0,0,1,0,no,0,1,0,weapon,0	//SA_CREATECON#エルレメンタルコンバータ製造#
+//,0,0,0,0,0,1,0,no,0,1,0,none,0	//SA_ELEMENTALCHG#エルレメンタルチェンジ#
+//,-3,8,1,0,0,1,1,no,0,1,0,weapon,3	//HT_PHANTASMIC#ファンタスミックアロー#
+//,10,8,1,0,0,1,1,no,0,1,0,none,0	//BD_PANGVOICE#パンボイス#
+//,10,8,1,0,0,1,1,no,0,1,0,none,0	//DC_WINKCHARM#魅惑のウィンク#
+//,0,0,0,0,0,1,0,no,0,1,0,weapon,0	//BS_UNFAIRLYTRICK#アンフェアリートリック#
+//,0,0,0,0,0,1,0,no,0,1,0,weapon,0	//BS_GREED#貪欲#
+//,10,6,2,6,1,10,1,yes,0,1,0,magic,0	//PR_REDEMPTIO#レデムプティオ#
+//,0,0,0,0,0,1,0,no,0,1,0,none,0	//MO_KITRANSLATION#珍奇注入(振気注入)#
+//,0,0,0,0,0,1,0,no,0,1,0,none,0	//MO_BALKYOUNG#足頃(発勁)#
+
 10000,0,0,0,0,0,1,0,no,0,0,0,none,0	//GD_APPROVAL#正規ギルド承認#
 10001,0,0,0,0,0,1,0,no,0,0,0,none,0	//GD_KAFRACONTRACT#カプラ雇用#
 10002,0,0,0,0,0,1,0,no,0,0,0,none,0	//GD_GUARDRESEARCH#ガーディアン研究#

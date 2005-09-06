@@ -350,9 +350,14 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 					delay = 200;
 				else
 					delay = 100;
-				if(sd)
+				if(sd){
 					sd->canmove_tick = gettick() + delay;
-				else if(md)
+					if(sc_data[SC_SHRINK].timer != -1 && atn_rand()%100<5*sc_data[SC_AUTOGUARD].val1)
+					{
+						skill_blown(bl,src,2);
+					}
+				
+				}else if(md)
 					md->canmove_tick = gettick() + delay;
 			}
 		}
@@ -857,6 +862,10 @@ static struct Damage battle_calc_pet_weapon_attack(
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 				break;
 			case AC_CHARGEARROW:	// チャージアロー
+				damage = damage*150/100;
+				flag=(flag&~BF_RANGEMASK)|BF_LONG;
+				break;
+			case HT_PHANTASMIC:	// ファンタスミックアロー
 				damage = damage*150/100;
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 				break;
@@ -1395,6 +1404,10 @@ static struct Damage battle_calc_mob_weapon_attack(
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 				break;
 			case AC_CHARGEARROW:	// チャージアロー
+				damage = damage*150/100;
+				flag=(flag&~BF_RANGEMASK)|BF_LONG;
+				break;
+			case HT_PHANTASMIC:	// ファンタスミックアロー
 				damage = damage*150/100;
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 				break;
@@ -2032,9 +2045,9 @@ static struct Damage battle_calc_pc_weapon_attack(
 	if(sd->weapontype1 == 0x01) {
 		if(skill_num == 0 && skill_lv >= 0 && (skill = pc_checkskill(sd,TF_DOUBLE)) > 0)
 		{
-			if(sc_data !=NULL && sc_data[SC_ROGUE].timer!=-1)
-				da = (atn_rand()%100 < (skill*10)) ? 1:0;
-			else
+			//if(sc_data !=NULL && sc_data[SC_ROGUE].timer!=-1)
+			//	da = (atn_rand()%100 < (skill*10)) ? 1:0;
+			//else
 				da = (atn_rand()%100 < (skill*5)) ? 1:0;
 		}
 	}
@@ -2066,20 +2079,20 @@ static struct Damage battle_calc_pc_weapon_attack(
 		{
 			if( (skill*5) > sd->double_rate )
 			{
-				if(sc_data !=NULL && sc_data[SC_ROGUE].timer!=-1)
-					da = (atn_rand()%100 < (skill*10)) ? 1:0;
-				else
+				//if(sc_data !=NULL && sc_data[SC_ROGUE].timer!=-1)
+				//	da = (atn_rand()%100 < (skill*10)) ? 1:0;
+				//else
 					da = (atn_rand()%100 < (skill*5)) ? 1:0;
 			}else{
-				if(sc_data !=NULL && sc_data[SC_ROGUE].timer!=-1)
-					da = (atn_rand()%100 < sd->double_rate*2) ? 1:0;
-				else
+				//if(sc_data !=NULL && sc_data[SC_ROGUE].timer!=-1)
+				//	da = (atn_rand()%100 < sd->double_rate*2) ? 1:0;
+				//else
 					da = (atn_rand()%100 < sd->double_rate) ? 1:0;
 			}
 		}else{
-			if(sc_data !=NULL && sc_data[SC_ROGUE].timer!=-1)
-				da = (atn_rand()%100 < sd->double_rate*2) ? 1:0;
-			else
+			//if(sc_data !=NULL && sc_data[SC_ROGUE].timer!=-1)
+			//	da = (atn_rand()%100 < sd->double_rate*2) ? 1:0;
+			//else
 				da = (atn_rand()%100 < sd->double_rate) ? 1:0;
 		}
 	}
@@ -2356,6 +2369,30 @@ static struct Damage battle_calc_pc_weapon_attack(
 				flag=(flag&~BF_RANGEMASK)|BF_LONG;
 				sd->state.arrow_atk = 1;
 				break;
+			case HT_PHANTASMIC:	// ファンタスミックアロー
+				if(!sd->state.arrow_atk && sd->arrow_atk > 0) {
+					int arr = atn_rand()%(sd->arrow_atk+1);
+					damage += arr;
+					damage2 += arr;
+				}
+				damage = damage*150/100;
+				damage2 = damage2*150/100;
+				if(sd->arrow_ele > 0) {
+					s_ele = sd->arrow_ele;
+					s_ele_ = sd->arrow_ele;
+				}
+				flag=(flag&~BF_RANGEMASK)|BF_LONG;
+				sd->state.arrow_atk = 1;
+				break;
+			case KN_CHARGEATK:			//チャージアタック
+				damage = damage*100/100;
+				damage2 = damage2*100/100;
+				break;
+			case AS_VENOMKNIFE:			//ベナムナイフ
+				damage = damage*100/100;
+				damage2 = damage2*100/100;
+				flag=(flag&~BF_RANGEMASK)|BF_LONG;
+				break;
 			case KN_PIERCE:	// ピアース
 				damage = damage*(100+ 10*skill_lv)/100;
 				damage2 = damage2*(100+ 10*skill_lv)/100;
@@ -2416,15 +2453,22 @@ static struct Damage battle_calc_pc_weapon_attack(
 				flag=(flag&~BF_SKILLMASK)|BF_NORMAL;
 				break;
 			case AS_SONICBLOW:	// ソニックブロウ
-				if(sc_data!=NULL && sc_data[SC_ASSASIN].timer!=-1)
 				{
-					damage = damage*(400+ 50*skill_lv)/100;
-					damage2 = damage2*(400+ 50*skill_lv)/100;
-				}else{
-					damage = damage*(300+ 50*skill_lv)/100;
-					damage2 = damage2*(300+ 50*skill_lv)/100;
+					int sonic_damage_rate = 300;
+					
+					if(pc_checkskill(sd,AS_SONICACCEL)>0)
+					{
+						sonic_damage_rate+=10;
+						hitrate+=50;
+					}
+					
+					if(sc_data!=NULL && sc_data[SC_ASSASIN].timer!=-1)
+						sonic_damage_rate+=100;
+					
+					damage = damage*(sonic_damage_rate+ 50*skill_lv)/100;
+					damage2 = damage2*(sonic_damage_rate+ 50*skill_lv)/100;
+					div_=8;
 				}
-				div_=8;
 				break;
 			case AS_GRIMTOOTH:	// グリムトゥース
 				damage = damage*(100+ 20*skill_lv)/100;

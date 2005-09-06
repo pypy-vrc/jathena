@@ -4,7 +4,7 @@
 #include "map.h"
 #include "mmo.h"
 
-#define MAX_SKILL_DB			500
+#define MAX_SKILL_DB			520
 #define MAX_GUILDSKILL_DB		MAX_GUILDSKILL
 #define MAX_SKILL_PRODUCE_DB	150
 #define MAX_PRODUCE_RESOURCE	7
@@ -491,6 +491,10 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_HIGHJUMP				= 286,//ハイジャンプ
 	SC_DOUBLE				= 287,//ダブルストレイフィング状態
 	SC_ACTION_DELAY			= 288,//ダブルストレイフィング状態
+	SC_SHRINK,//#シュリンク#
+	SC_CLOSECONFINE,//#クローズコンファイン#
+	SC_SIGHTBLASTER,//#サイトブラスター#
+	SC_ELEMENTALCHG,//#エルレメンタルチェンジ#
 };
 
 enum {
@@ -1011,6 +1015,23 @@ enum {
 	AM_TWILIGHT2 = 497,
 	AM_TWILIGHT3 = 498,
 	HT_POWER 	 = 499,
+
+	KN_CHARGEATK,//#チャージアタック#
+	CR_SHRINK,//#シュリンク#
+	AS_SONICACCEL,//#ソニックアクセラレーション#
+	AS_VENOMKNIFE,//#ベナムナイフ#
+	RG_CLOSECONFINE,//#クローズコンファイン#
+	WZ_SIGHTBLASTER,//#サイトブラスター#
+	SA_CREATECON,//#エルレメンタルコンバータ製造#
+	SA_ELEMENTALCHG,//#エルレメンタルチェンジ#
+	HT_PHANTASMIC,//#ファンタスミックアロー#
+	BD_PANGVOICE,//#パンボイス#
+	DC_WINKCHARM,//#魅惑のウィンク#
+	BS_UNFAIRLYTRICK,//#アンフェアリートリック#
+	BS_GREED,//#貪欲#
+	PR_REDEMPTIO,//#レデムプティオ#
+	MO_KITRANSLATION,//#珍奇注入(振気注入)#
+	MO_BALKYOUNG,//#足頃(発勁)#
 
 //	move to common/mmo.h
 //	GD_APPROVAL=10000,

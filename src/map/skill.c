@@ -278,6 +278,10 @@ int SkillStatusChangeTable[]={	/* skill.hのenumのSC_***とあわせること */
 	-1,-1,SC_DOUBLECASTING,-1,-1,-1,SC_OVERTHRUSTMAX,-1,-1,-1,
 /* 490- */
 	-1,-1,-1,-1,SC_HIGH,SC_ONEHAND,-1,-1,-1,-1,
+/* 500- */
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+/* 510- */
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 };
 
 
@@ -352,6 +356,10 @@ int StatusIconChangeTable[] = {
 	SI_BLANK,SI_BLANK,SI_ONEHAND,SI_READYSTORM,SI_READYDOWN,SI_READYTURN,SI_READYCOUNTER,SI_BLANK,SI_AUTOBERSERK,SI_DEVIL,
 /* 280- */
 	SI_DOUBLECASTING,SI_ELEMENTFIELD,SI_DARKELEMENT,SI_ATTENELEMENT,SI_SOULLINK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
+/* 290- */
+	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
+/* 300- */
+	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 };
 
 static const int dirx[8]={0,-1,-1,-1, 0, 1,1,1};
@@ -770,6 +778,20 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 		}
 		break;
 
+	
+	case AS_VENOMKNIFE:			//ベナムナイフ
+		if(atn_rand()%100< 60*sc_def_vit/100 )
+			status_change_start(bl,SC_POISON,skilllv,0,0,0,skill_get_time2(skillid,skilllv),0);
+		else{
+			if(sd && skillid==AS_VENOMKNIFE)
+				clif_skill_fail(sd,AS_VENOMKNIFE,0,0);
+		}
+		//ナイフの消費
+		if(sd->equip_index[8]>=0 && sd->inventory_data[sd->equip_index[8]]->nameid==1771)
+			pc_lossequipitem(sd,8,0);
+		else if(sd->equip_index[9]>=0 && sd->inventory_data[sd->equip_index[9]]->nameid==1771)
+			pc_lossequipitem(sd,9,0);
+		break;
 	case AS_SONICBLOW:		/* ソニックブロー */
 		if( atn_rand()%100 < (2*skilllv+10)*sc_def_vit/100 )
 			status_change_start(bl,SC_STAN,skilllv,0,0,0,skill_get_time2(skillid,skilllv),0);
@@ -2269,6 +2291,9 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 	case WS_CARTTERMINATION:	/* カートターミネーション */
 	case CR_ACIDDEMONSTRATION:	/* アシッドデモンストレーション */
 	case ITM_TOMAHAWK:			/* トマホーク投げ */
+	case KN_CHARGEATK:			//チャージアタック
+	case AS_VENOMKNIFE:			//ベナムナイフ
+	case HT_PHANTASMIC:			//ファンタスミックアロー
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 	case HT_POWER:			/* ピーストストレイフィング*/
@@ -3601,6 +3626,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case NV_TRICKDEAD:		/* 死んだふり */
 	case CR_DEFENDER:		/* ディフェンダー */
 	case CR_AUTOGUARD:		/* オートガード */
+	case CR_SHRINK:			/* シュリンク */
 		{
 			struct status_change *tsc_data = status_get_sc_data(bl);
 			int sc=SkillStatusChangeTable[skillid];
@@ -6696,9 +6722,13 @@ int skill_check_condition(struct map_session_data *sd,int type)
 	if(sd->dsprate!=100)
 		sp=sp*sd->dsprate/100;	/* 消費SP修正 */
 
-	//特殊なSP消費処理
+	//特殊な消費処理
 	switch(sd->skillid)
 	{
+		case MC_MAMMONITE://メマー
+			if(pc_checkskill(sd,BS_UNFAIRLYTRICK)>0)
+				zeny = zeny*90/100;
+			break;
 		case AL_HOLYLIGHT://ホーリーライトの消費量増加(プーリストの魂時)
 			if(sd->sc_data[SC_PRIEST].timer!=-1)
 				sp = sp * 5;
@@ -6978,6 +7008,14 @@ int skill_check_condition(struct map_session_data *sd,int type)
 		break;
 	case SG_FUSION:
 		if(sd && sd->sc_data[SC_STAR].timer==-1){//ケンセイの魂状態
+			clif_skill_fail(sd,skill,0,0);
+			return 0;
+		}
+		break;
+	case AS_VENOMKNIFE:
+		if((sd->equip_index[8]>=0 && sd->inventory_data[sd->equip_index[8]]->nameid!=1771)
+		 	&& (sd->equip_index[9]>=0 && sd->inventory_data[sd->equip_index[9]]->nameid!=1771))
+		 {
 			clif_skill_fail(sd,skill,0,0);
 			return 0;
 		}
