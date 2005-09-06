@@ -3159,7 +3159,6 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 					status_change_start(&dstsd->bl,SC_SPURT,10,0,0,0,150000,0);
 				status_change_end(bl,SC_RUN,-1);
 			}else{
-				//clif_skill_nodamage(src,bl,skillid,skilllv,1);
 				status_change_start(bl,SkillStatusChangeTable[skillid],skilllv,0,0,0,skill_get_time(skillid,skilllv),0 );
 			}
 		}
@@ -3170,6 +3169,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case TK_READYCOUNTER:
 	case TK_DODGE:
 	case SM_AUTOBERSERK:
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		status_change_start(bl,GetSkillStatusChangeTable(skillid),skilllv,0,0,0,skill_get_time(skillid,skilllv),0);
 		break;
 	case SG_SUN_WARM://太陽の温もり
@@ -9485,26 +9485,26 @@ int skill_produce_mix( struct map_session_data *sd,
 					{
 						case 3:
 							ranking_gain_point(sd,RK_ALCHEMIST,1);
+							ranking_setglobalreg(sd,RK_ALCHEMIST);
+							ranking_update(sd,RK_ALCHEMIST);
 							break;
 						case 5:
 							ranking_gain_point(sd,RK_ALCHEMIST,3);
+							ranking_setglobalreg(sd,RK_ALCHEMIST);
+							ranking_update(sd,RK_ALCHEMIST);
 							break;
 						case 7:
 							ranking_gain_point(sd,RK_ALCHEMIST,10);
+							ranking_setglobalreg(sd,RK_ALCHEMIST);
+							ranking_update(sd,RK_ALCHEMIST);
 							break;
 						case 10:
 							ranking_gain_point(sd,RK_ALCHEMIST,50);
+							ranking_setglobalreg(sd,RK_ALCHEMIST);
+							ranking_update(sd,RK_ALCHEMIST);
 							sd->am_pharmacy_success = 0;
 							break;	
 					}
-					/*
-					//10回連続成功達成
-					if(sd->am_pharmacy_success==10)
-					{
-						ranking_gain_point(sd,RK_ALCHEMIST,50);
-						sd->am_pharmacy_success = 0;
-					}
-					*/
 				}
 				break;
 			case ASC_CDP:
@@ -9513,8 +9513,11 @@ int skill_produce_mix( struct map_session_data *sd,
 				break;
 			default:  /* 武器製造 コイン製造 */
 				if( tmp_item.card[0]==0x00ff && wlv==3 && cnt==3)
+				{
 					ranking_gain_point(sd,RK_BLACKSMITH,10);
-					
+					ranking_setglobalreg(sd,RK_BLACKSMITH);
+					ranking_update(sd,RK_BLACKSMITH);
+				}	
 				clif_produceeffect(sd,0,nameid); /* 武器製造エフェクト */
 				clif_misceffect(&sd->bl,3);
 				break;
@@ -9530,15 +9533,6 @@ int skill_produce_mix( struct map_session_data *sd,
 			case AM_PHARMACY:
 				clif_produceeffect(sd,3,nameid);/* 製薬失敗エフェクト */
 				clif_misceffect(&sd->bl,6); /* 他人にも失敗を通知 */
-				/*
-				//3回以上連続成功
-				if(sd->am_pharmacy_success>=7)
-					ranking_gain_point(sd,RK_ALCHEMIST,10);
-				else if(sd->am_pharmacy_success>=5)
-					ranking_gain_point(sd,RK_ALCHEMIST,3);
-				else if(sd->am_pharmacy_success>=3)
-					ranking_gain_point(sd,RK_ALCHEMIST,1);
-				*/
 				//スリム以外の失敗でもスリム連続成功　リセット
 				//if(nameid ==545 || nameid ==546 || nameid == 547)
 				sd->am_pharmacy_success = 0;

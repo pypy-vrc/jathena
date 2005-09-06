@@ -4879,7 +4879,7 @@ atcommand_blacksmith(
 	const char* command, const char* message)
 {
 	nullpo_retr( -1, sd );
-	ranking_display_ranking(sd,RK_BLACKSMITH,0,MAX_RANKER-1);
+	ranking_display(sd,RK_BLACKSMITH,0,MAX_RANKER-1);
 	
 	return 0;
 }
@@ -4894,7 +4894,7 @@ atcommand_alchemist(
 	const char* command, const char* message)
 {
 	nullpo_retr( -1, sd );
-	ranking_display_ranking(sd,RK_ALCHEMIST,0,MAX_RANKER-1);
+	ranking_display(sd,RK_ALCHEMIST,0,MAX_RANKER-1);
 	
 	return 0;
 }
@@ -4909,7 +4909,7 @@ atcommand_taekwon(
 	const char* command, const char* message)
 {
 	nullpo_retr( -1, sd );
-	ranking_display_ranking(sd,RK_TAEKWON,0,MAX_RANKER-1);
+	ranking_display(sd,RK_TAEKWON,0,MAX_RANKER-1);
 	return 0;
 }
 
@@ -4924,7 +4924,7 @@ atcommand_ranking(
 		return -1;
 	if(i<0 || i>=MAX_RANKER)
 		return -1;
-	ranking_display_ranking(sd,i,0,MAX_RANKER-1);
+	ranking_display(sd,i,0,MAX_RANKER-1);
 	return 0;
 }
 

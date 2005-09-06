@@ -4481,15 +4481,18 @@ int buildin_successrefitem(struct script_state *st)
 			{
 				case 1:
 					ranking_gain_point(sd,RK_BLACKSMITH,1);
+					ranking_setglobalreg(sd,RK_BLACKSMITH);
+					ranking_update(sd,RK_BLACKSMITH);
 					break;
 				case 2:
 					ranking_gain_point(sd,RK_BLACKSMITH,25);
+					ranking_setglobalreg(sd,RK_BLACKSMITH);
+					ranking_update(sd,RK_BLACKSMITH);
 					break;
 				case 3:
 					ranking_gain_point(sd,RK_BLACKSMITH,1000);
-					break;
-				case 4:
-					//ranking_gain_point(sd,RK_BLACKSMITH,2500);
+					ranking_setglobalreg(sd,RK_BLACKSMITH);
+					ranking_update(sd,RK_BLACKSMITH);
 					break;
 				default:
 					break;

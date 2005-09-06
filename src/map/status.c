@@ -405,7 +405,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 						if(sd->star_ == 15) sd->star_ = 40;
 						wele_= (sd->status.inventory[index].card[1]&0x0f);	// 属 性
 						//ランキングボーナス
-						if(ranking_get_id2rank(RK_BLACKSMITH,*((unsigned long *)(&sd->status.inventory[index].card[2]))) )
+						if(ranking_get_id2rank( *((unsigned long *)(&sd->status.inventory[index].card[2])) ,RK_BLACKSMITH))
 							sd->ranker_weapon_bonus_ = 10;
 					}
 					sd->attackrange_ += sd->inventory_data[index]->range;
@@ -425,7 +425,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 						if(sd->star == 15) sd->star = 40;
 						wele = (sd->status.inventory[index].card[1]&0x0f);	// 属 性
 						//ランキングボーナス
-						if(ranking_get_id2rank(RK_BLACKSMITH,*((unsigned long *)(&sd->status.inventory[index].card[2]))) )
+						if(ranking_get_id2rank(*((unsigned long *)(&sd->status.inventory[index].card[2])),RK_BLACKSMITH))
 							sd->ranker_weapon_bonus = 10;
 					}
 					sd->attackrange += sd->inventory_data[index]->range;

@@ -44,7 +44,7 @@ int ranking_get_pc_rank(struct map_session_data * sd,int ranking_id)
 
 //idからランキングを求める
 // 0 : ランク外
-int ranking_get_id2rank(int ranking_id,int char_id)
+int ranking_get_id2rank(int char_id,int ranking_id)
 {	
 	int i;
 	
@@ -91,10 +91,7 @@ int ranking_set_point(struct map_session_data * sd,int ranking_id,int point)
 
 	sd->ranking_point[ranking_id] = point;
 	
-	//書き込み
-	pc_setglobalreg(sd,ranking_reg[ranking_id],sd->ranking_point[ranking_id]);
-	
-	return ranking_update_ranking(sd,ranking_id);
+	return 1;
 }
 
 int ranking_gain_point(struct map_session_data * sd,int ranking_id,int point)
@@ -109,26 +106,34 @@ int ranking_gain_point(struct map_session_data * sd,int ranking_id,int point)
 
 	sd->ranking_point[ranking_id] += point;
 	
-	//書き込み
+	return 1;
+}
+
+int ranking_setglobalreg(struct map_session_data * sd,int ranking_id)
+{
+	nullpo_retr(0, sd);
+	
+	//ランキング対象がない
+	if(ranking_id<0 || MAX_RANKING <= ranking_id)
+		return 0;
+
 	pc_setglobalreg(sd,ranking_reg[ranking_id],sd->ranking_point[ranking_id]);
 	
-	return ranking_update_ranking(sd,ranking_id);
+	return 1;
 }
 
-int ranking_swap(int ranking_id,int i,int j)
+int ranking_setglobalreg_all(struct map_session_data * sd)
 {
-	struct Ranking_Data tmp;
-	if(ranking_data[ranking_id][i].point < ranking_data[ranking_id][j].point)
-	{
-		tmp = ranking_data[ranking_id][i];
-		ranking_data[ranking_id][i] = ranking_data[ranking_id][j];
-		ranking_data[ranking_id][j] = tmp;
-		return 1;	
-	}
-	return 0;
+	int i;
+	nullpo_retr(0, sd);
+	
+	for(i = 0;i<MAX_RANKING;i++)
+		ranking_setglobalreg(sd,i);
+	
+	return 1;
 }
 
-int ranking_update_ranking(struct map_session_data * sd,int ranking_id)
+int ranking_update(struct map_session_data * sd,int ranking_id)
 {
 	
 	int i=0,update_flag=0;
@@ -163,8 +168,23 @@ int ranking_update_ranking(struct map_session_data * sd,int ranking_id)
 			update_flag = 1;
 		}
 	}
+	
 	if(update_flag)
 		ranking_sort(ranking_id);
+
+	return 1;
+}
+
+//終了時にでも
+int ranking_update_all(struct map_session_data * sd)
+{
+	int i=0,update_flag=0;
+	
+	nullpo_retr(0, sd);
+
+	//探す
+	for(i = 0;i<MAX_RANKING;i++)
+		ranking_update(sd,i);
 
 	return 1;
 }
@@ -192,7 +212,7 @@ int ranking_sort(int ranking_id)
 	return 1;
 }
 
-int ranking_display_ranking(struct map_session_data * sd,int ranking_id,int begin,int end)
+int ranking_display(struct map_session_data * sd,int ranking_id,int begin,int end)
 {
 	int i;
 	char output[128];
@@ -241,13 +261,10 @@ int ranking_init_data()
 	return 1;
 }
 
-
 //初期化
 int do_init_ranking()
 {
 	ranking_init_data();
-	
-	
 	
 	return 1;	
 }

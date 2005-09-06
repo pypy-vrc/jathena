@@ -10,19 +10,21 @@ struct Ranking_Data
 	int  char_id;
 };
 
-//PCのランキングを返す
 int ranking_get_pc_rank(struct map_session_data * sd,int ranking_id);
+int ranking_get_id2rank(int char_id,int ranking_id);
 
-int ranking_get_id2rank(int ranking_id,int char_id);
-//PCのランキングを返す
 int ranking_get_point(struct map_session_data * sd,int ranking_id);
 int ranking_set_point(struct map_session_data * sd,int ranking_id,int point);
 int ranking_gain_point(struct map_session_data * sd,int ranking_id,int point);
 
-int ranking_swap(int ranking_id,int i,int j);
-int ranking_update(struct map_session_data * sd,int ranking_id);
-int ranking_display_ranking(struct map_session_data * sd,int ranking_id,int begin,int end);
+int ranking_readreg(struct map_session_data * sd);
+int ranking_setglobalreg(struct map_session_data * sd,int ranking_id);
+int ranking_setglobalreg_all(struct map_session_data * sd);
 
+int ranking_update(struct map_session_data * sd,int ranking_id);
+int ranking_display(struct map_session_data * sd,int ranking_id,int begin,int end);
+
+int ranking_update_all(struct map_session_data * sd);
 int ranking_sort(int ranking_id);
 
 //ランキング

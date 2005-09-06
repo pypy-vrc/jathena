@@ -797,9 +797,8 @@ int pc_authok(int id,struct mmo_charstatus *st)
 
 	//ランキング用ポイントのスクリプト変数からの読み出しとsdへのセット
 	ranking_readreg(sd);
-	//暫定
-	for(i=0;i<MAX_RANKING;i++)
-		ranking_update_ranking(sd,i);
+	//暫定更新
+	ranking_update_all(sd);
 	
 	//ファーマシー連続成功カウンタ 起動時0に
 	sd->am_pharmacy_success = 0;
