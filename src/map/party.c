@@ -670,7 +670,7 @@ void party_foreachsamemap(int (*func)(struct block_list*,va_list),
 int party_check_same_map_member_count(struct map_session_data *sd)
 {
 	int count = 0;
-	int i;
+	int i = 0;
 	struct party* pt = NULL;
 	if(sd == NULL)
 		return 0;
@@ -689,5 +689,7 @@ int party_check_same_map_member_count(struct map_session_data *sd)
 		}
 	}
 	
-	return count;	
+	return count;
 }
+
+

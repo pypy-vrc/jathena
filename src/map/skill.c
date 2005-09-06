@@ -9335,7 +9335,7 @@ int skill_produce_mix( struct map_session_data *sd,
 	int nameid, int slot1, int slot2, int slot3 )
 {
 	int slot[3];
-	int i,sc,ele,idx,equip,wlv,make_per,flag,cnt=0;
+	int i,sc,ele,idx,equip,wlv=0,make_per,flag,cnt=0;
 
 	nullpo_retr(0, sd);
 

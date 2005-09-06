@@ -636,7 +636,7 @@ int pc_authok(int id,struct mmo_charstatus *st)
 	struct map_session_data *sd = NULL;
 	struct party *p = NULL;
 	struct guild *g = NULL;
-	int i,hate;
+	int i;
 	unsigned long tick = gettick();
 
 	sd = map_id2sd(id);

@@ -3,7 +3,9 @@
 #include "ranking.h"
 #include "nullpo.h"
 #include "clif.h"
+#include "pc.h"
 #include <stdlib.h>
+#include <string.h>
 
 struct Ranking_Data ranking_data[MAX_RANKING][MAX_RANKER];
 
@@ -68,8 +70,6 @@ int ranking_get_id2rank(int char_id,int ranking_id)
 //PCのランキングを返す
 int ranking_get_point(struct map_session_data * sd,int ranking_id)
 {
-	int i;
-	
 	nullpo_retr(0, sd);
 	
 	//ランキング対象がない
@@ -81,8 +81,6 @@ int ranking_get_point(struct map_session_data * sd,int ranking_id)
 
 int ranking_set_point(struct map_session_data * sd,int ranking_id,int point)
 {
-	int i;
-	
 	nullpo_retr(0, sd);
 	
 	//ランキング対象がない
@@ -96,8 +94,6 @@ int ranking_set_point(struct map_session_data * sd,int ranking_id,int point)
 
 int ranking_gain_point(struct map_session_data * sd,int ranking_id,int point)
 {
-	int i;
-	
 	nullpo_retr(0, sd);
 	
 	//ランキング対象がない
@@ -129,7 +125,7 @@ int ranking_setglobalreg_all(struct map_session_data * sd)
 	
 	for(i = 0;i<MAX_RANKING;i++)
 		ranking_setglobalreg(sd,i);
-	
+		
 	return 1;
 }
 
@@ -178,7 +174,7 @@ int ranking_update(struct map_session_data * sd,int ranking_id)
 //終了時にでも
 int ranking_update_all(struct map_session_data * sd)
 {
-	int i=0,update_flag=0;
+	int i;
 	
 	nullpo_retr(0, sd);
 
@@ -202,7 +198,6 @@ int compare_ranking_data(const struct Ranking_Data *a,const struct Ranking_Data 
 
 int ranking_sort(int ranking_id)
 {
-	int i;
 	//ランキング対象がない
 	if(ranking_id<0 || MAX_RANKING <= ranking_id)
 		return 0;

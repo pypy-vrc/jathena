@@ -2369,10 +2369,7 @@ int status_get_speed(struct block_list *bl)
 			if(sc_data[SC_INCFLEE].timer!=-1)
 				speed -= speed*25/100;
 			//速度減少時は25%加算
-			if(sc_data[SC_DECREASEAGI].timer!=-1)
-				if(sc_data[SC_DEFENDER].timer != -1)//（ディフェンダー時は加算無し）
-					speed += 0;
-				else
+			if(sc_data[SC_DECREASEAGI].timer!=-1 && sc_data[SC_DEFENDER].timer == -1)//（ディフェンダー時は加算無し）
 				speed = speed*125/100;
 			//クァグマイア時は1/3加算
 			if(sc_data[SC_QUAGMIRE].timer!=-1)
