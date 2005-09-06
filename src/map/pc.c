@@ -4910,13 +4910,14 @@ int pc_damage(struct block_list *src,struct map_session_data *sd,int damage)
 	//Ž€–S‘Oˆ—
 
 	//ƒJƒCƒ[ƒ‹
-	if(sd->sc_data && sd->sc_data[SC_KAIZEL].timer!=-1)// && map[sd->bl.m].flag.gvg==0 && map[sd->bl.m].flag.pvp==0)
+	if(sd->sc_data && sd->sc_data[SC_KAIZEL].timer!=-1 && map[sd->bl.m].flag.gvg==0 && map[sd->bl.m].flag.pvp==0)
 	{
-		sd->status.hp = 1;
-		clif_skill_nodamage(&sd->bl,&sd->bl,PR_KYRIE,sd->sc_data[SC_KAIZEL].val1,1);
-		status_change_start(&sd->bl,SC_KYRIE,sd->sc_data[SC_KAIZEL].val1,0,0,0,3000,0);
+		clif_skill_nodamage(&sd->bl,&sd->bl,ALL_RESURRECTION,4,1);
+		sd->status.hp = sd->status.max_hp*sd->sc_data[SC_KAIZEL].val1*10/100;
+		clif_updatestatus(sd,SP_HP);
 		status_change_end(&sd->bl,SC_KAIZEL,-1);
-			clif_updatestatus(sd,SP_HP);
+		clif_skill_nodamage(&sd->bl,&sd->bl,PR_KYRIE,sd->sc_data[SC_KAIZEL].val1,1);
+		status_change_start(&sd->bl,SC_KYRIE,sd->sc_data[SC_KAIZEL].val1,0,0,0,2000,0);
 		return 0;
 	}
 

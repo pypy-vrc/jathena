@@ -3451,7 +3451,6 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		if(sd)
 		{
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			//clif_misceffect(&sd->bl,);
 			skill_am_twilight1(sd);
 		}
 		break;
@@ -3459,7 +3458,6 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		if(sd)
 		{
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			//clif_misceffect(&sd->bl,);
 			skill_am_twilight2(sd);
 		}
 		break;
@@ -3467,7 +3465,6 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		if(sd)
 		{
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			//clif_misceffect(&sd->bl,);
 			skill_am_twilight3(sd);
 		}
 		break;
@@ -4044,10 +4041,15 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case AM_POTIONPITCHER:		/* ポーションピッチャー */
 		{
 			struct block_list tbl;
+			int lv_per = 0;
 			int i,x,hp = 0,sp = 0;
 			if(sd) {
 				x = skilllv%11 - 1;
 				i = pc_search_inventory(sd,skill_db[skillid].itemid[x]);
+				
+				if(sd->sc_data[SC_ALCHEMIST].timer!=-1)
+					lv_per = sd->status.base_level/10 * 10;
+					
 				if(i < 0 || skill_db[skillid].itemid[x] <= 0) {
 					clif_skill_fail(sd,skillid,0,0);
 					map_freeblock_unlock();
@@ -4066,21 +4068,21 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 				sd->state.potionpitcher_flag = 0;
 				if(sd->potion_per_hp > 0 || sd->potion_per_sp > 0) {
 					hp = status_get_max_hp(bl) * sd->potion_per_hp / 100;
-					hp = hp * (100 + pc_checkskill(sd,AM_POTIONPITCHER)*10 + pc_checkskill(sd,AM_LEARNINGPOTION)*5)/100;
+					hp = hp * (100 + pc_checkskill(sd,AM_POTIONPITCHER)*10 + pc_checkskill(sd,AM_LEARNINGPOTION)*5)/100 + lv_per;
 					if(dstsd) {
 						sp = dstsd->status.max_sp * sd->potion_per_sp / 100;
-						sp = sp * (100 + pc_checkskill(sd,AM_POTIONPITCHER) + pc_checkskill(sd,AM_LEARNINGPOTION)*5)/100;
+						sp = sp * (100 + pc_checkskill(sd,AM_POTIONPITCHER) + pc_checkskill(sd,AM_LEARNINGPOTION)*5)/100 + lv_per;
 					}
 				}
 				else {
 					if(sd->potion_hp > 0) {
-						hp = sd->potion_hp * (100 + pc_checkskill(sd,AM_POTIONPITCHER)*10 + pc_checkskill(sd,AM_LEARNINGPOTION)*5)/100;
+						hp = sd->potion_hp * (100 + pc_checkskill(sd,AM_POTIONPITCHER)*10 + pc_checkskill(sd,AM_LEARNINGPOTION)*5)/100 + lv_per;
 						hp = hp * (100 + (status_get_vit(bl)<<1)) / 100;
 						if(dstsd)
 							hp = hp * (100 + pc_checkskill(dstsd,SM_RECOVERY)*10) / 100;
 					}
 					if(sd->potion_sp > 0) {
-						sp = sd->potion_sp * (100 + pc_checkskill(sd,AM_POTIONPITCHER) + pc_checkskill(sd,AM_LEARNINGPOTION)*5)/100;
+						sp = sd->potion_sp * (100 + pc_checkskill(sd,AM_POTIONPITCHER) + pc_checkskill(sd,AM_LEARNINGPOTION)*5)/100 + lv_per;
 						sp = sp * (100 + (status_get_int(bl)<<1)) / 100;
 						if(dstsd)
 							sp = sp * (100 + pc_checkskill(dstsd,MG_SRECOVERY)*10) / 100;
@@ -7671,6 +7673,8 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 	case AM_TWILIGHT2:
 		{
 			int f=0;
+			if(!battle_config.twilight_party_check)
+				f=1;
 			if(sd->status.party_id>0 && sd->sc_data[SC_ALCHEMIST].timer!=-1)
 			{
 				struct party *pt = party_search(sd->status.party_id);
@@ -7699,6 +7703,8 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 	case AM_TWILIGHT3:
 		{
 			int f=0;
+			if(!battle_config.twilight_party_check)
+				f=1;
 			if(sd->status.party_id && sd->sc_data[SC_ALCHEMIST].timer!=-1)
 			{
 				struct party *pt = party_search(sd->status.party_id);
@@ -7722,6 +7728,13 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 				clif_skill_fail(sd,sd->skillid,0,0);
 				return 0;
 			}
+		}
+		break;
+	case AM_BERSERKPITCHER:
+		if(bl->type==BL_PC && ((struct map_session_data*)bl)->status.base_level<85)
+		{
+			clif_skill_fail(sd,sd->skillid,0,0);
+			return 0;
 		}
 		break;
 	}
@@ -9634,29 +9647,39 @@ int skill_produce_mix( struct map_session_data *sd,
 					sd->am_pharmacy_success++;
 					// +10成功したら合計ポイント+64?
 					//現在 規定成功数ごとにポイントを貰えるように設定
-					switch(sd->am_pharmacy_success)
-					{
-						case 3:
-							ranking_gain_point(sd,RK_ALCHEMIST,1);
-							ranking_setglobalreg(sd,RK_ALCHEMIST);
-							ranking_update(sd,RK_ALCHEMIST);
-							break;
-						case 5:
-							ranking_gain_point(sd,RK_ALCHEMIST,3);
-							ranking_setglobalreg(sd,RK_ALCHEMIST);
-							ranking_update(sd,RK_ALCHEMIST);
-							break;
-						case 7:
-							ranking_gain_point(sd,RK_ALCHEMIST,10);
-							ranking_setglobalreg(sd,RK_ALCHEMIST);
-							ranking_update(sd,RK_ALCHEMIST);
-							break;
-						case 10:
+					if(battle_config.alchemist_point_type){
+						if(sd->am_pharmacy_success==10){
 							ranking_gain_point(sd,RK_ALCHEMIST,50);
 							ranking_setglobalreg(sd,RK_ALCHEMIST);
 							ranking_update(sd,RK_ALCHEMIST);
 							sd->am_pharmacy_success = 0;
-							break;
+						}
+					}else{
+						switch(sd->am_pharmacy_success)
+						{
+							case 3:
+								ranking_gain_point(sd,RK_ALCHEMIST,1);
+								ranking_setglobalreg(sd,RK_ALCHEMIST);
+								ranking_update(sd,RK_ALCHEMIST);
+								break;
+							case 5:
+								ranking_gain_point(sd,RK_ALCHEMIST,3);
+								ranking_setglobalreg(sd,RK_ALCHEMIST);
+								ranking_update(sd,RK_ALCHEMIST);
+								break;
+							case 7:
+								ranking_gain_point(sd,RK_ALCHEMIST,10);
+								ranking_setglobalreg(sd,RK_ALCHEMIST);
+								ranking_update(sd,RK_ALCHEMIST);
+								break;
+							case 10:
+								ranking_gain_point(sd,RK_ALCHEMIST,50);
+								ranking_setglobalreg(sd,RK_ALCHEMIST);
+								ranking_update(sd,RK_ALCHEMIST);
+								sd->am_pharmacy_success = 0;
+								break;
+						}
+						
 					}
 				}
 				break;
@@ -9686,8 +9709,24 @@ int skill_produce_mix( struct map_session_data *sd,
 			case AM_PHARMACY:
 				clif_produceeffect(sd,3,nameid);/* 製薬失敗エフェクト */
 				clif_misceffect(&sd->bl,6); /* 他人にも失敗を通知 */
-				//スリム以外の失敗でもスリム連続成功　リセット
-				//if(nameid ==545 || nameid ==546 || nameid == 547)
+				if(battle_config.alchemist_point_type)
+				{
+					if(sd->am_pharmacy_success>=7)
+					{
+						ranking_gain_point(sd,RK_ALCHEMIST,10);
+						ranking_setglobalreg(sd,RK_ALCHEMIST);
+						ranking_update(sd,RK_ALCHEMIST);
+					}else if(sd->am_pharmacy_success>=5)
+					{
+						ranking_gain_point(sd,RK_ALCHEMIST,3);
+						ranking_setglobalreg(sd,RK_ALCHEMIST);
+						ranking_update(sd,RK_ALCHEMIST);
+					}else if(sd->am_pharmacy_success>=3){
+						ranking_gain_point(sd,RK_ALCHEMIST,1);
+						ranking_setglobalreg(sd,RK_ALCHEMIST);
+						ranking_update(sd,RK_ALCHEMIST);
+					}
+				}
 				sd->am_pharmacy_success = 0;
 				break;
 			case ASC_CDP:
@@ -9728,10 +9767,17 @@ int skill_am_twilight_sub(struct map_session_data* sd,int nameid,int make_per)
 		{
 			//連続成功数増加
 			sd->am_pharmacy_success++;
-			// +10成功したら合計ポイント+64?
-			//現在 規定成功数ごとにポイントを貰えるように設定
-			switch(sd->am_pharmacy_success)
+			if(battle_config.alchemist_point_type)
 			{
+				if(sd->am_pharmacy_success==10){
+					ranking_gain_point(sd,RK_ALCHEMIST,50);
+					ranking_setglobalreg(sd,RK_ALCHEMIST);
+					ranking_update(sd,RK_ALCHEMIST);
+					sd->am_pharmacy_success = 0;
+				}
+			}else{
+				switch(sd->am_pharmacy_success)
+				{
 				case 3:
 					ranking_gain_point(sd,RK_ALCHEMIST,1);
 					ranking_setglobalreg(sd,RK_ALCHEMIST);
@@ -9752,9 +9798,9 @@ int skill_am_twilight_sub(struct map_session_data* sd,int nameid,int make_per)
 					ranking_setglobalreg(sd,RK_ALCHEMIST);
 					ranking_update(sd,RK_ALCHEMIST);
 					sd->am_pharmacy_success = 0;
-					break;
-				
+					break;	
 				}
+			}
 		}
 		if((flag = pc_additem(sd,&tmp_item,1))) {
 			clif_additem(sd,0,0,flag);
@@ -9762,10 +9808,24 @@ int skill_am_twilight_sub(struct map_session_data* sd,int nameid,int make_per)
 		}
 	} else {
 		// 失敗
-		//clif_produceeffect(sd,3,nameid);/* 製薬失敗エフェクト */
-		//clif_misceffect(&sd->bl,6); /* 他人にも失敗を通知 */
-		//スリム以外の失敗でもスリム連続成功　リセット
-		//if(nameid ==545 || nameid ==546 || nameid == 547)
+		if(battle_config.alchemist_point_type)
+		{
+			if(sd->am_pharmacy_success>=7)
+			{
+				ranking_gain_point(sd,RK_ALCHEMIST,10);
+				ranking_setglobalreg(sd,RK_ALCHEMIST);
+				ranking_update(sd,RK_ALCHEMIST);
+			}else if(sd->am_pharmacy_success>=5)
+			{
+				ranking_gain_point(sd,RK_ALCHEMIST,3);
+				ranking_setglobalreg(sd,RK_ALCHEMIST);
+				ranking_update(sd,RK_ALCHEMIST);
+			}else if(sd->am_pharmacy_success>=3){
+				ranking_gain_point(sd,RK_ALCHEMIST,1);
+				ranking_setglobalreg(sd,RK_ALCHEMIST);
+				ranking_update(sd,RK_ALCHEMIST);
+			}
+		}
 		sd->am_pharmacy_success = 0;
 	}
 	return 1;

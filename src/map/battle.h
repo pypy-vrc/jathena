@@ -345,6 +345,8 @@ extern struct Battle_Config {
 	int tk_counter_rate_up_keeptime;
 	int allow_skill_without_day;
 	int save_hate_mob;
+	int twilight_party_check;
+	int alchemist_point_type;
 	
 	int debug_new_disp_status_icon_system;
 	

@@ -3835,7 +3835,7 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			if(sc_data[SC_ASSUMPTIO].timer!=-1)
 				status_change_end(bl,SC_ASSUMPTIO,-1);
 			//”½ŽË‰ñ”
-			if(val1 == 7) val2 = 2;
+			if(val1 >= 5) val2 = 2;
 			else val2 = 1;
 
 			break;

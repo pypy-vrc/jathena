@@ -2196,18 +2196,6 @@ static struct Damage battle_calc_pc_weapon_attack(
 			damage2 = (damage2 * (sd->atk_rate + sd->weapon_atk_rate[sd->status.weapon]))/100;
 		}
 
-		//ファイティングの計算　この位置？
-		if(pc_checkskill(sd,TK_POWER)>0 && sd->status.party_id >0)
-		{
-			int tk_power_lv = pc_checkskill(sd,TK_POWER);
-			int member_num   = party_check_same_map_member_count(sd);
-
-			if(member_num > 0)
-			{
-				tk_power_damage = damage*member_num*2*tk_power_lv/100;
-				tk_power_damage2 = damage2*member_num*2*tk_power_lv/100;
-			}
-		}
 
 		if(sd->state.arrow_atk) {
 			if(sd->arrow_atk > 0)
@@ -2245,6 +2233,20 @@ static struct Damage battle_calc_pc_weapon_attack(
 				}
 			}
 		}
+		
+		//ファイティングの計算　この位置？
+		if(pc_checkskill(sd,TK_POWER)>0 && sd->status.party_id >0)
+		{
+			int tk_power_lv = pc_checkskill(sd,TK_POWER);
+			int member_num   = party_check_same_map_member_count(sd);
+
+			if(member_num > 0)
+			{
+				tk_power_damage = damage*member_num*2*tk_power_lv/100;
+				tk_power_damage2 = damage2*member_num*2*tk_power_lv/100;
+			}
+		}
+		
 		// 状態異常中のダメージ追加でクリティカルで無効なスキル
 		if(sc_data){
 			if(sc_data[SC_OVERTHRUST].timer!=-1){	// オーバートラスト
@@ -4776,6 +4778,8 @@ int battle_config_read(const char *cfgName)
 		battle_config.allow_skill_without_day = 1;
 		battle_config.debug_new_disp_status_icon_system = 0;
 		battle_config.save_hate_mob = 0;
+		battle_config.twilight_party_check = 0;
+		battle_config.alchemist_point_type = 1;
 	}
 
 	fp=fopen(cfgName,"r");
@@ -5077,6 +5081,8 @@ int battle_config_read(const char *cfgName)
 			{ "allow_skill_without_day",			&battle_config.allow_skill_without_day				},
 			{ "debug_new_disp_status_icon_system",	&battle_config.debug_new_disp_status_icon_system	},
 			{ "save_hate_mob",						&battle_config.save_hate_mob						},
+			{ "twilight_party_check",				&battle_config.twilight_party_check					},
+			{ "alchemist_point_type",				&battle_config.alchemist_point_type					},
 		};
 
 		if(line[0] == '/' && line[1] == '/')
