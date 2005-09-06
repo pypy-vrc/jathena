@@ -107,6 +107,8 @@ int pc_isquitable(struct map_session_data *sd)
 		return 1;
 	if(sd->sc_data && sd->sc_data[SC_DANCING].timer!=-1 && sd->sc_data[SC_DANCING].val4 && (sg=(struct skill_unit_group *)sd->sc_data[SC_DANCING].val2) && sg->src_id == sd->bl.id)
 		return 1;
+	if(sd->sc_data && sd->sc_data[SC_MARIONETTE].timer!=-1)
+		return 1;
 	if(c > 0)
 		return 1;
 
@@ -3727,6 +3729,16 @@ static int pc_walk(int tid,unsigned int tick,int id,int data)
 				skill_devotion2(&sd->bl,sd->sc_data[SC_DEVOTION].val1);
 		}
 
+		/* マリオネット検査 */
+		if(sd->sc_data && sd->sc_data[SC_MARIONETTE].timer!=-1){
+			skill_marionette(&sd->bl,sd->sc_data[SC_MARIONETTE].val2);
+		}
+		
+		/* 被マリオネット検査 */
+		if(sd->sc_data && sd->sc_data[SC_MARIONETTE2].timer!=-1){
+			skill_marionette2(&sd->bl,sd->sc_data[SC_MARIONETTE2].val2);
+		}
+		
 		//ギルドスキル有効
 		pc_check_guild_skill_effective_range(sd);
 

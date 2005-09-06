@@ -512,104 +512,6 @@ int status_calc_pc(struct map_session_data* sd,int first)
 		sd->hit += skill;
 	}
 	
-	// ステータス変化による基本パラメータ補正
-	if(sd->sc_count){
-		if(sd->sc_data[SC_INCALLSTATUS].timer!=-1){
-			sd->paramb[0]+= sd->sc_data[SC_INCALLSTATUS].val1;
-			sd->paramb[1]+= sd->sc_data[SC_INCALLSTATUS].val1;
-			sd->paramb[2]+= sd->sc_data[SC_INCALLSTATUS].val1;
-			sd->paramb[3]+= sd->sc_data[SC_INCALLSTATUS].val1;
-			sd->paramb[4]+= sd->sc_data[SC_INCALLSTATUS].val1;
-			sd->paramb[5]+= sd->sc_data[SC_INCALLSTATUS].val1;
-		}
-		
-		//上位一次職の魂
-		//謎なのでLV/10増加
-		if(sd->sc_data[SC_HIGH].timer!=-1)
-		{
-			sd->paramb[0]+= sd->status.base_level/10;
-			sd->paramb[1]+= sd->status.base_level/10;
-			sd->paramb[2]+= sd->status.base_level/10;
-			sd->paramb[3]+= sd->status.base_level/10;
-			sd->paramb[4]+= sd->status.base_level/10;
-			sd->paramb[5]+= sd->status.base_level/10;
-		}
-		
-		//食事用
-		if(sd->sc_data[SC_MEAL_INCSTR].timer!=-1)
-			sd->paramb[0]+= sd->sc_data[SC_MEAL_INCSTR].val1;
-		if(sd->sc_data[SC_MEAL_INCAGI].timer!=-1)
-			sd->paramb[1]+= sd->sc_data[SC_MEAL_INCAGI].val1;
-		if(sd->sc_data[SC_MEAL_INCVIT].timer!=-1)
-			sd->paramb[2]+= sd->sc_data[SC_MEAL_INCVIT].val1;
-		if(sd->sc_data[SC_MEAL_INCINT].timer!=-1)
-			sd->paramb[3]+= sd->sc_data[SC_MEAL_INCINT].val1;
-		if(sd->sc_data[SC_MEAL_INCDEX].timer!=-1)
-			sd->paramb[4]+= sd->sc_data[SC_MEAL_INCDEX].val1;
-		if(sd->sc_data[SC_MEAL_INCLUK].timer!=-1)
-			sd->paramb[5]+= sd->sc_data[SC_MEAL_INCLUK].val1;
-			
-		//駆け足のSTR +10
-		if(sd->sc_data[SC_SPURT].timer!=-1)
-			sd->paramb[0] += 10;
-			
-		//ギルドスキル 臨戦態勢
-		if(sd->sc_data[SC_BATTLEORDER].timer!=-1){
-			sd->paramb[0]+= 5*sd->sc_data[SC_BATTLEORDER].val1;
-			sd->paramb[3]+= 5*sd->sc_data[SC_BATTLEORDER].val1;
-			sd->paramb[4]+= 5*sd->sc_data[SC_BATTLEORDER].val1;
-		}
-		
-		if(sd->sc_data[SC_CHASEWALK_STR].timer!=-1)
-			sd->paramb[0] += sd->sc_data[SC_CHASEWALK_STR].val1;
-			
-		if(sd->sc_data[SC_CONCENTRATE].timer!=-1 && sd->sc_data[SC_QUAGMIRE].timer == -1){	// 集中力向上
-			sd->paramb[1]+= (sd->status.agi+sd->paramb[1]+sd->parame[1]-sd->paramcard[1])*(2+sd->sc_data[SC_CONCENTRATE].val1)/100;
-			sd->paramb[4]+= (sd->status.dex+sd->paramb[4]+sd->parame[4]-sd->paramcard[4])*(2+sd->sc_data[SC_CONCENTRATE].val1)/100;
-		}
-		if(sd->sc_data[SC_INCREASEAGI].timer!=-1) {	// 速度増加
-			sd->paramb[1]+= 2+sd->sc_data[SC_INCREASEAGI].val1;
-			sd->speed -= sd->speed *25/100;
-		}
-		if(sd->sc_data[SC_DECREASEAGI].timer!=-1){	// 速度減少(agiはbattle.cで)
-			sd->paramb[1]-= 2+sd->sc_data[SC_DECREASEAGI].val1;
-			if(sd->sc_data[SC_DEFENDER].timer != -1)//ディフェンダー時は速度低下しない
-				sd->speed += 0;
-			else
-				sd->speed = sd->speed *125/100;
-		}
-		if(sd->sc_data[SC_BLESSING].timer!=-1){	// ブレッシング
-			sd->paramb[0]+= sd->sc_data[SC_BLESSING].val1;
-			sd->paramb[3]+= sd->sc_data[SC_BLESSING].val1;
-			sd->paramb[4]+= sd->sc_data[SC_BLESSING].val1;
-		}
-		if(sd->sc_data[SC_GLORIA].timer!=-1)	// グロリア
-			sd->paramb[5]+= 30;
-		if(sd->sc_data[SC_LOUD].timer!=-1 && sd->sc_data[SC_QUAGMIRE].timer == -1)	// ラウドボイス
-			sd->paramb[0]+= 4;
-		if(sd->sc_data[SC_QUAGMIRE].timer!=-1){	// クァグマイア
-			short subagi = 0;
-			short subdex = 0;
-			subagi = (sd->status.agi/2 < sd->sc_data[SC_QUAGMIRE].val1*10) ? sd->status.agi/2 : sd->sc_data[SC_QUAGMIRE].val1*10;
-			subdex = (sd->status.dex/2 < sd->sc_data[SC_QUAGMIRE].val1*10) ? sd->status.dex/2 : sd->sc_data[SC_QUAGMIRE].val1*10;
-			if(map[sd->bl.m].flag.pvp || map[sd->bl.m].flag.gvg){
-				subagi/= 2;
-				subdex/= 2;
-			}
-			sd->speed = sd->speed*4/3;
-			sd->paramb[1]-= subagi;
-			sd->paramb[4]-= subdex;
-		}
-		if(sd->sc_data[SC_TRUESIGHT].timer!=-1){	// トゥルーサイト
-			sd->paramb[0]+= 5;
-			sd->paramb[1]+= 5;
-			sd->paramb[2]+= 5;
-			sd->paramb[3]+= 5;
-			sd->paramb[4]+= 5;
-			sd->paramb[5]+= 5;
-		}
-	}
-
 	//1度も死んでないJob70スパノビに+10
 	if(s_class.job == 23 && (sd->die_counter == 0 || sd->repeal_die_counter == 1)&& sd->status.job_level >= 70){
 		sd->paramb[0]+= 10;
@@ -680,6 +582,171 @@ int status_calc_pc(struct map_session_data* sd,int first)
 		sd->under_the_influence_of_the_guild_skill = 0;
 	}
 	
+	// ステータス変化による基本パラメータ補正
+	if(sd->sc_count){
+		if(sd->sc_data[SC_INCALLSTATUS].timer!=-1){
+			sd->paramb[0]+= sd->sc_data[SC_INCALLSTATUS].val1;
+			sd->paramb[1]+= sd->sc_data[SC_INCALLSTATUS].val1;
+			sd->paramb[2]+= sd->sc_data[SC_INCALLSTATUS].val1;
+			sd->paramb[3]+= sd->sc_data[SC_INCALLSTATUS].val1;
+			sd->paramb[4]+= sd->sc_data[SC_INCALLSTATUS].val1;
+			sd->paramb[5]+= sd->sc_data[SC_INCALLSTATUS].val1;
+		}
+		
+		//上位一次職の魂
+		//謎なのでLV/10増加
+		if(sd->sc_data[SC_HIGH].timer!=-1)
+		{
+			sd->paramb[0]+= sd->status.base_level/10;
+			sd->paramb[1]+= sd->status.base_level/10;
+			sd->paramb[2]+= sd->status.base_level/10;
+			sd->paramb[3]+= sd->status.base_level/10;
+			sd->paramb[4]+= sd->status.base_level/10;
+			sd->paramb[5]+= sd->status.base_level/10;
+		}
+		
+		//食事用
+		if(sd->sc_data[SC_MEAL_INCSTR].timer!=-1)
+			sd->paramb[0]+= sd->sc_data[SC_MEAL_INCSTR].val1;
+		if(sd->sc_data[SC_MEAL_INCAGI].timer!=-1)
+			sd->paramb[1]+= sd->sc_data[SC_MEAL_INCAGI].val1;
+		if(sd->sc_data[SC_MEAL_INCVIT].timer!=-1)
+			sd->paramb[2]+= sd->sc_data[SC_MEAL_INCVIT].val1;
+		if(sd->sc_data[SC_MEAL_INCINT].timer!=-1)
+			sd->paramb[3]+= sd->sc_data[SC_MEAL_INCINT].val1;
+		if(sd->sc_data[SC_MEAL_INCDEX].timer!=-1)
+			sd->paramb[4]+= sd->sc_data[SC_MEAL_INCDEX].val1;
+		if(sd->sc_data[SC_MEAL_INCLUK].timer!=-1)
+			sd->paramb[5]+= sd->sc_data[SC_MEAL_INCLUK].val1;
+			
+		//駆け足のSTR +10
+		if(sd->sc_data[SC_SPURT].timer!=-1)
+			sd->paramb[0] += 10;
+		
+		//ギルドスキル 臨戦態勢
+		if(sd->sc_data[SC_BATTLEORDER].timer!=-1){
+			sd->paramb[0]+= 5*sd->sc_data[SC_BATTLEORDER].val1;
+			sd->paramb[3]+= 5*sd->sc_data[SC_BATTLEORDER].val1;
+			sd->paramb[4]+= 5*sd->sc_data[SC_BATTLEORDER].val1;
+		}
+		
+		if(sd->sc_data[SC_CHASEWALK_STR].timer!=-1)
+			sd->paramb[0] += sd->sc_data[SC_CHASEWALK_STR].val1;
+			
+		if(sd->sc_data[SC_CONCENTRATE].timer!=-1 && sd->sc_data[SC_QUAGMIRE].timer == -1){	// 集中力向上
+			sd->paramb[1]+= (sd->status.agi+sd->paramb[1]+sd->parame[1]-sd->paramcard[1])*(2+sd->sc_data[SC_CONCENTRATE].val1)/100;
+			sd->paramb[4]+= (sd->status.dex+sd->paramb[4]+sd->parame[4]-sd->paramcard[4])*(2+sd->sc_data[SC_CONCENTRATE].val1)/100;
+		}
+		if(sd->sc_data[SC_INCREASEAGI].timer!=-1) {	// 速度増加
+			sd->paramb[1]+= 2+sd->sc_data[SC_INCREASEAGI].val1;
+			sd->speed -= sd->speed *25/100;
+		}
+		if(sd->sc_data[SC_DECREASEAGI].timer!=-1){	// 速度減少(agiはbattle.cで)
+			sd->paramb[1]-= 2+sd->sc_data[SC_DECREASEAGI].val1;
+			if(sd->sc_data[SC_DEFENDER].timer != -1)//ディフェンダー時は速度低下しない
+				sd->speed += 0;
+			else
+				sd->speed = sd->speed *125/100;
+		}
+		if(sd->sc_data[SC_BLESSING].timer!=-1){	// ブレッシング
+			sd->paramb[0]+= sd->sc_data[SC_BLESSING].val1;
+			sd->paramb[3]+= sd->sc_data[SC_BLESSING].val1;
+			sd->paramb[4]+= sd->sc_data[SC_BLESSING].val1;
+		}
+		if(sd->sc_data[SC_GLORIA].timer!=-1)	// グロリア
+			sd->paramb[5]+= 30;
+		if(sd->sc_data[SC_LOUD].timer!=-1 && sd->sc_data[SC_QUAGMIRE].timer == -1)	// ラウドボイス
+			sd->paramb[0]+= 4;
+		if(sd->sc_data[SC_QUAGMIRE].timer!=-1){	// クァグマイア
+			short subagi = 0;
+			short subdex = 0;
+			subagi = (sd->status.agi/2 < sd->sc_data[SC_QUAGMIRE].val1*10) ? sd->status.agi/2 : sd->sc_data[SC_QUAGMIRE].val1*10;
+			subdex = (sd->status.dex/2 < sd->sc_data[SC_QUAGMIRE].val1*10) ? sd->status.dex/2 : sd->sc_data[SC_QUAGMIRE].val1*10;
+			if(map[sd->bl.m].flag.pvp || map[sd->bl.m].flag.gvg){
+				subagi/= 2;
+				subdex/= 2;
+			}
+			sd->speed = sd->speed*4/3;
+			sd->paramb[1]-= subagi;
+			sd->paramb[4]-= subdex;
+		}
+		if(sd->sc_data[SC_TRUESIGHT].timer!=-1){	// トゥルーサイト
+			sd->paramb[0]+= 5;
+			sd->paramb[1]+= 5;
+			sd->paramb[2]+= 5;
+			sd->paramb[3]+= 5;
+			sd->paramb[4]+= 5;
+			sd->paramb[5]+= 5;
+		}
+	
+		//
+		if(sd->sc_data[SC_MARIONETTE].timer!=-1){
+			sd->paramb[0]-= sd->status.str/2;
+			sd->paramb[1]-= sd->status.agi/2;
+			sd->paramb[2]-= sd->status.vit/2;
+			sd->paramb[3]-= sd->status.int_/2;
+			sd->paramb[4]-= sd->status.dex/2;
+			sd->paramb[5]-= sd->status.luk/2;
+		}
+		//
+		if(sd->sc_data[SC_MARIONETTE2].timer!=-1)
+		{
+			struct map_session_data* ssd = map_id2sd(sd->sc_data[SC_MARIONETTE2].val2);
+			if(ssd){
+				if(battle_config.marionette_type){
+					sd->paramb[0]+= ssd->status.str/2;
+					sd->paramb[1]+= ssd->status.agi/2;
+					sd->paramb[2]+= ssd->status.vit/2;
+					sd->paramb[3]+= ssd->status.int_/2;
+					sd->paramb[4]+= ssd->status.dex/2;
+					sd->paramb[5]+= ssd->status.luk/2;
+				}else{
+					//str
+					if(sd->paramb[0]+sd->status.str<99)
+					{
+						sd->paramb[0]+= ssd->status.str/2;
+						if(sd->paramb[0]+sd->status.str>99)
+							sd->paramb[0] = 99-sd->status.str;
+					}
+					//agi
+					if(sd->paramb[1]+sd->status.agi<99)
+					{
+						sd->paramb[1]+= ssd->status.agi/2;
+						if(sd->paramb[1]+sd->status.agi>99)
+							sd->paramb[1] = 99-sd->status.agi;
+					}
+					//str
+					if(sd->paramb[2]+sd->status.vit<99)
+					{
+						sd->paramb[2]+= ssd->status.vit/2;
+						if(sd->paramb[2]+sd->status.vit>99)
+							sd->paramb[2] = 99-sd->status.vit;
+					}
+					//int
+					if(sd->paramb[3]+sd->status.int_<99)
+					{
+						sd->paramb[3]+= ssd->status.int_/2;
+						if(sd->paramb[3]+sd->status.int_>99)
+							sd->paramb[3] = 99-sd->status.int_;
+					}
+					//dex
+					if(sd->paramb[4]+sd->status.dex<99)
+					{
+					sd->paramb[4]+= ssd->status.dex/2;
+						if(sd->paramb[4]+sd->status.dex>99)
+							sd->paramb[4] = 99-sd->status.dex;
+					}
+					//luk
+					if(sd->paramb[5]+sd->status.luk<99)
+					{
+						sd->paramb[5]+= ssd->status.luk/2;
+						if(sd->paramb[5]+sd->status.luk>99)
+							sd->paramb[5] = 99-sd->status.luk;
+					}
+				}
+			}
+		}
+	}
 	
 	sd->paramc[0]=sd->status.str+sd->paramb[0]+sd->parame[0];
 	sd->paramc[1]=sd->status.agi+sd->paramb[1]+sd->parame[1];
@@ -687,6 +754,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	sd->paramc[3]=sd->status.int_+sd->paramb[3]+sd->parame[3];
 	sd->paramc[4]=sd->status.dex+sd->paramb[4]+sd->parame[4];
 	sd->paramc[5]=sd->status.luk+sd->paramb[5]+sd->parame[5];
+	
 	for(i=0;i<6;i++)
 		if(sd->paramc[i] < 0) sd->paramc[i] = 0;
 
@@ -3368,9 +3436,6 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_UGLYDANCE:			/* 自分勝手なダンス */
 			val2 = 10;
 			break;
-		case SC_HUMMING:			/* ハミング */
-			calc_flag = 1;
-			break;
 		case SC_DONTFORGETME:		/* 私を忘れないで */
 			calc_flag = 1;
 			if(sc_data[SC_INCREASEAGI].timer!=-1 )	/* 速度上昇解除 */
@@ -3394,56 +3459,19 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			if(sc_data[SC_ONEHAND].timer!=-1 )
 				status_change_end(bl,SC_ONEHAND,-1);
 			break;
-		case SC_FORTUNE:			/* 幸運のキス */
-			calc_flag = 1;
-			break;
-		case SC_SERVICE4U:			/* サービスフォーユー */
-			calc_flag = 1;
-			break;
 		//移動？
-		case SC_WHISTLE_:			/* 口笛 */
-			calc_flag = 1;
-			break;
-		case SC_ASSNCROS_:			/* 夕陽のアサシンクロス */
-			calc_flag = 1;
-			break;
 		case SC_POEMBRAGI_:			/* ブラギの詩 */
 			break;
+		case SC_HUMMING:			/* ハミング */
+		case SC_FORTUNE:			/* 幸運のキス */
+		case SC_SERVICE4U:			/* サービスフォーユー */
+		case SC_WHISTLE_:			/* 口笛 */
+		case SC_ASSNCROS_:			/* 夕陽のアサシンクロス */
 		case SC_APPLEIDUN_:			/* イドゥンの林檎 */
-			calc_flag = 1;
-			break;
 		case SC_HUMMING_:			/* ハミング */
-		puts("SC_HUMMING_");
-			calc_flag = 1;
-			break;
 		case SC_DONTFORGETME_:		/* 私を忘れないで */
-			calc_flag = 1;
-			/*
-			if(sc_data[SC_INCREASEAGI].timer!=-1 )	// 速度上昇解除 
-				status_change_end(bl,SC_INCREASEAGI,-1);
-			if(sc_data[SC_TWOHANDQUICKEN].timer!=-1 )
-				status_change_end(bl,SC_TWOHANDQUICKEN,-1);
-			if(sc_data[SC_SPEARSQUICKEN].timer!=-1 )
-				status_change_end(bl,SC_SPEARSQUICKEN,-1);
-			if(sc_data[SC_ADRENALINE].timer!=-1 )
-				status_change_end(bl,SC_ADRENALINE,-1);
-			if(sc_data[SC_ASSNCROS].timer!=-1 )
-				status_change_end(bl,SC_ASSNCROS,-1);
-			if(sc_data[SC_TRUESIGHT].timer!=-1 )	// トゥルーサイト
-				status_change_end(bl,SC_TRUESIGHT,-1);
-			if(sc_data[SC_WINDWALK].timer!=-1 )	// ウインドウォーク 
-				status_change_end(bl,SC_WINDWALK,-1);
-			if(sc_data[SC_CARTBOOST].timer!=-1 )	// カートブースト
-				status_change_end(bl,SC_CARTBOOST,-1);
-			if(sc_data[SC_ONEHAND].timer!=-1 )
-				status_change_end(bl,SC_ONEHAND,-1);
-				*/
-			break;
 		case SC_FORTUNE_:			/* 幸運のキス */
-			calc_flag = 1;
-			break;
-		case SC_SERVICE4U_:			/* サービスフォーユー */
-			calc_flag = 1;
+		case SC_SERVICE4U_:		/* サービスフォーユー */
 			break;
 		case SC_DANCING:			/* ダンス/演奏中 */
 			calc_flag = 1;
@@ -3726,6 +3754,8 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			*opt3 |= 2048;
 			break;
 		case SC_MARIONETTE:		/* マリオネットコントロール */
+		case SC_MARIONETTE2:		/* マリオネットコントロール */
+			calc_flag = 1;
 			*opt3 |= 1024;
 			break;
 
@@ -4398,6 +4428,8 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_DONTFORGETME_:		/* 私を忘れないで */
 			case SC_FORTUNE_:			/* 幸運のキス */
 			case SC_SERVICE4U_:			/* サービスフォーユー */
+			case SC_MARIONETTE:		/* マリオネットコントロール */
+			case SC_MARIONETTE2:		/* マリオネットコントロール */
 				calc_flag = 1;
 				break;
 			case SC_EDP:		// エフェクトが実装されたら削除する
@@ -4601,6 +4633,7 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			*opt3 &= ~128;
 			break;
 		case SC_MARIONETTE:		/* マリオネットコントロール */
+		case SC_MARIONETTE2:		/* マリオネットコントロール */
 			*opt3 &= ~1024;
 			break;
 		case SC_ASSUMPTIO:		/* アスムプティオ */
@@ -4885,6 +4918,8 @@ int status_change_timer(int tid, unsigned int tick, int id, int data)
 	case SC_DODGE:
 	case SC_AUTOBERSERK:
 	case SC_RUN:
+	case SC_MARIONETTE:
+	case SC_MARIONETTE2:
 		sc_data[type].timer=add_timer( 1000*600+tick,status_change_timer, bl->id, data );
 		return 0;
 	case SC_DEVIL:

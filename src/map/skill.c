@@ -323,7 +323,7 @@ int StatusIconChangeTable[] = {
 /* 110- */
 	SI_ASSUMPTIO,SI_BLANK,SI_BLANK,SI_MAGICPOWER,SI_EDP,SI_TRUESIGHT,SI_WINDWALK,SI_MELTDOWN,SI_CARTBOOST,SI_CHASEWALK,
 /* 120- */
-	SI_REJECTSWORD,SI_MARIONETTE,SI_BLANK,SI_BLANK,SI_HEADCRUSH,SI_JOINTBEAT,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
+	SI_REJECTSWORD,SI_MARIONETTE,SI_MARIONETTE2,SI_BLANK,SI_HEADCRUSH,SI_JOINTBEAT,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 /* 130- */
 	SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,SI_BLANK,
 /* 140- */
@@ -3174,7 +3174,6 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case SA_FROSTWEAPON:	/* フロストウェポン */
 	case SA_LIGHTNINGLOADER:/* ライトニングローダー */
 	case SA_SEISMICWEAPON:	/* サイズミックウェポン */
-	case CG_MARIONETTE:		/* マリオネットコントロール */
 		if( dstsd && dstsd->special_state.no_magic_damage ){
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}else{
@@ -3377,6 +3376,29 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		}
 		break;
 
+	case CG_MARIONETTE:		/* マリオネットコントロール */
+		if(sd && dstsd)
+		{
+			//自分または相手がマリオネット状態なら失敗
+			if(sd->sc_data[SC_MARIONETTE].timer!=-1 || sd->sc_data[SC_MARIONETTE2].timer!=-1)
+			{
+				clif_skill_fail(sd,skillid,0,0);
+				map_freeblock_unlock();
+				return 0;
+			}
+			
+			if(dstsd->sc_data && (dstsd->sc_data[SC_MARIONETTE].timer!=-1 || dstsd->sc_data[SC_MARIONETTE2].timer!=-1))
+			{
+				clif_skill_fail(sd,skillid,0,0);
+				map_freeblock_unlock();
+				return 0;
+			}
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			clif_marionette(sd,bl->id);
+			status_change_start(src,SC_MARIONETTE,1,bl->id,0,0,60000,0 );
+			status_change_start(bl,SC_MARIONETTE2,1,src->id,0,0,60000,0 );
+		}
+		break;
 	case CR_DEVOTION:		/* ディボーション */
 		if(sd && dstsd){
 			//転生や養子の場合の元の職業を算出する
@@ -7412,6 +7434,7 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 	int forcecast=0;
 	struct block_list *bl;
 	struct status_change *sc_data;
+	struct status_change *tsc_data;
 	tick=gettick();
 
 	nullpo_retr(0, sd);
@@ -7426,7 +7449,7 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 		return 0;
 
 	sc_data=sd->sc_data;
-
+	tsc_data = status_get_sc_data(bl);
 	/* 沈黙や異常（ただし、グリムなどの判定をする） */
 	if( sd->opt1>0 )
 		return 0;
@@ -7531,9 +7554,38 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 	switch(skill_num)
 	{
 		case SL_SMA://エスマ
-			if(sd && sd->sc_data[SC_SMA].timer==-1){//エスマ詠唱可能状態
+			if(sd->sc_data[SC_SMA].timer==-1){//エスマ詠唱可能状態
 				clif_skill_fail(sd,skill_num,0,0);
 				return 0;
+			}
+			break;
+		case CG_MARIONETTE://マリオネット
+			{
+				//自分がマリオネットなら止める
+				if(sd->sc_data[SC_MARIONETTE].timer!=-1)
+				{
+					if(tsc_data[SC_MARIONETTE2].timer!=-1)
+					{
+						status_change_end(bl,SC_MARIONETTE2,-1);
+					}
+					status_change_end(&sd->bl,SC_MARIONETTE,-1);
+					clif_marionette(sd,0);
+					return 0;
+				}
+				
+				//自分または相手がマリオネット状態なら失敗
+				if(sd->sc_data[SC_MARIONETTE2].timer!=-1)
+				{
+					clif_skill_fail(sd,skill_num,0,0);
+					return 0;
+				}
+				if(bl->type!=BL_PC)
+					return 0;
+				if(tsc_data && (tsc_data[SC_MARIONETTE].timer!=-1 || tsc_data[SC_MARIONETTE2].timer!=-1))
+				{
+					clif_skill_fail(sd,skill_num,0,0);
+					return 0;
+				}
 			}
 			break;
 	}
@@ -8172,6 +8224,7 @@ void skill_devotion(struct map_session_data *md,int target)
 		}
 	}
 }
+
 void skill_devotion2(struct block_list *bl,int crusader)
 {
 	// 被ディボーションが歩いた時の距離チェック
@@ -8221,6 +8274,51 @@ void skill_devotion_end(struct map_session_data *md,struct map_session_data *sd,
 		clif_devotion(md,sd->bl.id);
 	}
 }
+
+int skill_marionette(struct block_list *bl,int target)
+{
+	//マリオネット主が歩いた時の距離チェック
+	struct map_session_data *sd;
+	struct map_session_data *tsd;
+	int n,r=0;
+
+	nullpo_retr(1, bl);
+	sd = (struct map_session_data *)bl;
+
+	if ((tsd = map_id2sd(target))==NULL)
+	{
+		if(sd->sc_data[SC_MARIONETTE].timer!=-1){
+			status_change_end(&sd->bl,SC_MARIONETTE,-1);
+			clif_devotion(sd,0);
+		}
+		return 1;
+	}
+	else
+		r = distance(sd->bl.x,sd->bl.y,tsd->bl.x,tsd->bl.y);
+
+	if(7 < r){	// 許容範囲を超えてた
+		status_change_end(&sd->bl,SC_MARIONETTE,-1);
+		status_change_end(&tsd->bl,SC_MARIONETTE2,-1);
+		clif_devotion(sd,0);
+		//clif_devotion(sd,sd->sc_data[SC_MARIONETTE].val2);
+		return 1;
+	}
+	return 0;
+}
+
+void skill_marionette2(struct block_list *bl,int src)
+{
+	// 被マリオネットが歩いた時の距離チェック
+	struct map_session_data *sd = map_id2sd(src);
+
+	nullpo_retv(bl);
+
+	if(sd)
+		 skill_marionette(&sd->bl,bl->id);
+	else
+		status_change_end(&bl,SC_MARIONETTE2,-1);
+}
+
 /*==========================================
  * オートスペル
  *------------------------------------------

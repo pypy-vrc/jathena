@@ -201,6 +201,8 @@ void skill_devotion(struct map_session_data *md,int target);
 void skill_devotion2(struct block_list *bl,int crusader);
 int skill_devotion3(struct block_list *bl,int target);
 void skill_devotion_end(struct map_session_data *md,struct map_session_data *sd,int target);
+int skill_marionette(struct block_list *bl,int target);
+void skill_marionette2(struct block_list *bl,int src);
 int skill_tarot_card_of_fate(struct block_list *src,struct block_list *target,int skillid,int skilllv,int tick,int flag,int wheel);
 
 #define skill_calc_heal(bl,skill_lv) (( status_get_lv(bl)+status_get_int(bl) )/8 *(4+ skill_lv*8))
@@ -321,7 +323,8 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_CARTBOOST			=118,	/* カートブースト */
 	SC_CHASEWALK			=119,	/* チェイスウォーク */
 	SC_REJECTSWORD			=120,	/* リジェクトソード */
-	SC_MARIONETTE			=121,	/* マリオネットコントロール */
+	SC_MARIONETTE			=121,	/* マリオネットコントロール */ //自分用
+	SC_MARIONETTE2			=122,	/* マリオネットコントロール */ //ターゲット用
 	SC_HEADCRUSH			=124,	/* ヘッドクラッシュ */
 	SC_JOINTBEAT			=125,	/* ジョイントビート */
 
@@ -1145,6 +1148,7 @@ enum {
 	SI_CHASEWALK			=119,	/* チェイスウォーク */
 	SI_REJECTSWORD			=120,	/* リジェクトソード */
 	SI_MARIONETTE			=121,	/* マリオネットコントロール */
+	SI_MARIONETTE2			=122,	/* マリオネットコントロール2 */
 	SI_MOONLIT 				=123,	//月明かりの下で
 	SI_HEADCRUSH			=124,	/* ヘッドクラッシュ */
 	SI_JOINTBEAT			=125,	/* ジョイントビート */

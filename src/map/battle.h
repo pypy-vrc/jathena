@@ -347,6 +347,7 @@ extern struct Battle_Config {
 	int save_hate_mob;
 	int twilight_party_check;
 	int alchemist_point_type;
+	int marionette_type;
 	
 	int debug_new_disp_status_icon_system;
 	

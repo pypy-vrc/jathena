@@ -4824,6 +4824,7 @@ int battle_config_read(const char *cfgName)
 		battle_config.save_hate_mob = 0;
 		battle_config.twilight_party_check = 0;
 		battle_config.alchemist_point_type = 1;
+		battle_config.marionette_type	   = 0;
 	}
 
 	fp=fopen(cfgName,"r");
@@ -5127,6 +5128,7 @@ int battle_config_read(const char *cfgName)
 			{ "save_hate_mob",						&battle_config.save_hate_mob						},
 			{ "twilight_party_check",				&battle_config.twilight_party_check					},
 			{ "alchemist_point_type",				&battle_config.alchemist_point_type					},
+			{ "marionette_type",					&battle_config.marionette_type						},
 		};
 
 		if(line[0] == '/' && line[1] == '/')

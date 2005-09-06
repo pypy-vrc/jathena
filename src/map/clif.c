@@ -6036,6 +6036,29 @@ int clif_devotion(struct map_session_data *sd,int target)
 }
 
 /*==========================================
+ * マリオネットの赤い糸
+ *------------------------------------------
+ */
+int clif_marionette(struct map_session_data *sd,int target)
+{
+	unsigned char buf[56];
+	int n;
+
+	nullpo_retr(0, sd);
+
+	WBUFW(buf,0)=0x1cf;
+	WBUFL(buf,2)=sd->bl.id;
+//	WBUFL(buf,6)=target;
+	WBUFL(buf,6+4)=target;
+//		WBUFL(buf,10+4*n)=0;
+	WBUFB(buf,26)=8;
+	WBUFB(buf,27)=0;
+
+	clif_send(buf,packet_db[0x1cf].len,&sd->bl,AREA);
+	return 0;
+}
+
+/*==========================================
  * 氣球
  *------------------------------------------
  */
