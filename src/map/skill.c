@@ -980,6 +980,11 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 		break;
 	case CG_TAROTCARD:
 		break;
+	case TK_DOWNKICK://下段蹴り
+			status_change_start(bl,SC_STAN,7,0,0,0,3000,0);
+		break;
+
+
 	}
 //	if(sd && skillid != MC_CARTREVOLUTION && attack_type&BF_WEAPON){	/* カードによる追加効果 */
 	if(sd && attack_type&BF_WEAPON){	/* カードによる追加効果 */
@@ -1714,9 +1719,7 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 		status_change_end(bl,SC_AUTOCOUNTER,-1);
 	}
 	/* ダブルキャスティング */
-	if (( skillid == MG_COLDBOLT || skillid == MG_FROSTDIVER ||
-		skillid == MG_FIREBOLT || skillid == MG_FIREBALL ||
-		skillid == MG_LIGHTNINGBOLT) &&
+	if (( skillid == MG_COLDBOLT || skillid == MG_FIREBOLT ||	skillid == MG_LIGHTNINGBOLT) &&
 		(sc_data = status_get_sc_data(src)) &&
 		sc_data[SC_DOUBLECASTING].timer != -1 &&
 		atn_rand() % 100 < 30+10*skilllv) {
@@ -1800,6 +1803,9 @@ static int skill_check_unit_range_sub( struct block_list *bl,va_list ap )
 	} else if (skillid==HP_BASILICA) {
 		if ((unit_id<0x8f || unit_id>0x99) && unit_id!=0x92 && unit_id!=0x83)
 			return 0;
+//	} else if (skillid==HW_GRAVITATION) {
+//		if (unit_id!=0xb8)
+//			return 0;
 	} else
 		return 0;
 
@@ -2327,6 +2333,23 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 		}
 		break;
 	case TK_STORMKICK:
+		if(flag&1 && bl->id != skill_area_temp[1]){
+			int dist = distance (bl->x, bl->y, skill_area_temp[2], skill_area_temp[3]);
+			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,
+				0x0500|dist);
+		} else {
+			skill_area_temp[1]=src->id;
+			skill_area_temp[2]=src->x;
+			skill_area_temp[3]=src->y;
+			map_foreachinarea(skill_area_sub,
+				src->m,src->x-2,src->y-2,src->x+2,src->y+2,0,
+				src,skillid,skilllv,tick, flag|BCT_ENEMY|1,
+				skill_castend_damage_id);
+			clif_skill_nodamage (src,src,skillid,skilllv,1);
+		}
+		break;
+
+
 	case TK_DOWNKICK:
 	case TK_TURNKICK:
 	case TK_COUNTER:
@@ -2496,6 +2519,7 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 					bl->m,bl->x-1,bl->y-1,bl->x+1,bl->y+1,0,
 					src,skillid,skilllv,tick, flag|BCT_ENEMY|1,
 					skill_castend_damage_id);
+				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,0);//これで2hit判定？
 		}
 		break;
 	case KN_SPEARSTAB:		/* スピアスタブ */
@@ -3233,7 +3257,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case PA_SACRIFICE:		/* サクリファイス */
 	case ST_PRESERVE:		/* プリザーブ */
 	case WS_OVERTHRUSTMAX:		/* オーバートラストマックス */
-	case KN_ONEHAND:	/* ツーハンドクイッケン */
+	case KN_ONEHAND:	/* ワンハンドクイッケン */
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		status_change_start(bl,SkillStatusChangeTable[skillid],skilllv,0,0,0,skill_get_time(skillid,skilllv),0 );
 		break;
@@ -4526,7 +4550,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			int conv_hp=0,conv_sp=0;
 			conv_hp=sd->status.hp/10; //基本はHPの10%
 			sd->status.hp -= conv_hp; //HPを減らす
-			conv_sp=conv_hp*20*skilllv/100;
+			conv_sp=conv_hp*10*skilllv/100;
 			conv_sp=(sd->status.sp+conv_sp>sd->status.max_sp)?sd->status.max_sp-sd->status.sp:conv_sp;
 			sd->status.sp += conv_sp; //SPを増やす
 			pc_heal(sd,-conv_hp,conv_sp);
@@ -8610,9 +8634,9 @@ int skill_encchant_eremental_end(struct block_list *bl,int type)
 		status_change_end(bl,SC_LIGHTNINGLOADER,-1);
 	if( type!=SC_SEISMICWEAPON && sc_data[SC_SEISMICWEAPON].timer!=-1 )	/* サイスミックウェポン解除 */
 		status_change_end(bl,SC_SEISMICWEAPON,-1);
-	if( type!=SC_SEISMICWEAPON && sc_data[SC_DARKELEMENT].timer!=-1 )	//闇
+	if( type!=SC_DARKELEMENT && sc_data[SC_DARKELEMENT].timer!=-1 )	//闇
 		status_change_end(bl,SC_DARKELEMENT,-1);
-	if( type!=SC_SEISMICWEAPON && sc_data[SC_ATTENELEMENT].timer!=-1 )	//念
+	if( type!=SC_ATTENELEMENT && sc_data[SC_ATTENELEMENT].timer!=-1 )	//念
 		status_change_end(bl,SC_ATTENELEMENT,-1);
 		
 	return 0;

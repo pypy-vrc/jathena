@@ -2239,10 +2239,6 @@ static struct Damage battle_calc_pc_weapon_attack(
 				damage += damage;
 				damage2 += damage2;
 			}
-			if(sc_data && sc_data[SC_AURABLADE].timer!=-1) {	//オーラブレードここに
-				damage += sc_data[SC_AURABLADE].val1 * 20;
-				damage2 += sc_data[SC_AURABLADE].val1 * 20;
-			}
 		}
 
 		// スキル修正１（攻撃力倍化系）
@@ -2884,6 +2880,10 @@ static struct Damage battle_calc_pc_weapon_attack(
 			&& skill_num != LK_SPIRALPIERCE) {			//修練ダメージ無視
 		damage = battle_addmastery(sd,target,damage,0);
 		damage2 = battle_addmastery(sd,target,damage2,1);
+	}
+	if(sc_data &&sc_data[SC_AURABLADE].timer!=-1) {	//オーラブレードここに
+		damage += sc_data[SC_AURABLADE].val1 * 20;
+		damage2 += sc_data[SC_AURABLADE].val1 * 20;
 	}
 
 	if(sd->perfect_hit > 0) {

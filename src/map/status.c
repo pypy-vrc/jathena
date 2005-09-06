@@ -130,8 +130,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	pc_calc_skilltree(sd);	// スキルツリーの計算
 
 	sd->max_weight = max_weight_base[s_class.job]+sd->status.str*300;
-	if(pc_checkskill(sd,KN_RIDING)==1) // ライディングスキル所持
-		sd->max_weight +=battle_config.riding_weight; // Weight+α(初期設定は0)
+//ペコ騎乗時増えるよう移動
 	if( (skill=pc_checkskill(sd,MC_INCCARRY))>0 )	// 所持量増加
 		sd->max_weight += skill*2000;
 	if( (skill=pc_checkskill(sd,SG_KNOWLEDGE))>0)// 太陽と月と星の知識
@@ -780,8 +779,13 @@ int status_calc_pc(struct map_session_data* sd,int first)
 		sd->speed += (short)(1.2*DEFAULT_WALK_SPEED - skill*9);
 	if (pc_iscarton(sd) && (skill=pc_checkskill(sd,MC_PUSHCART))>0)	// カートによる速度低下
 		sd->speed += (short)((10-skill) * (DEFAULT_WALK_SPEED * 0.1));
-	else if (pc_isriding(sd))	// ペコペコ乗りによる速度増加
-		sd->speed -= (short)(0.25 * DEFAULT_WALK_SPEED);
+	else if (pc_isriding(sd)){// ペコペコ乗りによる速度増加
+			sd->max_weight += battle_config.riding_weight; // Weight+α(初期設定は0)10000で本鯖;
+			if(sd->sc_data[SC_DEFENDER].timer != -1)//ディフェンダー時は歩行速度と同じ
+				sd->speed -= 0;
+			else
+			sd->speed -= (short)(0.25 * DEFAULT_WALK_SPEED);
+		}
 	if( s_class.job == 12 && (skill=pc_checkskill(sd,TF_MISS))>0 )	// アサシン系の回避率上昇による速度増加
 		sd->speed -= (short)(skill*DEFAULT_WALK_SPEED/100);
 
@@ -2358,6 +2362,9 @@ int status_get_speed(struct block_list *bl)
 				speed -= speed*25/100;
 			//速度減少時は25%加算
 			if(sc_data[SC_DECREASEAGI].timer!=-1)
+				if(sc_data[SC_DEFENDER].timer != -1)//（ディフェンダー時は加算無し）
+					speed += 0;
+				else
 				speed = speed*125/100;
 			//クァグマイア時は1/3加算
 			if(sc_data[SC_QUAGMIRE].timer!=-1)
@@ -3246,7 +3253,7 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_SEISMICWEAPON:		/* サイズミックウェポン */
 			skill_encchant_eremental_end(bl,SC_SEISMICWEAPON);
 			break;
-		case SC_DARKELEMENT:		/* やみ属性 */
+		case SC_DARKELEMENT:		/* 闇属性 */
 			skill_encchant_eremental_end(bl,SC_DARKELEMENT);
 			break;
 		case SC_ATTENELEMENT:		/* 念属性 */
