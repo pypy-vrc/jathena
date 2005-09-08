@@ -2853,7 +2853,7 @@ int buildin_getmapxy(struct script_state *st);  //get map position for player/np
 int buildin_checkcart(struct script_state *st); // check cart [Valaris] from EA
 int buildin_checkfalcon(struct script_state *st); // check falcon [Valaris] from EA
 int buildin_checkriding(struct script_state *st); // check for pecopeco [Valaris] from EA
-
+int buildin_adoption(struct script_state *st);
 
 struct script_function buildin_func[] = {
 	{buildin_mes,"mes","s"},
@@ -3034,6 +3034,7 @@ struct script_function buildin_func[] = {
 	{buildin_checkcart,"checkcart","*"},		//fixed by Lupus (added '*')
 	{buildin_checkfalcon,"checkfalcon","*"},	//fixed by Lupus (fixed wrong pointer, added '*')
 	{buildin_checkriding,"checkriding","*"},	//fixed by Lupus (fixed wrong pointer, added '*')
+	{buildin_adoption,"adoption","ss"},
 	{NULL,NULL,NULL}
 };
 
@@ -6634,7 +6635,8 @@ int buildin_marriage(struct script_state *st)
 	struct map_session_data *p_sd=map_nick2sd(partner);
 
 	//ó{éqÉLÉÉÉâÇ©îªíËí«â¡ êVêEóp
-	if(sd==NULL || p_sd==NULL || pc_isadoptee(sd) || pc_isadoptee(sd) || pc_marriage(sd,p_sd) < 0){
+	if(sd==NULL || p_sd==NULL || pc_isbaby(sd) || pc_marriage(sd,p_sd) < 0)
+	{
 		push_val(st->stack,C_INT,0);
 		return 0;
 	}
@@ -6683,6 +6685,30 @@ int buildin_divorce(struct script_state *st)
 	if(num==1)
 		push_val(st->stack,C_INT,partner_id);
 
+	return 0;
+}
+
+/* ================================================================
+ * ó{éqèàóù
+ * ----------------------------------------------------------------
+ */
+ 
+int buildin_adoption(struct script_state *st)
+{
+	char *papa_name=conv_str(st,& (st->stack->stack_data[st->start+2]));
+	char *mama_name=conv_str(st,& (st->stack->stack_data[st->start+3]));
+	struct map_session_data *sd=script_rid2sd(st);
+	struct map_session_data *papa_sd=map_nick2sd(papa_name);
+	struct map_session_data *mama_sd=map_nick2sd(mama_name);
+	//ê¨å˜
+	if(pc_adoption_sub(sd,papa_sd,mama_sd))
+	{
+		push_val(st->stack,C_INT,1);
+		return 1;
+	}
+	
+	//é∏îs
+	push_val(st->stack,C_INT,0);
 	return 0;
 }
 

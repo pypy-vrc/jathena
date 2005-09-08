@@ -132,9 +132,14 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	pc_calc_skilltree(sd);	// スキルツリーの計算
 
 	sd->max_weight = max_weight_base[s_class.job]+sd->status.str*300;
+	
+	if(battle_config.baby_weight_rate !=100 && pc_isbaby(sd))
+		sd->max_weight = sd->max_weight*battle_config.baby_weight_rate/100;
+		
 //ペコ騎乗時増えるよう移動
-	if( (skill=pc_checkskill(sd,MC_INCCARRY))>0 )	// 所持量増加
+	if( (skill=pc_checkskill(sd,MC_INCCARRY))>0)	// 所持量増加
 		sd->max_weight += skill*2000;
+
 	if( (skill=pc_checkskill(sd,SG_KNOWLEDGE))>0)// 太陽と月と星の知識
 	{
 	 	if(battle_config.check_knowlege_map)//場所チェックを行なう
@@ -318,7 +323,6 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	memset(sd->break_myequip_rate_when_hit,0,sizeof(sd->break_myequip_rate_when_hit));
 	sd->loss_equip_flag = 0;
 	sd->short_weapon_damege_rate = sd->long_weapon_damege_rate = 0;
- 	//status_calc_pc_itemeffect_init(sd);
 
 	for(i=0;i<10;i++) {
 		index = sd->equip_index[i];
@@ -439,9 +443,6 @@ int status_calc_pc(struct map_session_data* sd,int first)
 			}
 		}
 	}
-	//装備ボーナスの後始末
-	//現在はオートスペルの禁止発動率増加程度の処理
-	status_calc_pc_itemeffect_finish(sd);
 	
 	if(sd->equip_index[10] >= 0){ // 矢
 		index = sd->equip_index[10];
@@ -508,6 +509,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	if( (skill=pc_checkskill(sd,SA_DRAGONOLOGY))>0 ){// ドラゴノロジー
 		sd->paramb[3] += (int)((skill+1)*0.5);
 	}
+	
 	if( (skill=pc_checkskill(sd,TF_DOUBLE))>0 ){// ダブルアタック
 		sd->hit += skill;
 	}
@@ -584,6 +586,14 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	
 	// ステータス変化による基本パラメータ補正
 	if(sd->sc_count){
+			
+		// 集中力向上
+		if(sd->sc_data[SC_CONCENTRATE].timer!=-1 && sd->sc_data[SC_QUAGMIRE].timer == -1){
+			sd->paramb[1]+= (sd->status.agi+sd->paramb[1]+sd->parame[1]-sd->paramcard[1])*(2+sd->sc_data[SC_CONCENTRATE].val1)/100;
+			sd->paramb[4]+= (sd->status.dex+sd->paramb[4]+sd->parame[4]-sd->paramcard[4])*(2+sd->sc_data[SC_CONCENTRATE].val1)/100;
+		}
+		
+		//ゴスペルALL+20
 		if(sd->sc_data[SC_INCALLSTATUS].timer!=-1){
 			sd->paramb[0]+= sd->sc_data[SC_INCALLSTATUS].val1;
 			sd->paramb[1]+= sd->sc_data[SC_INCALLSTATUS].val1;
@@ -618,7 +628,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 			sd->paramb[4]+= sd->sc_data[SC_MEAL_INCDEX].val1;
 		if(sd->sc_data[SC_MEAL_INCLUK].timer!=-1)
 			sd->paramb[5]+= sd->sc_data[SC_MEAL_INCLUK].val1;
-			
+		
 		//駆け足のSTR +10
 		if(sd->sc_data[SC_SPURT].timer!=-1)
 			sd->paramb[0] += 10;
@@ -632,11 +642,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 		
 		if(sd->sc_data[SC_CHASEWALK_STR].timer!=-1)
 			sd->paramb[0] += sd->sc_data[SC_CHASEWALK_STR].val1;
-			
-		if(sd->sc_data[SC_CONCENTRATE].timer!=-1 && sd->sc_data[SC_QUAGMIRE].timer == -1){	// 集中力向上
-			sd->paramb[1]+= (sd->status.agi+sd->paramb[1]+sd->parame[1]-sd->paramcard[1])*(2+sd->sc_data[SC_CONCENTRATE].val1)/100;
-			sd->paramb[4]+= (sd->status.dex+sd->paramb[4]+sd->parame[4]-sd->paramcard[4])*(2+sd->sc_data[SC_CONCENTRATE].val1)/100;
-		}
+		
 		if(sd->sc_data[SC_INCREASEAGI].timer!=-1) {	// 速度増加
 			sd->paramb[1]+= 2+sd->sc_data[SC_INCREASEAGI].val1;
 			sd->speed -= sd->speed *25/100;
@@ -655,8 +661,19 @@ int status_calc_pc(struct map_session_data* sd,int first)
 		}
 		if(sd->sc_data[SC_GLORIA].timer!=-1)	// グロリア
 			sd->paramb[5]+= 30;
+			
 		if(sd->sc_data[SC_LOUD].timer!=-1 && sd->sc_data[SC_QUAGMIRE].timer == -1)	// ラウドボイス
 			sd->paramb[0]+= 4;
+		
+		if(sd->sc_data[SC_TRUESIGHT].timer!=-1){	// トゥルーサイト
+			sd->paramb[0]+= 5;
+			sd->paramb[1]+= 5;
+			sd->paramb[2]+= 5;
+			sd->paramb[3]+= 5;
+			sd->paramb[4]+= 5;
+			sd->paramb[5]+= 5;
+		}
+		
 		if(sd->sc_data[SC_QUAGMIRE].timer!=-1){	// クァグマイア
 			short subagi = 0;
 			short subdex = 0;
@@ -670,15 +687,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 			sd->paramb[1]-= subagi;
 			sd->paramb[4]-= subdex;
 		}
-		if(sd->sc_data[SC_TRUESIGHT].timer!=-1){	// トゥルーサイト
-			sd->paramb[0]+= 5;
-			sd->paramb[1]+= 5;
-			sd->paramb[2]+= 5;
-			sd->paramb[3]+= 5;
-			sd->paramb[4]+= 5;
-			sd->paramb[5]+= 5;
-		}
-	
+		
 		//
 		if(sd->sc_data[SC_MARIONETTE].timer!=-1){
 			sd->paramb[0]-= sd->status.str/2;
@@ -688,6 +697,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 			sd->paramb[4]-= sd->status.dex/2;
 			sd->paramb[5]-= sd->status.luk/2;
 		}
+		
 		//
 		if(sd->sc_data[SC_MARIONETTE2].timer!=-1)
 		{
@@ -702,45 +712,45 @@ int status_calc_pc(struct map_session_data* sd,int first)
 					sd->paramb[5]+= ssd->status.luk/2;
 				}else{
 					//str
-					if(sd->paramb[0]+sd->status.str<99)
+					if(sd->paramb[0]+sd->parame[0]+sd->status.str<99)
 					{
 						sd->paramb[0]+= ssd->status.str/2;
-						if(sd->paramb[0]+sd->status.str>99)
+						if(sd->paramb[0]+sd->parame[0]+sd->status.str>99)
 							sd->paramb[0] = 99-sd->status.str;
 					}
 					//agi
-					if(sd->paramb[1]+sd->status.agi<99)
+					if(sd->paramb[1]+sd->parame[1]+sd->status.agi<99)
 					{
 						sd->paramb[1]+= ssd->status.agi/2;
-						if(sd->paramb[1]+sd->status.agi>99)
+						if(sd->paramb[1]+sd->parame[1]+sd->status.agi>99)
 							sd->paramb[1] = 99-sd->status.agi;
 					}
-					//str
-					if(sd->paramb[2]+sd->status.vit<99)
+					//vit
+					if(sd->paramb[2]+sd->parame[2]+sd->status.vit<99)
 					{
 						sd->paramb[2]+= ssd->status.vit/2;
-						if(sd->paramb[2]+sd->status.vit>99)
+						if(sd->paramb[2]+sd->parame[2]+sd->status.vit>99)
 							sd->paramb[2] = 99-sd->status.vit;
 					}
 					//int
-					if(sd->paramb[3]+sd->status.int_<99)
+					if(sd->paramb[3]+sd->parame[3]+sd->status.int_<99)
 					{
 						sd->paramb[3]+= ssd->status.int_/2;
-						if(sd->paramb[3]+sd->status.int_>99)
+						if(sd->paramb[3]+sd->parame[3]+sd->status.int_>99)
 							sd->paramb[3] = 99-sd->status.int_;
 					}
 					//dex
-					if(sd->paramb[4]+sd->status.dex<99)
+					if(sd->paramb[4]+sd->parame[4]+sd->status.dex<99)
 					{
 					sd->paramb[4]+= ssd->status.dex/2;
-						if(sd->paramb[4]+sd->status.dex>99)
+						if(sd->paramb[4]+sd->parame[4]+sd->status.dex>99)
 							sd->paramb[4] = 99-sd->status.dex;
 					}
 					//luk
-					if(sd->paramb[5]+sd->status.luk<99)
+					if(sd->paramb[5]+sd->parame[5]+sd->status.luk<99)
 					{
 						sd->paramb[5]+= ssd->status.luk/2;
-						if(sd->paramb[5]+sd->status.luk>99)
+						if(sd->paramb[5]+sd->parame[5]+sd->status.luk>99)
 							sd->paramb[5] = 99-sd->status.luk;
 					}
 				}
@@ -896,7 +906,10 @@ int status_calc_pc(struct map_session_data* sd,int first)
 		if(sd->sc_data[SC_RUN].timer!=-1)/*駆け足による速度変化*/
 			sd->speed = sd->speed / 2;
 		if(sd->sc_data[SC_CHASEWALK].timer!=-1)/*チェイスウォークによる速度変化*/
-			sd->speed = sd->speed * sd->sc_data[SC_CHASEWALK].val3 /100;
+		{
+			if(sd->sc_data[SC_ROGUE].timer==-1)
+				sd->speed = sd->speed * sd->sc_data[SC_CHASEWALK].val3 /100;
+		}
 		if(sd->sc_data[SC_WINDWALK].timer!=-1) 	//ウィンドウォーク時はLv*2%減算
 			sd->speed -= sd->speed *(sd->sc_data[SC_WINDWALK].val1*2)/100;
 		if(sd->sc_data[SC_CARTBOOST].timer!=-1)	// カートブースト
@@ -922,8 +935,8 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	//転生職の場合最大HP25%UP
 	if(pc_isupper(sd))
 		sd->status.max_hp += ((3500 + bl*hp_coefficient2[s_class.job] + hp_sigma_val[s_class.job][(bl > 0)? bl-1:0])/100 * (100 + sd->paramc[2])/100 + (sd->parame[2] - sd->paramcard[2])) * 125/100;
-	else if(pc_isadoptee(sd))//養子の場合最大HP70%
-		sd->status.max_hp += ((3500 + bl*hp_coefficient2[s_class.job] + hp_sigma_val[s_class.job][(bl > 0)? bl-1:0])/100 * (100 + sd->paramc[2])/100 + (sd->parame[2] - sd->paramcard[2])) * 70/100;
+	else if(pc_isbaby(sd))//養子の場合最大HP70%
+		sd->status.max_hp += ((3500 + bl*hp_coefficient2[s_class.job] + hp_sigma_val[s_class.job][(bl > 0)? bl-1:0])/100 * (100 + sd->paramc[2])/100 + (sd->parame[2] - sd->paramcard[2])) * battle_config.baby_hp_rate/100;
 	else sd->status.max_hp += (3500 + bl*hp_coefficient2[s_class.job] + hp_sigma_val[s_class.job][(bl > 0)? bl-1:0])/100 * (100 + sd->paramc[2])/100 + (sd->parame[2] - sd->paramcard[2]);
 
 	if(sd->hprate!=100)
@@ -946,8 +959,8 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	//転生職の場合最大SP125%
 	if(pc_isupper(sd))
 		sd->status.max_sp += (((sp_coefficient[s_class.job] * bl) + 1000)/100 * (100 + sd->paramc[3])/100 + (sd->parame[3] - sd->paramcard[3])) * 125/100;
-	else if(pc_isadoptee(sd)) //養子の場合最大SP70%
-		sd->status.max_sp += (((sp_coefficient[s_class.job] * bl) + 1000)/100 * (100 + sd->paramc[3])/100 + (sd->parame[3] - sd->paramcard[3])) * 70/100;
+	else if(pc_isbaby(sd)) //養子の場合最大SP70%
+		sd->status.max_sp += (((sp_coefficient[s_class.job] * bl) + 1000)/100 * (100 + sd->paramc[3])/100 + (sd->parame[3] - sd->paramcard[3])) * battle_config.baby_sp_rate/100;
 	else sd->status.max_sp += ((sp_coefficient[s_class.job] * bl) + 1000)/100 * (100 + sd->paramc[3])/100 + (sd->parame[3] - sd->paramcard[3]);
 
 	if(sd->sprate!=100)

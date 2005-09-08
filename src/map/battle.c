@@ -4273,7 +4273,6 @@ int battle_weapon_attack( struct block_list *src,struct block_list *target,
 	//カードによるオートスペル
 	if(sd && sd->bl.type == BL_PC && src != target 	&& (wd.damage > 0 || wd.damage2 > 0))
 	{
-		//オートスペル
 		skill_bonus_autospell(src,target,EAS_ATTACK,0,0);
 	}
 
@@ -4867,6 +4866,10 @@ int battle_config_read(const char *cfgName)
 		battle_config.twilight_party_check = 0;
 		battle_config.alchemist_point_type = 1;
 		battle_config.marionette_type	   = 0;
+		battle_config.baby_status_max  = 80;
+		battle_config.baby_hp_rate	   = 70;
+		battle_config.baby_sp_rate	   = 70;
+		battle_config.baby_weight_rate = 100;
 	}
 
 	fp=fopen(cfgName,"r");
@@ -5171,6 +5174,10 @@ int battle_config_read(const char *cfgName)
 			{ "twilight_party_check",				&battle_config.twilight_party_check					},
 			{ "alchemist_point_type",				&battle_config.alchemist_point_type					},
 			{ "marionette_type",					&battle_config.marionette_type						},
+			{ "baby_status_max",					&battle_config.baby_status_max						},
+			{ "baby_hp_rate",						&battle_config.baby_hp_rate							},
+			{ "baby_sp_rate",						&battle_config.baby_sp_rate							},
+			{ "baby_weight_rate",					&battle_config.baby_weight_rate						},
 		};
 
 		if(line[0] == '/' && line[1] == '/')

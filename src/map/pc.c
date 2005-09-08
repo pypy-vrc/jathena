@@ -1016,7 +1016,9 @@ int pc_calc_skilltree(struct map_session_data *sd)
 			if(i!=331)
 				sd->status.skill[i].id=i;
 		if(battle_config.enable_upper_class){ //confで無効でなければ読み込む
-			for(i=355;i<MAX_SKILL;i++)
+			for(i=355;i<408;i++)
+				sd->status.skill[i].id=i;
+			for(i=411;i<MAX_SKILL;i++)
 				sd->status.skill[i].id=i;
 		}
 	}else{
@@ -1042,6 +1044,25 @@ int pc_calc_skilltree(struct map_session_data *sd)
 				}
 			}
 		}while(flag);
+	}
+	
+	//子持ち
+	if(sd->status.baby_id>0)
+	{
+		sd->status.skill[WE_CALLBABY].id=WE_CALLBABY;
+		sd->status.skill[WE_CALLBABY].lv=1;
+		sd->status.skill[WE_CALLBABY].flag=1;
+	}
+	
+	//養子 親が居ないと覚えない
+	if(sd->status.parent_id[0]>0 || sd->status.parent_id[1]>0)
+	{
+		sd->status.skill[WE_BABY].id=WE_BABY;
+		sd->status.skill[WE_BABY].lv=1;
+		sd->status.skill[WE_BABY].flag=1;
+		sd->status.skill[WE_CALLPARENT].id=WE_CALLPARENT;
+		sd->status.skill[WE_CALLPARENT].lv=1;
+		sd->status.skill[WE_CALLPARENT].flag=1;
 	}
 
 	//埋め込み
@@ -4576,7 +4597,7 @@ int pc_statusup(struct map_session_data *sd,int type)
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
-		if(pc_isadoptee(sd) && sd->status.str >= 79){//養子
+		if(pc_isbaby(sd) && sd->status.str >= battle_config.baby_status_max){//養子
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
@@ -4588,7 +4609,7 @@ int pc_statusup(struct map_session_data *sd,int type)
 			return 1;
 		}
 
-		if(pc_isadoptee(sd) && sd->status.agi >= 79){//養子
+		if(pc_isbaby(sd) && sd->status.agi >= battle_config.baby_status_max){//養子
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
@@ -4599,7 +4620,7 @@ int pc_statusup(struct map_session_data *sd,int type)
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
-		if(pc_isadoptee(sd) && sd->status.vit >= 79){//養子
+		if(pc_isbaby(sd) && sd->status.vit >= battle_config.baby_status_max){//養子
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
@@ -4610,7 +4631,7 @@ int pc_statusup(struct map_session_data *sd,int type)
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
-		if(pc_isadoptee(sd) && sd->status.int_ >= 79){//養子
+		if(pc_isbaby(sd) && sd->status.int_ >= battle_config.baby_status_max){//養子
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
@@ -4621,7 +4642,7 @@ int pc_statusup(struct map_session_data *sd,int type)
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
-		if(pc_isadoptee(sd) && sd->status.dex >= 79){//養子
+		if(pc_isbaby(sd) && sd->status.dex >= battle_config.baby_status_max){//養子
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
@@ -4632,7 +4653,7 @@ int pc_statusup(struct map_session_data *sd,int type)
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
-		if(pc_isadoptee(sd) && sd->status.luk >= 79){//養子
+		if(pc_isbaby(sd) && sd->status.luk >= battle_config.baby_status_max){//養子
 			clif_statusupack(sd,type,0,0);
 			return 1;
 		}
@@ -4660,7 +4681,7 @@ int pc_isupper(struct map_session_data *sd)
 	return 0;
 }
 //養子か判定する
-int pc_isadoptee(struct map_session_data *sd)
+int pc_isbaby(struct map_session_data *sd)
 {
 	nullpo_retr(0, sd);
 	if(sd->status.class >= PC_CLASS_NV3 && sd->status.class <= PC_CLASS_SNV3)
@@ -6649,7 +6670,56 @@ int pc_marriage(struct map_session_data *sd,struct map_session_data *dstsd)
 	dstsd->status.partner_id=sd->status.char_id;
 	return 0;
 }
+/*==========================================
+ * sdがpapa mamaと養子縁組
+ *------------------------------------------
+ */
+int pc_adoption(struct map_session_data* sd,struct map_session_data *parent)
+{
+	struct map_session_data * parent2;
+	
+	if(sd == NULL || parent ==NULL)
+		return 0;
+	parent2 = map_id2sd(parent->status.partner_id);
+	if(parent2==NULL)
+		return 0;
 
+	return pc_adoption_sub(sd,parent,parent2);
+}
+/*==========================================
+ * sdがpapa mamaと養子縁組
+ *------------------------------------------
+ */
+int pc_adoption_sub(struct map_session_data* sd,struct map_session_data *papa,struct map_session_data *mama)
+{
+	struct pc_base_job s_class;
+	
+	if(sd == NULL || papa ==NULL || mama == NULL || 
+	 	sd->status.partner_id > 0 || sd->status.parent_id[0]>0 || sd->status.parent_id[1]>0 ||
+		papa->status.baby_id  >0 || mama->status.baby_id >0 ||
+		papa->status.partner_id != mama->status.char_id
+		)
+		return 0;
+	//養子チェック
+	s_class = pc_calc_base_job(sd->status.class);
+	if(s_class.upper!=0)
+		return 0;
+	//パーティー同じマップに３人
+	if(party_check_same_map_member_count(sd)!=2)
+		return 0;
+	//３人とも同じパーティー
+	if(sd->status.party_id != papa->status.party_id ||
+	 	sd->status.party_id != mama->status.party_id)
+		return 0;
+	sd->status.parent_id[0] = papa->status.char_id;
+	sd->status.parent_id[1] = mama->status.char_id;
+	papa->status.baby_id = sd->status.char_id;
+	mama->status.baby_id = sd->status.char_id;
+	
+	pc_jobchange(sd,s_class.job,2);
+	
+	return 1;
+}
 
 /*==========================================
  * sdが離婚(相手はsd->status.partner_idに依る)(相手も同時に離婚・結婚指輪自動剥奪)

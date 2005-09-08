@@ -348,6 +348,10 @@ extern struct Battle_Config {
 	int twilight_party_check;
 	int alchemist_point_type;
 	int marionette_type;
+	int baby_status_max;
+	int baby_hp_rate;
+	int baby_sp_rate;
+	int baby_weight_rate;
 	
 	int debug_new_disp_status_icon_system;
 	

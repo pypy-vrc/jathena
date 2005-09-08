@@ -158,6 +158,8 @@ int pc_ismarried(struct map_session_data *sd);
 int pc_marriage(struct map_session_data *sd,struct map_session_data *dstsd);
 int pc_divorce(struct map_session_data *sd);
 struct map_session_data *pc_get_partner(struct map_session_data *sd);
+int pc_adoption(struct map_session_data* sd,struct map_session_data *parent);
+int pc_adoption_sub(struct map_session_data* sd,struct map_session_data *papa,struct map_session_data *mama);
 
 int pc_break_equip(struct map_session_data *sd, unsigned short where);
 int pc_break_equip2(struct map_session_data *sd, unsigned short where);
@@ -175,7 +177,7 @@ struct pc_base_job{
 };
 
 int pc_isupper(struct map_session_data *sd);
-int pc_isadoptee(struct map_session_data *sd);
+int pc_isbaby(struct map_session_data *sd);
 
 struct pc_base_job pc_calc_base_job(int b_class);//“]¶‚â—{qE‚ÌŒ³‚ÌE‹Æ‚ğ•Ô‚·
 

@@ -1,4 +1,4 @@
-// $Id: char.c,v 1.2 2005/09/06 19:29:10 running_pinata Exp $
+// $Id: char.c,v 1.3 2005/09/08 23:24:58 running_pinata Exp $
 // original : char2.c 2003/03/14 11:58:35 Rev.1.5
 #define DUMP_UNKNOWN_PACKET	1
 
@@ -99,7 +99,7 @@ static int mmo_char_tostr(char *str,struct mmo_charstatus *p)
 	
 	str_p += sprintf(str_p,"%d\t%d,%d\t%s\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
 		"\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
-		"\t%s,%d,%d\t%s,%d,%d,%d\t",
+		"\t%s,%d,%d\t%s,%d,%d,%d,%d,%d,%d\t",
 		p->char_id,p->account_id,p->char_num,p->name, //
 		p->class,p->base_level,p->job_level,
 		p->base_exp,p->job_exp,p->zeny,
@@ -112,7 +112,7 @@ static int mmo_char_tostr(char *str,struct mmo_charstatus *p)
 		p->weapon,p->shield,p->head_top,p->head_mid,p->head_bottom,
 		p->last_point.map,p->last_point.x,p->last_point.y, //
 		p->save_point.map,p->save_point.x,p->save_point.y,
-		p->partner_id
+		p->partner_id,p->parent_id[0],p->parent_id[1],p->baby_id
 	);
 	for(i=0;i<10;i++)
 		if(p->memo_point[i].map[0])
@@ -161,9 +161,29 @@ static int mmo_char_fromstr(char *str,struct mmo_charstatus *p)
 	int set,next,len,i;
 	
 	nullpo_retr(0,p);
-	
-	// 1008以降の形式読み込み
+	// 1426以降の形式読み込み
 	if( (set=sscanf(str,"%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
+		"\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
+		"\t%[^,],%d,%d\t%[^,],%d,%d,%d,%d,%d,%d%n",
+		&tmp_int[0],&tmp_int[1],&tmp_int[2],p->name, //
+		&tmp_int[3],&tmp_int[4],&tmp_int[5],
+		&tmp_int[6],&tmp_int[7],&tmp_int[8],
+		&tmp_int[9],&tmp_int[10],&tmp_int[11],&tmp_int[12],
+		&tmp_int[13],&tmp_int[14],&tmp_int[15],&tmp_int[16],&tmp_int[17],&tmp_int[18],
+		&tmp_int[19],&tmp_int[20],
+		&tmp_int[21],&tmp_int[22],&tmp_int[23], //
+		&tmp_int[24],&tmp_int[25],&tmp_int[26],
+		&tmp_int[27],&tmp_int[28],&tmp_int[29],
+		&tmp_int[30],&tmp_int[31],&tmp_int[32],&tmp_int[33],&tmp_int[34],
+		p->last_point.map,&tmp_int[35],&tmp_int[36], //
+		p->save_point.map,&tmp_int[37],&tmp_int[38],&tmp_int[39],&tmp_int[40],&tmp_int[41],&tmp_int[42],&next
+		)
+	)!=46 ){
+		tmp_int[40]=0;
+		tmp_int[41]=0;
+		tmp_int[42]=0;
+		 // 1008以降の形式読み込み
+		if( (set=sscanf(str,"%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
 		"\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
 		"\t%[^,],%d,%d\t%[^,],%d,%d,%d%n",
 		&tmp_int[0],&tmp_int[1],&tmp_int[2],p->name, //
@@ -178,8 +198,7 @@ static int mmo_char_fromstr(char *str,struct mmo_charstatus *p)
 		&tmp_int[30],&tmp_int[31],&tmp_int[32],&tmp_int[33],&tmp_int[34],
 		p->last_point.map,&tmp_int[35],&tmp_int[36], //
 		p->save_point.map,&tmp_int[37],&tmp_int[38],&tmp_int[39],&next
-		)
-	)!=43 ){
+		))!=43 ){
 		// 384以降1008以前の形式読み込み
 		tmp_int[39]=0;
 		if( (set=sscanf(str,"%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
@@ -198,30 +217,35 @@ static int mmo_char_fromstr(char *str,struct mmo_charstatus *p)
 			p->last_point.map,&tmp_int[35],&tmp_int[36], //
 			p->save_point.map,&tmp_int[37],&tmp_int[38],&next
 			)
-		)!=42 ){
+		)!=42 )
+		{
 			// 384以前の形式の読み込み
-			tmp_int[26]=0;
-			set=sscanf(str,"%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
-				"\t%d,%d,%d\t%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
-				"\t%[^,],%d,%d\t%[^,],%d,%d%n",
-				&tmp_int[0],&tmp_int[1],&tmp_int[2],p->name, //
-				&tmp_int[3],&tmp_int[4],&tmp_int[5],
-				&tmp_int[6],&tmp_int[7],&tmp_int[8],
-				&tmp_int[9],&tmp_int[10],&tmp_int[11],&tmp_int[12],
-				&tmp_int[13],&tmp_int[14],&tmp_int[15],&tmp_int[16],&tmp_int[17],&tmp_int[18],
-				&tmp_int[19],&tmp_int[20],
-				&tmp_int[21],&tmp_int[22],&tmp_int[23], //
-				&tmp_int[24],&tmp_int[25],//
-				&tmp_int[27],&tmp_int[28],&tmp_int[29],
-				&tmp_int[30],&tmp_int[31],&tmp_int[32],&tmp_int[33],&tmp_int[34],
-				p->last_point.map,&tmp_int[35],&tmp_int[36], //
-				p->save_point.map,&tmp_int[37],&tmp_int[38],&next
-				);
-			set+=2;
-			printf("char: old char data ver.1\n");
-		}else{// 383~1008Verでの読み込みに成功しているならsetを正常値へ
-			set++;
-			printf("char: old char data ver.2\n");
+				tmp_int[26]=0;
+				set=sscanf(str,"%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
+					"\t%d,%d,%d\t%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
+					"\t%[^,],%d,%d\t%[^,],%d,%d%n",
+					&tmp_int[0],&tmp_int[1],&tmp_int[2],p->name, //
+					&tmp_int[3],&tmp_int[4],&tmp_int[5],
+					&tmp_int[6],&tmp_int[7],&tmp_int[8],
+					&tmp_int[9],&tmp_int[10],&tmp_int[11],&tmp_int[12],
+					&tmp_int[13],&tmp_int[14],&tmp_int[15],&tmp_int[16],&tmp_int[17],&tmp_int[18],
+					&tmp_int[19],&tmp_int[20],
+					&tmp_int[21],&tmp_int[22],&tmp_int[23], //
+					&tmp_int[24],&tmp_int[25],//
+					&tmp_int[27],&tmp_int[28],&tmp_int[29],
+					&tmp_int[30],&tmp_int[31],&tmp_int[32],&tmp_int[33],&tmp_int[34],
+					p->last_point.map,&tmp_int[35],&tmp_int[36], //
+					p->save_point.map,&tmp_int[37],&tmp_int[38],&next
+					);
+				set+=2;
+				printf("char: old char data ver.1\n");
+			}else{// 383~1008Verでの読み込みに成功しているならsetを正常値へ
+				set++;
+				printf("char: old char data ver.2\n");
+			}
+		}else{
+			set+=3;
+			printf("char: old char data ver.3\n");
 		}
 	}
 	p->char_id=tmp_int[0];
@@ -264,7 +288,10 @@ static int mmo_char_fromstr(char *str,struct mmo_charstatus *p)
 	p->save_point.x=tmp_int[37];
 	p->save_point.y=tmp_int[38];
 	p->partner_id=tmp_int[39];
-	if(set!=43)
+	p->parent_id[0]=tmp_int[40];
+	p->parent_id[1]=tmp_int[41];
+	p->baby_id=tmp_int[42];
+	if(set!=46)
 		return 0;
 	if(str[next]=='\n' || str[next]=='\r')
 		return 1;	// 新規データ
@@ -836,8 +863,8 @@ const struct mmo_charstatus* char_sql_load(int char_id) {
 		// skill_point option karma manner party_id guild_id pet_id hair hair_color clothes_color
 		// 31     32     33       34       35          36       37     38     39       40    
 		// weapon shield head_top head_mid head_bottom last_map last_x last_y save_map save_x
-		// 41     42         43
-		// save_y partner_id online
+		// 41     42         43           44           45      46
+		// save_y partner_id parent_id[0] parent_id[1] baby_id online
 
 		sql_row = mysql_fetch_row(sql_res);
 		if(sql_row == NULL) {
@@ -889,6 +916,9 @@ const struct mmo_charstatus* char_sql_load(int char_id) {
 		p->save_point.x  = atoi(sql_row[40]);
 		p->save_point.y  = atoi(sql_row[41]);
 		p->partner_id    = atoi(sql_row[42]);
+		p->parent_id[0]	 = atoi(sql_row[43]);
+		p->parent_id[1]	 = atoi(sql_row[44]);
+		p->baby_id		 = atoi(sql_row[45]);
 		//free mysql result.
 		mysql_free_result(sql_res);
 	} else {
@@ -1074,6 +1104,10 @@ int  char_sql_save(struct mmo_charstatus *st2) {
 	UPDATE_NUM(save_point.x  ,"save_x");
 	UPDATE_NUM(save_point.y  ,"save_y");
 	UPDATE_NUM(partner_id    ,"partner_id");
+	UPDATE_NUM(parent_id[0]  ,"parent_id");
+	UPDATE_NUM(parent_id[1]  ,"parent_id2");
+	UPDATE_NUM(baby_id    ,"baby_id");
+	
 	if(sep == ',') {
 		sprintf(p," WHERE `char_id` = '%d'",st2->char_id);
 		if (mysql_query(&mysql_handle, tmp_sql)) {

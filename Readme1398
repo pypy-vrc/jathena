@@ -1,13 +1,23 @@
 ----------------------------------------
+//1426 by ＡＡＡ
+・養子縁組実装
+・セーブデータ構造の更新
+・暫定的に養子コンパニオンを追加
+・養子判定関数のリネーム
+	-pc_isbaby()
+	-pc_adoption();
+	-pc_adoption_sub();
+
+----------------------------------------
 //1425 by ＡＡＡ
 ・宝石箱・明治アーモンド(ネタ自由に使おう)用txt追加
 ・スキル判定関数追加
 skill.h
 skill.c
-	skill_cloneable
-	skill_upperskill
-	skill_mobskill
-	skill_abraskill
+	skill_cloneable()
+	skill_upperskill()
+	skill_mobskill()
+	skill_abraskill()
 
 ----------------------------------------
 //1424 by ＡＡＡ

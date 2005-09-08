@@ -111,6 +111,8 @@ struct mmo_charstatus {
 	int char_id;
 	int account_id;
 	int partner_id;
+	int parent_id[2];
+	int baby_id;
 
 	int base_exp,job_exp,zeny;
 
