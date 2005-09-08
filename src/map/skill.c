@@ -713,11 +713,11 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 /*コンパイラで計算が０／０の時に変数の最大値が代入されるバグ*/
 /*があるようです、正しい計算にならないですけど、ダメージ計算*/
 /*やステータス変化が予想以上に適用されない場合、以下を有効にしてください*/
-/*	if(sc_def_mdef<1)       */
+/*	if(sc_def_mdef<1)	   */
 /*		sc_def_mdef=1;  */
-/*	if(sc_def_vit<1)        */
+/*	if(sc_def_vit<1)		*/
 /*		sc_def_vit=1;   */
-/*	if(sc_def_int<1)        */
+/*	if(sc_def_int<1)		*/
 /*		sc_def_int=1;   */
 
 	switch(skillid){
@@ -777,7 +777,7 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 				clif_skill_fail(sd,skillid,0,0);
 		}
 		break;
-	
+
 	case AS_VENOMKNIFE:			//ベナムナイフ
 		if(atn_rand()%100< 60*sc_def_vit/100 )
 			status_change_start(bl,SC_POISON,skilllv,0,0,0,skill_get_time2(skillid,skilllv),0);
@@ -998,7 +998,6 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 	case TK_DOWNKICK://下段蹴り
 			status_change_start(bl,SC_STAN,7,0,0,0,3000,0);
 		break;
-
 	}
 //	if(sd && skillid != MC_CARTREVOLUTION && attack_type&BF_WEAPON){	/* カードによる追加効果 */
 	if(sd && attack_type&BF_WEAPON){	/* カードによる追加効果 */
@@ -1110,11 +1109,11 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 /*=========================================================================
  * スキル攻撃吹き飛ばし処理
  *  count: 0x00XYZZZZ
- *         X: 吹き飛ばし方向指定(逆向き)
- *         Y: フラグ
- *            0x1: srcとtargetの位置関係で吹飛ばし方向を決定
- *            0x2: スキッドトラップの吹き飛ばし
- *         Z: 吹き飛ばしセル数
+ *		 X: 吹き飛ばし方向指定(逆向き)
+ *		 Y: フラグ
+ *			0x1: srcとtargetの位置関係で吹飛ばし方向を決定
+ *			0x2: スキッドトラップの吹き飛ばし
+ *		 Z: 吹き飛ばしセル数
 -------------------------------------------------------------------------*/
 int skill_blown( struct block_list *src, struct block_list *target,int count)
 {
@@ -1234,7 +1233,7 @@ int skill_blown( struct block_list *src, struct block_list *target,int count)
 
 /*=========================================================================
  * スキル攻撃吹き飛ばし処理(カード追加効果用)
- *  SAB_NORMAL     0x10000: srcとtargetの位置関係で吹飛ばし方向を決定
+ *  SAB_NORMAL	 0x10000: srcとtargetの位置関係で吹飛ばし方向を決定
  *  SAB_SKIDTRAP   0x20000: スキッドトラップの吹き飛ばし
 -------------------------------------------------------------------------*/
 int skill_add_blown( struct block_list *src, struct block_list *target,int skillid,int flag)
@@ -1303,7 +1302,6 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 	}
 	if(sc_data && sc_data[SC_TRICKDEAD].timer != -1) //死んだふり中は何もしない
 		return 0;
-
 	if(skillid == WZ_STORMGUST) { //使用スキルがストームガストで
 		if(sc_data && sc_data[SC_FREEZE].timer != -1) //凍結状態なら何もしない
 			return 0;
@@ -1500,7 +1498,6 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 				if(sc_data[SC_KAITE].val2==0)
 					status_change_end(bl,SC_KAITE,-1);
 			}
-
 		}
 		if(rdamage > 0)
 			clif_damage(src,src,tick, dmg.amotion,0,rdamage,1,4,0);
@@ -1733,7 +1730,9 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 		status_change_end(bl,SC_AUTOCOUNTER,-1);
 	}
 	/* ダブルキャスティング */
-	if (( skillid == MG_COLDBOLT || skillid == MG_FIREBOLT || skillid == MG_LIGHTNINGBOLT) &&
+	if ((skillid == MG_COLDBOLT || skillid == MG_FROSTDIVER ||
+		 skillid == MG_FIREBOLT || skillid == MG_FIREBALL ||
+		 skillid == MG_LIGHTNINGBOLT) &&
 		(sc_data = status_get_sc_data(src)) &&
 		sc_data[SC_DOUBLECASTING].timer != -1 &&
 		atn_rand() % 100 < 30+10*skilllv) {
@@ -1817,9 +1816,6 @@ static int skill_check_unit_range_sub( struct block_list *bl,va_list ap )
 	} else if (skillid==HP_BASILICA) {
 		if ((unit_id<0x8f || unit_id>0x99) && unit_id!=0x92 && unit_id!=0x83)
 			return 0;
-//	} else if (skillid==HW_GRAVITATION) {
-//		if (unit_id!=0xb8)
-//			return 0;
 	} else
 		return 0;
 
@@ -2188,6 +2184,7 @@ int skill_cleartimerskill(struct block_list *src)
  * -------------------------------------------------------------------------
  */
 
+
 /*==========================================
  * スキル使用（詠唱完了、ID指定攻撃系）
  * （スパゲッティに向けて１歩前進！(ダメポ)）
@@ -2220,7 +2217,6 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 		status_change_start(src,SC_DOUBLE,skilllv,0,0,0,skill_get_time(skillid,skilllv),0);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
-	/* 武器攻撃系スキル */
 	case SM_BASH:			/* バッシュ */
 	case MC_MAMMONITE:		/* メマーナイト */
 	case AS_SONICBLOW:		/* ソニックブロー */
@@ -3379,7 +3375,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 				map_freeblock_unlock();
 				return 0;
 			}
-			
+
 			if(dstsd->sc_data && (dstsd->sc_data[SC_MARIONETTE].timer!=-1 || dstsd->sc_data[SC_MARIONETTE2].timer!=-1))
 			{
 				clif_skill_fail(sd,skillid,0,0);
@@ -3599,6 +3595,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			}
 		}
 		break;
+
 	/* パーティスキル */
 	case AL_ANGELUS:		/* エンジェラス */
 	case PR_MAGNIFICAT:		/* マグニフィカート */
@@ -3636,6 +3633,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 				skill_castend_nodamage_id);
 		}
 		break;
+
 	/*（付加と解除が必要） */
 	case BS_MAXIMIZE:		/* マキシマイズパワー */
 	case NV_TRICKDEAD:		/* 死んだふり */
@@ -3922,7 +3920,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		{
 			int alive = 1;
 			map_foreachinarea(skill_landprotector,src->m,src->x,src->y,src->x,src->y,BL_SKILL,skillid,&alive);
-			if( sd && alive){
+			if(sd && alive){
 				if(map[sd->bl.m].flag.noteleport){	/* テレポ禁止 */
 					clif_skill_teleportmessage(sd,0);
 					break;
@@ -4087,10 +4085,10 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			if(sd) {
 				x = skilllv%11 - 1;
 				i = pc_search_inventory(sd,skill_db[skillid].itemid[x]);
-				
+
 				if(sd->sc_data[SC_ALCHEMIST].timer!=-1)
 					lv_per = sd->status.base_level/10 * 10;
-					
+
 				if(i < 0 || skill_db[skillid].itemid[x] <= 0) {
 					clif_skill_fail(sd,skillid,0,0);
 					map_freeblock_unlock();
@@ -4800,6 +4798,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			struct guild * g = guild_search(sd->status.guild_id);
 			struct map_session_data * member = NULL;
 			clif_skill_nodamage(src,src,skillid,skilllv,1);
+
 			if(battle_config.emergencycall_point_randam)
 			{
 				int i;
@@ -5464,12 +5463,12 @@ int skill_castend_map( struct map_session_data *sd,int skill_num, const char *ma
 		{
 			int alive = 1;
 			map_foreachinarea(skill_landprotector,sd->bl.m,sd->bl.x,sd->bl.y,sd->bl.x,sd->bl.y,BL_SKILL,AL_TELEPORT,&alive);
-			if( sd && alive){
+			if(sd && alive){
 				if(strcmp(map,"Random")==0)
-				pc_randomwarp(sd,3);
+					pc_randomwarp(sd,3);
 				else
-				pc_setpos(sd,sd->status.save_point.map,
-					sd->status.save_point.x,sd->status.save_point.y,3);
+					pc_setpos(sd,sd->status.save_point.map,
+						sd->status.save_point.x,sd->status.save_point.y,3);
 			}
 		}
 		break;
@@ -5641,7 +5640,7 @@ struct skill_unit_group *skill_unitsetting( struct block_list *src, int skillid,
 				//if(ptd->tick > skill_get_time(skillid,skilllv))
 				//	ptd->tick = skill_get_time(skillid,skilllv);
 				//属性場の残り時間算出
-				limit = sd->sc_data[SC_ELEMENTFIELD].val2 -  (gettick() - sd->sc_data[SC_ELEMENTFIELD].val3);
+				limit = sd->sc_data[SC_ELEMENTFIELD].val2 - (gettick() - sd->sc_data[SC_ELEMENTFIELD].val3);
 			}else{
 				status_change_start(src,SC_ELEMENTFIELD,1,skill_get_time(skillid,skilllv),gettick(),0,skill_get_time(skillid,skilllv),0 );
 			}
@@ -6265,7 +6264,7 @@ int skill_unit_onout(struct skill_unit *src,struct block_list *bl,unsigned int t
 
 /*==========================================
  * スキルユニット効果発動/離脱処理(foreachinarea)
- *    bl: ユニット(BL_PC/BL_MOB)
+ *	bl: ユニット(BL_PC/BL_MOB)
  *------------------------------------------
  */
 int skill_unit_effect(struct block_list *bl,va_list ap)
@@ -6640,7 +6639,6 @@ int skill_check_condition(struct map_session_data *sd,int type)
 
 	nullpo_retr(0, sd);
 
-
 	//GMハイド中で、コンフィグでハイド中攻撃不可 GMレベルが指定より大きい場合
 	if(sd->status.option&0x40 && battle_config.hide_attack == 0	&& pc_isGM(sd)<battle_config.gm_hide_attack_lv)
 		return 0;	// 隠れてスキル使うなんて卑怯なGMﾃﾞｽﾈ
@@ -6799,11 +6797,11 @@ int skill_check_condition(struct map_session_data *sd,int type)
 		{
 			int alive = 1;
 			map_foreachinarea(skill_landprotector,sd->bl.m,sd->bl.x,sd->bl.y,sd->bl.x,sd->bl.y,BL_SKILL,AL_TELEPORT,&alive);
-			if(alive==0){	
+			if(alive==0){
 				clif_skill_teleportmessage(sd,0);
 				return 0;
 			}
-			
+
 			if(map[sd->bl.m].flag.noteleport) {
 				clif_skill_teleportmessage(sd,0);
 				return 0;
@@ -7187,7 +7185,7 @@ int skill_check_condition(struct map_session_data *sd,int type)
 		}
 		break;
 	}
-	
+
 	//属性場用 出ている間はコスト無し
 	switch(skill)
 	{
@@ -7198,7 +7196,7 @@ int skill_check_condition(struct map_session_data *sd,int type)
 				goto ITEM_NOCOST;
 			break;
 	}
-	
+
 	//GVG PVP以外のマップでの特殊処理
 	if(map[sd->bl.m].flag.pvp==0 && map[sd->bl.m].flag.gvg==0)
 	{
@@ -7257,8 +7255,6 @@ int skill_check_condition(struct map_session_data *sd,int type)
 				break;
 		}
 	}
-
-
 
 	for(i=0;i<10;i++) {
 		int x = lv%11 - 1;
@@ -7564,7 +7560,7 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 					clif_marionette(sd,0);
 					return 0;
 				}
-				
+
 				//自分または相手がマリオネット状態なら失敗
 				if(sd->sc_data[SC_MARIONETTE2].timer!=-1)
 				{
@@ -7629,14 +7625,14 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 			return 0;
 	}
 	if((skill_num != MO_CHAINCOMBO &&
-	    skill_num != MO_COMBOFINISH &&
-	    skill_num != MO_EXTREMITYFIST &&
-	    skill_num != CH_TIGERFIST &&
-	    skill_num != CH_CHAINCRUSH &&
-	    skill_num != TK_STORMKICK &&
-	    skill_num != TK_DOWNKICK &&
-	    skill_num != TK_TURNKICK &&
-	    skill_num != TK_COUNTER) ||
+		skill_num != MO_COMBOFINISH &&
+		skill_num != MO_EXTREMITYFIST &&
+		skill_num != CH_TIGERFIST &&
+		skill_num != CH_CHAINCRUSH &&
+		skill_num != TK_STORMKICK &&
+		skill_num != TK_DOWNKICK &&
+		skill_num != TK_TURNKICK &&
+		skill_num != TK_COUNTER) ||
 		(skill_num == MO_EXTREMITYFIST && sd->state.skill_flag) )
 		pc_stopattack(sd);
 
@@ -7746,6 +7742,7 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 			clif_skill_fail(sd,sd->skillid,0,0);
 			return 0;
 		}
+		break;
 	case AM_TWILIGHT1:
 		if(sd->sc_data[SC_ALCHEMIST].timer==-1){
 			clif_skill_fail(sd,sd->skillid,0,0);
@@ -7764,11 +7761,11 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 				{
 					int i;
 					struct map_session_data* psd = NULL;
-	
+
 					for(i=0;i<MAX_PARTY;i++)
 					{
 						psd = pt->member[i].sd;
-						if(psd->status.class == PC_CLASS_SNV || psd->status.class == PC_CLASS_SNV3)
+						if(psd && (psd->status.class == PC_CLASS_SNV || psd->status.class == PC_CLASS_SNV3))
 						{
 							f = 1;
 							break;
@@ -7794,11 +7791,11 @@ int skill_use_id( struct map_session_data *sd, int target_id,
 				{
 					int i;
 					struct map_session_data* psd = NULL;
-	
+
 					for(i=0;i<MAX_PARTY;i++)
 					{
 						psd = pt->member[i].sd;
-						if(psd->status.class == PC_CLASS_TK)
+						if(psd && psd->status.class == PC_CLASS_TK)
 						{
 							f = 1;
 							break;
@@ -8216,7 +8213,6 @@ void skill_devotion(struct map_session_data *md,int target)
 		}
 	}
 }
-
 void skill_devotion2(struct block_list *bl,int crusader)
 {
 	// 被ディボーションが歩いた時の距離チェック
@@ -8272,7 +8268,7 @@ int skill_marionette(struct block_list *bl,int target)
 	//マリオネット主が歩いた時の距離チェック
 	struct map_session_data *sd;
 	struct map_session_data *tsd;
-	int n,r=0;
+	int r=0;
 
 	nullpo_retr(1, bl);
 	sd = (struct map_session_data *)bl;
@@ -8281,7 +8277,7 @@ int skill_marionette(struct block_list *bl,int target)
 	{
 		if(sd->sc_data[SC_MARIONETTE].timer!=-1){
 			status_change_end(&sd->bl,SC_MARIONETTE,-1);
-			clif_devotion(sd,0);
+			clif_marionette(sd,0);
 		}
 		return 1;
 	}
@@ -8291,7 +8287,7 @@ int skill_marionette(struct block_list *bl,int target)
 	if(7 < r){	// 許容範囲を超えてた
 		status_change_end(&sd->bl,SC_MARIONETTE,-1);
 		status_change_end(&tsd->bl,SC_MARIONETTE2,-1);
-		clif_devotion(sd,0);
+		clif_marionette(sd,0);
 		//clif_devotion(sd,sd->sc_data[SC_MARIONETTE].val2);
 		return 1;
 	}
@@ -8308,7 +8304,7 @@ void skill_marionette2(struct block_list *bl,int src)
 	if(sd)
 		 skill_marionette(&sd->bl,bl->id);
 	else
-		status_change_end(&bl,SC_MARIONETTE2,-1);
+		status_change_end(bl,SC_MARIONETTE2,-1);
 }
 
 /*==========================================
@@ -8627,7 +8623,6 @@ int skill_tarot_card_of_fate(struct block_list *src,struct block_list *target,in
 		return 0;
 	if(target==NULL)
 		return 0;
-
 	if(target->type == BL_PC)
 		tsd = (struct map_session_data*)target;
 	else if(target->type == BL_MOB)
@@ -9445,8 +9440,8 @@ int skill_unit_move_sub(struct block_list *bl, va_list ap)
 
 /*==========================================
  * ユニット移動時処理
- *    flag  0:移動前処理(ユニット位置のスキルユニットを離脱)
- *          1:移動後処理(ユニット位置のスキルユニットを発動)
+ *	flag  0:移動前処理(ユニット位置のスキルユニットを離脱)
+ *		  1:移動後処理(ユニット位置のスキルユニットを発動)
  *------------------------------------------
  */
 int skill_unit_move(struct block_list *bl,unsigned int tick,int flag)
@@ -9488,11 +9483,11 @@ int skill_unit_move_unit_group( struct skill_unit_group *group, int m,int dx,int
 	m_flag = malloc(sizeof(int)*group->unit_count);
 	memset(m_flag,0,sizeof(int)*group->unit_count);// 移動フラグ
 	// 先にフラグを全部決める
-	//    m_flag
+	//	m_flag
 	//		0: 単純移動
-	//      1: ユニットを移動する(現位置からユニットがなくなる)
-	//      2: 残留＆新位置が移動先となる(移動先にユニットが存在しない)
-	//      3: 残留
+	//	  1: ユニットを移動する(現位置からユニットがなくなる)
+	//	  2: 残留＆新位置が移動先となる(移動先にユニットが存在しない)
+	//	  3: 残留
 	for(i=0;i<group->unit_count;i++){
 		unit1=&group->unit[i];
 		if (!unit1->alive || unit1->bl.m!=m)
@@ -9807,7 +9802,7 @@ int skill_produce_mix( struct map_session_data *sd,
 								sd->am_pharmacy_success = 0;
 								break;
 						}
-						
+
 					}
 				}
 				break;
@@ -9875,7 +9870,7 @@ int skill_produce_mix( struct map_session_data *sd,
 //
 int skill_am_twilight_sub(struct map_session_data* sd,int nameid,int make_per)
 {
-
+	nullpo_retr(0, sd)
 	if(atn_rand()%10000 < make_per){
 		/* 成功 */
 		int flag;
@@ -9926,7 +9921,7 @@ int skill_am_twilight_sub(struct map_session_data* sd,int nameid,int make_per)
 					ranking_setglobalreg(sd,RK_ALCHEMIST);
 					ranking_update(sd,RK_ALCHEMIST);
 					sd->am_pharmacy_success = 0;
-					break;	
+					break;
 				}
 			}
 		}
@@ -9961,12 +9956,13 @@ int skill_am_twilight_sub(struct map_session_data* sd,int nameid,int make_per)
 
 int skill_am_twilight1(struct map_session_data* sd)
 {
-	int i,make_per = 0;
+	int i,make_per;
+	nullpo_retr(0, sd)
 	//白ポ
 	make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*100
 				+pc_checkskill(sd,AM_PHARMACY)*300+sd->status.job_level*20
 				+sd->status.dex*10+sd->status.int_*5+2000;
-	
+
 	if(make_per < 1) make_per = 1;
 
 	if( battle_config.pp_rate!=100 )
@@ -9978,12 +9974,13 @@ int skill_am_twilight1(struct map_session_data* sd)
 
 	for(i=0;i<200;i++)
 		skill_am_twilight_sub(sd,504,make_per);
-	
+
 	return 1;
 }
 int skill_am_twilight2(struct map_session_data* sd)
 {
-	int i,make_per = 0;
+	int i,make_per;
+	nullpo_retr(0, sd)
 	//白スリム
 	make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*100
 				+pc_checkskill(sd,AM_PHARMACY)*300+sd->status.job_level*20
@@ -10000,18 +9997,21 @@ int skill_am_twilight2(struct map_session_data* sd)
 
 	for(i=0;i<200;i++)
 		skill_am_twilight_sub(sd,547,make_per);
+
+	return 1;
 }
 int skill_am_twilight3(struct map_session_data* sd)
 {
-	int i,make_per = 0,make_per2 = 0;
+	int i,make_per;//,make_per2;
+	nullpo_retr(0, sd)
 	//アルコール
 	make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*100
 				+pc_checkskill(sd,AM_PHARMACY)*300+sd->status.job_level*20
 				+sd->status.dex*10+sd->status.int_*5+1000;
 	//その他
-	make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*100
-				+pc_checkskill(sd,AM_PHARMACY)*300+sd->status.job_level*20
-				+sd->status.dex*10+sd->status.int_*5;
+//	make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*100
+//				+pc_checkskill(sd,AM_PHARMACY)*300+sd->status.job_level*20
+//				+sd->status.dex*10+sd->status.int_*5;
 
 	if(make_per < 1) make_per = 1;
 
@@ -10034,6 +10034,7 @@ int skill_am_twilight3(struct map_session_data* sd)
 	{
 		skill_am_twilight_sub(sd,7136,make_per);
 	}
+	return 1;
 }
 int skill_arrow_create( struct map_session_data *sd,int nameid)
 {
@@ -10169,7 +10170,7 @@ int skill_use_bonus_autospell(struct block_list * src,struct block_list * bl,int
 	//指定あるがいらないな
 	//if(asflag&EAS_TARGET)
 	//	spell_target = (struct block_list *)bl;//相手
-	//else 
+	//else
 	if(asflag&EAS_SELF)
 		spell_target = (struct block_list *)sd;//自分
 	else if(asflag&EAS_TARGET_RAND)
@@ -10264,7 +10265,7 @@ int skill_bonus_autospell(struct block_list * src,struct block_list * bl,int mod
 		}
 	}else{
 		if(mode&EAS_ATTACK || mode&EAS_LONG_ATTACK)
-			return 	skill_use_bonus_autospell(src,bl,sd->autospell.id[0],sd->autospell.lv[0],sd->autospell.rate[0],sd->autospell.flag[0],tick,flag);
+			return skill_use_bonus_autospell(src,bl,sd->autospell.id[0],sd->autospell.lv[0],sd->autospell.rate[0],sd->autospell.flag[0],tick,flag);
 		else if(mode&EAS_REVENGE || mode&EAS_LONG_REVENGE)
 				skill_use_bonus_autospell(src,bl,sd->autospell.id[1],sd->autospell.lv[1],sd->autospell.rate[1],sd->autospell.flag[1],tick,flag);
 	}
@@ -10277,7 +10278,7 @@ int skill_bonus_autospell(struct block_list * src,struct block_list * bl,int mod
 
 /*
  * 文字列処理
- *        ',' で区切って val に戻す
+ *		',' で区切って val に戻す
  */
 int skill_split_str(char *str,char **val,int num)
 {
@@ -10293,7 +10294,7 @@ int skill_split_str(char *str,char **val,int num)
 }
 /*
  * 文字列処理
- *      ':' で区切ってatoiしてvalに戻す
+ *	  ':' で区切ってatoiしてvalに戻す
  */
 int skill_split_atoi(char *str,int *val)
 {

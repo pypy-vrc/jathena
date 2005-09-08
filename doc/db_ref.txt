@@ -15,7 +15,7 @@ skill_require_db.txt	スキル使用条件を設定。
 pet_db.txt	ペットのデータを設定。
 packet_db.txt	map-server clif.cで使うパケット定義。
 item_db.txt	アイテムのデータを設定
-
+mob_db.txt	モンスターのデータを設定
 
 ==========================================================================
 1. db/skill_cast_db.txt
@@ -259,9 +259,9 @@ ID,Name,Jname,Type,Price,Sell,Weight,ATK,DEF,Range,Slot,Job,Gender,Loc,wLV,eLV,V
 
 
 ==========================================================================
-7. db/mob_db.txt			参考先 AthenaWiki
+7. db/mob_db.txt
 --------------------------------------------------------------------------
-ID,Name,JName,LV,HP,SP,EXP,JEXP,Range1,ATK1,ATK2,DEF,MDEF,STR,AGI,VIT,INT,DEX,LUK,Range2,Range3,Scale,Race,Element,Mode,Speed,ADelay,aMotion,dMotion,Drop1id,Drop1per,Drop2id,Drop2per,Drop3id,Drop3per,Drop4id,Drop4per,Drop5id,Drop5per,Drop6id,Drop6per,Drop7id,Drop7per,Drop8id,Drop8per,Item1,Item2,MEXP,ExpPer,MVP1id,MVP1per,MVP2id,MVP2per,MVP3id,MVP3per
+ID,Name,JName,LV,HP,SP,EXP,JEXP,Range1,ATK1,ATK2,DEF,MDEF,STR,AGI,VIT,INT,DEX,LUK,Range2,Range3,Scale,Race,Element,Mode,Speed,ADelay,aMotion,dMotion,Drop1id,Drop1per,Drop2id,Drop2per,Drop3id,Drop3per,Drop4id,Drop4per,Drop5id,Drop5per,Drop6id,Drop6per,Drop7id,Drop7per,Drop8id,Drop8per,Drop9id,Drop9per,Cardid,Cardper,MEXP,ExpPer,MVP1id,MVP1per,MVP2id,MVP2per,MVP3id,MVP3per
 
 ID : Ragexe Sakexeで定義されたID
 Name : 名前（英語）
@@ -325,9 +325,9 @@ ADelay : 基本攻撃速度は謎
 	（1>??<3074? : 攻撃速度。Aspdの代わり？数値が小さくなれば速く、大きくなれば遅くなる。）
 aMotion : 攻撃時のモーションスピードのディレイタイム
 dMotion : dMotionは攻撃アニメーション終了時のディレイタイム
-Drop1id,(id),Drop1per,(per)～Drop8id,(id),Drop8per,(per) : 通常ドロップアイテムとその確率。1から8個まで設定可能
-	（例：4001,2 の場合はポリンカードを0.02%の確率でドロップするということになる）
-Item1-Item2 : 謎
+Drop1id,(id),Drop1per,(per)～Drop8id,(id),Drop8per,(per) : 通常ドロップアイテムとその確率。1から9個まで設定可能
+	（例：512,2 の場合はリンゴを0.02%の確率でドロップするということになる）
+Cardid,(id),Cardper,(per) : ドロップするカードのIDと確立。１つだけ設定可能。
 MEXP : MVPを取ったとき入る経験値
 ExpPer : MVPを取ったとき経験値が入る確率
 MVP1id(id),MVP1per,(per)～MVP3id(id),MVP3per,(per) : MVPドロップアイテムとその確率。3個まで設定可能

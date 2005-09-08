@@ -810,8 +810,8 @@ unsigned char* parse_curly_close(unsigned char *p) {
 }
 
 // 構文関連の処理
-//     break, case, continue, default, do, for, function,
-//     if, switch, while をこの内部で処理します。
+//	 break, case, continue, default, do, for, function,
+//	 if, switch, while をこの内部で処理します。
 unsigned char* parse_syntax(unsigned char *p) {
 	switch(p[0]) {
 	case 'b':
@@ -1254,8 +1254,8 @@ unsigned char* parse_syntax_close(unsigned char *p) {
 }
 
 // if, for , while , do の閉じ判定
-//     flag == 1 : 閉じられた
-//     flag == 0 : 閉じられない
+//	 flag == 1 : 閉じられた
+//	 flag == 0 : 閉じられない
 unsigned char* parse_syntax_close_sub(unsigned char *p,int *flag) {
 	char label[256];
 	int pos = syntax.curly_count - 1;
@@ -1605,8 +1605,8 @@ unsigned char* parse_script(unsigned char *src,int line)
 			printf("%06x ",i);
 			j = i;
 			switch(get_com(script_buf,&i)) {
-			case C_EOL:     printf("C_EOL"); break;
-			case C_INT:     printf("C_INT %d",get_num(script_buf,&i)); break;
+			case C_EOL:	 printf("C_EOL"); break;
+			case C_INT:	 printf("C_INT %d",get_num(script_buf,&i)); break;
 			case C_POS:
 				printf("C_POS  0x%06x",*(int*)(script_buf+i)&0xffffff);
 				i += 3;
@@ -1616,30 +1616,30 @@ unsigned char* parse_script(unsigned char *src,int line)
 				printf("C_NAME %s",j == 0xffffff ? "?? unknown ??" : str_buf + str_data[j].str);
 				i += 3;
 				break;
-			case C_ARG:     printf("C_ARG"); break;
-			case C_FUNC:    printf("C_FUNC"); break;
-			case C_ADD:     printf("C_ADD"); break;
-			case C_SUB:     printf("C_SUB"); break;
-			case C_MUL:     printf("C_MUL"); break;
-			case C_DIV:     printf("C_DIV"); break;
-			case C_MOD:     printf("C_MOD"); break;
-			case C_EQ:      printf("C_EQ"); break;
-			case C_NE:      printf("C_NE"); break;
-			case C_GT:      printf("C_GT"); break;
-			case C_GE:      printf("C_GE"); break;
-			case C_LT:      printf("C_LT"); break;
-			case C_LE:      printf("C_LE"); break;
-			case C_AND:     printf("C_AND"); break;
-			case C_OR:      printf("C_OR"); break;
-			case C_XOR:     printf("C_XOR"); break;
-			case C_LAND:    printf("C_LAND"); break;
-			case C_LOR:     printf("C_LOR"); break;
-			case C_R_SHIFT: printf("C_R_SHIFT"); break;
-			case C_L_SHIFT: printf("C_L_SHIFT"); break;
-			case C_NEG:     printf("C_NEG"); break;
-			case C_NOT:     printf("C_NOT"); break;
-			case C_LNOT:    printf("C_LNOT"); break;
-			case C_NOP:     printf("C_NOP"); break;
+			case C_ARG:		printf("C_ARG"); break;
+			case C_FUNC:	printf("C_FUNC"); break;
+			case C_ADD:	 	printf("C_ADD"); break;
+			case C_SUB:		printf("C_SUB"); break;
+			case C_MUL:		printf("C_MUL"); break;
+			case C_DIV:		printf("C_DIV"); break;
+			case C_MOD:		printf("C_MOD"); break;
+			case C_EQ:		printf("C_EQ"); break;
+			case C_NE:		printf("C_NE"); break;
+			case C_GT:		printf("C_GT"); break;
+			case C_GE:		printf("C_GE"); break;
+			case C_LT:		printf("C_LT"); break;
+			case C_LE:		printf("C_LE"); break;
+			case C_AND:		printf("C_AND"); break;
+			case C_OR:		printf("C_OR"); break;
+			case C_XOR:		printf("C_XOR"); break;
+			case C_LAND:	printf("C_LAND"); break;
+			case C_LOR:		printf("C_LOR"); break;
+			case C_R_SHIFT:	printf("C_R_SHIFT"); break;
+			case C_L_SHIFT:	printf("C_L_SHIFT"); break;
+			case C_NEG:		printf("C_NEG"); break;
+			case C_NOT:		printf("C_NOT"); break;
+			case C_LNOT:	printf("C_LNOT"); break;
+			case C_NOP:		printf("C_NOP"); break;
 			case C_STR:
 				j = strlen(script_buf + i);
 				printf("C_STR %s",script_buf + i);
@@ -2065,20 +2065,20 @@ void op_2num(struct script_state *st,int op,int i1,int i2)
 	int ret = 0;
 	double ret_double = 0;
 	switch(op){
-	case C_MOD:  ret = i1 % i2;    break;
-	case C_AND:  ret = i1 & i2;    break;
-	case C_OR:   ret = i1 | i2;    break;
-	case C_XOR:  ret = i1 ^ i2;    break;
-	case C_LAND: ret = (i1 && i2); break;
-	case C_LOR:  ret = (i1 || i2); break;
-	case C_EQ:   ret = (i1 == i2); break;
-	case C_NE:   ret = (i1 != i2); break;
-	case C_GT:   ret = (i1 >  i2); break;
-	case C_GE:   ret = (i1 >= i2); break;
-	case C_LT:   ret = (i1 <  i2); break;
-	case C_LE:   ret = (i1 <= i2); break;
-	case C_R_SHIFT: ret = i1>>i2;  break;
-	case C_L_SHIFT: ret = i1<<i2;  break;
+	case C_MOD:  ret = i1 % i2;		break;
+	case C_AND:  ret = i1 & i2;		break;
+	case C_OR:   ret = i1 | i2;		break;
+	case C_XOR:  ret = i1 ^ i2;		break;
+	case C_LAND: ret = (i1 && i2);	break;
+	case C_LOR:  ret = (i1 || i2);	break;
+	case C_EQ:   ret = (i1 == i2);	break;
+	case C_NE:   ret = (i1 != i2);	break;
+	case C_GT:   ret = (i1 >  i2);	break;
+	case C_GE:   ret = (i1 >= i2);	break;
+	case C_LT:   ret = (i1 <  i2);	break;
+	case C_LE:   ret = (i1 <= i2);	break;
+	case C_R_SHIFT: ret = i1>>i2;	break;
+	case C_L_SHIFT: ret = i1<<i2;	break;
 	default:
 		switch(op) {
 		case C_SUB: ret = i1 - i2; ret_double = (double)i1 - (double)i2; break;
@@ -2273,7 +2273,7 @@ int run_script(unsigned char *rootscript,int pos,int rid,int oid)
 		st.stack  = sd->stack;
 		st.state  = sd->npc_scriptstate;
 		sd->stack = NULL; // プレイヤーがデタッチされても良いようにクリア
-		sd->npc_script      = NULL;
+		sd->npc_script	    = NULL;
 		sd->npc_scriptroot  = NULL;
 		sd->npc_scriptstate = 0;
 	} else {
@@ -2294,10 +2294,10 @@ int run_script(unsigned char *rootscript,int pos,int rid,int oid)
 	sd = map_id2sd(st.rid);
 	if(st.state != END && sd){
 		// 再開するためにスタック情報を保存
-		sd->npc_script      = st.script;
-		sd->npc_scriptroot  = rootscript;
-		sd->npc_scriptstate = st.state;
-		sd->stack           = st.stack;
+		sd->npc_script		= st.script;
+		sd->npc_scriptroot	= rootscript;
+		sd->npc_scriptstate	= st.state;
+		sd->stack			= st.stack;
 	} else {
 		// 実行が終わった or 続行不可能なのでスタッククリア
 		free(st.stack->stack_data);
@@ -4286,7 +4286,7 @@ int buildin_strcharinfo(struct script_state *st)
 unsigned int equip[10]={0x0100,0x0010,0x0020,0x0002,0x0004,0x0040,0x0008,0x0080,0x0200,0x0001};
 
 /*==========================================
- * GetEquipID(Pos);     Pos: 1-10
+ * GetEquipID(Pos);	 Pos: 1-10
  *------------------------------------------
  */
 int buildin_getequipid(struct script_state *st)
@@ -4378,8 +4378,8 @@ int buildin_getequipisenableref(struct script_state *st)
 	sd=script_rid2sd(st);
 	i=pc_checkequip(sd,equip[num-1]);
 //	if(i >= 0 && num<7 && sd->inventory_data[i] && (num!=1 || sd->inventory_data[i]->def > 1
-//	             || (sd->inventory_data[i]->def==1 && sd->inventory_data[i]->equip_script==NULL)
-//	             || (sd->inventory_data[i]->def<=0 && sd->inventory_data[i]->equip_script!=NULL)){
+//				 || (sd->inventory_data[i]->def==1 && sd->inventory_data[i]->equip_script==NULL)
+//				 || (sd->inventory_data[i]->def<=0 && sd->inventory_data[i]->equip_script!=NULL)){
 	if(i >= 0 && sd->inventory_data[i] && (sd->inventory_data[i]->refine != 0))
 		push_val(st->stack,C_INT,1);
 	else
@@ -4875,8 +4875,8 @@ int buildin_gettimetick(struct script_state *st)	/* Asgard Version */
 
 /*==========================================
  * GetTime(Type);
- * 1: Sec     2: Min     3: Hour
- * 4: WeekDay     5: MonthDay     6: Month
+ * 1: Sec	 2: Min	 3: Hour
+ * 4: WeekDay	 5: MonthDay	 6: Month
  * 7: Year
  *------------------------------------------
  */
@@ -5057,15 +5057,14 @@ int buildin_monster(struct script_state *st)
 		return 0;
 
 	id = mob_once_spawn(map_id2sd(st->rid),map,x,y,str,class,amount,event);
-
+	if(!id) return 0;
 	md = (struct mob_data *)map_id2bl(id);
+	if(!md) return 0;
 	md->guardup_lv = 0;
 	if((g = guild_search(guild_id))!=NULL){
-		if(md){
-			md->guild_id = guild_id;
-			//ガーディアンならギルドスキル適用
-			md->guardup_lv = guild_checkskill(g,GD_GUARDUP);
-		}
+		md->guild_id = guild_id;
+		//ガーディアンならギルドスキル適用
+		md->guardup_lv = guild_checkskill(g,GD_GUARDUP);
 	}
 
 	//ランダム召還じゃないならドロップあり
@@ -6285,7 +6284,7 @@ int buildin_maprespawnguildid(struct script_state *st)
 
 int buildin_agitstart(struct script_state *st)
 {
-	if(agit_flag==1) return 1;      // Agit already Start.
+	if(agit_flag==1) return 1;	  // Agit already Start.
 	agit_flag=1;
 	guild_agit_start();
 
@@ -6294,13 +6293,13 @@ int buildin_agitstart(struct script_state *st)
 
 int buildin_agitend(struct script_state *st)
 {
-	if(agit_flag==0) return 1;      // Agit already End.
+	if(agit_flag==0) return 1;	  // Agit already End.
 	agit_flag=0;
 	guild_agit_end();
 	return 0;
 }
 /*==========================================
- * agitcheck 1;    // choice script
+ * agitcheck 1;	// choice script
  * if(@agit_flag == 1) goto agit;
  * if(agitcheck(0) == 1) goto agit;
  *------------------------------------------
@@ -7233,7 +7232,6 @@ int buildin_getmapname(struct script_state *st)
 		push_str(st->stack,C_STR,sd->mapname);
 	return 0;
 }
-
 //add new define for new Script
 #define MAP_NAME_LENGTH 24
 
@@ -7269,21 +7267,21 @@ int buildin_summon(struct script_state *st)
 /*==========================================
   * Get position for  char/npc/pet/mob objects. Added by Lorky
   *
-  *     int getMapXY(MapName$,MaxX,MapY,type,[CharName$]);
-  *	     where type:
-  *		     MapName$ - String variable for output map name
-  *		     MapX     - Integer variable for output coord X
-  *		     MapY     - Integer variable for output coord Y
-  *		     type     - type of object
+  *	 int getMapXY(MapName$,MaxX,MapY,type,[CharName$]);
+  *		 where type:
+  *			 MapName$ - String variable for output map name
+  *			 MapX	 - Integer variable for output coord X
+  *			 MapY	 - Integer variable for output coord Y
+  *			 type	 - type of object
   *				0 - Character coord
   *				1 - NPC coord
   *				2 - Pet coord
   *				3 - Mob coord (not released)
-  *		     CharName$ - Name object. If miss or "this" the current object
+  *			 CharName$ - Name object. If miss or "this" the current object
   *
-  *	     Return:
-  *		     0	- success
-  *		     -1       - some error, MapName$,MapX,MapY contains unknown value.
+  *		 Return:
+  *			 0	- success
+  *			 -1	   - some error, MapName$,MapX,MapY contains unknown value.
   *------------------------------------------
 */ //[#cbf145a0]
 int buildin_getmapxy(struct script_state *st){
@@ -7319,104 +7317,95 @@ int buildin_getmapxy(struct script_state *st){
 	mapname=(char *) aCalloc(MAP_NAME_LENGTH, sizeof(char));
 
 	switch (type){
-	    case 0:					     //Get Character Position
-		    if( st->end>st->start+6 )
-			sd=map_nick2sd(conv_str(st,& (st->stack->stack_data[st->start+6])));
-		    else
-			sd=script_rid2sd(st);
+		case 0:						 //Get Character Position
+			if( st->end>st->start+6 )
+				sd=map_nick2sd(conv_str(st,& (st->stack->stack_data[st->start+6])));
+			else
+				sd=script_rid2sd(st);
 
-		    if ( sd==NULL ) {		   //wrong char name or char offline
+			if ( sd==NULL ) {		//wrong char name or char offline
 			push_val(st->stack,C_INT,-1);
 			return 0;
-		    }
-
-
-		    x=sd->bl.x;
-		    y=sd->bl.y;
-		    memcpy(mapname,sd->mapname, MAP_NAME_LENGTH-1);
-		    break;
-	    case 1:					     //Get NPC Position
-		    if( st->end > st->start+6 )
-			nd=npc_name2id(conv_str(st,& (st->stack->stack_data[st->start+6])));
-		    else
-			nd=(struct npc_data *)map_id2bl(st->oid);
-
-		    if ( nd==NULL ) {		   //wrong npc name or char offline
+			}
+			x=sd->bl.x;
+			y=sd->bl.y;
+			memcpy(mapname,sd->mapname, MAP_NAME_LENGTH-1);
+			break;
+		case 1:						//Get NPC Position
+			if( st->end > st->start+6 )
+				nd=npc_name2id(conv_str(st,& (st->stack->stack_data[st->start+6])));
+			else
+				nd=(struct npc_data *)map_id2bl(st->oid);
+			if ( nd==NULL ) {		//wrong npc name or char offline
+				push_val(st->stack,C_INT,-1);
+				return 0;
+			}
+			x=nd->bl.x;
+			y=nd->bl.y;
+			memcpy(mapname, map[nd->bl.m].name, MAP_NAME_LENGTH-1);
+			break;
+		case 2:						//Get Pet Position
+			if( st->end>st->start+6 )
+				sd=map_nick2sd(conv_str(st,& (st->stack->stack_data[st->start+6])));
+			else
+				sd=script_rid2sd(st);
+			if ( sd==NULL ) {		//wrong char name or char offline
+				push_val(st->stack,C_INT,-1);
+				return 0;
+			}
+			pd=sd->pd;
+			if(pd==NULL){			//pet data not found
+				push_val(st->stack,C_INT,-1);
+				return 0;
+			}
+			x=pd->bl.x;
+			y=pd->bl.y;
+			memcpy(mapname, map[pd->bl.m].name, MAP_NAME_LENGTH-1);
+			break;
+		case 3:						//Get Mob Position
 			push_val(st->stack,C_INT,-1);
 			return 0;
-		    }
-
-		    x=nd->bl.x;
-		    y=nd->bl.y;
-		    memcpy(mapname, map[nd->bl.m].name, MAP_NAME_LENGTH-1);
-		    break;
-	    case 2:					     //Get Pet Position
-		    if( st->end>st->start+6 )
-			sd=map_nick2sd(conv_str(st,& (st->stack->stack_data[st->start+6])));
-		    else
-			sd=script_rid2sd(st);
-
-		    if ( sd==NULL ) {		   //wrong char name or char offline
-			push_val(st->stack,C_INT,-1);
-			return 0;
-		    }
-
-		    pd=sd->pd;
-
-		    if(pd==NULL){		       //pet data not found
-			push_val(st->stack,C_INT,-1);
-			return 0;
-		    }
-		    x=pd->bl.x;
-		    y=pd->bl.y;
-		    memcpy(mapname, map[pd->bl.m].name, MAP_NAME_LENGTH-1);
-		    break;
-
-	    case 3:					     //Get Mob Position
-			push_val(st->stack,C_INT,-1);
-			return 0;
-	    default:					    //Wrong type parameter
+		default:					//Wrong type parameter
 			push_val(st->stack,C_INT,-1);
 			return 0;
 	}
 
-     //Set MapName$
+	//Set MapName$
 	num=st->stack->stack_data[st->start+2].u.num;
 	name=(char *)(str_buf+str_data[num&0x00ffffff].str);
 	prefix=*name;
 
 	if( prefix!='$' )
-	    sd=script_rid2sd(st);
+		sd=script_rid2sd(st);
 	else
-	    sd=NULL;
+		sd=NULL;
 
 	set_reg(sd,num,name,(void*)mapname);
 
-     //Set MapX
+	//Set MapX
 	num=st->stack->stack_data[st->start+3].u.num;
 	name=(char *)(str_buf+str_data[num&0x00ffffff].str);
 	prefix=*name;
 
 	if( prefix!='$' )
-	    sd=script_rid2sd(st);
+		sd=script_rid2sd(st);
 	else
-	    sd=NULL;
+		sd=NULL;
 	set_reg(sd,num,name,(void*)x);
 
-
-     //Set MapY
+	//Set MapY
 	num=st->stack->stack_data[st->start+4].u.num;
 	name=(char *)(str_buf+str_data[num&0x00ffffff].str);
 	prefix=*name;
 
 	if( prefix!='$' )
-	    sd=script_rid2sd(st);
+		sd=script_rid2sd(st);
 	else
-	    sd=NULL;
+		sd=NULL;
 
 	set_reg(sd,num,name,(void*)y);
 
-     //Return Success value
+	//Return Success value
 	push_val(st->stack,C_INT,0);
 	return 0;
 }
@@ -7477,6 +7466,4 @@ int buildin_checkriding(struct script_state *st)
 
 	return 0;
 }
-
-
 

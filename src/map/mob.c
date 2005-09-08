@@ -35,8 +35,6 @@
 #define MOB_LAZYMOVEPERC 50		// 手抜きモードMOBの移動確率（千分率）
 #define MOB_LAZYWARPPERC 20		// 手抜きモードMOBのワープ確率（千分率）
 
-#define MOB_ID_MAX 2000
-
 struct mob_db mob_db[MOB_ID_MAX+1];
 /*	簡易設定	*/
 #define CLASSCHANGE_BOSS_NUM 21
@@ -2239,14 +2237,9 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 		if(mob_db[md->class].job_exp > 0 && job_exp < 1) job_exp = 1;
 		if(job_exp < 0) job_exp = 0;
 
-		// 取り巻きは経験値なし
-		//configで設定お願いします
-		//if(md->master_id>0)
-		//	base_exp=job_exp=0;
-
 		//太陽と月と星の憎悪
 		tk_exp_rate = 0;
-		
+
 		if(tmpsd[i]->sc_data[SC_MIRACLE].timer!=-1)
 		{
 			tk_exp_rate = 20*pc_checkskill(tmpsd[i],SG_STAR_BLESS);
@@ -2258,7 +2251,7 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 			else if((battle_config.allow_skill_without_day || is_day_of_star()) && md->class == tmpsd[i]->hate_mob[2])
 				tk_exp_rate = 20*pc_checkskill(tmpsd[i],SG_STAR_BLESS);
 		}
-		
+
 		if((pid=tmpsd[i]->status.party_id)>0){	// パーティに入っている
 			int j=0;
 			for(j=0;j<pnum;j++)	// 公平パーティリストにいるかどうか
@@ -3231,7 +3224,6 @@ int mobskill_use_pos( struct mob_data *md,
 	if( casttime<=0 )	// 詠唱の無いものはキャンセルされない
 		md->state.skillcastcancel=0;
 
-
 	md->skillx		= skill_x;
 	md->skilly		= skill_y;
 	md->skilltarget	= 0;
@@ -3250,7 +3242,6 @@ int mobskill_use_pos( struct mob_data *md,
 
 	return 1;
 }
-
 
 /*==========================================
  * 近くのMOBでHPの減っているものを探す
@@ -3629,9 +3620,11 @@ static int mob_readdb(void)
 				cov=1;	// item_db2による、すでに登録のあるIDの上書きかどうか
 
 			mob_db[class].view_class=class;
-			memcpy(mob_db[class].name,str[1],24);
-			memcpy(mob_db[class].jname,str[2],24);
 			// ここから先は、item_db2では記述のある部分のみ反映
+			if(!cov || strlen(str[1])>0)
+				memcpy(mob_db[class].name,str[1],24);
+			if(!cov || strlen(str[2])>0)
+				memcpy(mob_db[class].jname,str[2],24);
 			#define DB_ADD(a,b) a=((!cov)?atoi(str[b]):(strlen(str[b])>0)?atoi(str[b]):a)
 			DB_ADD(mob_db[class].lv,3);
 			DB_ADD(mob_db[class].max_hp,4);

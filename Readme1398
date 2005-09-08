@@ -1,4 +1,47 @@
 ----------------------------------------
+//1422 by huge
+・オンラインでないギルドメンバーを脱退させた際に、他のメンバーへ通知がいかないかもしれない問題を修正
+・npc_monster.txtでのmonster命令でもIDをチェックするように修正
+・mob_db2.txt読み込み時、MOB名を入れないと消えてしまう問題を修正
+・@reloaditemdbを使用した後に、ランダムアイテムDBが壊れる問題を修正
+・db_ref.txtのmob_dbに関する記述の修正
+・warning修正
+・その他整理など
+・ついでのversion更新
+	(doc/)
+		db_ref.txt 修正
+	(src/common/)
+		version.h
+	(src/map/)
+		clif.c
+			clif_marionette() 不要な関数宣言削除
+		guild.c
+			guild_member_leaved() 修正
+		itemdb.c
+			各ランダムアイテムのカウント初期化を
+			itemdb_read_randomitem() でやるよう修正
+		mob.c
+			MOB_ID_MAXは、mmo.hから読まれるので消し
+			mob_readdb() 修正
+		npc.c
+			npc_parse_mob() 修正
+		pc.c
+			pc_check_noequip(),pc_bonus3(),pc_bonus4() NULLチェック
+			pc_bonus4() warning消し
+		pc.h
+			pc_check_noequip() 追記
+		script.c
+			buildin_monster() 修正
+		skill.c
+			skill_use_id() NULLチェックと、breakし忘れ？を修正
+			skill_marionette() ディボーションへ飛ぶようになってたのを、マリオネットへ
+			skill_marionette2() warning消し
+			skill_am_twilight_sub(),skill_am_twilight1() NULLチェック
+			skill_am_twilight2(),skill_am_twilight3() NULLチェックと、warning消し
+		skill.h
+			skill_blown() 追記
+
+----------------------------------------
 //1421 by ＡＡＡ
 ・ベナムナイフ修正
 

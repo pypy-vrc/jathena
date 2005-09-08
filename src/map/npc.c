@@ -1,4 +1,4 @@
-// $Id: npc.c,v 1.2 2005/09/06 19:24:52 running_pinata Exp $
+// $Id: npc.c,v 1.3 2005/09/08 00:29:29 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -1465,6 +1465,11 @@ int npc_parse_mob(char *w1,char *w2,char *w3,char *w4)
 		strcpy(eventname,eventtemp);
 	}
 
+	if (class<0 || (class>=0 && class<=1000) || class >MOB_ID_MAX){
+		// ’èŠú•¦‚«‚ÅIDˆÙí‚Í’ˆÓ‚ð‘£‚·
+		printf("npc_monster bad class :%d\n",class);
+		return 0;
+	}
 	m=map_mapname2mapid(mapname);
 
 	if ( num>1 && battle_config.mob_count_rate!=100) {

@@ -6042,7 +6042,6 @@ int clif_devotion(struct map_session_data *sd,int target)
 int clif_marionette(struct map_session_data *sd,int target)
 {
 	unsigned char buf[56];
-	int n;
 
 	nullpo_retr(0, sd);
 
@@ -7750,12 +7749,12 @@ void clif_parse_DropItem(int fd,struct map_session_data *sd, int cmd)
 	}
 	if(sd->sc_data)
 		sd->sc_data[SC_ACTION_DELAY].val2++;
-	
+
 	if(sd->sc_data && sd->sc_data[SC_ACTION_DELAY].val2==6)
 	{
-		printf("%s様(ID:%d)のアイテムドロップ間隔が異常です\n",sd->status.name,sd->status.char_id);	
+		printf("%s様(ID:%d)のアイテムドロップ間隔が異常です\n",sd->status.name,sd->status.char_id);
 	}
-	
+
 	if( sd->npc_id != 0 || sd->vender_id != 0 || sd->deal_mode != 0 || sd->opt1 > 0 ||
 		(sd->sc_data && (sd->sc_data[SC_AUTOCOUNTER].timer!=-1 || //オートカウンター
 		sd->sc_data[SC_BLADESTOP].timer!=-1 || //白刃取り
@@ -7824,7 +7823,7 @@ void clif_parse_EquipItem(int fd,struct map_session_data *sd, int cmd)
 	id = (index >=0 && index < MAX_INVENTORY)? sd->status.inventory[index].nameid : -1;
 
 	if( (sd->npc_id!=0 && sd->npc_allowuseitem!=0 && sd->npc_allowuseitem!=id )
-	 || sd->vender_id != 0 || sd->deal_mode != 0) return;
+		|| sd->vender_id != 0 || sd->deal_mode != 0) return;
 	if(sd->sc_data && ( sd->sc_data[SC_BLADESTOP].timer!=-1 || sd->sc_data[SC_BERSERK].timer!=-1 )) return;
 
 	if(sd->status.inventory[index].identify != 1) {		// 未鑑定
@@ -8516,7 +8515,7 @@ void clif_parse_MoveToKafra(int fd,struct map_session_data *sd, int cmd)
 	nullpo_retv(sd);
 
 	if(sd->npc_id != 0 || sd->vender_id != 0 || sd->deal_mode != 0
-	 || sd->sc_data[SC_BERSERK].timer!=-1) return; //バーサーク
+		|| sd->sc_data[SC_BERSERK].timer!=-1) return; //バーサーク
 	item_index = RFIFOW(fd,GETPACKETPOS(cmd,0))-2;
 	item_amount = RFIFOL(fd,GETPACKETPOS(cmd,1));
 

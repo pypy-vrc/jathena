@@ -791,7 +791,7 @@ int guild_member_leaved(int guild_id,int account_id,int char_id,int flag,
 				struct map_session_data *sd2=sd;
 				if(sd2==NULL)
 					sd2=guild_getavailablesd(g);
-				else{
+				if(sd2!=NULL){
 					if(flag==0)
 						clif_guild_leave(sd2,name,mes);
 					else

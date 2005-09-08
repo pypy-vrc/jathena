@@ -42,7 +42,7 @@ struct skill_unit_layout {
 
 enum {
 	UF_DEFNOTENEMY		= 0x0001,	// defnotenemy 設定でBCT_NOENEMYに切り替え
-	UF_NOREITERATION	= 0x0002,	// 重複置き禁止 
+	UF_NOREITERATION	= 0x0002,	// 重複置き禁止
 	UF_NOFOOTSET		= 0x0004,	// 足元置き禁止
 	UF_NOOVERLAP		= 0x0008,	// ユニット効果が重複しない
 	UF_PATHCHECK		= 0x0010,	// オブジェクト発生時に射線チェック
@@ -235,6 +235,7 @@ int skill_castend_pos2( struct block_list *src, int x,int y,int skillid,int skil
 // スキル攻撃一括処理
 int skill_attack( int attack_type, struct block_list* src, struct block_list *dsrc,
 	 struct block_list *bl,int skillid,int skilllv,unsigned int tick,int flag );
+int skill_blown( struct block_list *src, struct block_list *target,int count);
 
 void skill_reload(void);
 
@@ -383,6 +384,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_SPIDERWEB			=180,	/* スパイダーウェッブ */
 	SC_MEMORIZE				=181,	/* メモライズ */
 	SC_DPOISON				=182,	/* 猛毒 */
+
 	SC_SACRIFICE			=184,	/* サクリファイス */
 	SC_INCATK				=185,	//item 682用
 	SC_INCMATK				=186,	//item 683用
@@ -403,7 +405,6 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_PRESERVE				=201,	/* プリザーブ */
 	SC_OVERTHRUSTMAX		=202,	/* オーバートラストマックス */
 	SC_CHASEWALK_STR		=203,	/*STR上昇（チェイスウォーク用）*/
-	
 	SC_WHISTLE_				=204,
 	SC_ASSNCROS_			=205,
 	SC_POEMBRAGI_			=206,
@@ -436,8 +437,8 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_SPURT 				= 231,
 	SC_TKCOMBO 				= 232,	//テコンのコンボ用
 	SC_DODGE				= 233,
-	//			= 234,
-	SC_TRIPLEATTACK_RATE_UP	= 235,//三段発動率アップ
+	//						= 234,
+	SC_TRIPLEATTACK_RATE_UP	= 235,	//三段発動率アップ
 	SC_COUNTER_RATE_UP		= 236,	//カウンターキック発動率アップ
 	SC_SUN_WARM				= 237,
 	SC_MOON_WARM			= 238,
@@ -446,6 +447,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_MOON_COMFORT			= 241,
 	SC_STAR_COMFORT			= 242,
 	SC_FUSION				= 243,
+
 	//魂
 	SC_ALCHEMIST			= 244,
 	SC_MONK					= 245,
@@ -993,7 +995,7 @@ enum {
 	SL_SWOO,
 	SL_SKE,
 	SL_SKA,
-	
+
 	ST_PRESERVE = 475,
 	ST_FULLSTRIP,
 	WS_WEAPONREFINE,
@@ -1011,7 +1013,7 @@ enum {
 	CG_TAROTCARD,
 	CR_ACIDDEMONSTRATION,
 	CR_CULTIVATION,
-	
+
 	SL_HIGH = 494,
 	KN_ONEHAND = 495,
 	AM_TWILIGHT1 = 496,
@@ -1183,6 +1185,7 @@ enum {
 	SI_OVERTHRUSTMAX		=188,	//オーバートラストマックス
 	//SI_			=191,
 };
+
 
 extern int SkillStatusChangeTable[];
 extern int StatusIconChangeTable[];

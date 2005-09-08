@@ -1,4 +1,4 @@
-// $Id: itemdb.c,v 1.1 2005/08/29 21:39:48 running_pinata Exp $
+// $Id: itemdb.c,v 1.2 2005/09/08 00:29:29 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +26,7 @@
 static struct dbt* item_db;
 
 static struct random_item_data blue_box[MAX_RANDITEM],violet_box[MAX_RANDITEM],card_album[MAX_RANDITEM],gift_box[MAX_RANDITEM],scroll[MAX_RANDITEM], finding_ore[MAX_RANDITEM];
-static int blue_box_count=0,violet_box_count=0,card_album_count=0,gift_box_count=0,scroll_count=0, finding_ore_count = 0;
+static int blue_box_count,violet_box_count,card_album_count,gift_box_count,scroll_count,finding_ore_count;
 static int blue_box_default=0,violet_box_default=0,card_album_default=0,gift_box_default=0,scroll_default=0, finding_ore_default = 0;
 
 static int itemdb_readdb(void);
@@ -135,7 +135,7 @@ struct item_data* itemdb_search(int nameid)
 	id->flag.available=0;
 	id->flag.value_notdc=0;  //一応・・・
 	id->flag.value_notoc=0;
-	id->flag.no_equip=0;	
+	id->flag.no_equip=0;
 	id->view_id=0;
 
 	if(nameid>500 && nameid<600)
@@ -287,7 +287,7 @@ static int itemdb_readdb(void)
 			}
 			if(str[0]==NULL)
 				continue;
-			
+
 			nameid=atoi(str[0]);
 			if(nameid<=0 || nameid>=20000)
 				continue;
@@ -339,7 +339,7 @@ static int itemdb_readdb(void)
 		fclose(fp);
 		printf("read %s done (count=%d)\n",filename[i],ln);
 	}
-	
+
 	fp=fopen("db/item_group_db.txt","r");
 	if(fp==NULL){
 		printf("can't read db/item_group_db.txt\n");
@@ -357,7 +357,7 @@ static int itemdb_readdb(void)
 		}
 		if(str[0]==NULL)
 			continue;
-		
+
 		nameid=atoi(str[0]);
 		if(nameid<=0 || nameid>=20000)
 			continue;
@@ -382,7 +382,7 @@ static int itemdb_read_itemvaluedb(void)
 	int nameid,j;
 	char *str[32],*p;
 	struct item_data *id;
-	
+
 	if( (fp=fopen("db/item_value_db.txt","r"))==NULL){
 		printf("can't read db/item_value_db.txt\n");
 		return -1;
@@ -438,19 +438,27 @@ static int itemdb_read_randomitem(void)
 	int ln=0;
 	int nameid,i,j;
 	char *str[10],*p;
-	
+
 	const struct {
 		char filename[64];
 		struct random_item_data *pdata;
 		int *pcount,*pdefault;
 	} data[] = {
-		{"db/item_bluebox.txt",		blue_box,	&blue_box_count, &blue_box_default		},
-		{"db/item_violetbox.txt",	violet_box,	&violet_box_count, &violet_box_default	},
-		{"db/item_cardalbum.txt",	card_album,	&card_album_count, &card_album_default	},
-		{"db/item_giftbox.txt",	gift_box,	&gift_box_count, &gift_box_default	},
-		{"db/item_scroll.txt",	scroll,	&scroll_count, &scroll_default	},
-		{"db/item_findingore.txt",	finding_ore,	&finding_ore_count, &finding_ore_default	},
+		{"db/item_bluebox.txt",		blue_box,	&blue_box_count,	&blue_box_default	},
+		{"db/item_violetbox.txt",	violet_box,	&violet_box_count,	&violet_box_default	},
+		{"db/item_cardalbum.txt",	card_album,	&card_album_count,	&card_album_default	},
+		{"db/item_giftbox.txt",		gift_box,	&gift_box_count,	&gift_box_default	},
+		{"db/item_scroll.txt",		scroll,		&scroll_count,		&scroll_default		},
+		{"db/item_findingore.txt",	finding_ore,&finding_ore_count,	&finding_ore_default},
 	};
+
+	// 読み込む度、初期化
+	blue_box_count		= 0;
+	violet_box_count	= 0;
+	card_album_count	= 0;
+	gift_box_count		= 0;
+	scroll_count		= 0;
+	finding_ore_count	= 0;
 
 	for(i=0;i<sizeof(data)/sizeof(data[0]);i++){
 		struct random_item_data *pd=data[i].pdata;
@@ -512,12 +520,12 @@ static int itemdb_read_itemavail(void)
 	int ln=0;
 	int nameid,j,k;
 	char *str[10],*p;
-	
+
 	if( (fp=fopen("db/item_avail.txt","r"))==NULL ){
 		printf("can't read db/item_avail.txt\n");
 		return -1;
 	}
-	
+
 	while(fgets(line,1020,fp)){
 		struct item_data *id;
 		if(line[0]=='/' && line[1]=='/')
@@ -580,7 +588,7 @@ static int itemdb_read_itemnametable(void)
 
 			memcpy(itemdb_search(nameid)->jname,buf2,24);
 		}
-		
+
 		p=strchr(p,10);
 		if(!p) break;
 		p++;
@@ -614,7 +622,7 @@ static int itemdb_read_cardillustnametable(void)
 			memcpy(itemdb_search(nameid)->cardillustname,buf2,64);
 //			printf("%d %s\n",nameid,itemdb_search(nameid)->cardillustname);
 		}
-		
+
 		p=strchr(p,10);
 		if(!p) break;
 		p++;
@@ -636,7 +644,7 @@ static int itemdb_read_noequip(void)
 	int nameid,j;
 	char *str[32],*p;
 	struct item_data *id;
-	
+
 	if( (fp=fopen("db/item_noequip.txt","r"))==NULL ){
 		printf("can't read db/item_noequip.txt\n");
 		return -1;

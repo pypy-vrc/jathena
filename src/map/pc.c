@@ -634,13 +634,17 @@ int pc_isequip(struct map_session_data *sd,int n)
  * @return 現在のフィールドで使用できるアイテムの場合 0
  *         現在のフィールドで使用できないアイテムの場合 1
  */
-int pc_check_noequip(struct map_session_data *sd, int inv_index) {
+int pc_check_noequip(struct map_session_data *sd, int inv_index)
+{
 	int card_id,i;
 	struct item_data *item_data, *card_data;
+
+	nullpo_retr(1,sd);
 
 	if(inv_index<0) {
 		return 1;
 	}
+
 	item_data = sd->inventory_data[inv_index];
 	if(item_data == NULL) {
 		return 1;
@@ -710,7 +714,6 @@ int pc_authok(int id,struct mmo_charstatus *st)
 		}
 		return 1;
 	}
-
 	memcpy(&sd->status,st,sizeof(*st));
 
 	if(sd->status.char_id != sd->char_id){
@@ -795,7 +798,6 @@ int pc_authok(int id,struct mmo_charstatus *st)
 		sd->sc_data[i].timer=-1;
 		sd->sc_data[i].val1 = sd->sc_data[i].val2 = sd->sc_data[i].val3 = sd->sc_data[i].val4 = 0;
 	}
-
 	sd->sc_count=0;
 	sd->status.option&=OPTION_MASK;
 
@@ -1041,7 +1043,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 			}
 		}while(flag);
 	}
-	
+
 	//埋め込み
 	//アルケミストの魂
 	if(sd->sc_data && sd->sc_data[SC_ALCHEMIST].timer!=-1)
@@ -1067,7 +1069,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 				sd->status.skill[AM_TWILIGHT3].flag=1;
 			}
 		}
-		
+
 		if(pc_checkskill(sd,AM_BERSERKPITCHER)==0)//カードスキル扱い
 		{
 			sd->status.skill[AM_BERSERKPITCHER].id=AM_BERSERKPITCHER;
@@ -1113,9 +1115,9 @@ int pc_calc_skilltree(struct map_session_data *sd)
 				sd->status.skill[HT_POWER].flag=1;
 			}
 		}
-		
+
 	}
-	
+
 	//バード　ダンサーの魂
 	if(sd->sc_data && sd->sc_data[SC_BARDDANCER].timer!=-1)
 	{
@@ -1164,7 +1166,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 				sd->status.skill[DC_FORTUNEKISS].lv=lv;
 				sd->status.skill[DC_FORTUNEKISS].flag=1;
 			}
-			
+
 		}else if((lv = pc_checkskill(sd,DC_FORTUNEKISS))>0)
 		{
 			if(pc_checkskill(sd,BA_POEMBRAGI)==0)//カードスキル扱い
@@ -1173,7 +1175,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 				sd->status.skill[BA_POEMBRAGI].lv=lv;
 				sd->status.skill[BA_POEMBRAGI].flag=1;
 			}
-			
+
 		}
 		//
 		if((lv = pc_checkskill(sd,BA_APPLEIDUN))>0)
@@ -2044,6 +2046,9 @@ int pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 {
 	int i;
+
+	nullpo_retr(0, sd);
+
 	switch(type){
 	case SP_ADD_MONSTER_DROP_ITEM:
 		if(sd->state.lr_flag != 2) {
@@ -2076,7 +2081,6 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			}else{
 				sd->hp_drain_rate_race[type2]   += type3;
 				sd->hp_drain_value_race[type2] += val;
-
 			}
 		}
 		break;
@@ -2230,21 +2234,23 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 }
 
 /*==========================================
- * 装 備品による能力等のボーナス設定
+ * 装備品による能力等のボーナス設定
  *------------------------------------------
  */
 int pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type4,int val)
 {
 	//int i;
+	nullpo_retr(0, sd);
+
 	switch(type){
 	case SP_AUTOSPELL:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,type4,val);
+		pc_bonus_autospell(sd,type2,type3,type4,(short)val);
 		break;
 	default:
 		if(battle_config.error_log)
-			printf("pc_bonus4: unknown type %d %d %d %d!\n",type,type2,type3,type4,val);
+			printf("pc_bonus4: unknown type %d %d %d %d %d!\n",type,type2,type3,type4,val);
 		break;
 	}
 
@@ -2263,7 +2269,7 @@ int pc_bonus_autospell(struct map_session_data* sd,int skillid,int skilllv,int r
 		return 0;
 
 	//printf("skillid:%d,skilllv:%d,rate:%d,flag:%d\n",skillid,skilllv,rate,flag);
-	
+
 	if(!battle_config.allow_same_autospell){
 		for(i=0;i<sd->autospell.count;i++){
 			if(sd->autospell.card_id[i] == current_equip_card_id)
@@ -2274,7 +2280,7 @@ int pc_bonus_autospell(struct map_session_data* sd,int skillid,int skilllv,int r
 	//一杯
 	if(sd->autospell.count == MAX_BONUS_AUTOSPELL)
 	 	return 0;
-	 	
+
 	//後ろに追加
 	sd->autospell.id[sd->autospell.count] = skillid;
 	sd->autospell.lv[sd->autospell.count] = skilllv;
@@ -3054,7 +3060,7 @@ int pc_steal_item(struct map_session_data *sd,struct block_list *bl)
 			battle_config.item_rate > 0) {
 			skill = sd->paramc[4] - mob_db[md->class].dex + pc_checkskill(sd,TF_STEAL) * 3 + 10;
 			if(0 < skill) {
-				for(i=0;i<9;i++) {	// カードは盗めないってことでいいのかな？
+				for(i=0;i<9;i++) {
 					itemid = mob_db[md->class].dropitem[i].nameid;
 					if(itemid > 0 && itemdb_type(itemid) != 6) {
 						rate = (mob_db[md->class].dropitem[i].p /battle_config.item_rate * 100 * skill)/100;
@@ -3653,7 +3659,6 @@ static int pc_walk(int tid,unsigned int tick,int id,int data)
 			pc_walktoxy_sub(sd);
 			return 0;
 		}
-
 		//目的地に着いた場合　継続判定
 		if(sd->sc_data[SC_RUN].timer!=-1 && sd->bl.x == sd->to_x && sd->bl.y == sd->to_y)
 		{
@@ -3662,10 +3667,7 @@ static int pc_walk(int tid,unsigned int tick,int id,int data)
 		}
 	} else { // マス目境界へ到着
 		if(sd->walkpath.path[sd->walkpath.path_pos]>=8)
-		{
-			puts("sd->walkpath.path[sd->walkpath.path_pos]>=8");
 			return 1;
-		}
 
 		x = sd->bl.x;
 		y = sd->bl.y;
@@ -3728,17 +3730,15 @@ static int pc_walk(int tid,unsigned int tick,int id,int data)
 		if( sd->sc_data && sd->sc_data[SC_DEVOTION].val1){
 				skill_devotion2(&sd->bl,sd->sc_data[SC_DEVOTION].val1);
 		}
-
 		/* マリオネット検査 */
 		if(sd->sc_data && sd->sc_data[SC_MARIONETTE].timer!=-1){
 			skill_marionette(&sd->bl,sd->sc_data[SC_MARIONETTE].val2);
 		}
-		
 		/* 被マリオネット検査 */
 		if(sd->sc_data && sd->sc_data[SC_MARIONETTE2].timer!=-1){
 			skill_marionette2(&sd->bl,sd->sc_data[SC_MARIONETTE2].val2);
 		}
-		
+
 		//ギルドスキル有効
 		pc_check_guild_skill_effective_range(sd);
 
@@ -3746,7 +3746,6 @@ static int pc_walk(int tid,unsigned int tick,int id,int data)
 			npc_touch_areanpc(sd,sd->bl.m,x,y);
 		else
 			sd->areanpc_id=0;
-
 	}
 	if((i=calc_next_walk_step(sd))>0) {
 		i = i>>1;
@@ -3755,10 +3754,8 @@ static int pc_walk(int tid,unsigned int tick,int id,int data)
 		sd->walktimer=add_timer(tick+i,pc_walk,id,sd->walkpath.path_pos);
 	}
 
-
 	return 0;
 }
-
 
 /*==========================================
  * 移動可能か確認して、可能なら歩行開始
@@ -3912,6 +3909,7 @@ int pc_movepos(struct map_session_data *sd,int dst_x,int dst_y)
 int pc_runtodir(struct map_session_data *sd)
 {
 	int i,to_x,to_y,dir_x,dir_y;
+
 	nullpo_retr(0, sd);
 
 	to_x = sd->bl.x;
@@ -4127,7 +4125,6 @@ struct pc_base_job pc_calc_base_job(int b_class)
 		bj.upper = 2;
 	}
 
-
 	if(battle_config.enable_upper_class==0){ //confで無効になっていたらupper=0
 		bj.upper = 0;
 	}
@@ -4170,6 +4167,7 @@ int pc_attack_timer(int tid,unsigned int tick,int id,int data)
 		return 0;
 
 	bl=map_id2bl(sd->attacktarget);
+
 	if(bl==NULL || bl->prev == NULL)
 		return 0;
 
@@ -4186,11 +4184,13 @@ int pc_attack_timer(int tid,unsigned int tick,int id,int data)
 
 	if(sd->sc_data[SC_AUTOCOUNTER].timer != -1)
 		return 0;
+
 	if(sd->sc_data[SC_BLADESTOP].timer != -1)
 		return 0;
 
 	if((opt = status_get_option(bl)) != NULL && *opt&0x46)
 		return 0;
+
 	if((sc_data = status_get_sc_data(bl)) != NULL && sc_data[SC_TRICKDEAD].timer != -1)
 		return 0;
 
@@ -4206,6 +4206,7 @@ int pc_attack_timer(int tid,unsigned int tick,int id,int data)
 
 	dist = distance(sd->bl.x,sd->bl.y,bl->x,bl->y);
 	range = sd->attackrange;
+
 	if(sd->status.weapon != 11) range++;
 	if( dist > range ){	// 届かないので移動
 		if(pc_can_reach(sd,bl->x,bl->y))
@@ -6261,12 +6262,10 @@ int pc_equipitem(struct map_session_data *sd,int n,int pos)
 	sd->status.inventory[n].equip=pos;
 
 	if(sd->status.inventory[n].equip & 0x0002) {
-
 		if(sd->inventory_data[n])
 			sd->weapontype1 = sd->inventory_data[n]->look;
 		else
 			sd->weapontype1 = 0;
-
 		pc_calcweapontype(sd);
 		clif_changelook(&sd->bl,LOOK_WEAPON,sd->status.weapon);
 	}
@@ -7212,7 +7211,6 @@ static int pc_rest_heal_sp(struct map_session_data *sd)
 		}
 	}
 
-
 	return 0;
 }
 
@@ -7252,7 +7250,6 @@ static int pc_bleeding(struct map_session_data *sd)
  * HP/SP 自然回復 各クライアント
  *------------------------------------------
  */
-
 static int pc_natural_heal_sub(struct map_session_data *sd,va_list ap)
 {
 	int skill;
@@ -7340,7 +7337,6 @@ int pc_setsavepoint(struct map_session_data *sd,char *mapname,int x,int y)
 	}
 	return 0;
 }
-
 
 /*==========================================
  * 自動セーブ 各クライアント
