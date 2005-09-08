@@ -1,4 +1,4 @@
-// $Id: itemdb.c,v 1.2 2005/09/08 00:29:29 running_pinata Exp $
+// $Id: itemdb.c,v 1.3 2005/09/08 00:29:53 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,9 +25,13 @@
 
 static struct dbt* item_db;
 
-static struct random_item_data blue_box[MAX_RANDITEM],violet_box[MAX_RANDITEM],card_album[MAX_RANDITEM],gift_box[MAX_RANDITEM],scroll[MAX_RANDITEM], finding_ore[MAX_RANDITEM];
-static int blue_box_count,violet_box_count,card_album_count,gift_box_count,scroll_count,finding_ore_count;
-static int blue_box_default=0,violet_box_default=0,card_album_default=0,gift_box_default=0,scroll_default=0, finding_ore_default = 0;
+static struct random_item_data blue_box[MAX_RANDITEM],violet_box[MAX_RANDITEM],card_album[MAX_RANDITEM],
+				gift_box[MAX_RANDITEM],scroll[MAX_RANDITEM], finding_ore[MAX_RANDITEM],arrow_quiver[MAX_RANDITEM],
+				diamond_weapon[MAX_RANDITEM],diamond_armor[MAX_RANDITEM],diamond_hood[MAX_RANDITEM],diamond_helm[MAX_RANDITEM],diamond_shoes[MAX_RANDITEM],diamond_shield[MAX_RANDITEM];
+static int blue_box_count,violet_box_count,card_album_count,gift_box_count,scroll_count,finding_ore_count,arrow_quiver_count,
+				diamond_weapon_count,diamond_armor_count,diamond_hood_count,diamond_helm_count,diamond_shoes_count,diamond_shield_count;
+static int blue_box_default=0,violet_box_default=0,card_album_default=0,gift_box_default=0,scroll_default=0, finding_ore_default = 0,arrow_quiver_default = 0,
+				diamond_weapon_default=0,diamond_armor_default=0,diamond_hood_default=0,diamond_helm_default=0,diamond_shoes_default=0,diamond_shield_default=0;
 
 static int itemdb_readdb(void);
 static int itemdb_read_randomitem(void);
@@ -74,18 +78,25 @@ int itemdb_searchrandomid(int flags)
 	struct {
 		int nameid,count;
 		struct random_item_data *list;
-	} data[7];
+	} data[14];
 
 	// for BCC32 compile error
-	data[0].nameid = 0;						data[0].count = 0; 					data[0].list = NULL;
-	data[1].nameid = blue_box_default;		data[1].count = blue_box_count;		data[1].list = blue_box;
-	data[2].nameid = violet_box_default;	data[2].count = violet_box_count;	data[2].list = violet_box;
-	data[3].nameid = card_album_default;	data[3].count = card_album_count;	data[3].list = card_album;
-	data[4].nameid = gift_box_default;		data[4].count = gift_box_count;		data[4].list = gift_box;
-	data[5].nameid = scroll_default;		data[5].count = scroll_count;		data[5].list = scroll;
-	data[6].nameid = finding_ore_default;	data[6].count = finding_ore_count;	data[6].list = finding_ore;
+	data[0].nameid = 0;							data[0].count = 0; 						data[0].list = NULL;
+	data[1].nameid = blue_box_default;			data[1].count = blue_box_count;			data[1].list = blue_box;
+	data[2].nameid = violet_box_default;		data[2].count = violet_box_count;		data[2].list = violet_box;
+	data[3].nameid = card_album_default;		data[3].count = card_album_count;		data[3].list = card_album;
+	data[4].nameid = gift_box_default;			data[4].count = gift_box_count;			data[4].list = gift_box;
+	data[5].nameid = scroll_default;			data[5].count = scroll_count;			data[5].list = scroll;
+	data[6].nameid = finding_ore_default;		data[6].count = finding_ore_count;		data[6].list = finding_ore;
+	data[7].nameid = arrow_quiver_default;		data[7].count = arrow_quiver_count;		data[7].list = arrow_quiver;
+	data[8].nameid = diamond_weapon_default;	data[8].count = diamond_weapon_count;	data[8].list = diamond_weapon;
+	data[9].nameid = diamond_armor_default;		data[9].count = diamond_armor_count;	data[9].list = diamond_armor;
+	data[10].nameid = diamond_hood_default;		data[10].count = diamond_hood_count;	data[10].list = diamond_hood;
+	data[11].nameid = diamond_helm_default;		data[11].count = diamond_helm_count;	data[11].list = diamond_helm;
+	data[12].nameid = diamond_shoes_default;	data[12].count = diamond_shoes_count;	data[12].list = diamond_shoes;
+	data[13].nameid = diamond_shield_default;	data[13].count = diamond_shield_count;	data[13].list = diamond_shield;
 
-	if(flags>=1 && flags<=6){
+	if(flags>=1 && flags<=13){
 		nameid=data[flags].nameid;
 		count=data[flags].count;
 		list=data[flags].list;
@@ -450,8 +461,14 @@ static int itemdb_read_randomitem(void)
 		{"db/item_giftbox.txt",		gift_box,	&gift_box_count,	&gift_box_default	},
 		{"db/item_scroll.txt",		scroll,		&scroll_count,		&scroll_default		},
 		{"db/item_findingore.txt",	finding_ore,&finding_ore_count,	&finding_ore_default},
+		{"db/item_arrowquiver.txt",	arrow_quiver,&arrow_quiver_count,	&arrow_quiver_default},
+		{"db/item_diamond_weapon.txt",diamond_weapon	,&diamond_weapon_count,	&diamond_weapon_default},
+		{"db/item_diamond_armor.txt",diamond_armor	,&diamond_armor_count,	&diamond_armor_default},
+		{"db/item_diamond_hood.txt",	diamond_hood,&diamond_hood_count,	&diamond_hood_default},
+		{"db/item_diamond_helm.txt",diamond_helm	,&diamond_helm_count,	&diamond_helm_default},
+		{"db/item_diamond_shoes.txt",diamond_shoes,&diamond_shoes_count,	&diamond_shoes_default},
+		{"db/item_diamond_shield.txt",diamond_shield	,&diamond_shield_count,	&diamond_shield_default},
 	};
-
 	// “Ç‚Ýž‚Þ“xA‰Šú‰»
 	blue_box_count		= 0;
 	violet_box_count	= 0;
@@ -459,6 +476,13 @@ static int itemdb_read_randomitem(void)
 	gift_box_count		= 0;
 	scroll_count		= 0;
 	finding_ore_count	= 0;
+	arrow_quiver_count	= 0;
+	diamond_weapon_count= 0;
+	diamond_armor_count	= 0;
+	diamond_helm_count	= 0;
+	diamond_helm_count	= 0;
+	diamond_shoes_count	= 0;
+	diamond_shield_count= 0;
 
 	for(i=0;i<sizeof(data)/sizeof(data[0]);i++){
 		struct random_item_data *pd=data[i].pdata;

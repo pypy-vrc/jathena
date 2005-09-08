@@ -1,4 +1,19 @@
 ----------------------------------------
+//1424 by ＡＡＡ
+・分からない矢筒、ギャンブル用にtxt追加
+・item_arrow_quiver.txt,item_diamond_weapon.txt,item_diamond_armor.txt,
+item_diamond_hood.txt,item_diamond_helm.txt,item_diamond_shoes.txt,
+item_diamond_shield.txt 追加
+・const.txtに追加
+ARROW_QUIVER	-7
+DIAMOND_WEAPON	-8
+DIAMOND_ARMOR	-9
+DIAMOND_HOOD	-10
+DIAMOND_HELM	-11
+DIAMOND_SHOES	-12
+DIAMOND_SHIELD	-13
+
+----------------------------------------
 //1423 by t
 ・ディフェンダーの攻撃速度減少処理を書き換え
 　（他のスキル同様aspd_rateでの仕様へ）
