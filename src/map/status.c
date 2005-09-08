@@ -953,7 +953,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 	if(sd->sprate!=100)
 		sd->status.max_sp = sd->status.max_sp*sd->sprate/100;
 
-	if((skill=pc_checkskill(sd,HP_MEDITATIO))>0) // メディテイティオ 
+	if((skill=pc_checkskill(sd,HP_MEDITATIO))>0) // メディタティオ 
 		sd->status.max_sp += sd->status.max_sp*skill/100;
 	if((skill=pc_checkskill(sd,HW_SOULDRAIN))>0) /* ソウルドレイン */
 		sd->status.max_sp += sd->status.max_sp*2*skill/100;
@@ -1008,7 +1008,7 @@ int status_calc_pc(struct map_session_data* sd,int first)
 		if(sd->nhealsp < 1) sd->nhealsp = 1;
 	}
 	if((skill=pc_checkskill(sd,HP_MEDITATIO)) > 0) {
-		// メディテイティオはSPRではなく自然回復にかかる
+		// メディタティオはSPRではなく自然回復にかかる
 		sd->nhealsp += (sd->nhealsp)*3*skill/100;
 		if(sd->nhealsp > 0x7fff) sd->nhealsp = 0x7fff;
 	}
@@ -1367,8 +1367,8 @@ int status_calc_pc(struct map_session_data* sd,int first)
 			aspd_rate += 25;
 			sd->speed = (sd->speed * 125) / 100;
 		}
-		if(sd->sc_data[SC_DEFENDER].timer != -1) {
-			sd->aspd += (250 - sd->sc_data[SC_DEFENDER].val1*50);
+		if(sd->sc_data[SC_DEFENDER].timer != -1) {	// ディフェンダー
+			sd->aspd += (25 - sd->sc_data[SC_DEFENDER].val1*5);
 			sd->speed = (sd->speed * (155 - sd->sc_data[SC_DEFENDER].val1*5)) / 100;
 		}
 		if(sd->sc_data[SC_ENCPOISON].timer != -1)
@@ -2550,9 +2550,11 @@ int status_get_adelay(struct block_list *bl)
 			//増速ポーション使用時は減算
 			if(	sc_data[i=SC_SPEEDPOTION2].timer!=-1 || sc_data[i=SC_SPEEDPOTION1].timer!=-1 || sc_data[i=SC_SPEEDPOTION0].timer!=-1)
 				aspd_rate -= sc_data[i].val2;
-			//ディフェンダー時は加算
+			//ディフェンダー時は加算aspd_rateに変更&マスター時加算0に
 			if(sc_data[SC_DEFENDER].timer != -1)
-				adelay += (1100 - sc_data[SC_DEFENDER].val1*100);
+//				adelay += (1000 - sc_data[SC_DEFENDER].val1*200);
+				aspd_rate += (25 - sc_data[SC_DEFENDER].val1*5);
+
 		}
 		if(aspd_rate != 100)
 			adelay = adelay*aspd_rate/100;
@@ -2617,7 +2619,9 @@ int status_get_amotion(struct block_list *bl)
 			if(	sc_data[i=SC_SPEEDPOTION2].timer!=-1 || sc_data[i=SC_SPEEDPOTION1].timer!=-1 || sc_data[i=SC_SPEEDPOTION0].timer!=-1)
 				aspd_rate -= sc_data[i].val2;
 			if(sc_data[SC_DEFENDER].timer != -1)
-				amotion += (550 - sc_data[SC_DEFENDER].val1*50);
+			//ディフェンダー時は加算ASPDに変更&マスター時加算0に
+//				amotion += (550 - sc_data[SC_DEFENDER].val1*50);
+				aspd_rate += (25 - sc_data[SC_DEFENDER].val1*5);
 		}
 		if(aspd_rate != 100)
 			amotion = amotion*aspd_rate/100;
@@ -4428,16 +4432,12 @@ int status_change_end( struct block_list* bl , int type,int tid )
 			case SC_DONTFORGETME_:		/* 私を忘れないで */
 			case SC_FORTUNE_:			/* 幸運のキス */
 			case SC_SERVICE4U_:			/* サービスフォーユー */
-			case SC_MARIONETTE:		/* マリオネットコントロール */
+			case SC_MARIONETTE:			/* マリオネットコントロール */
 			case SC_MARIONETTE2:		/* マリオネットコントロール */
 				calc_flag = 1;
 				break;
-			case SC_EDP:		// エフェクトが実装されたら削除する
-			{
-			//	struct map_session_data *sd = (struct map_session_data *)bl;
-			//	clif_displaymessage(sd->fd, " 猛毒属性が解除されました");
+			case SC_EDP:		// アイコンが実装されたので内容削除
 				break;
-			}
 			case SC_BERSERK:			/* バーサーク */
 				calc_flag = 1;
 				clif_status_change(bl,SC_INCREASEAGI,0);	/* アイコン消去 */
@@ -4958,7 +4958,7 @@ int status_change_timer(int tid, unsigned int tick, int id, int data)
 						s=6;
 						break;
 					case DC_DONTFORGETME:			/* 私を忘れないで… 10秒でSP1 */
-					case CG_MOONLIT:				/* 月明りの泉に落ちる花びら 10秒でSP1？ */
+					case CG_MOONLIT:				/* 月明りの下で 10秒でSP1？ */
 						s=10;
 						break;
 					}

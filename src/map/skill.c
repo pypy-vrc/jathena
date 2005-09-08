@@ -1730,9 +1730,7 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 		status_change_end(bl,SC_AUTOCOUNTER,-1);
 	}
 	/* ダブルキャスティング */
-	if ((skillid == MG_COLDBOLT || skillid == MG_FROSTDIVER ||
-		 skillid == MG_FIREBOLT || skillid == MG_FIREBALL ||
-		 skillid == MG_LIGHTNINGBOLT) &&
+	if ((skillid == MG_COLDBOLT || skillid == MG_FIREBOLT || skillid == MG_LIGHTNINGBOLT) &&
 		(sc_data = status_get_sc_data(src)) &&
 		sc_data[SC_DOUBLECASTING].timer != -1 &&
 		atn_rand() % 100 < 30+10*skilllv) {
@@ -2632,17 +2630,6 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 	case SL_STIN: //エスティン
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
-/*	case MG_COLDBOLT:			// コールドボルト
-	case MG_FIREBOLT:			// ファイアーボルト
-	case MG_LIGHTNINGBOLT:		// ライトニングボルト
-		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
-		//ダブルキャスティング
-		if(sd && sd->sc_data && sd->sc_data[SC_DOUBLECASTING].timer!=-1)
-		{
-			if(atn_rand()%10 < (pc_checkskill(sd,PF_DOUBLECASTING)+3))
-				skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
-		}
-		break; */
 	case CG_TAROTCARD:		/*運命のタロットカード*/
 		skill_tarot_card_of_fate(src,bl,skillid,skilllv,tick,flag,0);
 		//return 1;
@@ -3266,7 +3253,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case MO_STEELBODY:		// 金剛
 	case LK_AURABLADE:		/* オーラブレード */
 	case LK_PARRYING:		/* パリイング */
-	case HP_ASSUMPTIO:		/*  */
+	case HP_ASSUMPTIO:		/* アスムプティオ */
 	case WS_CARTBOOST:		/* カートブースト */
 	case SN_SIGHT:			/* トゥルーサイト */
 	case WS_MELTDOWN:		/* メルトダウン */
@@ -3429,7 +3416,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			pc_addspiritball(sd,skill_get_time(skillid,skilllv),skilllv);
 		}
 		break;
-	case CH_SOULCOLLECT:	// 狂気功
+	case CH_SOULCOLLECT:	// 練気功
 		if(sd) {
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			pc_delspiritball(sd,sd->spiritball,0);
