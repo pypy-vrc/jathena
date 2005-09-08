@@ -3696,7 +3696,7 @@ static int mob_readdb(void)
 				if (nameid >= 4001 && nameid<= 4331 ){
 					*per = *per * battle_config.card_drop_rate/100;
 				}
-				else if ((nameid >= 1101 && nameid<= 2640 ) || (nameid >= 5001 && nameid<= 5098 )){
+				else if ((nameid >= 1101 && nameid<= 2670 ) || (nameid >= 5001 && nameid<= 5150 )|| (nameid >= 13000 && nameid<= 13010 )){
 					*per = *per * battle_config.equip_drop_rate/100;
 				}
 				else if (nameid == 756 || nameid == 757 || nameid == 984 || nameid == 985){
