@@ -1,4 +1,15 @@
 ----------------------------------------
+//1425 by ＡＡＡ
+・宝石箱・明治アーモンド(ネタ自由に使おう)用txt追加
+・スキル判定関数追加
+skill.h
+skill.c
+	skill_cloneable
+	skill_upperskill
+	skill_mobskill
+	skill_abraskill
+
+----------------------------------------
 //1424 by ＡＡＡ
 ・分からない矢筒、ギャンブル用にtxt追加
 ・item_arrow_quiver.txt,item_diamond_weapon.txt,item_diamond_armor.txt,

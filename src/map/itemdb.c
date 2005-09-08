@@ -1,4 +1,4 @@
-// $Id: itemdb.c,v 1.3 2005/09/08 00:29:53 running_pinata Exp $
+// $Id: itemdb.c,v 1.4 2005/09/08 23:22:20 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,11 +27,14 @@ static struct dbt* item_db;
 
 static struct random_item_data blue_box[MAX_RANDITEM],violet_box[MAX_RANDITEM],card_album[MAX_RANDITEM],
 				gift_box[MAX_RANDITEM],scroll[MAX_RANDITEM], finding_ore[MAX_RANDITEM],arrow_quiver[MAX_RANDITEM],
-				diamond_weapon[MAX_RANDITEM],diamond_armor[MAX_RANDITEM],diamond_hood[MAX_RANDITEM],diamond_helm[MAX_RANDITEM],diamond_shoes[MAX_RANDITEM],diamond_shield[MAX_RANDITEM];
+				diamond_weapon[MAX_RANDITEM],diamond_armor[MAX_RANDITEM],diamond_hood[MAX_RANDITEM],diamond_helm[MAX_RANDITEM],
+				diamond_shoes[MAX_RANDITEM],diamond_shield[MAX_RANDITEM],jewel_box[MAX_RANDITEM],meiji_almond[MAX_RANDITEM];
 static int blue_box_count,violet_box_count,card_album_count,gift_box_count,scroll_count,finding_ore_count,arrow_quiver_count,
-				diamond_weapon_count,diamond_armor_count,diamond_hood_count,diamond_helm_count,diamond_shoes_count,diamond_shield_count;
-static int blue_box_default=0,violet_box_default=0,card_album_default=0,gift_box_default=0,scroll_default=0, finding_ore_default = 0,arrow_quiver_default = 0,
-				diamond_weapon_default=0,diamond_armor_default=0,diamond_hood_default=0,diamond_helm_default=0,diamond_shoes_default=0,diamond_shield_default=0;
+				diamond_weapon_count,diamond_armor_count,diamond_hood_count,diamond_helm_count,diamond_shoes_count,
+				diamond_shield_count,jewel_box_count,meiji_almond_count;
+static int blue_box_default=0,violet_box_default=0,card_album_default=0,gift_box_default=0,scroll_default=0, finding_ore_default = 0,
+				arrow_quiver_default = 0,diamond_weapon_default=0,diamond_armor_default=0,diamond_hood_default=0,
+				diamond_helm_default=0,diamond_shoes_default=0,diamond_shield_default=0,jewel_box_default=0,meiji_almond_default=0;
 
 static int itemdb_readdb(void);
 static int itemdb_read_randomitem(void);
@@ -78,7 +81,7 @@ int itemdb_searchrandomid(int flags)
 	struct {
 		int nameid,count;
 		struct random_item_data *list;
-	} data[14];
+	} data[16];
 
 	// for BCC32 compile error
 	data[0].nameid = 0;							data[0].count = 0; 						data[0].list = NULL;
@@ -95,8 +98,10 @@ int itemdb_searchrandomid(int flags)
 	data[11].nameid = diamond_helm_default;		data[11].count = diamond_helm_count;	data[11].list = diamond_helm;
 	data[12].nameid = diamond_shoes_default;	data[12].count = diamond_shoes_count;	data[12].list = diamond_shoes;
 	data[13].nameid = diamond_shield_default;	data[13].count = diamond_shield_count;	data[13].list = diamond_shield;
+	data[14].nameid = jewel_box_default;		data[14].count = jewel_box_count;		data[14].list = jewel_box;
+	data[15].nameid = meiji_almond_default;		data[15].count = meiji_almond_count;	data[15].list = meiji_almond;
 
-	if(flags>=1 && flags<=13){
+	if(flags>=1 && flags<=15){
 		nameid=data[flags].nameid;
 		count=data[flags].count;
 		list=data[flags].list;
@@ -468,7 +473,10 @@ static int itemdb_read_randomitem(void)
 		{"db/item_diamond_helm.txt",diamond_helm	,&diamond_helm_count,	&diamond_helm_default},
 		{"db/item_diamond_shoes.txt",diamond_shoes,&diamond_shoes_count,	&diamond_shoes_default},
 		{"db/item_diamond_shield.txt",diamond_shield	,&diamond_shield_count,	&diamond_shield_default},
+		{"db/item_jewel_box.txt",jewel_box	,&jewel_box_count,	&jewel_box_default},
+		{"db/item_meiji_almond.txt",meiji_almond	,&meiji_almond_count,	&meiji_almond_default},
 	};
+	
 	// “Ç‚Ýž‚Þ“xA‰Šú‰»
 	blue_box_count		= 0;
 	violet_box_count	= 0;
@@ -483,7 +491,9 @@ static int itemdb_read_randomitem(void)
 	diamond_helm_count	= 0;
 	diamond_shoes_count	= 0;
 	diamond_shield_count= 0;
-
+	jewel_box_count		= 0;
+	meiji_almond_count  = 0;
+	
 	for(i=0;i<sizeof(data)/sizeof(data[0]);i++){
 		struct random_item_data *pd=data[i].pdata;
 		int *pc=data[i].pcount;

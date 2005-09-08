@@ -4,7 +4,7 @@
 #include "map.h"
 #include "mmo.h"
 
-#define MAX_SKILL_DB			520
+#define MAX_SKILL_DB			MAX_SKILL
 #define MAX_GUILDSKILL_DB		MAX_GUILDSKILL
 #define MAX_SKILL_PRODUCE_DB	150
 #define MAX_PRODUCE_RESOURCE	7
@@ -232,6 +232,11 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int skillid,int skilllv,unsigned int tick,int flag );
 int skill_castend_pos2( struct block_list *src, int x,int y,int skillid,int skilllv,unsigned int tick,int flag);
 
+int skill_cloneable(int skillid);
+int skill_upperskill(int skillid);
+int skill_mobskill(int skillid);
+int skill_abraskill(int skillid);
+
 // スキル攻撃一括処理
 int skill_attack( int attack_type, struct block_list* src, struct block_list *dsrc,
 	 struct block_list *bl,int skillid,int skilllv,unsigned int tick,int flag );
@@ -447,7 +452,6 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_MOON_COMFORT			= 241,
 	SC_STAR_COMFORT			= 242,
 	SC_FUSION				= 243,
-
 	//魂
 	SC_ALCHEMIST			= 244,
 	SC_MONK					= 245,

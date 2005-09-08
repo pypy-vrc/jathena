@@ -1568,16 +1568,11 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 		//転生職転生でスキルがクローンできる場合
 		if(battle_config.extended_cloneskill &&  s_class.upper == 1
 			&& !tsd->status.skill[skillid].id && !tsd->status.skill[skillid].lv
-			&& skillid <= CR_CULTIVATION
-			&& !(skillid >= NPC_PIERCINGATT && skillid <= NPC_SUMMONMONSTER)
-			&& !(skillid >= NPC_SELFDESTRUCTION2 && skillid <= NPC_RECALL)
-			)
+			&& skill_cloneable(skillid))
 				goto Extended_CloneSkill_Label;
 
 		if(!tsd->status.skill[skillid].id && !tsd->status.skill[skillid].lv
-			&& skillid < NPC_SELFDESTRUCTION2
-			&& !(skillid >= NPC_PIERCINGATT && skillid <= NPC_SUMMONMONSTER)
-			)
+			&& skill_cloneable(skillid) && !skill_upperskill(skillid))
 		{
 
 		Extended_CloneSkill_Label:
@@ -1625,6 +1620,7 @@ int skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
 
 		}
 	}
+	
 	/* ダメージがあるなら追加効果判定 */
 	if(bl->prev != NULL){
 		struct map_session_data *sd = (struct map_session_data *)bl;
@@ -8275,7 +8271,6 @@ int skill_marionette(struct block_list *bl,int target)
 		status_change_end(&sd->bl,SC_MARIONETTE,-1);
 		status_change_end(&tsd->bl,SC_MARIONETTE2,-1);
 		clif_marionette(sd,0);
-		//clif_devotion(sd,sd->sc_data[SC_MARIONETTE].val2);
 		return 1;
 	}
 	return 0;
@@ -10822,6 +10817,77 @@ int skill_readdb(void)
 
 	return 0;
 }
+
+/*==========================================
+ * 盗作可能か？（転生スキル含む）
+ *------------------------------------------
+ */
+int skill_cloneable(int skillid)
+{
+	if(SM_SWORD<=skillid && skillid<=MG_ENERGYCOAT)
+		return 1;
+	if(RG_SNATCHER<=skillid && skillid<=MG_ENERGYCOAT)
+		return 1;
+		
+	if(LK_AURABLADE<=skillid && skillid<=ASC_CDP)
+		return 1;
+		
+	if(ST_PRESERVE<=skillid && skillid<=CR_CULTIVATION)
+		return 1;
+	
+	//if(TK_RUN<=skillid && skillid<=SL_SKA)
+	//	return 1;
+
+	if(skillid == TK_JUMPKICK)
+		return 1;
+
+		
+	//if(SL_HIGH<=skillid && skillid<=HT_POWER)
+	//	return 1;
+		
+	return 0;
+}
+
+/*==========================================
+ * 転生スキルか？
+ *------------------------------------------
+ */
+int skill_upperskill(int skillid)
+{
+	if(LK_AURABLADE<=skillid && skillid<=ASC_CDP)
+		return 1;
+	if(ST_PRESERVE<=skillid && skillid<=CR_CULTIVATION)
+		return 1;
+	return 0;
+}
+/*==========================================
+ * 敵のスキルか？
+ *------------------------------------------
+ */
+int skill_mobskill(int skillid)
+{
+	if(NPC_PIERCINGATT<=skillid && skillid<=NPC_SUMMONMONSTER)
+		return 1;
+		
+	if(NPC_DARKCROSS<=skillid && skillid<=NPC_RECALL)
+		return 1;
+		
+	if(skillid == NPC_SELFDESTRUCTION2)
+		return 1;
+		
+	return 0;
+}
+/*==========================================
+ * 油専用スキルか
+ *------------------------------------------
+ */
+int skill_abraskill(int skillid)
+{
+	if(SA_MONOCELL<=skillid && skillid<=SA_COMA)
+		return 1;
+	return 0;
+}
+
 
 void skill_reload(void)
 {
