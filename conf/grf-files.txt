@@ -1,3 +1,0 @@
-data: C:\Program Files\Gravity\RagnarokOnline\data.grf
-sdata: C:\Program Files\Gravity\RagnarokOnline\sdata.grf
-adata: C:\Program Files\Gravity\RagnarokOnline\adata.grf
