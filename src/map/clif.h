@@ -12,11 +12,11 @@
 #endif
 #include "map.h"
 
-#define MAX_PACKET_DB			0x220
+#define MAX_PACKET_DB			0x260
 
 struct packet_db {
 	short len;
-	void (*func)();
+	void (*func)(int fd,struct map_session_data *sd, int cmd);
 	short pos[20];
 };
 
@@ -48,10 +48,9 @@ int clif_movemob(struct mob_data*);	//area
 int clif_movepet(struct pet_data *pd);	//area
 int clif_changemap(struct map_session_data*,char*,int,int);	//self
 int clif_changemapserver(struct map_session_data*,char*,int,int,int,int);	//self
-int clif_fixpos(struct block_list *);	// area
-int clif_fixmobpos(struct mob_data *md);
-int clif_fixpcpos(struct map_session_data *sd);
-int clif_fixpetpos(struct pet_data *pd);
+int clif_fixpos(struct block_list *bl);	// area
+int clif_fixpos2(struct block_list *bl, int x[4], int y[4]);	// custom
+int clif_fixwalkpos(struct block_list *bl);	// area
 int clif_npcbuysell(struct map_session_data*,int);	//self
 int clif_buylist(struct map_session_data*,struct npc_data*);	//self
 int clif_selllist(struct map_session_data*);	//self
@@ -92,6 +91,8 @@ int clif_clearchat(struct chat_data*,int);	// area or fd
 int clif_leavechat(struct chat_data*,struct map_session_data*);	// chat
 int clif_changechatstatus(struct chat_data*);	// chat
 
+int clif_baby_target_display(struct map_session_data *sd);//
+int clif_refine_select(struct map_session_data *sd);
 void clif_emotion(struct block_list *bl,int type);
 void clif_talkiebox(struct block_list *bl,char* talkie);
 void clif_wedding_effect(struct block_list *bl);
@@ -99,6 +100,8 @@ void clif_callpartner(struct map_session_data *sd);
 void clif_sitting(struct map_session_data *sd);
 void clif_soundeffect(struct map_session_data *sd,struct block_list *bl,char *name,int type);
 
+int clif_getareachar(struct block_list* bl,va_list ap);
+int clif_changeoption_clear(struct block_list* bl);
 // trade
 int clif_traderequest(struct map_session_data *sd,char *name);
 int clif_tradestart(struct map_session_data *sd,int type);
@@ -164,6 +167,8 @@ int clif_01ac(struct block_list *bl);
 
 int clif_autospell(struct map_session_data *sd,int skilllv);
 int clif_devotion(struct map_session_data *sd,int target);
+int clif_marionette(struct map_session_data *sd,int target);
+
 int clif_spiritball(struct map_session_data *sd);
 int clif_combo_delay(struct block_list *src,int wait);
 int clif_bladestop(struct block_list *src,struct block_list *dst,int bool);
@@ -188,6 +193,7 @@ int clif_cart_itemlist(struct map_session_data *sd);
 int clif_cart_equiplist(struct map_session_data *sd);
 
 int clif_item_identify_list(struct map_session_data *sd);
+int clif_weapon_refine_list(struct map_session_data *sd);
 int clif_item_identified(struct map_session_data *sd,int idx,int flag);
 int clif_item_repair_list(struct map_session_data *sd,struct map_session_data *dstsd);
 int clif_item_repaireffect(struct map_session_data *sd,int flag,int nameid);
@@ -260,6 +266,7 @@ int clif_set0199(int fd,int type);
 int clif_pvpset(struct map_session_data *sd, int pvprank, int pvpnum,int type);
 int clif_send0199(int map,int type);
 int clif_refine(int fd,struct map_session_data *sd,int fail,int index,int val);
+int clif_send_packet(struct map_session_data *sd,const char *message);
 
 //petsystem
 int clif_catch_process(struct map_session_data *sd);
@@ -278,6 +285,16 @@ void clif_friend_send_online(const int fd, int account_id, int char_id, int flag
 void clif_friend_add_request(const int fd, struct map_session_data *from_sd );
 void clif_friend_add_ack(const int fd, int account_id, int char_id, char* name, int flag );
 void clif_friend_del_ack(const int fd, int account_id, int char_id );
+
+//ranking
+void clif_blacksmith_point(const int fd,const int total,const int point);
+void clif_alchemist_point(const int fd,const int total,const int point);
+void clif_taekwon_point(const int fd,const int total,const int point);
+void clif_pk_point(const int fd,const int total,const int point);
+void clif_blacksmith_ranking(const int fd,char *charname[10],const int point[10]);
+void clif_alchemist_ranking(const int fd,char *charname[10],const int point[10]);
+void clif_taekwon_ranking(const int fd,char *charname[10],const int point[10]);
+void clif_pk_ranking(const int fd,char *charname[10],const int point[10]);
 
 int clif_GM_kickack(struct map_session_data *sd,int id);
 int clif_GM_kick(struct map_session_data *sd,struct map_session_data *tsd,int type);

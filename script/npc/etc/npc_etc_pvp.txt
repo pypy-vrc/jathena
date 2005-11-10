@@ -10,7 +10,7 @@ geffen_in.gat,67,63,4	script	PVPガイド	84,{
 morocc_in.gat,144,138,4	script	PVPガイド	84,{
 	callfunc "pvpguide","morocc_in.gat",142,140;
 }
-payon_in01.gat,172,109,4	script	PVPガイド	84,{
+payon_in01.gat,142,50,4	script	PVPガイド	84,{
 	callfunc "pvpguide","payon_in01.gat",166,107;
 }
 prt_in.gat,56,140,4	script	PVPガイド	84,{
@@ -26,7 +26,7 @@ geffen_in.gat,63,63,4	script	PVPドアマン	83,{
 morocc_in.gat,144,142,4	script	PVPドアマン	83,{
 	callfunc "pvpdoor";
 }
-payon_in01.gat,176,107,4	script	PVPドアマン	83,{
+payon_in01.gat,140,53,4	script	PVPドアマン	83,{
 	callfunc "pvpdoor";
 }
 prt_in.gat,52,140,4	script	PVPドアマン	83,{

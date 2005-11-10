@@ -303,7 +303,7 @@ treasure01.gat,164,91,0		warp	treasurewarp4006	5,1,treasure01.gat,164,116
 treasure01.gat,27,164,0		warp	treasurewarp4007	1,4,treasure01.gat,40,164
 treasure01.gat,38,164,0		warp	treasurewarp4008	1,4,treasure01.gat,25,164
 treasure01.gat,41,111,0		warp	treasurewarp4009	1,3,treasure01.gat,63,111
-treasure01.gat,62,111,0		warp	treasurewarp4010	1,3,treasure01.gat,39,111
+treasure01.gat,61,111,0		warp	treasurewarp4010	1,3,treasure01.gat,39,111
 treasure01.gat,41,37,0		warp	treasurewarp4011	1,3,treasure01.gat,61,37
 treasure01.gat,58,37,0		warp	treasurewarp4012	1,3,treasure01.gat,39,37
 treasure01.gat,69,75,0		warp	treasurewarp4013	2,1,treasure01.gat,69,106
@@ -330,263 +330,12 @@ treasure02.gat,80,72,0		warp	treasurewarp4032	1,4,treasure02.gat,63,72
 
 
 //==============================================================
-// ----- タイムアタック -----
-// force_1-1.gat	タイムアタックモード 1 ～ 3
-// force_2-1.gat	タイムアタックモード 1 ～ 3
-// force_3-1.gat	タイムアタックモード 1 ～ 3
-// -----
-//==============================================================
-force_1-1.gat,25,44,0		warp	forcewarp4001		1,1,force_1-1.gat,25,69
-force_1-1.gat,25,65,0		warp	forcewarp4002		1,1,force_1-1.gat,25,40
-force_1-1.gat,25,134,0		warp	forcewarp4003		1,1,force_1-1.gat,25,159
-force_1-1.gat,25,155,0		warp	forcewarp4004		1,1,force_1-1.gat,25,130
-force_1-1.gat,44,26,0		warp	forcewarp4005		1,1,force_1-1.gat,66,26
-force_1-1.gat,62,26,0		warp	forcewarp4006		1,1,force_1-1.gat,40,26
-force_1-1.gat,44,174,0		warp	forcewarp4007		1,1,force_1-1.gat,69,174
-force_1-1.gat,65,174,0		warp	forcewarp4008		1,1,force_1-1.gat,40,174
-force_1-1.gat,99,54,0		warp	forcewarp4009		1,1,force_1-1.gat,99,82
-force_1-1.gat,100,81,0		warp	forcewarp4010		1,1,force_1-1.gat,99,51
-force_1-1.gat,134,174,0		warp	forcewarp4011		1,1,force_1-1.gat,159,174
-force_1-1.gat,155,174,0		warp	forcewarp4012		1,1,force_1-1.gat,130,174
-force_1-1.gat,137,26,0		warp	forcewarp4013		1,1,force_1-1.gat,159,26
-force_1-1.gat,155,26,0		warp	forcewarp4014		1,1,force_1-1.gat,132,26
-force_1-1.gat,174,44,0		warp	forcewarp4015		1,1,force_1-1.gat,174,69
-force_1-1.gat,174,65,0		warp	forcewarp4016		1,1,force_1-1.gat,174,40
-force_1-1.gat,174,134,0		warp	forcewarp4017		1,1,force_1-1.gat,174,159
-force_1-1.gat,174,155,0		warp	forcewarp4018		1,1,force_1-1.gat,174,130
-force_1-2.gat,25,93,0		warp	forcewarp4019		1,1,force_1-2.gat,25,118
-force_1-2.gat,25,114,0		warp	forcewarp4020		1,1,force_1-2.gat,25,89
-force_1-2.gat,33,178,0		warp	forcewarp4021		1,1,force_1-2.gat,59,178
-force_1-2.gat,55,178,0		warp	forcewarp4022		1,1,force_1-2.gat,29,178
-force_1-2.gat,41,26,0		warp	forcewarp4023		1,1,force_1-2.gat,89,26
-force_1-2.gat,85,26,0		warp	forcewarp4024		1,1,force_1-2.gat,37,26
-force_1-2.gat,41,78,0		warp	forcewarp4025		1,1,force_1-2.gat,88,78
-force_1-2.gat,84,78,0		warp	forcewarp4026		1,1,force_1-2.gat,37,78
-force_1-2.gat,49,130,0		warp	forcewarp4027		1,1,force_1-2.gat,91,125
-force_1-2.gat,91,129,0		warp	forcewarp4028		1,1,force_1-2.gat,49,134
-force_1-2.gat,95,187,0		warp	forcewarp4029		1,1,force_1-2.gat,107,141
-force_1-2.gat,107,145,0		warp	forcewarp4030		1,1,force_1-2.gat,95,183
-force_1-2.gat,99,40,0		warp	forcewarp4031		1,1,force_1-2.gat,99,66
-force_1-2.gat,99,62,0		warp	forcewarp4032		1,1,force_1-2.gat,99,36
-force_1-2.gat,114,26,0		warp	forcewarp4033		1,1,force_1-2.gat,162,26
-force_1-2.gat,158,26,0		warp	forcewarp4034		1,1,force_1-2.gat,110,26
-force_1-2.gat,115,78,0		warp	forcewarp4035		1,1,force_1-2.gat,162,78
-force_1-2.gat,158,78,0		warp	forcewarp4036		1,1,force_1-2.gat,111,78
-force_1-2.gat,137,178,0		warp	forcewarp4037		1,1,force_1-2.gat,162,178
-force_1-2.gat,158,178,0		warp	forcewarp4038		1,1,force_1-2.gat,133,178
-force_1-2.gat,173,93,0		warp	forcewarp4039		1,1,force_1-2.gat,173,118
-force_1-2.gat,173,114,0		warp	forcewarp4040		1,1,force_1-2.gat,173,89
-force_1-3.gat,10,100,0		warp	forcewarp4041		1,1,force_1-3.gat,25,180
-force_1-3.gat,29,180,0		warp	forcewarp4042		1,1,force_1-3.gat,14,100
-force_1-3.gat,19,10,0		warp	forcewarp4043		1,1,force_1-3.gat,19,185
-force_1-3.gat,19,189,0		warp	forcewarp4044		1,1,force_1-3.gat,19,14
-force_1-3.gat,19,29,0		warp	forcewarp4045		1,1,force_1-3.gat,19,54
-force_1-3.gat,19,50,0		warp	forcewarp4046		1,1,force_1-3.gat,19,25
-force_1-3.gat,19,147,0		warp	forcewarp4047		1,1,force_1-3.gat,179,94
-force_1-3.gat,179,90,0		warp	forcewarp4048		1,1,force_1-3.gat,19,143
-force_1-3.gat,29,100,0		warp	forcewarp4049		1,1,force_1-3.gat,174,180
-force_1-3.gat,170,180,0		warp	forcewarp4050		1,1,force_1-3.gat,24,100
-force_1-3.gat,59,29,0		warp	forcewarp4051		1,1,force_1-3.gat,99,132
-force_1-3.gat,99,128,0		warp	forcewarp4052		1,1,force_1-3.gat,59,25
-force_1-3.gat,59,69,0		warp	forcewarp4053		1,1,force_1-3.gat,59,94
-force_1-3.gat,59,90,0		warp	forcewarp4054		1,1,force_1-3.gat,59,65
-force_1-3.gat,59,109,0		warp	forcewarp4055		1,1,force_1-3.gat,139,54
-force_1-3.gat,139,50,0		warp	forcewarp4056		1,1,force_1-3.gat,59,105
-force_1-3.gat,59,128,0		warp	forcewarp4057		1,1,force_1-3.gat,139,105
-force_1-3.gat,139,109,0		warp	forcewarp4058		1,1,force_1-3.gat,59,132
-force_1-3.gat,69,20,0		warp	forcewarp4059		1,1,force_1-3.gat,134,100
-force_1-3.gat,130,100,0		warp	forcewarp4060		1,1,force_1-3.gat,65,20
-force_1-3.gat,69,60,0		warp	forcewarp4061		1,1,force_1-3.gat,94,60
-force_1-3.gat,90,60,0		warp	forcewarp4062		1,1,force_1-3.gat,65,60
-force_1-3.gat,69,138,0		warp	forcewarp4063		1,1,force_1-3.gat,174,60
-force_1-3.gat,170,60,0		warp	forcewarp4064		1,1,force_1-3.gat,65,138
-force_1-3.gat,99,147,0		warp	forcewarp4065		1,1,force_1-3.gat,99,168
-force_1-3.gat,99,164,0		warp	forcewarp4066		1,1,force_1-3.gat,99,143
-force_1-3.gat,109,60,0		warp	forcewarp4067		1,1,force_1-3.gat,134,20
-force_1-3.gat,130,20,0		warp	forcewarp4068		1,1,force_1-3.gat,105,60
-force_1-3.gat,109,100,0		warp	forcewarp4069		1,1,force_1-3.gat,174,100
-force_1-3.gat,170,100,0		warp	forcewarp4070		1,1,force_1-3.gat,105,100
-force_1-3.gat,109,138,0		warp	forcewarp4071		1,1,force_1-3.gat,134,138
-force_1-3.gat,130,138,0		warp	forcewarp4072		1,1,force_1-3.gat,105,138
-force_1-3.gat,139,147,0		warp	forcewarp4073		1,1,force_1-3.gat,179,174
-force_1-3.gat,179,170,0		warp	forcewarp4074		1,1,force_1-3.gat,139,143
-force_1-3.gat,179,29,0		warp	forcewarp4075		1,1,force_1-3.gat,179,54
-force_1-3.gat,179,50,0		warp	forcewarp4076		1,1,force_1-3.gat,179,25
-force_1-3.gat,179,109,0		warp	forcewarp4077		1,1,force_1-3.gat,179,132
-force_1-3.gat,179,128,0		warp	forcewarp4078		1,1,force_1-3.gat,179,105
-
-
-
-//==============================================================
-// ----- バトルオディール -----
-// ordeal_1-1.gat	バトルオディールモード 1 ～ 4
-// ordeal_2-1.gat	バトルオディールモード 1 ～ 4
-// ordeal_3-1.gat	バトルオディールモード 1 ～ 4
-// -----
-//==============================================================
-ordeal_1-1.gat,100,150,0	warp	ordealwarp4101		1,1,ordeal_1-1.gat,128,150
-ordeal_1-1.gat,123,150,0	warp	ordealwarp4102		1,1,ordeal_1-1.gat,95,150
-ordeal_1-1.gat,114,183,0	warp	ordealwarp4103		1,1,ordeal_1-1.gat,135,163
-ordeal_1-1.gat,130,168,0	warp	ordealwarp4104		1,1,ordeal_1-1.gat,109,188
-ordeal_1-1.gat,115,115,0	warp	ordealwarp4105		1,1,ordeal_1-1.gat,136,136
-ordeal_1-1.gat,131,131,0	warp	ordealwarp4106		1,1,ordeal_1-1.gat,110,110
-ordeal_1-1.gat,148,176,0	warp	ordealwarp4107		1,1,ordeal_1-1.gat,149,204
-ordeal_1-1.gat,149,199,0	warp	ordealwarp4108		1,1,ordeal_1-1.gat,148,171
-ordeal_1-1.gat,149,99,0		warp	ordealwarp4109		1,1,ordeal_1-1.gat,151,129
-ordeal_1-1.gat,151,124,0	warp	ordealwarp4110		1,1,ordeal_1-1.gat,151,94
-ordeal_1-1.gat,168,168,0	warp	ordealwarp4111		1,1,ordeal_1-1.gat,189,189
-ordeal_1-1.gat,184,184,0	warp	ordealwarp4112		1,1,ordeal_1-1.gat,163,163
-ordeal_1-1.gat,169,131,0	warp	ordealwarp4113		1,1,ordeal_1-1.gat,188,111
-ordeal_1-1.gat,183,116,0	warp	ordealwarp4114		1,1,ordeal_1-1.gat,164,136
-ordeal_1-1.gat,176,150,0	warp	ordealwarp4115		1,1,ordeal_1-1.gat,204,150
-ordeal_1-1.gat,199,150,0	warp	ordealwarp4116		1,1,ordeal_1-1.gat,171,150
-ordeal_1-2.gat,128,154,0	warp	ordealwarp4117		1,1,ordeal_1-2.gat,24,154
-ordeal_1-2.gat,136,136,0	warp	ordealwarp4118		1,1,ordeal_1-2.gat,24,24
-ordeal_1-2.gat,136,172,0	warp	ordealwarp4119		1,1,ordeal_1-2.gat,24,284
-ordeal_1-2.gat,153,128,0	warp	ordealwarp4120		1,1,ordeal_1-2.gat,153,23
-ordeal_1-2.gat,153,180,0	warp	ordealwarp4121		1,1,ordeal_1-2.gat,144,284
-ordeal_1-2.gat,172,135,0	warp	ordealwarp4122		1,1,ordeal_1-2.gat,284,24
-ordeal_1-2.gat,172,172,0	warp	ordealwarp4123		1,1,ordeal_1-2.gat,284,284
-ordeal_1-2.gat,180,154,0	warp	ordealwarp4124		1,1,ordeal_1-2.gat,284,164
-ordeal_1-3.gat,100,150,0	warp	ordealwarp4125		1,1,ordeal_1-3.gat,128,150
-ordeal_1-3.gat,114,183,0	warp	ordealwarp4126		1,1,ordeal_1-3.gat,135,163
-ordeal_1-3.gat,115,115,0	warp	ordealwarp4127		1,1,ordeal_1-3.gat,136,136
-ordeal_1-3.gat,123,150,0	warp	ordealwarp4128		1,1,ordeal_1-3.gat,95,150
-ordeal_1-3.gat,130,168,0	warp	ordealwarp4129		1,1,ordeal_1-3.gat,109,188
-ordeal_1-3.gat,131,131,0	warp	ordealwarp4130		1,1,ordeal_1-3.gat,110,110
-ordeal_1-3.gat,148,176,0	warp	ordealwarp4131		1,1,ordeal_1-3.gat,149,204
-ordeal_1-3.gat,149,99,0		warp	ordealwarp4132		1,1,ordeal_1-3.gat,151,129
-ordeal_1-3.gat,149,199,0	warp	ordealwarp4133		1,1,ordeal_1-3.gat,148,171
-ordeal_1-3.gat,151,124,0	warp	ordealwarp4134		1,1,ordeal_1-3.gat,151,94
-ordeal_1-3.gat,168,168,0	warp	ordealwarp4135		1,1,ordeal_1-3.gat,189,189
-ordeal_1-3.gat,169,131,0	warp	ordealwarp4136		1,1,ordeal_1-3.gat,188,111
-ordeal_1-3.gat,176,150,0	warp	ordealwarp4137		1,1,ordeal_1-3.gat,204,150
-ordeal_1-3.gat,183,116,0	warp	ordealwarp4138		1,1,ordeal_1-3.gat,164,136
-ordeal_1-3.gat,184,184,0	warp	ordealwarp4139		1,1,ordeal_1-3.gat,163,163
-ordeal_1-3.gat,199,150,0	warp	ordealwarp4140		1,1,ordeal_1-3.gat,171,150
-ordeal_1-4.gat,128,154,0	warp	ordealwarp4141		1,1,ordeal_1-4.gat,24,154
-ordeal_1-4.gat,136,136,0	warp	ordealwarp4142		1,1,ordeal_1-4.gat,24,24
-ordeal_1-4.gat,136,172,0	warp	ordealwarp4143		1,1,ordeal_1-4.gat,24,284
-ordeal_1-4.gat,153,128,0	warp	ordealwarp4144		1,1,ordeal_1-4.gat,153,23
-ordeal_1-4.gat,153,180,0	warp	ordealwarp4145		1,1,ordeal_1-4.gat,144,284
-ordeal_1-4.gat,172,135,0	warp	ordealwarp4146		1,1,ordeal_1-4.gat,284,24
-ordeal_1-4.gat,172,172,0	warp	ordealwarp4147		1,1,ordeal_1-4.gat,284,284
-ordeal_1-4.gat,180,154,0	warp	ordealwarp4148		1,1,ordeal_1-4.gat,284,164
-
-ordeal_2-1.gat,100,150,0	warp	ordealwarp4201		1,1,ordeal_2-1.gat,128,150
-ordeal_2-1.gat,123,150,0	warp	ordealwarp4202		1,1,ordeal_2-1.gat,95,150
-ordeal_2-1.gat,114,183,0	warp	ordealwarp4203		1,1,ordeal_2-1.gat,135,163
-ordeal_2-1.gat,130,168,0	warp	ordealwarp4204		1,1,ordeal_2-1.gat,109,188
-ordeal_2-1.gat,115,115,0	warp	ordealwarp4205		1,1,ordeal_2-1.gat,136,136
-ordeal_2-1.gat,131,131,0	warp	ordealwarp4206		1,1,ordeal_2-1.gat,110,110
-ordeal_2-1.gat,148,176,0	warp	ordealwarp4207		1,1,ordeal_2-1.gat,149,204
-ordeal_2-1.gat,149,199,0	warp	ordealwarp4208		1,1,ordeal_2-1.gat,148,171
-ordeal_2-1.gat,149,99,0		warp	ordealwarp4209		1,1,ordeal_2-1.gat,151,129
-ordeal_2-1.gat,151,124,0	warp	ordealwarp4210		1,1,ordeal_2-1.gat,151,94
-ordeal_2-1.gat,168,168,0	warp	ordealwarp4211		1,1,ordeal_2-1.gat,189,189
-ordeal_2-1.gat,184,184,0	warp	ordealwarp4212		1,1,ordeal_2-1.gat,163,163
-ordeal_2-1.gat,169,131,0	warp	ordealwarp4213		1,1,ordeal_2-1.gat,188,111
-ordeal_2-1.gat,183,116,0	warp	ordealwarp4214		1,1,ordeal_2-1.gat,164,136
-ordeal_2-1.gat,176,150,0	warp	ordealwarp4215		1,1,ordeal_2-1.gat,204,150
-ordeal_2-1.gat,199,150,0	warp	ordealwarp4216		1,1,ordeal_2-1.gat,171,150
-ordeal_2-2.gat,128,154,0	warp	ordealwarp4217		1,1,ordeal_2-2.gat,24,154
-ordeal_2-2.gat,136,136,0	warp	ordealwarp4218		1,1,ordeal_2-2.gat,24,24
-ordeal_2-2.gat,136,172,0	warp	ordealwarp4219		1,1,ordeal_2-2.gat,24,284
-ordeal_2-2.gat,153,128,0	warp	ordealwarp4220		1,1,ordeal_2-2.gat,153,23
-ordeal_2-2.gat,153,180,0	warp	ordealwarp4221		1,1,ordeal_2-2.gat,144,284
-ordeal_2-2.gat,172,135,0	warp	ordealwarp4222		1,1,ordeal_2-2.gat,284,24
-ordeal_2-2.gat,172,172,0	warp	ordealwarp4223		1,1,ordeal_2-2.gat,284,284
-ordeal_2-2.gat,180,154,0	warp	ordealwarp4224		1,1,ordeal_2-2.gat,284,164
-ordeal_2-3.gat,100,150,0	warp	ordealwarp4225		1,1,ordeal_2-3.gat,128,150
-ordeal_2-3.gat,114,183,0	warp	ordealwarp4226		1,1,ordeal_2-3.gat,135,163
-ordeal_2-3.gat,115,115,0	warp	ordealwarp4227		1,1,ordeal_2-3.gat,136,136
-ordeal_2-3.gat,123,150,0	warp	ordealwarp4228		1,1,ordeal_2-3.gat,95,150
-ordeal_2-3.gat,130,168,0	warp	ordealwarp4229		1,1,ordeal_2-3.gat,109,188
-ordeal_2-3.gat,131,131,0	warp	ordealwarp4230		1,1,ordeal_2-3.gat,110,110
-ordeal_2-3.gat,148,176,0	warp	ordealwarp4231		1,1,ordeal_2-3.gat,149,204
-ordeal_2-3.gat,149,99,0		warp	ordealwarp4232		1,1,ordeal_2-3.gat,151,129
-ordeal_2-3.gat,149,199,0	warp	ordealwarp4233		1,1,ordeal_2-3.gat,148,171
-ordeal_2-3.gat,151,124,0	warp	ordealwarp4234		1,1,ordeal_2-3.gat,151,94
-ordeal_2-3.gat,168,168,0	warp	ordealwarp4235		1,1,ordeal_2-3.gat,189,189
-ordeal_2-3.gat,169,131,0	warp	ordealwarp4236		1,1,ordeal_2-3.gat,188,111
-ordeal_2-3.gat,176,150,0	warp	ordealwarp4237		1,1,ordeal_2-3.gat,204,150
-ordeal_2-3.gat,183,116,0	warp	ordealwarp4238		1,1,ordeal_2-3.gat,164,136
-ordeal_2-3.gat,184,184,0	warp	ordealwarp4239		1,1,ordeal_2-3.gat,163,163
-ordeal_2-3.gat,199,150,0	warp	ordealwarp4240		1,1,ordeal_2-3.gat,171,150
-ordeal_2-4.gat,128,154,0	warp	ordealwarp4241		1,1,ordeal_2-4.gat,24,154
-ordeal_2-4.gat,136,136,0	warp	ordealwarp4242		1,1,ordeal_2-4.gat,24,24
-ordeal_2-4.gat,136,172,0	warp	ordealwarp4243		1,1,ordeal_2-4.gat,24,284
-ordeal_2-4.gat,153,128,0	warp	ordealwarp4244		1,1,ordeal_2-4.gat,153,23
-ordeal_2-4.gat,153,180,0	warp	ordealwarp4245		1,1,ordeal_2-4.gat,144,284
-ordeal_2-4.gat,172,135,0	warp	ordealwarp4246		1,1,ordeal_2-4.gat,284,24
-ordeal_2-4.gat,172,172,0	warp	ordealwarp4247		1,1,ordeal_2-4.gat,284,284
-ordeal_2-4.gat,180,154,0	warp	ordealwarp4248		1,1,ordeal_2-4.gat,284,164
-
-ordeal_3-1.gat,100,150,0	warp	ordealwarp4301		1,1,ordeal_3-1.gat,128,150
-ordeal_3-1.gat,123,150,0	warp	ordealwarp4302		1,1,ordeal_3-1.gat,95,150
-ordeal_3-1.gat,114,183,0	warp	ordealwarp4303		1,1,ordeal_3-1.gat,135,163
-ordeal_3-1.gat,130,168,0	warp	ordealwarp4304		1,1,ordeal_3-1.gat,109,188
-ordeal_3-1.gat,115,115,0	warp	ordealwarp4305		1,1,ordeal_3-1.gat,136,136
-ordeal_3-1.gat,131,131,0	warp	ordealwarp4306		1,1,ordeal_3-1.gat,110,110
-ordeal_3-1.gat,148,176,0	warp	ordealwarp4307		1,1,ordeal_3-1.gat,149,204
-ordeal_3-1.gat,149,199,0	warp	ordealwarp4308		1,1,ordeal_3-1.gat,148,171
-ordeal_3-1.gat,149,99,0		warp	ordealwarp4309		1,1,ordeal_3-1.gat,151,129
-ordeal_3-1.gat,151,124,0	warp	ordealwarp4310		1,1,ordeal_3-1.gat,151,94
-ordeal_3-1.gat,168,168,0	warp	ordealwarp4311		1,1,ordeal_3-1.gat,189,189
-ordeal_3-1.gat,184,184,0	warp	ordealwarp4312		1,1,ordeal_3-1.gat,163,163
-ordeal_3-1.gat,169,131,0	warp	ordealwarp4313		1,1,ordeal_3-1.gat,188,111
-ordeal_3-1.gat,183,116,0	warp	ordealwarp4314		1,1,ordeal_3-1.gat,164,136
-ordeal_3-1.gat,176,150,0	warp	ordealwarp4315		1,1,ordeal_3-1.gat,204,150
-ordeal_3-1.gat,199,150,0	warp	ordealwarp4316		1,1,ordeal_3-1.gat,171,150
-ordeal_3-2.gat,128,154,0	warp	ordealwarp4317		1,1,ordeal_3-2.gat,24,154
-ordeal_3-2.gat,136,136,0	warp	ordealwarp4318		1,1,ordeal_3-2.gat,24,24
-ordeal_3-2.gat,136,172,0	warp	ordealwarp4319		1,1,ordeal_3-2.gat,24,284
-ordeal_3-2.gat,153,128,0	warp	ordealwarp4320		1,1,ordeal_3-2.gat,153,23
-ordeal_3-2.gat,153,180,0	warp	ordealwarp4321		1,1,ordeal_3-2.gat,144,284
-ordeal_3-2.gat,172,135,0	warp	ordealwarp4322		1,1,ordeal_3-2.gat,284,24
-ordeal_3-2.gat,172,172,0	warp	ordealwarp4323		1,1,ordeal_3-2.gat,284,284
-ordeal_3-2.gat,180,154,0	warp	ordealwarp4324		1,1,ordeal_3-2.gat,284,164
-ordeal_3-3.gat,100,150,0	warp	ordealwarp4325		1,1,ordeal_3-3.gat,128,150
-ordeal_3-3.gat,114,183,0	warp	ordealwarp4326		1,1,ordeal_3-3.gat,135,163
-ordeal_3-3.gat,115,115,0	warp	ordealwarp4327		1,1,ordeal_3-3.gat,136,136
-ordeal_3-3.gat,123,150,0	warp	ordealwarp4328		1,1,ordeal_3-3.gat,95,150
-ordeal_3-3.gat,130,168,0	warp	ordealwarp4329		1,1,ordeal_3-3.gat,109,188
-ordeal_3-3.gat,131,131,0	warp	ordealwarp4330		1,1,ordeal_3-3.gat,110,110
-ordeal_3-3.gat,148,176,0	warp	ordealwarp4331		1,1,ordeal_3-3.gat,149,204
-ordeal_3-3.gat,149,99,0		warp	ordealwarp4332		1,1,ordeal_3-3.gat,151,129
-ordeal_3-3.gat,149,199,0	warp	ordealwarp4333		1,1,ordeal_3-3.gat,148,171
-ordeal_3-3.gat,151,124,0	warp	ordealwarp4334		1,1,ordeal_3-3.gat,151,94
-ordeal_3-3.gat,168,168,0	warp	ordealwarp4335		1,1,ordeal_3-3.gat,189,189
-ordeal_3-3.gat,169,131,0	warp	ordealwarp4336		1,1,ordeal_3-3.gat,188,111
-ordeal_3-3.gat,176,150,0	warp	ordealwarp4337		1,1,ordeal_3-3.gat,204,150
-ordeal_3-3.gat,183,116,0	warp	ordealwarp4338		1,1,ordeal_3-3.gat,164,136
-ordeal_3-3.gat,184,184,0	warp	ordealwarp4339		1,1,ordeal_3-3.gat,163,163
-ordeal_3-3.gat,199,150,0	warp	ordealwarp4340		1,1,ordeal_3-3.gat,171,150
-ordeal_3-4.gat,128,154,0	warp	ordealwarp4341		1,1,ordeal_3-4.gat,24,154
-ordeal_3-4.gat,136,136,0	warp	ordealwarp4342		1,1,ordeal_3-4.gat,24,24
-ordeal_3-4.gat,136,172,0	warp	ordealwarp4343		1,1,ordeal_3-4.gat,24,284
-ordeal_3-4.gat,153,128,0	warp	ordealwarp4344		1,1,ordeal_3-4.gat,153,23
-ordeal_3-4.gat,153,180,0	warp	ordealwarp4345		1,1,ordeal_3-4.gat,144,284
-ordeal_3-4.gat,172,135,0	warp	ordealwarp4346		1,1,ordeal_3-4.gat,284,24
-ordeal_3-4.gat,172,172,0	warp	ordealwarp4347		1,1,ordeal_3-4.gat,284,284
-ordeal_3-4.gat,180,154,0	warp	ordealwarp4348		1,1,ordeal_3-4.gat,284,164
-
-
-
-//==============================================================
 // izlu2dun.gat		バイラン島
 // -----
 // iz_dun00.gat		イズルード海底洞窟1層
 //==============================================================
 izlu2dun.gat,108,83,0		warp	izludewarp0401		3,2,iz_dun00.gat,168,168
 
-
-
-//==============================================================
-// prt_arena01.gat	アリーナ
-// prt_are01.gat	アリーナ
-// -----
-//==============================================================
 
 
 
@@ -614,12 +363,12 @@ w2:	warp "alde_dun03.gat",175,131; end;
 w3:	warp "c_tower3.gat",235,7;     end;
 }
 //random 2-2
-c_tower2.gat,233,267,4		script	#clockwarp4007		45,1,1,{
+c_tower2.gat,223,267,4		script	#clockwarp4007		45,1,1,{
 	set @warp0,rand(3);
 	if(@warp0==0) goto w1;
 	if(@warp0==1) goto w2;
 	if(@warp0==2) goto w3;
-w1:	warp "c_tower2.gat",288,267;   end;
+w1:	warp "c_tower2.gat",228,267;   end;
 w2:	warp "alde_dun03.gat",130,130; end;
 w3:	warp "c_tower3.gat",252,29;    end;
 }
@@ -1091,14 +840,14 @@ um_dun02.gat,60,89,0		warp	umbalawarp4014		1,1,um_dun02,215,74
 // -----
 // louyang.gat		古都 龍之城
 //==============================================================
-lou_dun01.gat,222,196,0		warp	louyangwarp0101		1,1,louyang.gat,40,273
+lou_dun01.gat,221,195,0		warp	louyangwarp0101		1,1,louyang.gat,40,273
 
 // Lou_dun01 -> Lou_dun02
-lou_dun01.gat,30,203,0		warp	louyangwarp1001		1,1,lou_dun02.gat,282,20
-lou_dun02.gat,287,20,0		warp	louyangwarp1002		1,2,lou_dun01.gat,38,204
+lou_dun01.gat,40,201,0		warp	louyangwarp1001		1,1,lou_dun02.gat,285,18
+lou_dun02.gat,288,18,0		warp	louyangwarp1002		1,2,lou_dun01.gat,38,203
 // Lou_dun02 -> Lou_dun03
-lou_dun02.gat,165,270,0		warp	louyangwarp1003		1,1,lou_dun03.gat,165,37
-lou_dun03.gat,165,34,0		warp	louyangwarp1004		1,1,lou_dun02.gat,165,262
+lou_dun02.gat,165,269,0		warp	louyangwarp1003		1,1,lou_dun03.gat,165,38
+lou_dun03.gat,165,35,0		warp	louyangwarp1004		1,1,lou_dun02.gat,165,266
 
 
 
@@ -1121,16 +870,15 @@ lou_dun03.gat,165,34,0		warp	louyangwarp1004		1,1,lou_dun02.gat,165,262
 // ayo_dun02.gat	古代神殿内部
 // -----
 //==============================================================
+ayo_dun01.gat,274,14,0	warp	ayothayawarp0501	1,1,ayo_fild02.gat,279,150
 
 
-
-//---ジュノーフィールド追加マップ
 
 
 //---アルデバランターボトラック追加マップ
 
 
-//---鋼鉄都市アインブロク追加マップ
+//---鋼鉄の都市アインブロック追加マップ
 
 
 //==============================================================
@@ -1138,13 +886,16 @@ lou_dun03.gat,165,34,0		warp	louyangwarp1004		1,1,lou_dun02.gat,165,262
 // ein_dun01.gat	鉱山ダンジョン
 // ein_dun02.gat	鉱山ダンジョン
 // -----
-// einbech.gat		採光村アインベフ
+// einbech.gat		採鉱の村アインベフ
 //==============================================================
-//アインベフ炭鉱⇒採光村アインベフ
-ein_dun01.gat,22,11,0	warp	warp	1,1,einbech.gat,139,250
-//アインベフ炭鉱１Ｆ⇔アインベフ炭鉱Ｂ１Ｆ
-ein_dun01.gat,262,256,0	warp	warp	1,1,ein_dun02.gat,291,289
-ein_dun02.gat,291,291,0	warp	warp	1,1,ein_dun01.gat,262,258
+//鉱山ダンジョン⇒採鉱の村アインベフ
+ein_dun01.gat,22,11,0	warp	einbrochwarp0101	1,1,einbech.gat,138,249
+//鉱山ダンジョン１⇔鉱山ダンジョン２
+ein_dun01.gat,261,255,0	warp	einbrochwarp4001	1,1,ein_dun02.gat,291,292
+ein_dun02.gat,286,292,0	warp	einbrochwarp4002	1,1,ein_dun01.gat,261,258
+//鉱山ダンジョン２
+ein_dun02.gat,210,225,0	warp	einbrochwarp4003	1,1,ein_dun02.gat,216,207
+ein_dun02.gat,216,210,0	warp	einbrochwarp4004	1,1,ein_dun02.gat,208,228
 
 
 
@@ -1174,3 +925,49 @@ lhz_dun03.gat,140,139,0		warp	lighthalzenwarp4008	1,1,lhz_dun02.gat,150,151
 
 
 
+//---アビス湖ダンジョン追加マップ
+
+
+//==============================================================
+// abyss_01.gat	アビス湖地下洞窟１層
+// abyss_02.gat	アビス湖地下洞窟２層
+// abyss_03.gat	アビス湖地下洞窟３層
+// -----
+// hu_fild.gat	アビス湖
+//==============================================================
+//アビス湖地下洞窟１層⇒アビス湖
+abyss_01.gat,26,24,0	warp	abysslakewarp0501	1,1,hu_fild05.gat,193,206
+
+//アビス湖地下洞窟１層⇔アビス湖地下洞窟２層
+abyss_01.gat,267,273,0	warp	abysslakewarp4001	1,1,abyss_02.gat,275,270
+abyss_02.gat,277,270,0	warp	abysslakewarp4002	1,1,abyss_01.gat,264,270
+//アビス湖地下洞窟２層⇔アビス湖地下洞窟３層
+abyss_02.gat,145,279,0	warp	abysslakewarp4003	1,1,abyss_03.gat,115,27
+abyss_03.gat,115,25,0	warp	abysslakewarp4004	1,1,abyss_02.gat,145,277
+
+
+
+//---タナトスタワーダンジョン追加マップ
+
+
+//==============================================================
+// tha_scene01.gat	タナトスタワー前
+// tha_t01.gat	タナトスタワー下層部
+// tha_t02.gat	タナトスタワー下層部
+// tha_t03.gat	タナトスタワー下層部
+// tha_t04.gat	タナトスタワー下層部
+// tha_t05.gat	タナトスタワー上層部
+// tha_t06.gat	タナトスタワー上層部
+// tha_t07.gat	タナトスタワー上層部
+// tha_t08.gat	タナトスタワー上層部
+// thana_step.gat	タナトスタワー
+// thana_boss.gat	タナトスタワー
+// -----
+//==============================================================
+
+tha_scene01.gat,144,200,0	warp	thanatoswarp4001	1,1,tha_t01.gat,150,36
+tha_t01.gat,150,33,0		warp	thanatoswarp4002	1,1,tha_scene01.gat,139,200
+
+//タナトスタワー１F⇔タナトスタワー２F
+tha_t01.gat,150,148,0	warp	thanatoswarp4003	1,1,tha_t02.gat,150,133
+tha_t02.gat,150,130,0	warp	thanatoswarp4004	1,1,tha_t01.gat,150,145

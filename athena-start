@@ -82,7 +82,7 @@ check_account() {
 		i=0
 		while [ $i -le 19 ];
 		do
-			echo -e "$i,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0\r" >> save/castle.txt
+			echo -e "$i,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0\r" >> save/castle.txt
 			i=`expr $i + 1`
 		done
 	fi

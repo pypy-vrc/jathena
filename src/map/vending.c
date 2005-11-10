@@ -64,6 +64,9 @@ void vending_purchasereq(struct map_session_data *sd,int len,int id,unsigned cha
 
 	blank=pc_inventoryblank(sd);
 
+	if(vsd==NULL || vsd->vender_id==0)
+		return;
+
 	for(i=0,w=z=0;8+4*i<len;i++){
 		amount=*(short*)(p+4*i);
 		index=*(short*)(p+2+4*i)-2;
@@ -109,9 +112,7 @@ void vending_purchasereq(struct map_session_data *sd,int len,int id,unsigned cha
 			return;	// ƒAƒCƒeƒ€”’´‰ß
 		}
 	}
-	if(vsd==NULL)
-		return;
-	if(vsd->vender_id==0)
+	if(vsd==NULL || vsd->vender_id==0)
 		return;
 	pc_payzeny(sd,(int)z);
 	pc_getzeny(vsd,(int)z);

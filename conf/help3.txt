@@ -85,3 +85,9 @@
 resetstate
 	/resetstate	--- ステータスリセット
 	/resetskill	--- スキルリセット
+
+
+@resetfeel 数字  ---0:太陽 1:月 2:星
+		    太陽と月と星の感情をリセット
+@resethate 数字  ---0:太陽 1:月 2:星
+		    太陽と月と星の憎悪をリセット

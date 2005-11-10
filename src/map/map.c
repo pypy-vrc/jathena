@@ -1,4 +1,4 @@
-// $Id: map.c,v 1.1.1.1 2005/08/29 21:39:49 running_pinata Exp $
+// $Id: map.c,v 1.1.1.2 2005/11/10 20:59:14 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,6 +39,7 @@
 #include "graph.h"
 #include "socket.h"
 #include "friend.h"
+#include "unit.h"
 
 #ifdef MEMWATCH
 #include "memwatch.h"
@@ -67,6 +68,8 @@ int map_num=0;
 
 int autosave_interval=DEFAULT_AUTOSAVE_INTERVAL;
 int agit_flag=0;
+int map_pk_server_flag = 0;
+int map_pk_nightmaredrop_flag = 0;
 
 extern int packet_parse_time;
 
@@ -342,6 +345,8 @@ struct skill_unit *map_find_skill_unit_oncell(struct block_list *target,int x,in
 	struct block_list *bl;
 	int i,c;
 	struct skill_unit *unit;
+
+	nullpo_retr(0, target);
 	m = target->m;
 
 	if (x < 0 || y < 0 || (x >= map[m].xs) || (y >= map[m].ys))
@@ -391,12 +396,12 @@ void map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int 
 	///////////////////////////////
 	// find maximum runindex
 	int tmax = abs(y1-y0);
-	
+
 	if(x0 != x1 && y0 != y1 && abs(x1-x0) != abs(y1-y0)) {
 		printf("map_foreachinpath: not supported size\n");
 		return;
 	}
-	if(tmax  < abs(x1-x0))	
+	if(tmax  < abs(x1-x0))
 		tmax = abs(x1-x0);
 	// pre-calculate delta values for x and y destination
 	// should speed up cause you don't need to divide in the loop
@@ -427,7 +432,7 @@ void map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int 
 				bl = map[m].block[bx+by*map[m].bxs];		// a block with the elements
 				for(i=0;i<c1 && bl;i++,bl=bl->next){		// go through all elements
 					if( bl && ( !type || bl->type==type ) && bl_list_count<BL_LIST_MAX )
-					{	
+					{
 						// check if block xy is on the line
 						if( (bl->x-x0)*(y1-y0) == (bl->y-y0)*(x1-x0) )
 						// and if it is within start and end point
@@ -450,7 +455,7 @@ void map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int 
 							bl_list[bl_list_count++]=bl;
 					}
 				}//end for mobs
-			}	
+			}
 		}
 	}//end for index
 
@@ -479,14 +484,12 @@ void map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int 
  * type!=0 ならその種類のみ
  *------------------------------------------
  */
-void map_foreachinarea(int (*func)(struct block_list*,va_list),int m,int x0,int y0,int x1,int y1,int type,...)
+void map_foreachinarea_sub(int (*func)(struct block_list*,va_list),int m,int x0,int y0,int x1,int y1,int type,va_list ap)
 {
 	int bx,by;
 	struct block_list *bl;
-	va_list ap;
 	int blockcount=bl_list_count,i,c;
 
-	va_start(ap,type);
 	if (x0 < 0) x0 = 0;
 	if (y0 < 0) y0 = 0;
 	if (x1 >= map[m].xs) x1 = map[m].xs-1;
@@ -529,8 +532,16 @@ void map_foreachinarea(int (*func)(struct block_list*,va_list),int m,int x0,int 
 
 	map_freeblock_unlock();	// 解放を許可する
 
-	va_end(ap);
 	bl_list_count = blockcount;
+
+}
+
+void map_foreachinarea(int (*func)(struct block_list*,va_list),int m,int x0,int y0,int x1,int y1,int type,...)
+{
+	va_list ap;
+	va_start(ap,type);
+	map_foreachinarea_sub(func, m, x0, y0, x1, y1, type, ap);
+	va_end(ap);
 }
 
 /*==========================================
@@ -641,6 +652,40 @@ void map_foreachinmovearea(int (*func)(struct block_list*,va_list),int m,int x0,
 
 	va_end(ap);
 	bl_list_count = blockcount;
+}
+
+
+/*==========================================
+ * 矩形(x[0],y[0])-(x[1],y[1])と矩形(x[2],y[2])-(x[3],y[3])の
+ * 共通部分に対してfuncを呼ぶ。ただし、x[0] < x[1], y[0] < y[1],
+ * x[2] < x[3], y[2] < y[3]を仮定している
+ *------------------------------------------
+ */
+
+// 正方形の中に点(x,y) が含まれているかを調べる
+#define map_square_in(p, _x, _y) (x[p+0] <= (_x) && x[p+1] >= (_x) && y[p+0] <= (_y) && y[p+1] >= (_y))
+
+void map_foreachcommonarea(int (*func)(struct block_list*,va_list),int m,int x[4],int y[4],int type,...) {
+	int flag = 0, i, j;
+	int x0 = 9999, x1 = -9999;
+	int y0 = 9999, y1 = -9999;
+	va_list ap;
+	va_start(ap,type);
+
+	for(i = 0; i < 4; i++) {
+		for(j = 0; j < 4; j++) {
+			if( map_square_in( 0, x[i], y[j] ) && map_square_in( 2, x[i], y[j] ) ) {
+				if( x0 > x[i]) { x0 = x[i]; flag = 1; }
+				if( x1 < x[i]) { x1 = x[i]; flag = 1; }
+				if( y0 > y[j]) { y0 = y[j]; flag = 1; }
+				if( y1 < y[j]) { y1 = y[j]; flag = 1; }
+			}
+		}
+	}
+	if( flag ) {
+		map_foreachinarea_sub(func, m, x0, y0, x1, y1, type, ap);
+	}
+	va_end(ap);
 }
 
 /*==========================================
@@ -914,13 +959,13 @@ int map_addflooritem(struct item *item_data,int amount,int m,int x,int y,struct 
 struct charid2nick *char_search(int char_id)
 {
 	struct charid2nick *p;
-	
+
 	p=numdb_search(charid_db,char_id);
 	if(p==NULL){	// データベースにない
 		chrif_searchcharid(char_id);
 		return NULL;
 	}
-	
+
 	return p;
 }
 
@@ -1042,14 +1087,14 @@ int map_quit(struct map_session_data *sd)
 		friend_send_online( sd, 1 );			// 友達リストのログアウトメッセージ送信
 		party_send_logout(sd);					// パーティのログアウトメッセージ送信
 		guild_send_memberinfoshort(sd,0);		// ギルドのログアウトメッセージ送信
-		skill_status_change_clear(&sd->bl,1);	// ステータス異常を解除する
+		status_change_clear(&sd->bl,1);			// ステータス異常を解除する
 		skill_stop_dancing(&sd->bl,1);			// ダンス/演奏中断
 		pc_cleareventtimer(sd);					// イベントタイマを破棄する
 		pc_delspiritball(sd,sd->spiritball,1);	// 気功削除
 
 		if(sd->status.pet_id && sd->pd) {
 			pet_lootitem_drop(sd->pd,sd);
-			pet_remove_map(sd);
+			unit_remove_map(&sd->pd->bl,0);
 			if(sd->pet.intimate <= 0) {
 				intif_delete_petdata(sd->status.pet_id);
 				sd->status.pet_id = 0;
@@ -1060,7 +1105,7 @@ int map_quit(struct map_session_data *sd)
 				intif_save_petdata(sd->status.account_id,&sd->pet);
 		}
 
-		if(pc_isdead(sd))
+		if(unit_isdead(&sd->bl))
 			pc_setrestartvalue(sd,2);
 
 		//クローンスキルで覚えたスキルは消す
@@ -1071,7 +1116,7 @@ int map_quit(struct map_session_data *sd)
 				sd->status.skill[i].flag=0;
 			}
 		}	*/
-		pc_remove_map(sd,2);
+		unit_remove_map(&sd->bl,2);
 		chrif_save(sd);
 		storage_storage_save(sd);
 		storage_delete(sd->status.account_id);
@@ -1163,7 +1208,7 @@ int map_foreachiddb(int (*func)(void*,void*,va_list),...)
 	va_list ap;
 
 	va_start(ap,func);
-	numdb_foreach(id_db,func,ap);
+	db_foreach_sub(id_db,func,ap);
 	va_end(ap);
 	return 0;
 }
@@ -1718,7 +1763,7 @@ static int map_cache_write(struct map_data *m)
 				len_new = m->xs * m->ys;
 				write_buf = m->gat;
 				map_cache.map[i].compressed     = 0;
-				map_cache.map[i].compressed_len = 0;	
+				map_cache.map[i].compressed_len = 0;
 			}
 			if(len_new <= len_old) {
 				// サイズが同じか小さくなったので場所は変わらない
@@ -1939,7 +1984,7 @@ int map_delmap(char *mapname)
 
 	fd=va_arg(ap,int);
 
-	if( p->ip != 0 && 
+	if( p->ip != 0 &&
 		p->port != 0 &&
 		!(battle_config.hide_GM_session && pc_numisGM(p->account_id))
 	)
@@ -1950,6 +1995,48 @@ int map_delmap(char *mapname)
 int map_who(int fd){
 	numdb_foreach( charid_db, map_who_sub, fd );
 	return 0;
+}
+
+//PKサーバーに一括変更
+int map_pk_server(int flag)
+{
+	int i,count=0;
+	if(!flag)
+		return 0;
+	printf("server setting:pk map ");
+	for(i=0;i<map_num;i++)
+	{
+		if(map[i].flag.gvg || map[i].flag.pvp)
+			continue;
+		if(map[i].flag.nopenalty)
+			continue;
+		if(map[i].flag.gvg_noparty)
+			continue;
+		if(!map[i].flag.nomemo)
+			continue;
+		map[i].flag.pk = 1;
+		count++;
+	}
+	printf("(count:%d/%d)\n",count,map_num);
+	return 1;
+}
+
+//PKフィールドのアイテムドロップを一括変更
+int map_pk_nightmaredrop(int flag)
+{
+	int i,count=0;
+	if(!flag)
+		return 0;
+	printf("server setting:pk nightmaredrop ");
+	for(i=0;i<map_num;i++)
+	{
+		if(map[i].flag.pk){
+			map[i].flag.pk_nightmaredrop = 1;
+			count++;
+		}
+	}
+	printf("(count:%d/%d)\n",count,map_num);
+	return 1;
 }
 /*==========================================
  * 設定ファイルを読み込む
@@ -2041,6 +2128,10 @@ int map_config_read(char *cfgName)
 			httpd_config_read(w2);
 		}else if(strcmpi(w1,"import")==0){
 			map_config_read(w2);
+		}else if(strcmpi(w1,"map_pk_server")==0){
+			map_pk_server_flag = atoi(w2);
+		}else if(strcmpi(w1,"map_pk_nightmaredrop")==0){
+			map_pk_nightmaredrop_flag = atoi(w2);
 		}
 	}
 	fclose(fp);
@@ -2060,7 +2151,7 @@ void map_socket_ctrl_panel_func(int fd,char* usage,char* user,char* status)
 	strcpy( usage,
 		( sd->func_parse == clif_parse )? "map user" :
 		( sd->func_parse == chrif_parse )? "char server" : "unknown" );
-	
+
 	if( sd->func_parse == clif_parse && sd->auth )
 	{
 		struct map_session_data *sd2 = sd->session_data;
@@ -2123,9 +2214,10 @@ void do_final(void)
 	do_final_party();
 	do_final_pet();
 	do_final_friend();
+	do_final_unit();
 
 	for(i=0;i<=map_num;i++){
-		if(map[i].gat) {	
+		if(map[i].gat) {
 			free(map[i].gat);
 			map[i].gat=NULL;
 		}
@@ -2183,7 +2275,7 @@ int do_init(int argc,char *argv[])
 	add_timer_func_list(map_freeblock_timer,"map_freeblock_timer");
 	add_timer_func_list(map_clearflooritem_timer,"map_clearflooritem_timer");
 	add_timer_interval(gettick()+1000,map_freeblock_timer,0,0,60*1000);
-	
+
 	do_init_chrif();
 	do_init_clif();
 	do_init_script(); // parse_script を呼び出す前にこれを呼ぶ
@@ -2198,6 +2290,11 @@ int do_init(int argc,char *argv[])
 	do_init_pet();
 	do_init_status();
 	do_init_friend();
+	do_init_ranking();
+	do_init_unit();
+	//
+	map_pk_server(map_pk_server_flag);
+	map_pk_nightmaredrop(map_pk_nightmaredrop_flag);
 	npc_event_do_oninit();	// npcのOnInitイベント実行
 
 	// for httpd support

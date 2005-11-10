@@ -37,8 +37,8 @@ rem set __TKSGSL__=/D "TKSGSL"
 rem ---------------------------
 rem コンパイルオプション設定
 
-set __opt1__=/c /W3 /O2 /Op /GA /TC /I "../common/zlib/" /I "../common/" /D "PACKETVER=6" /D "NEW_006b" /D "FD_SETSIZE=4096"  /D "LOCALZLIB" /D "NDEBUG" /D "_CONSOLE" /D "WIN32" /D "_WIN32" /D "_WIN32_WINDOWS" %__TXT_MODE__% %__CMP_AFL2__% %__CMP_AFIP__% %__NO_HTTPD__% %__TKSGSL__%
-set __opt2__=/nologo user32.lib ../common/zlib/*.obj ../common/*.obj *.obj
+set __opt1__=/c /W3 /O2 /Op /GA /TC /Zi /I "../common/zlib/" /I "../common/" /D "PACKETVER=6" /D "NEW_006b" /D "FD_SETSIZE=4096"  /D "LOCALZLIB" /D "NDEBUG" /D "_CONSOLE" /D "WIN32" /D "_WIN32" /D "_WIN32_WINDOWS" %__TXT_MODE__% %__CMP_AFL2__% %__CMP_AFIP__% %__NO_HTTPD__% %__TKSGSL__%
+set __opt2__=/DEBUG /nologo user32.lib ../common/zlib/*.obj ../common/*.obj *.obj
 
 rem ---------------------------
 rem コンパイル
@@ -50,13 +50,16 @@ cl %__opt1__% *.c
 
 cd ..\login
 cl %__opt1__% *.c 
-link %__opt2__% /out:"../../bin/login-server.exe"
+link %__opt2__% /out:"../../login-server.exe"
 cd ..\char
 cl %__opt1__% *.c 
-link %__opt2__% /out:"../../bin/char-server.exe"
+link %__opt2__% /out:"../../char-server.exe"
 cd ..\map
 cl %__opt1__% *.c 
-link %__opt2__% /out:"../../bin/map-server.exe"
+link %__opt2__% /out:"../../map-server.exe"
+cd ..\converter
+cl %__opt1__% *.c 
+link %__opt2__% /out:"../../txt-converter.exe"
 
 cd ..\..\
 pause
@@ -66,4 +69,4 @@ del src\common\*.obj
 del src\char\*.obj
 del src\login\*.obj
 del src\map\*.obj
-
+del src\converter\*.obj

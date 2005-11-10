@@ -16,7 +16,7 @@ else
 LIBS = -lwsock32
 endif
 
-map-server: map.o chrif.o clif.o pc.o npc.o chat.o path.o itemdb.o mob.o script.o storage.o skill.o atcommand.o battle.o intif.o trade.o party.o vending.o guild.o pet.o status.o friend.o date.o $(COMMON_OBJ)
+map-server: map.o chrif.o clif.o pc.o npc.o chat.o path.o itemdb.o mob.o script.o storage.o skill.o atcommand.o battle.o intif.o trade.o party.o vending.o guild.o pet.o status.o friend.o date.o ranking.o unit.o $(COMMON_OBJ)
 	$(CC) -o ../../bin/$@ $> $(LIBS)
 
 clean:

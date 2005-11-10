@@ -1,4 +1,4 @@
-// $Id: login.c,v 1.1.1.1 2005/08/29 21:39:39 running_pinata Exp $
+// $Id: login.c,v 1.1.1.2 2005/11/10 20:59:04 running_pinata Exp $
 // original : login2.c 2003/01/28 02:29:17 Rev.1.1.1.1
 #define DUMP_UNKNOWN_PACKET	1
 
@@ -52,7 +52,6 @@ struct mmo_char_server server[MAX_SERVERS];
 static int server_fd[MAX_SERVERS];
 static int login_fd;
 
-#define AUTH_FIFO_SIZE 256
 static struct {
   int account_id,login_id1,login_id2;
   int ip,sex,delflag,tick;
@@ -923,6 +922,27 @@ int charif_sendallwos(int sfd,unsigned char *buf,unsigned int len)
 	return c;
 }
 
+// authfifo‚Ì”äŠr
+int cmp_authfifo(int i,int account_id,int login_id1,int login_id2,int ip)
+{
+	if(	auth_fifo[i].account_id==account_id &&
+		auth_fifo[i].login_id1==login_id1 )
+		return 1;
+#ifdef CMP_AUTHFIFO_LOGIN2
+//	printf("cmp_authfifo: id2 check %d %x %x = %08x %08x %08x\n",i,auth_fifo[i].login_id2,login_id2,
+//		auth_fifo[i].account_id,auth_fifo[i].login_id1,auth_fifo[i].login_id2);
+	if( auth_fifo[i].login_id2==login_id2 && login_id2 != 0)
+		return 1;
+#endif
+#ifdef CMP_AUTHFIFO_IP
+//	printf("cmp_authfifo: ip check %d %x %x = %08x %08x %08x\n",i,auth_fifo[i].ip,ip,
+//		auth_fifo[i].account_id,auth_fifo[i].login_id1,auth_fifo[i].login_id2);
+	if(auth_fifo[i].ip==ip && ip!=0 && ip!=-1)
+		return 1;
+#endif
+	return 0;
+}
+
 int parse_char_disconnect(int fd) {
 	int i;
  	for(i=0;i<MAX_SERVERS;i++)
@@ -949,29 +969,14 @@ int parse_fromchar(int fd)
 			if(RFIFOREST(fd)<23)
 				return 0;
 			for(i=0;i<AUTH_FIFO_SIZE;i++){
-				int ret=0;
-				if( !(ret=(	auth_fifo[i].account_id==RFIFOL(fd,2) &&
-						auth_fifo[i].login_id1==RFIFOL(fd,6) &&
-					/*auth_fifo[i].login_id2==RFIFOL(fd,10) */ 1 ) ) ){
-#ifdef CMP_AUTHFIFO_LOGIN2
-//					printf("login auth_fifo check lid2 %d %x %x\n",i,auth_fifo[i].login_id2,RFIFOL(fd,10));
-				
-					ret=(auth_fifo[i].login_id2==RFIFOL(fd,10));
-#endif
-#ifdef CMP_AUTHFIFO_IP
-//					printf("login auth_fifo check ip %d %x %x\n",i,auth_fifo[i].ip,RFIFOL(fd,15));
-					ret|=(auth_fifo[i].ip==RFIFOL(fd,15) );
-#endif
-				}
-				if(	ret &&
+				if( cmp_authfifo(i,RFIFOL(fd,2),RFIFOL(fd,6),RFIFOL(fd,10),RFIFOL(fd,15)) &&
 					auth_fifo[i].sex==RFIFOB(fd,14) &&
 					!auth_fifo[i].delflag){
 					auth_fifo[i].delflag=1;
-//				 printf("%d\n",i);
 					break;
 				}
 			}
-	  
+
 			if(i!=AUTH_FIFO_SIZE){	// account_reg‘—M
 				int p,j;
 				const struct mmo_account *ac = account_load_num(auth_fifo[i].account_id);
@@ -987,7 +992,7 @@ int parse_fromchar(int fd)
 //			printf("account_reg2 send : login->char (auth fifo)\n");
 				}
 			}
-	  
+
 			WFIFOW(fd,0)=0x2713;
 			WFIFOL(fd,2)=RFIFOL(fd,2);
 			if(i!=AUTH_FIFO_SIZE){
@@ -1311,6 +1316,14 @@ int parse_login(int fd)
 				memcpy(WFIFOP(fd,20),sd->lastlogin,24);
 				WFIFOB(fd,46) = sd->sex;
 				WFIFOSET(fd,47+32*server_num);
+				for(i=0;i<AUTH_FIFO_SIZE;i++){
+					if( cmp_authfifo(i,sd->account_id,sd->login_id1,sd->login_id2,session[fd]->client_addr.sin_addr.s_addr) &&
+						auth_fifo[i].sex==sd->sex &&
+						!auth_fifo[i].delflag){
+						auth_fifo[i].delflag=1;
+						break;
+					}
+				}
 				if(auth_fifo_pos>=AUTH_FIFO_SIZE){
 					auth_fifo_pos=0;
 				}

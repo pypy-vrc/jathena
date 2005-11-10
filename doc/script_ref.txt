@@ -775,6 +775,15 @@ AthenaNPCScript
 			<gatname>に存在するモンスターをすべて殺します。killmonsterとは違ってそのマップに始めから配置されていたモンスターまで全て殺すことができます。
 
 
+		areakillmonster命令
+			areakillmonster <gatname>,<x0>,<y0>,<x1>,<y1>;
+
+			gatname		文字列
+			x0,y0,x1,y1		数値
+
+			<gatname>の、x0,y0を中心に、x1,y1の範囲に存在するモンスターをすべて殺します。そのマップに始めから配置されていたモンスターまで全て殺すことができます。
+
+
 		addtimer命令
 			addtimer <ms>,<event>;
 
@@ -1190,7 +1199,32 @@ AthenaNPCScript
 			指定した ID のアイテムを NPC 会話中に使用可能にします。
 			id を省略するか、 0 を指定すると、全てのアイテムが使用可能になります。
 			id に -1 を指定すると、通常の状態（アイテム使用不可）になります。
-			
+
+		petskillattack命令
+			petskillattack <skill id>,<skill lv>,<rate>,<bonusrate>;
+
+			skill id	使用するスキルのID
+			skill lv	使用するスキルのLv
+			rate		通常攻撃の代わりにスキルを発動する確率(単位%)
+			bonusrate	友情値に応じて上がる発動確率(友情値 * 0.01% * n)
+
+			ペットに指定した攻撃スキル(対象指定のみ)を使用出来る状態にします。
+			この命令はeAthena との互換性がありますが、Athena 特有の仕様として、
+			skill_idに-1を指定すると、スキルを削除できます。
+
+		petskillsupport命令
+			petskillsupport <skill id>,<skill lv>,<delay>,<percent hp>,<percent sp>;
+
+			skill id	使用するスキルのID
+			skill lv	使用するスキルのレベル
+			delay		スキルを使用する最低間隔(秒)
+			percent hp	スキル使用条件( プレイヤーのHPが n% 以下 )
+			percent sp	スキル使用条件( プレイヤーのSPが n% 以下 )
+
+			ペットに指定した支援スキルを使用出来る状態にします。
+			この命令はeAthena との互換性がありますが、Athena 特有の仕様として、
+			skill_idに-1を指定すると、スキルを削除できます。
+
 	＊関数
 		rand関数
 			rand(<n1>[,<n2>])
@@ -1631,6 +1665,13 @@ AthenaNPCScript
 			+2	同盟ギルド
 			+4	gld1側敵対ギルド
 			+8	gld2側敵対ギルド
+
+		getmapname関数
+			getmapname(<Char_name>)
+
+			Char_name	キャラ名
+
+			指定したキャラが居るマップのgatnameが返ります。
 
 
 	＊定数ラベル

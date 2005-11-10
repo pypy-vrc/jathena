@@ -168,7 +168,7 @@ prt_in.gat,47,173,3	script	モリスン	97,{
 			close;
 }
 
-payon_in01.gat,174,113,3	script	マルクハンセン	86,{
+payon_in03.gat,188,146,4	script	マルクハンセン	86,{
 		if (MOTHER_MARIENU != 2) goto L_START_0;
 			mes "[商人 マルクハンセン]";
 			mes "いらっしゃい、あなたも果物を加工しに来ましたか?";

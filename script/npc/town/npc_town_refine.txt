@@ -4,7 +4,7 @@ alberta_in.gat,28,58,4	script	フレドリック	85,{
 	callfunc "refine1","フレドリックヘルマンソン",18,4;
 }
 // ----- プロンテラ -----
-prt_in.gat,63,60,4	script	ホルグレン	85,{
+prt_in.gat,63,60,0	script	ホルグレン	85,{
 	callfunc "refine1","ホルグレン",21,23;
 }
 // ----- モロク -----
@@ -12,12 +12,16 @@ morocc_in.gat,73,38,4	script	アラガム	99,{
 	callfunc "refine3","アラガムサレー",30,16;
 }
 // ----- フェイヨン -----
-payon.gat,144,173,6	script	アントニオ	88,{
+payon.gat,144,173,5	script	アントニオ	88,{
 	callfunc "refine2","アントニオ",0,32;
 }
 // ----- ジュノー -----
 yuno_in01.gat,171,21,4	script	ディスターブ	85,{
 	callfunc "refine2","ディスターブ",9,0;
+}
+// ----- アインブロック -----
+ein_in01.gat,24,87,5	script	マンダスマン	826,{
+	callfunc "refine1","マンダスマン",18,4;
 }
 
 //EP? - BuyStone NPC
@@ -36,6 +40,9 @@ payon.gat,145,178,4	script	ベグナド	88,{
 yuno_in01.gat,171,27,4	script	ティルレマ	86,{
 	callfunc "buystone","ティルレマ";
 }
+ein_in01.gat,15,87,4	script	ティルイハース	86,{
+	callfunc "buystone","ティルイハース";
+}
 
 //EP? - ChangeStone NPC
 alberta_in.gat,21,63,5	script	ゼノフォン	84,{
@@ -47,11 +54,14 @@ prt_in.gat,63,69,4	script	ディートリヒ	84,{
 morocc_in.gat,72,32,0	script	アブドゥル	99,{
 	callfunc "chgstone","アブドゥル";
 }
-payon.gat,137,178,6	script	ハキム	88,{
+payon.gat,137,178,5	script	ハキム	88,{
 	callfunc "chgstone","ハキム";
 }
 yuno_in01.gat,164,27,4	script	ティルレイ	84,{
 	callfunc "chgstone","ティルレイ";
+}
+ein_in01.gat,18,82,5	script	マティシュタイン	84,{
+	callfunc "chgstone","マティシュタイン";
 }
 
 //EP3.0 - Repairer NPC
@@ -64,7 +74,7 @@ prt_in.gat,63,54,2	script	修理工	86,{
 morocc_in.gat,71,41,4	script	修理工	99,{
 	callfunc "repairer";
 }
-payon.gat,143,165,0	script	修理工	88,{
+payon.gat,143,165,7	script	修理工	88,{
 	callfunc "repairer";
 }
 geffen_in.gat,34,166,2	script	修理工	86,{

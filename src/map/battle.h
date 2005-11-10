@@ -1,6 +1,8 @@
 #ifndef _BATTLE_H_
 #define _BATTLE_H_
 
+#include <stdarg.h>
+
 // ダメージ
 struct Damage {
 	int damage,damage2;
@@ -55,16 +57,12 @@ int battle_heal(struct block_list *bl,struct block_list *target,int hp,int sp,in
 //吸収処理(PC専用)
 int battle_attack_drain(struct block_list *bl,struct block_list *target,int damage,int damage2,int calc_per_drain_flag);
 
-// 攻撃や移動を止める
-int battle_stopattack(struct block_list *bl);
-int battle_stopwalking(struct block_list *bl,int type);
-
-// 通常攻撃処理まとめ
+// 攻撃処理まとめ
 int battle_weapon_attack( struct block_list *bl,struct block_list *target,
 	 unsigned int tick,int flag);
-
-// 各種パラメータを得る
-int battle_counttargeted(struct block_list *bl,struct block_list *src,int target_lv);
+int battle_skill_attack(int attack_type,struct block_list* src,struct block_list *dsrc,
+	 struct block_list *bl,int skillid,int skilllv,unsigned int tick,int flag);
+int battle_skill_attack_area(struct block_list *bl,va_list ap);
 
 enum {
 	BCT_NOENEMY	=0x00000,
@@ -238,6 +236,7 @@ extern struct Battle_Config {
 	int gx_disptype;
 	int devotion_level_difference;
 	int player_skill_partner_check;
+	int sole_concert_type;
 	int hide_GM_session;
 	int unit_movement_type;
 	int invite_request_check;
@@ -268,7 +267,7 @@ extern struct Battle_Config {
 	int petowneditem;
 	int buyer_name;
 	int once_autospell;
-	int expand_autospell;
+	//int expand_autospell;
 	int allow_same_autospell;
 	int combo_delay_lower_limits;
 	int new_marrige_skill;
@@ -276,6 +275,9 @@ extern struct Battle_Config {
 	int summonslave_no_drop;
 	int summonslave_no_exp;
 	int summonslave_no_mvp;
+	int summonmonster_no_drop;
+	int summonmonster_no_exp;
+	int summonmonster_no_mvp;
 	int cannibalize_no_drop;
 	int cannibalize_no_exp;
 	int cannibalize_no_mvp;
@@ -344,9 +346,49 @@ extern struct Battle_Config {
 	int tripleattack_rate_up_keeptime;
 	int tk_counter_rate_up_keeptime;
 	int allow_skill_without_day;
-	
+	int save_hate_mob;
+	int twilight_party_check;
+	int alchemist_point_type;
+	int marionette_type;
+	int baby_status_max;
+	int baby_hp_rate;
+	int baby_sp_rate;
+	int baby_weight_rate;
+	int no_emergency_call;
+	int save_am_pharmacy_success;
+	int save_all_ranking_point_when_logout;
+	int soul_linker_battle_mode;
+	int soul_linker_battle_mode_ka;
+	int skillup_type;
 	int debug_new_disp_status_icon_system;
-	
+	int allow_me_dance_effect;
+	int allow_me_concert_effect;
+	int pharmacy_get_point_type;
+	int cheat_log;
+	int soulskill_can_be_used_for_myself;
+	int hermode_gvg_only;
+	int hermode_wp_check_range;
+	int hermode_wp_check;
+	int hermode_no_walking;
+	int atcommand_go_significant_values;
+	int abraskill_coloneable;
+	int expansion_job1_skill_cloneable;
+	int expansion_job2_skill_cloneable;
+	int questskill2_cloneable;
+	int redemptio_penalty_type;
+	int allow_weaponrearch_to_weaponrefine;
+	int boss_no_knockbacking;
+	int scroll_produce_rate;
+	int allow_create_scroll;
+	int scroll_item_name_input;
+	int pet_leave;
+	int pk_short_damage_rate;
+	int pk_long_damage_rate;
+	int pk_magic_damage_rate;
+	int pk_misc_damage_rate;
+	int cooking_rate;
+	int making_rate;
+
 	int item_rate_details,item_rate_1,item_rate_10,item_rate_100,item_rate_1000;	//ドロップレート詳細
 	int item_rate_1_min,item_rate_10_min,item_rate_100_min,item_rate_1000_min;	//ドロップレート詳細min
 	int item_rate_1_max,item_rate_10_max,item_rate_100_max,item_rate_1000_max;	//ドロップレート詳細max

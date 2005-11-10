@@ -57,22 +57,26 @@ int status_get_critical(struct block_list *bl);
 int status_get_atk_(struct block_list *bl);
 int status_get_atk_2(struct block_list *bl);
 int status_get_atk2(struct block_list *bl);
+int status_get_aspd(struct block_list *bl);
 
-// 状態異常関連 skill.c より移動
+// 状態異常関連
 int status_change_start(struct block_list *bl,int type,int val1,int val2,int val3,int val4,int tick,int flag);
 int status_change_end( struct block_list* bl , int type,int tid );
 int status_change_timer(int tid, unsigned int tick, int id, int data);
 int status_change_timer_sub(struct block_list *bl, va_list ap );
+int status_change_end_by_jumpkick( struct block_list* bl);
+int status_support_magic_skill_end( struct block_list* bl);
+int status_change_race_end(struct block_list *bl,int type);
+int status_enchant_armor_eremental_end(struct block_list *bl,int type);
+int status_encchant_eremental_end(struct block_list *bl,int type);
+int status_change_clear(struct block_list *bl,int type);
 
-int status_calc_pc_itemeffect_finish(struct map_session_data* sd);
-// ステータス計算 pc.c から分離
-// pc_calcstatus
-int status_calc_pc_itemeffect_init(struct map_session_data* sd);
+// ステータス計算
 int status_calc_pc(struct map_session_data* sd,int first);
-int status_calc_pc_autospell(struct map_session_data* sd);
 int status_calc_skilltree(struct map_session_data *sd);
 int status_getrefinebonus(int lv,int type);
 int status_percentrefinery(struct map_session_data *sd,struct item *item);
+int status_percentrefinery_weaponrefine(struct map_session_data *sd,struct item *item);
 extern int current_equip_item_index;
 extern int current_equip_card_id;
 //DB再読込用

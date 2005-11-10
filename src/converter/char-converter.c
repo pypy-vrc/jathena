@@ -1,4 +1,4 @@
-// $Id: char-converter.c,v 1.1.1.1 2005/08/29 21:39:38 running_pinata Exp $
+// $Id: char-converter.c,v 1.1.1.2 2005/11/10 20:59:04 running_pinata Exp $
 // original : char2.c 2003/03/14 11:58:35 Rev.1.5
 
 #include <sys/types.h>
@@ -208,69 +208,92 @@ int mmo_char_fromstr(char *str, struct mmo_charstatus *p) {
 
 	// initilialise character
 	memset(p, '\0', sizeof(struct mmo_charstatus));
-
-	// If it's not char structure of version 1008 and after
-	if ((set = sscanf(str, "%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
-	   "\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
-	   "\t%[^,],%d,%d\t%[^,],%d,%d,%d%n",
-	   &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
-	   &tmp_int[3], &tmp_int[4], &tmp_int[5],
-	   &tmp_int[6], &tmp_int[7], &tmp_int[8],
-	   &tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12],
-	   &tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18],
-	   &tmp_int[19], &tmp_int[20],
-	   &tmp_int[21], &tmp_int[22], &tmp_int[23], //
-	   &tmp_int[24], &tmp_int[25], &tmp_int[26],
-	   &tmp_int[27], &tmp_int[28], &tmp_int[29],
-	   &tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34],
-	   p->last_point.map, &tmp_int[35], &tmp_int[36], //
-	   p->save_point.map, &tmp_int[37], &tmp_int[38], &tmp_int[39], &next)) != 43) {
-		tmp_int[39] = 0; // partner id
-		// If not char structure from version 384 to 1007
+	// If it's not char structure of version 1425 and after
+	if((set = sscanf(str, "%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
+	   		"\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
+	   		"\t%[^,],%d,%d\t%[^,],%d,%d,%d,%d,%d,%d%n",
+	   	&tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
+	   	&tmp_int[3], &tmp_int[4], &tmp_int[5],
+	   	&tmp_int[6], &tmp_int[7], &tmp_int[8],
+	   	&tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12],
+	   	&tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18],
+	   	&tmp_int[19], &tmp_int[20],
+	   	&tmp_int[21], &tmp_int[22], &tmp_int[23], //
+	   	&tmp_int[24], &tmp_int[25], &tmp_int[26],
+	   	&tmp_int[27], &tmp_int[28], &tmp_int[29],
+	   	&tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34],
+	   	p->last_point.map, &tmp_int[35], &tmp_int[36], //
+	   	p->save_point.map, &tmp_int[37], &tmp_int[38], &tmp_int[39], &tmp_int[40],
+	   	&tmp_int[41],&tmp_int[42],&next)) != 46) 
+	{	
+		tmp_int[40] = 0;
+	   	tmp_int[41] = 0;
+	   	tmp_int[42] = 0;
+		// If it's not char structure of version 1008 and after
 		if ((set = sscanf(str, "%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
-		   "\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
-		   "\t%[^,],%d,%d\t%[^,],%d,%d%n",
-		   &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
-		   &tmp_int[3], &tmp_int[4], &tmp_int[5],
-		   &tmp_int[6], &tmp_int[7], &tmp_int[8],
-		   &tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12],
-		   &tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18],
-		   &tmp_int[19], &tmp_int[20],
-		   &tmp_int[21], &tmp_int[22], &tmp_int[23], //
-		   &tmp_int[24], &tmp_int[25], &tmp_int[26],
-		   &tmp_int[27], &tmp_int[28], &tmp_int[29],
-		   &tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34],
-		   p->last_point.map, &tmp_int[35], &tmp_int[36], //
-		   p->save_point.map, &tmp_int[37], &tmp_int[38], &next)) != 42) {
-			// It's char structure of a version before 384
-			tmp_int[26] = 0; // pet id
-			set = sscanf(str, "%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
-			      "\t%d,%d,%d\t%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
-			      "\t%[^,],%d,%d\t%[^,],%d,%d%n",
-			      &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
-			      &tmp_int[3], &tmp_int[4], &tmp_int[5],
-			      &tmp_int[6], &tmp_int[7], &tmp_int[8],
-			      &tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12],
-			      &tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18],
-			      &tmp_int[19], &tmp_int[20],
-			      &tmp_int[21], &tmp_int[22], &tmp_int[23], //
-			      &tmp_int[24], &tmp_int[25], //
-			      &tmp_int[27], &tmp_int[28], &tmp_int[29],
-			      &tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34],
-			      p->last_point.map, &tmp_int[35], &tmp_int[36], //
-			      p->save_point.map, &tmp_int[37], &tmp_int[38], &next);
-			set += 2;
+	   		"\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
+	   		"\t%[^,],%d,%d\t%[^,],%d,%d,%d%n",
+	   	&tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
+	   	&tmp_int[3], &tmp_int[4], &tmp_int[5],
+	   	&tmp_int[6], &tmp_int[7], &tmp_int[8],
+	   	&tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12],
+	   	&tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18],
+	   	&tmp_int[19], &tmp_int[20],
+	   	&tmp_int[21], &tmp_int[22], &tmp_int[23], //
+	   	&tmp_int[24], &tmp_int[25], &tmp_int[26],
+	   	&tmp_int[27], &tmp_int[28], &tmp_int[29],
+	   	&tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34],
+	   	p->last_point.map, &tmp_int[35], &tmp_int[36], //
+	   	p->save_point.map, &tmp_int[37], &tmp_int[38], &tmp_int[39], &next)) != 43) 
+	   	{
+			tmp_int[39] = 0; // partner id
+			// If not char structure from version 384 to 1007
+			if ((set = sscanf(str, "%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
+			   "\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
+			   "\t%[^,],%d,%d\t%[^,],%d,%d%n",
+			   &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
+			   &tmp_int[3], &tmp_int[4], &tmp_int[5],
+			   &tmp_int[6], &tmp_int[7], &tmp_int[8],
+			   &tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12],
+			   &tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18],
+			   &tmp_int[19], &tmp_int[20],
+			   &tmp_int[21], &tmp_int[22], &tmp_int[23], //
+			   &tmp_int[24], &tmp_int[25], &tmp_int[26],
+			   &tmp_int[27], &tmp_int[28], &tmp_int[29],
+			   &tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34],
+			   p->last_point.map, &tmp_int[35], &tmp_int[36], //
+			   p->save_point.map, &tmp_int[37], &tmp_int[38], &next)) != 42) 
+			  {
+				// It's char structure of a version before 384
+				tmp_int[26] = 0; // pet id
+				set = sscanf(str, "%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
+			      	"\t%d,%d,%d\t%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d"
+			      	"\t%[^,],%d,%d\t%[^,],%d,%d%n",
+			      	&tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
+			      	&tmp_int[3], &tmp_int[4], &tmp_int[5],
+			      	&tmp_int[6], &tmp_int[7], &tmp_int[8],
+			      	&tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12],
+			      	&tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18],
+			      	&tmp_int[19], &tmp_int[20],
+			      	&tmp_int[21], &tmp_int[22], &tmp_int[23], //
+			      	&tmp_int[24], &tmp_int[25], //
+			      	&tmp_int[27], &tmp_int[28], &tmp_int[29],
+			      	&tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34],
+			      	p->last_point.map, &tmp_int[35], &tmp_int[36], //
+			      	p->save_point.map, &tmp_int[37], &tmp_int[38], &next);
+				set += 2;
 			//printf("char: old char data ver.1\n");
-		// Char structure of version 1007 or older
+			// Char structure of version 1007 or older
+			} else {
+				set++;
+				//printf("char: old char data ver.2\n");
+			}
+		// Char structure of version 1008+
 		} else {
-			set++;
-			//printf("char: old char data ver.2\n");
+			//printf("char: new char data ver.3\n");
 		}
-	// Char structure of version 1008+
-	} else {
-		//printf("char: new char data ver.3\n");
 	}
-	if (set != 43)
+	if (set != 46)
 		return 0;
 
 	p->char_id = tmp_int[0];
@@ -312,7 +335,10 @@ int mmo_char_fromstr(char *str, struct mmo_charstatus *p) {
 	p->last_point.y = tmp_int[36];
 	p->save_point.x = tmp_int[37];
 	p->save_point.y = tmp_int[38];
-	p->partner_id = tmp_int[39];
+	p->partner_id 	= tmp_int[39];
+	p->parent_id[0] = tmp_int[40];
+	p->parent_id[1] = tmp_int[41];
+	p->baby_id 		= tmp_int[42];
 
 	if (str[next] == '\n' || str[next] == '\r')
 		return 1;	// 新規データ
@@ -428,14 +454,14 @@ int mmo_char_tosql(int char_id, struct mmo_charstatus *p){
 	//`max_hp`,`hp`,`max_sp`,`sp`,`status_point`,`skill_point`, //21
 	//`option`,`karma`,`manner`,`party_id`,`guild_id`,`pet_id`, //27
 	//`hair`,`hair_color`,`clothes_color`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom`, //35
-	//`last_map`,`last_x`,`last_y`,`save_map`,`save_x`,`save_y`)
+	//`last_map`,`last_x`,`last_y`,`save_map`,`save_x`,`save_y`,`partner_id`, `parent_id`,`parent_id2`,`baby_id`)
 	sprintf(tmp_sql ,"INSERT INTO `char` SET `char_id`='%d', `account_id`='%d', `char_num`='%d', `name`='%s', `class`='%d', `base_level`='%d', `job_level`='%d',"
 		"`base_exp`='%d', `job_exp`='%d', `zeny`='%d',"
 		"`max_hp`='%d',`hp`='%d',`max_sp`='%d',`sp`='%d',`status_point`='%d',`skill_point`='%d',"
 		"`str`='%d',`agi`='%d',`vit`='%d',`int`='%d',`dex`='%d',`luk`='%d',"
 		"`option`='%d',`karma`='%d',`manner`='%d',`party_id`='%d',`guild_id`='%d',`pet_id`='%d',"
 		"`hair`='%d',`hair_color`='%d',`clothes_color`='%d',`weapon`='%d',`shield`='%d',`head_top`='%d',`head_mid`='%d',`head_bottom`='%d',"
-		"`last_map`='%s',`last_x`='%d',`last_y`='%d',`save_map`='%s',`save_x`='%d',`save_y`='%d', `partner_id` = '%d'",
+		"`last_map`='%s',`last_x`='%d',`last_y`='%d',`save_map`='%s',`save_x`='%d',`save_y`='%d', `partner_id` = '%d', `parent_id` = '%d', `parent_id2` = '%d', `baby_id` = '%d'",
 		char_id,p->account_id,p->char_num,strecpy(name,p->name),p->class , p->base_level, p->job_level,
 		p->base_exp, p->job_exp, p->zeny,
 		p->max_hp, p->hp, p->max_sp, p->sp, p->status_point, p->skill_point,
@@ -444,7 +470,7 @@ int mmo_char_tosql(int char_id, struct mmo_charstatus *p){
 		p->hair, p->hair_color, p->clothes_color,
 		p->weapon, p->shield, p->head_top, p->head_mid, p->head_bottom,
 		p->last_point.map, p->last_point.x, p->last_point.y,
-		p->save_point.map, p->save_point.x, p->save_point.y, p->partner_id
+		p->save_point.map, p->save_point.x, p->save_point.y, p->partner_id , p->parent_id[0] ,p->parent_id[1] , p->baby_id
 	);
 
 	if(mysql_query(&mysql_handle, tmp_sql) ) {

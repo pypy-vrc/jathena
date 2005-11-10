@@ -348,7 +348,7 @@ Lok:
 	close;
 }
 //==============================================================================
-payon_in01.gat,170,142,4	script	蘭香	77,{
+payon_in01.gat,8,193,4	script	蘭香	77,{
 	if ((countitem(2285)>=1) && (countitem(1550)>=1)) goto Lmake;
 	if ((countitem(1750)>=1) && (countitem(5073)>=1)) goto Lunmake;
 	emotion 0;
@@ -532,7 +532,7 @@ Lunmake:
 		close;
 }
 //==============================================================================
-payon.gat,111,160,3	script	コネコ	725,{
+payon.gat,115,131,3	script	コネコ	725,{
 	if ((countitem(2213)>=1) && (countitem(983)>=1) && (countitem(914)>=200) && (Zeny>=10000)) goto Lok;
 	mes "[コネコ]";
 	mes "こんにちは～。";

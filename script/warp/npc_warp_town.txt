@@ -187,11 +187,7 @@ moc_prydb1.gat,87,115,0		warp	thiefwarp6006		2,6,moc_prydb1.gat,56,115
 // -----
 // pay_fild01.gat	フェイヨン迷いの森 01 ～ 11
 //==============================================================
-in_hunter.gat,100,15,0		warp 	hunterwarp0501		0,0,pay_fild10.gat,143,250
 in_hunter.gat,99,13,0		warp	hunterwarp0502		1,1,pay_fild10.gat,148,252
-
-job_hunte.gat,89,139,0		warp	hunterwarp6001		3,3,job_hunte.gat,0,0
-job_hunte.gat,89,68,0		warp	hunterwarp6002		3,3,job_hunte.gat,0,0
 
 
 
@@ -1049,16 +1045,20 @@ izlude_in.gat,172,158,0		warp	izludewarp1014		3,2,izlude_in.gat,172,136
 izlude_in.gat,43,169,0		warp	izludewarp1015		2,3,izlude_in.gat,64,169
 
 // arena
-izlude.gat,128,225,0		warp	izludewarp1101		1,1,prt_are_in.gat,100,28
-prt_are_in.gat,99,24,0		warp	izludewarp1102		1,1,izlude.gat,127,221
-prt_are_in.gat,31,122,0		warp	izludewarp1103		1,1,prt_are_in.gat,31,92
-prt_are_in.gat,49,82,0		warp	izludewarp1104		1,1,prt_are_in.gat,76,82
-prt_are_in.gat,72,82,0		warp	izludewarp1105		1,1,prt_are_in.gat,44,82
-prt_are_in.gat,99,47,0		warp	izludewarp1106		1,1,prt_are_in.gat,99,76
-prt_are_in.gat,99,72,0		warp	izludewarp1107		1,1,prt_are_in.gat,99,43
-prt_are_in.gat,127,82,0		warp	izludewarp1108		1,1,prt_are_in.gat,156,82
-prt_are_in.gat,152,82,0		warp	izludewarp1109		1,1,prt_are_in.gat,123,82
-prt_are_in.gat,169,122,0	warp	izludewarp1110		1,1,prt_are_in.gat,169,92
+izlude.gat,128,225,0		warp	izludewarp1101		1,1,arena_room.gat,100,30
+arena_room.gat,100,25,0		warp	izludewarp1102		1,1,izlude.gat,128,221
+arena_room.gat,84,72,0		warp	izludewarp1103		1,1,arena_room.gat,60,50
+arena_room.gat,62,52,0		warp	izludewarp1104		1,1,arena_room.gat,86,74
+arena_room.gat,77,88,0		warp	izludewarp1105		1,1,arena_room.gat,46,88
+arena_room.gat,48,88,0		warp	izludewarp1106		1,1,arena_room.gat,79,88
+arena_room.gat,84,103,0		warp	izludewarp1107		1,1,arena_room.gat,63,129
+arena_room.gat,63,127,0		warp	izludewarp1108		1,1,arena_room.gat,86,101
+arena_room.gat,115,72,0		warp	izludewarp1109		1,1,arena_room.gat,139,50
+arena_room.gat,137,52,0		warp	izludewarp1110		1,1,arena_room.gat,113,74
+arena_room.gat,122,88,0		warp	izludewarp1111		1,1,arena_room.gat,153,88
+arena_room.gat,151,88,0		warp	izludewarp1112		1,1,arena_room.gat,120,88
+arena_room.gat,115,103,0	warp	izludewarp1113		1,1,arena_room.gat,135,129
+arena_room.gat,135,127,0	warp	izludewarp1114		1,1,arena_room.gat,113,101
 
 
 
@@ -1363,10 +1363,10 @@ yuno_in05.gat,50,88,0		warp	yunowarp1079		1,1,yuno_in02.gat,85,14
 // -----
 // cmd_fild07.gat	ファロス灯台島
 //==============================================================
-in_rogue.gat,375,46,0		warp	roguewarp0501		0,0,cmd_fild07.gat,196,117
+in_rogue.gat,375,46,0		warp	roguewarp0501		1,1,cmd_fild07.gat,196,117
 
-in_rogue.gat,375,33,0		warp	roguewarp6001		0,0,in_rogue.gat,380,125
-in_rogue.gat,375,125,0		warp	roguewarp6002		0,0,in_rogue.gat,379,33
+in_rogue.gat,375,33,0		warp	roguewarp6001		1,1,in_rogue.gat,380,125
+in_rogue.gat,375,125,0		warp	roguewarp6002		1,1,in_rogue.gat,379,33
 
 
 
@@ -1555,53 +1555,57 @@ nif_in.gat,140,171,0		warp	niflheimwarp1020	1,1,nif_in.gat,65,170
 // lou_dun01.gat	王陵
 // lou_fild01.gat	龍之城フィールド
 //==============================================================
-louyang.gat,36,271,0		warp	louyangwarp0401		1,1,lou_dun01.gat,219,196
-louyang.gat,217,23,0		warp	louyangwarp0501		3,1,lou_fild01.gat,232,354
+louyang.gat,37,271,0		warp	louyangwarp0401		1,1,lou_dun01.gat,218,195
+louyang.gat,218,19,0		warp	louyangwarp0501		3,1,lou_fild01.gat,233,353
 
-// Louyang -> Lou_in01
-louyang.gat,218,255,0		warp	louyangwarp1001		2,1,lou_in01.gat,101,123
-lou_in01.gat,101,118,0		warp	louyangwarp1002		1,1,louyang.gat,218,249
-// Lou_in01 -> Lou_in01
-lou_in01.gat,125,140,0		warp	louyangwarp1003		2,1,lou_in01.gat,156,140
-lou_in01.gat,152,140,0		warp	louyangwarp1004		1,1,lou_in01.gat,120,140
-// Lou_in01 -> Lou_in01
-lou_in01.gat,78,140,0		warp	louyangwarp1005		2,1,lou_in01.gat,45,140
-lou_in01.gat,51,140,0		warp	louyangwarp1006		1,1,lou_in01.gat,83,140
-// 民宿
-louyang.gat,122,148,0		warp	louyangwarp1007		1,1,lou_in02.gat,246,58
-lou_in02.gat,242,58,0		warp	louyangwarp1008		1,1,louyang.gat,122,152
+// 城
+louyang.gat,218,255,0		warp	louyangwarp1001		2,1,lou_in01.gat,101,122
+lou_in01.gat,101,119,0		warp	louyangwarp1002		1,1,louyang.gat,218,252
+// 城 -> 右の部屋
+lou_in01.gat,125,140,0		warp	louyangwarp1003		2,1,lou_in01.gat,156,141
+lou_in01.gat,153,141,0		warp	louyangwarp1004		1,1,lou_in01.gat,122,141
+// 城 -> 左の部屋
+lou_in01.gat,79,141,0		warp	louyangwarp1005		2,1,lou_in01.gat,47,141
+lou_in01.gat,50,141,0		warp	louyangwarp1006		1,1,lou_in01.gat,82,141
+// 病院
+louyang.gat,263,93,0		warp	louyangwarp1007		1,1,lou_in02.gat,245,59
+lou_in02.gat,242,59,0		warp	louyangwarp1008		1,1,louyang.gat,260,93
 // 道具屋
-louyang.gat,135,96,0		warp	louyangwarp1009		1,1,lou_in02.gat,250,174
-lou_in02.gat,253,177,0		warp	louyangwarp1010		1,1,louyang.gat,140,101
+louyang.gat,136,97,0		warp	louyangwarp1009		1,1,lou_in02.gat,250,174
+lou_in02.gat,253,177,0		warp	louyangwarp1010		1,1,louyang.gat,139,100
 // 倉庫
-louyang.gat,125,121,0		warp	louyangwarp1011		1,1,lou_in02.gat,197,162
-lou_in02.gat,197,158,0		warp	louyangwarp1012		1,1,louyang.gat,125,118
-louyang.gat,129,121,0		warp	louyangwarp1013		1,1,lou_in02.gat,203,162
-lou_in02.gat,203,158,0		warp	louyangwarp1014		1,1,louyang.gat,129,118
+louyang.gat,125,121,0		warp	louyangwarp1011		1,1,lou_in02.gat,198,161
+lou_in02.gat,198,159,0		warp	louyangwarp1012		1,1,louyang.gat,125,118
+louyang.gat,129,121,0		warp	louyangwarp1013		1,1,lou_in02.gat,203,161
+lou_in02.gat,203,159,0		warp	louyangwarp1014		1,1,louyang.gat,129,118
 // 武器屋
-louyang.gat,145,175,0		warp	louyangwarp1015		1,1,lou_in02.gat,125,167
-lou_in02.gat,125,164,0		warp	louyangwarp1016		1,1,louyang.gat,145,171
+louyang.gat,145,174,0		warp	louyangwarp1015		1,1,lou_in02.gat,126,168
+lou_in02.gat,126,165,0		warp	louyangwarp1016		1,1,louyang.gat,145,171
 // 酒屋
-louyang.gat,279,168,0		warp	louyangwarp1017		1,1,lou_in02.gat,57,174
-lou_in02.gat,57,170,0		warp	louyangwarp1018		1,1,louyang.gat,279,165
+louyang.gat,280,167,0		warp	louyangwarp1017		1,1,lou_in02.gat,58,173
+lou_in02.gat,58,170,0		warp	louyangwarp1018		1,1,louyang.gat,280,164
 // 酒屋 -> 2F左
-lou_in02.gat,34,190,0		warp	louyangwarp1019		1,1,lou_in02.gat,37,138
-lou_in02.gat,43,138,0		warp	louyangwarp1020		1,1,lou_in02.gat,38,190
+lou_in02.gat,35,190,0		warp	louyangwarp1019		1,1,lou_in02.gat,41,138
+lou_in02.gat,44,138,0		warp	louyangwarp1020		1,1,lou_in02.gat,38,190
 // 酒屋 -> 2F右
-lou_in02.gat,81,190,0		warp	louyangwarp1021		1,1,lou_in02.gat,78,140
-lou_in02.gat,72,140,0		warp	louyangwarp1022		1,1,lou_in02.gat,76,190
-// 図書館建物
-louyang.gat,309,81,0		warp	louyangwarp1023		1,1,lou_in02.gat,189,78
+lou_in02.gat,80,190,0		warp	louyangwarp1021		1,1,lou_in02.gat,74,140
+lou_in02.gat,71,140,0		warp	louyangwarp1022		1,1,lou_in02.gat,77,190
+// 官庁
+louyang.gat,309,80,0		warp	louyangwarp1023		1,1,lou_in02.gat,189,77
 lou_in02.gat,189,74,0		warp	louyangwarp1024		1,1,louyang.gat,309,77
-// 建物2F
-lou_in02.gat,200,94,0		warp	louyangwarp1025		1,1,lou_in02.gat,170,45
-lou_in02.gat,176,45,0		warp	louyangwarp1026		1,1,lou_in02.gat,206,93
-// 普通の部屋
-louyang.gat,130,63,0		warp	louyangwarp1027		1,1,lou_in02.gat,71,32
-lou_in02.gat,71,28,0		warp	louyangwarp1028		1,1,louyang.gat,130,60
-// 普通の部屋2号
-louyang.gat,317,177,0		warp	louyangwarp1029		1,1,lou_in02.gat,121,32
-lou_in02.gat,121,28,0		warp	louyangwarp1030		1,1,louyang.gat,317,175
+// 官庁2F
+lou_in02.gat,201,94,0		warp	louyangwarp1025		1,1,lou_in02.gat,173,46
+lou_in02.gat,176,46,0		warp	louyangwarp1026		1,1,lou_in02.gat,204,94
+// 世捨て人の家
+louyang.gat,130,63,0		warp	louyangwarp1027		1,1,lou_in02.gat,72,31
+lou_in02.gat,72,28,0		warp	louyangwarp1028		1,1,louyang.gat,130,60
+// 毒薬王の家
+louyang.gat,317,176,0		warp	louyangwarp1029		1,1,lou_in02.gat,121,31
+lou_in02.gat,121,28,0		warp	louyangwarp1030		1,1,louyang.gat,317,173
+// 展望台
+louyang.gat,133,245,0		warp	louyangwarp1031		1,1,lou_in01.gat,25,19
+lou_in01.gat,28,19,0		warp	louyangwarp1032		1,1,louyang.gat,136,245
+lou_in01.gat,14,18,0		warp	louyangwarp1033		0,0,louyang.gat,90,254
 
 
 
@@ -1611,23 +1615,19 @@ lou_in02.gat,121,28,0		warp	louyangwarp1030		1,1,louyang.gat,317,175
 // jawaii_in.gat	ジャワイ 室内
 // -----
 //==============================================================
-// npc_town_jawaii.txt の 22～41行目 に同様の部分あり
-
-// Pub
-jawaii.gat,192,214,0		warp	jawaiiwarp1001		1,1,jawaii_in.gat,27,94
-jawaii_in.gat,27,91,0		warp	jawaiiwarp1002		1,1,jawaii.gat,192,217
-// 家１(左下入り口)本来入り口なし
-jawaii.gat,139,202,0		warp	jawaiiwarp1003		1,1,jawaii_in.gat,115,63
-jawaii_in.gat,113,61,0		warp	jawaiiwarp1004		1,1,jawaii.gat,137,201
-// 家２(右下入り口)本来入り口なし
-jawaii.gat,110,200,0		warp	jawaiiwarp1005		1,1,jawaii_in.gat,130,109
-jawaii_in.gat,132,107,0		warp	jawaiiwarp1006		1,1,jawaii.gat,111,198
-// 家３(右上入り口)本来入り口なし
-jawaii.gat,114,171,0		warp	jawaiiwarp1007		1,1,jawaii_in.gat,88,76
-jawaii_in.gat,90,78,0		warp	jawaiiwarp1008		1,1,jawaii.gat,116,172
-// 家４(左上入り口)本来入り口なし
-jawaii.gat,108,186,0		warp	jawaiiwarp1009		1,1,jawaii_in.gat,85,117
-jawaii_in.gat,88,117,0		warp	jawaiiwarp1010		1,1,jawaii.gat,110,186
+//秘密酒場
+jawaii.gat,192,215	warp	jaw001	1,1,jawaii_in.gat,27,94
+jawaii_in.gat,27,91,0	script	jaw001-1	45,1,1,{
+	if ( PartnerId ) warp "jawaii.gat",192,218; else warp "jawaii_in.gat",27,94;
+}
+//スイートルーム
+jawaii_in.gat,113,61	warp	jaw01	1,1,jawaii.gat,136,203
+//アンティークルーム
+jawaii_in.gat,132,107	warp	jaw02	1,1,jawaii.gat,114,196
+//ハニールーム
+jawaii_in.gat,89,117	warp	jaw03	1,1,jawaii.gat,111,186
+//ビラルーム
+jawaii_in.gat,90,78	warp	jaw04	1,1,jawaii.gat,117,175
 
 
 
@@ -1644,115 +1644,165 @@ jawaii_in.gat,88,117,0		warp	jawaiiwarp1010		1,1,jawaii.gat,110,186
 // ayo_in02.gat		アユタヤ 室内
 // -----
 //==============================================================
+ayothaya.gat,276,176,0	warp	ayothayawarp0501	1,1,ayo_fild01.gat,37,241
+
+//船降りて桟橋左の建物
+ayothaya.gat,130,75,0	warp	ayothayawarp1001	1,1,ayo_in01.gat,17,156
+ayo_in01.gat,17,153,0	warp	ayothayawarp1002	1,1,ayothaya.gat,132,73
+ayothaya.gat,130,97,0	warp	ayothayawarp1003	1,1,ayo_in01.gat,43,183
+ayo_in01.gat,46,183,0	warp	ayothayawarp1004	1,1,ayothaya.gat,132,99
+ayothaya.gat,129,86,0	warp	ayothayawarp1005	1,1,ayo_in01.gat,21,178
+ayo_in01.gat,23,175,0	warp	ayothayawarp1006	1,1,ayothaya.gat,132,86
+//船降りて桟橋右の建物
+ayothaya.gat,165,90,0	warp	ayothayawarp1007	1,1,ayo_in01.gat,77,174
+ayo_in01.gat,73,174,0	warp	ayothayawarp1008	1,1,ayothaya.gat,162,90
+ayothaya.gat,177,90,0	warp	ayothayawarp1009	1,1,ayo_in01.gat,95,175
+ayo_in01.gat,98,175,0	warp	ayothayawarp1010	1,1,ayothaya.gat,180,90
+ayothaya.gat,173,77,0	warp	ayothayawarp1011	1,1,ayo_in01.gat,85,152
+ayo_in01.gat,85,149,0	warp	ayothayawarp1012	1,1,ayothaya.gat,173,74
+//旅館
+ayothaya.gat,202,161,0	warp	ayothayawarp1015	1,1,ayo_in01.gat,31,108
+ayo_in01.gat,31,111,0	warp	ayothayawarp1016	1,1,ayothaya.gat,202,164
+ayothaya.gat,191,150,0	warp	ayothayawarp1013	1,1,ayo_in01.gat,13,94
+ayo_in01.gat,10,94,0	warp	ayothayawarp1014	1,1,ayothaya.gat,189,150
+ayothaya.gat,211,150,0	warp	ayothayawarp1017	1,1,ayo_in01.gat,47,94
+ayo_in01.gat,50,94,0	warp	ayothayawarp1018	1,1,ayothaya.gat,214,150
+ayothaya.gat,202,140,0	warp	ayothayawarp1019	1,1,ayo_in01.gat,31,81
+ayo_in01.gat,31,78,0	warp	ayothayawarp1020	1,1,ayothaya.gat,202,137
+//旅館部屋
+ayo_in01.gat,13,107,0	warp	ayothayawarp1021	1,1,ayo_in01.gat,132,27
+ayo_in01.gat,135,27,0	warp	ayothayawarp1022	1,1,ayo_in01.gat,17,107
+ayo_in01.gat,48,107,0	warp	ayothayawarp1023	1,1,ayo_in01.gat,179,27
+ayo_in01.gat,176,27,0	warp	ayothayawarp1024	1,1,ayo_in01.gat,45,107
+ayo_in01.gat,13,82,0	warp	ayothayawarp1025	1,1,ayo_in01.gat,18,14
+ayo_in01.gat,21,14,0	warp	ayothayawarp1026	1,1,ayo_in01.gat,17,82
+ayo_in01.gat,48,82,0	warp	ayothayawarp1027	1,1,ayo_in01.gat,63,14
+ayo_in01.gat,60,14,0	warp	ayothayawarp1028	1,1,ayo_in01.gat,45,82
+//マーリーパイ食堂
+ayothaya.gat,229,69,0	warp	ayothayawarp1029	1,1,ayo_in01.gat,137,192
+ayo_in01.gat,137,195,0	warp	ayothayawarp1030	1,1,ayothaya.gat,229,72
+//シャーマン民家
+ayothaya.gat,62,104,0	warp	ayothayawarp1031	1,1,ayo_in01.gat,191,183
+ayo_in01.gat,194,183,0	warp	ayothayawarp1032	1,1,ayothaya.gat,65,104
+//民家
+ayothaya.gat,111,109,0	warp	ayothayawarp1033	1,1,ayo_in01.gat,180,129
+ayo_in01.gat,177,129,0	warp	ayothayawarp1034	1,1,ayothaya.gat,111,106
+//神殿
+ayothaya.gat,208,283,0	warp	ayothayawarp1035	1,1,ayo_in02.gat,100,152
+ayo_in02.gat,100,148,0	warp	ayothayawarp1036	1,1,ayothaya.gat,208,280
 
 
-
-//---ジュノーフィールド追加マップ
 
 
 //---アルデバランターボトラック追加マップ
 
 
-//---鋼鉄都市アインブロク追加マップ
+//---鋼鉄の都市アインブロック追加マップ
 
 
 //==============================================================
-// ----- Einbroch アインブロク -----
-// einbroch.gat		鋼鉄都市アインブロク
-// einbech.gat		採光村アインベフ
-// ein_in01.gat		室内
+// ----- Einbroch アインブロック -----
+// einbroch.gat		鋼鉄の都市アインブロック
+// einbech.gat		採鉱の村アインベフ
+// ein_in01.gat		アインブロック室内
 // airport.gat		空港
-// airplane.gat		飛行機内
+// airplane.gat		飛行船
 // -----
 // ein_dun01.gat	鉱山ダンジョン
-// ein_fild04.gat	アインブロクフィールド
-// ein_fild08.gat	アインブロクフィールド
-// ein_fild09.gat	アインブロクフィールド
+// ein_fild08.gat	アインブロックフィールド
+// ein_fild09.gat	アインブロックフィールド
 //==============================================================
-//採光村アインベフ⇒アインベフ炭鉱
-einbech.gat,139,252,0		warp	einbrochwarp0401	2,2,ein_dun01.gat,21,14
-//鋼鉄都市アインブロク⇒アインブロクフィールド
-einbroch.gat,158,329,0		warp	einbrochwarp0501	1,1,ein_fild04.gat,184,28
-einbroch.gat,150,25,0		warp	einbrochwarp0502	2,2,ein_fild08.gat,164,378
-//採光村アインベフ⇒アインブロクフィールド
-einbech.gat,62,29,0	warp	einbrochwarp0503	1,1,ein_fild09.gat,72,350
+//採鉱の村アインベフ⇒鉱山ダンジョン
+einbech.gat,138,252,0		warp	einbrochwarp0401	1,1,ein_dun01.gat,22,14
+//鋼鉄の都市アインブロック⇒アインブロックフィールド
+einbroch.gat,150,25,0		warp	einbrochwarp0501	1,1,ein_fild08.gat,164,377
+//採鉱の村アインベフ⇒アインブロックフィールド
+einbech.gat,62,29,0		warp	einbrochwarp0502	1,1,ein_fild09.gat,74,350
 
-
-// 採光村アインベフ（室内）
-ein_in01.gat,265,105,0	warp	einbech01	1,1,einbech.gat,143,112
-einbech.gat,145,112,0	warp	einbech01a	1,1,ein_in01.gat,267,105
-ein_in01.gat,288,89,0	warp	einbech02	1,1,einbech.gat,155,106
-einbech.gat,153,106,0	warp	einbech02a	1,1,ein_in01.gat,286,89
-ein_in01.gat,200,32,0	warp	einbech03	1,1,einbech.gat,170,144
-einbech.gat,170,146,0	warp	einbech03a	1,1,ein_in01.gat,200,30
-ein_in01.gat,189,37,0	warp	einbech04	1,1,einbech.gat,177,136
-einbech.gat,177,138,0	warp	einbech04a	1,1,ein_in01.gat,189,35
-ein_in01.gat,145,152,0	warp	einbech05	1,1,einbech.gat,253,110
-einbech.gat,255,110,0	warp	einbech05a	1,1,ein_in01.gat,147,152
-
-//鋼鉄都市アインブロク（室内）
-ein_in01.gat,13,213,0	warp	ein013	1,1,einbroch.gat,131,80
-einbroch.gat,133,80,0	warp	ein013a	1,1,ein_in01.gat,15,213
-ein_in01.gat,110,267,0	warp	ein014	1,1,einbroch.gat,204,120
-einbroch.gat,202,120,0	warp	ein014a	1,1,ein_in01.gat,108,267
-ein_in01.gat,110,236,0	warp	ein015	1,1,einbroch.gat,204,100
-einbroch.gat,202,100,0	warp	ein015a	1,1,ein_in01.gat,108,236
-ein_in01.gat,80,199,0	warp	ein016	1,1,einbroch.gat,178,71
-einbroch.gat,178,73,0	warp	ein016a	1,1,ein_in01.gat,80,201
-ein_in01.gat,195,224,0	warp	ein017	1,1,einbroch.gat,255,200
-einbroch.gat,257,200,0	warp	ein017a	1,1,ein_in01.gat,197,224
-ein_in01.gat,211,232,0	warp	ein018	1,1,ein_in01.gat,273,232
-ein_in01.gat,271,232,0	warp	ein018a	1,1,ein_in01.gat,209,232
-ein_in01.gat,211,216,0	warp	ein019	1,1,ein_in01.gat,273,218
-ein_in01.gat,271,218,0	warp	ein019a	1,1,ein_in01.gat,209,216
-ein_in01.gat,181,277,0	warp	ein020	1,1,ein_in01.gat,281,224
-ein_in01.gat,283,224,0	warp	ein020a	1,1,ein_in01.gat,179,277
-ein_in01.gat,232,273,0	warp	ein021	1,1,ein_in01.gat,274,244
-ein_in01.gat,274,246,0	warp	ein021a	1,1,ein_in01.gat,232,275
-ein_in01.gat,273,273,0	warp	ein022	1,1,ein_in01.gat,264,244
-ein_in01.gat,264,246,0	warp	ein022a	1,1,ein_in01.gat,273,275
-ein_in01.gat,232,176,0	warp	ein023	1,1,ein_in01.gat,264,205
-ein_in01.gat,264,203,0	warp	ein023a	1,1,ein_in01.gat,232,174
-ein_in01.gat,274,176,0	warp	ein024	1,1,ein_in01.gat,274,205
-ein_in01.gat,274,203,0	warp	ein024a	1,1,ein_in01.gat,274,174
-ein_in01.gat,39,85,0	warp	ein025	1,1,ein_in01.gat,37,36
-ein_in01.gat,39,36,0	warp	ein025a	1,1,ein_in01.gat,37,85
-ein_in01.gat,14,13,0	warp	ein026	1,1,einbroch.gat,255,109
-einbroch.gat,255,107,0	warp	ein026a	1,1,ein_in01.gat,14,15
-ein_in01.gat,288,25,0	warp	ein040	1,1,einbroch.gat,52,52
-einbroch.gat,50,52,0	warp	ein040a	1,1,ein_in01.gat,286,25
-einbroch.gat,213,263,0	warp	ein041	1,1,einbroch.gat,233,310
-einbroch.gat,233,308,0	warp	ein041a	1,1,einbroch.gat,213,261
-einbroch.gat,250,263,0	warp	ein042	1,1,einbroch.gat,270,312,0
-einbroch.gat,270,310,0	warp	ein042a	1,1,einbroch.gat,250,261
-ein_in01.gat,108,13,0	warp	ein043	1,1,einbroch.gat,217,212
-einbroch.gat,217,214,0	warp	ein043a	1,1,ein_in01.gat,108,15
-
-//- Elevator
-ein_in01.gat,126,88,0	warp	ein032	1,1,ein_in01.gat,100,140
-ein_in01.gat,100,142,0	warp	ein032a	1,1,ein_in01.gat,126,86
-
-//未処理（室内）
-//- Bottom-left doorway
-//ein_in01.gat,11,147,0	warp	ein025	1,1,mapname.gat,x,y
-//mapname.gat,x,y,0	warp	ein025a	1,1,ein_in01.gat,13,147
-//- Top-right doorway
-//ein_in01.gat,26,131,0	warp	ein026	1,1,mapname.gat,x,y
-//mapname.gat,x,y,0	warp	ein026a	1,1,ein_in01.gat,26,133
-//2 floor laboratory-ish house
-//- Left Exit
-//ein_in01.gat,103,95,0	warp	ein030	1,1,mapname.gat,x,y
-//mapname.gat,x,y,0	warp	ein030a	1,1,ein_in01.gat,105,95
-//- Right Exit
-//ein_in01.gat,120,77,0	warp	ein031	1,1,mapname.gat,x,y
-//mapname.gat,x,y,0	warp	ein031a	1,1,ein_in01.gat,120,79
-//House
-//- Bottom-left doorway
-//ein_in01.gat,187,98,0	warp	ein033	1,1,mapname.gat,x,y
-//mapname.gat,x,y,0	warp	ein033a	1,1,ein_in01.gat,189,98
-//- Top-right doorway
-//ein_in01.gat,204,81,0	warp	ein034	1,1,mapname.gat,x,y
-//mapname.gat,x,y,0	warp	ein034a	1,1,ein_in01.gat,204,83
+//工場
+einbroch.gat,179,73,0	warp	einbrochwarp1001	1,1,ein_in01.gat,81,203
+ein_in01.gat,81,198,0	warp	einbrochwarp1002	1,1,einbroch.gat,179,70
+einbroch.gat,132,79,0	warp	einbrochwarp1003	1,1,ein_in01.gat,17,213
+ein_in01.gat,13,213,0	warp	einbrochwarp1004	1,1,einbroch.gat,129,79
+//駅
+einbroch.gat,214,263,0	warp	einbrochwarp1005	1,1,einbroch.gat,233,315
+einbroch.gat,233,312,0	warp	einbrochwarp1006	1,1,einbroch.gat,214,260
+einbroch.gat,250,263,0	warp	einbrochwarp1007	1,1,einbroch.gat,269,315
+einbroch.gat,269,312,0	warp	einbrochwarp1008	1,1,einbroch.gat,250,260
+//武器屋
+einbroch.gat,216,214,0	warp	einbrochwarp1009	1,1,ein_in01.gat,108,17
+ein_in01.gat,108,13,0	warp	einbrochwarp1010	1,1,einbroch.gat,216,211
+//ホテル
+einbroch.gat,257,199,0	warp	einbrochwarp1011	1,1,ein_in01.gat,198,224
+ein_in01.gat,195,224,0	warp	einbrochwarp1012	1,1,einbroch.gat,254,199
+//ホテル1F⇔2F
+ein_in01.gat,211,216,0	warp	einbrochwarp1013	1,1,ein_in01.gat,274,218
+ein_in01.gat,271,218,0	warp	einbrochwarp1014	1,1,ein_in01.gat,208,216
+ein_in01.gat,211,232,0	warp	einbrochwarp1015	1,1,ein_in01.gat,274,232
+ein_in01.gat,271,232,0	warp	einbrochwarp1016	1,1,ein_in01.gat,208,232
+//ホテル左下の部屋
+ein_in01.gat,264,203,0	warp	einbrochwarp1017	1,1,ein_in01.gat,232,173
+ein_in01.gat,232,176,0	warp	einbrochwarp1018	1,1,ein_in01.gat,264,206
+//ホテル左上の部屋
+ein_in01.gat,264,246,0	warp	einbrochwarp1019	1,1,ein_in01.gat,231,276
+ein_in01.gat,231,273,0	warp	einbrochwarp1020	1,1,ein_in01.gat,264,243
+//ホテル右下の部屋
+ein_in01.gat,274,203,0	warp	einbrochwarp1021	1,1,ein_in01.gat,274,173
+ein_in01.gat,274,176,0	warp	einbrochwarp1022	1,1,ein_in01.gat,274,206
+//ホテル右上の部屋
+ein_in01.gat,274,246,0	warp	einbrochwarp1023	1,1,ein_in01.gat,273,276
+ein_in01.gat,273,273,0	warp	einbrochwarp1024	1,1,ein_in01.gat,274,243
+//ホテル中央の部屋
+ein_in01.gat,284,224,0	warp	einbrochwarp1025	1,1,ein_in01.gat,177,277
+ein_in01.gat,180,277,0	warp	einbrochwarp1026	1,1,ein_in01.gat,280,224
+//ブラックスミスギルド
+einbroch.gat,255,107,0	warp	einbrochwarp1027	1,1,ein_in01.gat,14,17
+ein_in01.gat,14,14,0	warp	einbrochwarp1028	1,1,einbroch.gat,255,110
+ein_in01.gat,39,36,0	warp	einbrochwarp1029	1,1,ein_in01.gat,35,83
+ein_in01.gat,39,85,0	warp	einbrochwarp1030	1,1,ein_in01.gat,36,36
+//研究所
+einbroch.gat,51,52,0	warp	einbrochwarp1031	1,1,ein_in01.gat,285,25
+ein_in01.gat,288,25,0	warp	einbrochwarp1032	1,1,einbroch.gat,54,52
+//カペルタの家
+einbroch.gat,129,229,0	warp	einbrochwarp1033	1,1,ein_in01.gat,14,147
+ein_in01.gat,11,147,0	warp	einbrochwarp1034	1,1,einbroch.gat,126,229
+//ギルナーの家
+einbroch.gat,290,222,0	warp	einbrochwarp1035	1,1,ein_in01.gat,121,80
+ein_in01.gat,121,77,0	warp	einbrochwarp1036	1,1,einbroch.gat,290,219
+einbroch.gat,278,233,0	warp	einbrochwarp1037	1,1,ein_in01.gat,107,95
+ein_in01.gat,103,95,0	warp	einbrochwarp1038	1,1,einbroch.gat,275,233
+ein_in01.gat,126,88,0	warp	einbrochwarp1039	1,1,ein_in01.gat,100,139
+ein_in01.gat,100,142,0	warp	einbrochwarp1040	1,1,ein_in01.gat,123,85
+//空港
+einbroch.gat,64,207,0	warp	einbrochwarp1041	1,1,airport.gat,143,17
+airport.gat,143,14,0	warp	einbrochwarp1042	1,1,einbroch.gat,64,204
+airport.gat,142,61,0	warp	einbrochwarp1043	1,1,einbroch.gat,62,246
+einbroch.gat,64,234,0	warp	einbrochwarp1044	1,1,airport.gat,138,51
+//空港1F⇔2F
+airport.gat,124,13,0	warp	einbrochwarp1045	1,1,airport.gat,19,21
+airport.gat,19,18,0	warp	einbrochwarp1046	1,1,airport.gat,122,16
+airport.gat,161,13,0	warp	einbrochwarp1047	1,1,airport.gat,47,21
+airport.gat,47,18,0	warp	einbrochwarp1048	1,1,airport.gat,163,16
+//飛行船
+einbroch.gat,92,281,0	warp	einbrochwarp1049	1,1,airplane.gat,224,64
+airplane.gat,254,54,0	warp	einbrochwarp1050	1,1,airplane.gat,91,67
+airplane.gat,87,67,0	warp	einbrochwarp1051	1,1,airplane.gat,250,54
+//酒場
+einbech.gat,145,112,0	warp	einbrochwarp1052	1,1,ein_in01.gat,268,104
+ein_in01.gat,265,104,0	warp	einbrochwarp1053	1,1,einbech.gat,141,112
+einbech.gat,154,106,0	warp	einbrochwarp1054	1,1,ein_in01.gat,285,89
+ein_in01.gat,288,89,0	warp	einbrochwarp1055	1,1,einbech.gat,157,106
+//道具屋
+einbech.gat,177,136,0	warp	einbrochwarp1056	1,1,ein_in01.gat,190,35
+ein_in01.gat,190,38,0	warp	einbrochwarp1057	1,1,einbech.gat,177,133
+//民家
+einbech.gat,214,121,0	warp	einbrochwarp1058	1,1,ein_in01.gat,205,84
+ein_in01.gat,205,81,0	warp	einbrochwarp1059	1,1,einbech.gat,214,118
+einbech.gat,207,135,0	warp	einbrochwarp1060	1,1,ein_in01.gat,190,99
+ein_in01.gat,187,99,0	warp	einbrochwarp1061	1,1,einbech.gat,204,135
+//剣士ギルド
+einbech.gat,257,109,0	warp	einbrochwarp1062	1,1,ein_in01.gat,148,153
+ein_in01.gat,145,153,0	warp	einbrochwarp1063	1,1,einbech.gat,253,109
 
 
 
@@ -1766,8 +1816,10 @@ ein_in01.gat,100,142,0	warp	ein032a	1,1,ein_in01.gat,126,86
 // lhz_dun01.gat	生体実験研究所地下１階
 // lhz_fild01.gat	リヒタルゼンフィールド
 //==============================================================
+
 lighthalzen.gat,73,52,0		warp	lighthalzenwarp0401	1,1,lhz_dun01.gat,150,288
-lighthalzen.gat,214,329,0	warp	lighthalzenwarp0501	1,1,lhz_fild01.gat,210,18
+einbroch.gat,158,329,0		warp	lighthalzenwarp0501	1,1,ein_fild04.gat,184,28
+lighthalzen.gat,214,329,0	warp	lighthalzenwarp0502	1,1,lhz_fild01.gat,210,18
 
 lighthalzen.gat,101,248,0	warp	lighthalzenwarp1001	1,1,lhz_in01.gat,110,123
 lhz_in01.gat,110,121,0		warp	lighthalzenwarp1002	1,1,lighthalzen.gat,101,246
@@ -1844,23 +1896,25 @@ lhz_in02.gat,239,169,0		warp	lighthalzenwarp1069	1,1,lhz_in02.gat,239,152
 lhz_in02.gat,239,154,0		warp	lighthalzenwarp1070	1,1,lhz_in02.gat,239,171
 lhz_in02.gat,38,205,0		warp	lighthalzenwarp1071	1,1,lhz_in02.gat,38,137
 lhz_in02.gat,36,137,0		warp	lighthalzenwarp1072	1,1,lhz_in02.gat,36,205
-lhz_in02.gat,13,155,0		warp	lighthalzenwarp1073	1,1,lhz_in02.gat,100,155
-lhz_in02.gat,102,155,0		warp	lighthalzenwarp1074	1,1,lhz_in02.gat,15,155
-lhz_in02.gat,48,155,0		warp	lighthalzenwarp1075	1,1,lhz_in02.gat,81,223
-lhz_in02.gat,79,223,0		warp	lighthalzenwarp1076	1,1,lhz_in02.gat,46,155
-lhz_in02.gat,13,285,0		warp	lighthalzenwarp1077	1,1,lhz_in02.gat,92,285
-lhz_in02.gat,94,285,0		warp	lighthalzenwarp1078	1,1,lhz_in02.gat,16,285
-lhz_in02.gat,114,273,0		warp	lighthalzenwarp1079	1,1,lhz_in02.gat,151,283
-lhz_in02.gat,149,283,0		warp	lighthalzenwarp1080	1,1,lhz_in02.gat,112,273
+lhz_in02.gat,13,155,0		warp	lighthalzenwarp1073	1,1,lhz_in02.gat,81,223
+lhz_in02.gat,79,223,0		warp	lighthalzenwarp1074	1,1,lhz_in02.gat,15,155
+lhz_in02.gat,48,155,0		warp	lighthalzenwarp1075	1,1,lhz_in02.gat,100,155
+lhz_in02.gat,102,155,0		warp	lighthalzenwarp1076	1,1,lhz_in02.gat,46,155
+lhz_in02.gat,94,213,0		warp	lighthalzenwarp1077	1,1,lhz_in02.gat,91,145
+lhz_in02.gat,89,145,0		warp	lighthalzenwarp1078	1,1,lhz_in02.gat,92,213
+lhz_in02.gat,13,285,0		warp	lighthalzenwarp1079	1,1,lhz_in02.gat,92,285
+lhz_in02.gat,94,285,0		warp	lighthalzenwarp1080	1,1,lhz_in02.gat,16,285
+lhz_in02.gat,114,273,0		warp	lighthalzenwarp1081	1,1,lhz_in02.gat,151,283
+lhz_in02.gat,149,283,0		warp	lighthalzenwarp1082	1,1,lhz_in02.gat,112,273
 
-lhz_in03.gat,133,15,0		warp	lighthalzenwarp1081	1,1,lhz_in03.gat,123,91
-lhz_in03.gat,121,91,0		warp	lighthalzenwarp1082	1,1,lhz_in03.gat,131,15
-lhz_in03.gat,251,15,0		warp	lighthalzenwarp1083	1,1,lhz_in03.gat,255,83
-lhz_in03.gat,257,83,0		warp	lighthalzenwarp1084	1,1,lhz_in03.gat,253,15
-lhz_in03.gat,190,100,0		warp	lighthalzenwarp1085	1,1,lhz_in03.gat,191,33
-lhz_in03.gat,191,35,0		warp	lighthalzenwarp1086	1,1,lhz_in03.gat,190,102
-lhz_in03.gat,13,32,0		warp	lighthalzenwarp1087	1,1,lhz_in03.gat,13,100
-lhz_in03.gat,15,100,0		warp	lighthalzenwarp1088	1,1,lhz_in03.gat,15,32
+lhz_in03.gat,133,15,0		warp	lighthalzenwarp1083	1,1,lhz_in03.gat,123,91
+lhz_in03.gat,121,91,0		warp	lighthalzenwarp1084	1,1,lhz_in03.gat,131,15
+lhz_in03.gat,251,15,0		warp	lighthalzenwarp1085	1,1,lhz_in03.gat,255,83
+lhz_in03.gat,257,83,0		warp	lighthalzenwarp1086	1,1,lhz_in03.gat,253,15
+lhz_in03.gat,190,100,0		warp	lighthalzenwarp1087	1,1,lhz_in03.gat,191,33
+lhz_in03.gat,191,35,0		warp	lighthalzenwarp1088	1,1,lhz_in03.gat,190,102
+lhz_in03.gat,13,32,0		warp	lighthalzenwarp1089	1,1,lhz_in03.gat,13,100
+lhz_in03.gat,15,100,0		warp	lighthalzenwarp1090	1,1,lhz_in03.gat,15,32
 
 
 

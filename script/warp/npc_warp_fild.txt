@@ -775,77 +775,30 @@ cmd_fild09.gat,309,381,0	warp	comodowarp5032		2,1,cmd_fild08.gat,309,60
 // yuno_fild02.gat	キルハイルの別荘
 // yuno_fild03.gat	エルメスプレート
 // yuno_fild04.gat	エルメスプレート
-// -- ジュノーフィールド追加マップ --
-// yuno_fild05.gat	エルメスプレート
-// yuno_fild07.gat	エルメス峡谷 深淵の谷間
-// yuno_fild08.gat	キルハイル学校
-// yuno_fild09.gat	シュバルツバルド警備隊野営地
-// yuno_fild11.gat	ジュノーフィールド
-// yuno_fild12.gat	国境検問所
 // -----
 // aldebaran.gat	国境都市アルデバラン
 // yuno.gat 		シュバルツバルド共和国の首都ジュノー
 // mag_dun01.gat	ノーグロード 1層
-// ein_fild06.gat	アインブロクフィールド
-// ein_fild07.gat	アインブロクフィールド
 //==============================================================
 yuno_fild01.gat,208,17,0	warp	yunowarp0101		1,1,aldebaran.gat,140,242
 yuno_fild04.gat,231,288,0	warp	yunowarp0102		1,1,yuno.gat,158,16
 
 yuno_fild03.gat,32,139,0	warp	yunowarp0401		1,1,mag_dun01.gat,126,69
 
+//YunoFild01⇔YunoFild02
+//yuno_fild01.gat,70,378,0	warp	yunowarp5001		1,1,yuno_fild02.gat,70,27
+//yuno_fild02.gat,70,23,0	warp	yunowarp5002		1,1,yuno_fild01.gat,70,375
+//yuno_fild01.gat,286,368,0	warp	yunowarp5003		1,1,yuno_fild02.gat,294,28
+//yuno_fild02.gat,294,24,0	warp	yunowarp5004		1,1,yuno_fild01.gat,286,365
 //YunoFild02⇔YunoFild03
 yuno_fild02.gat,18,337,0	warp	yunowarp5005		1,1,yuno_fild03.gat,379,331
 yuno_fild03.gat,383,331,0	warp	yunowarp5006		1,1,yuno_fild02.gat,22,337
-
 //YunoFild03⇔YunoFild04
 yuno_fild03.gat,20,155,0	warp	yunowarp5007		1,1,yuno_fild04.gat,372,150
 yuno_fild04.gat,375,150,0	warp	yunowarp5008		1,1,yuno_fild03.gat,23,155
 yuno_fild03.gat,19,79,0		warp	yunowarp5009		1,1,yuno_fild04.gat,372,84
 yuno_fild04.gat,375,84,0	warp	yunowarp5010		1,1,yuno_fild03.gat,22,79
 
-//---ジュノーフィールド追加マップ---
-//ジュノーフィールド04⇔ジュノーフィールド05
-yuno_fild04.gat,42,369,0	warp	ein19	1,1,yuno_fild05.gat,59,31
-yuno_fild05.gat,59,28,0	warp	ein20	1,1,yuno_fild04.gat,42,366
-//ジュノーフィールド11⇔ジュノーフィールド07
-yuno_fild11.gat,92,371,0	warp	ein23	1,1,yuno_fild07.gat,93,15
-yuno_fild07.gat,93,12,0	warp	ein24	1,1,yuno_fild11.gat,92,369
-//アインフィールド06⇔ジュノーフィールド07
-yuno_fild07.gat,73,219,0	warp	ein25	1,1,ein_fild06.gat,337,175
-ein_fild06.gat,340,175,0	warp	ein26	1,1,yuno_fild07.gat,75,219
-//ジュノーフィールド11⇔ジュノーフィールド12
-yuno_fild11.gat,365,217,0	warp	ein27	1,1,yuno_fild12.gat,25,228
-yuno_fild12.gat,23,226,0	warp	ein28	1,1,yuno_fild11.gat,362,217
-yuno_fild11.gat,368,359,0	warp	ein29	1,1,yuno_fild12.gat,25,337
-yuno_fild12.gat,23,340,0	warp	ein30	1,1,yuno_fild11.gat,366,357
-//ジュノーフィールド01⇔ジュノーフィールド12
-yuno_fild12.gat,371,240,0	warp	ein31	1,1,yuno_fild01.gat,27,249
-yuno_fild01.gat,26,246,0	warp	ein32	1,1,yuno_fild12.gat,368,240
-//ジュノーフィールド12⇔ジュノーフィールド08
-yuno_fild12.gat,193,372,0	warp	ein33	1,1,yuno_fild08.gat,138,23
-yuno_fild08.gat,143,21,0	warp	ein34	1,1,yuno_fild12.gat,194,369
-//ジュノーフィールド08⇔ジュノーフィールド07
-yuno_fild08.gat,31,57,0	warp	ein31	1,1,yuno_fild07.gat,359,74
-yuno_fild07.gat,361,71,0	warp	ein35	1,1,yuno_fild08.gat,33,59
-yuno_fild08.gat,21,277,0	warp	ein36	1,1,yuno_fild07.gat,352,289
-yuno_fild07.gat,354,291,0	warp	ein37	1,1,yuno_fild08.gat,25,276
-//ジュノーフィールド07⇔ジュノーフィールド03
-yuno_fild07.gat,180,354,0	warp	ein38	1,1,yuno_fild03.gat,180,18
-yuno_fild03.gat,180,15,0	warp	ein39	1,1,yuno_fild07.gat,180,351
-//ジュノーフィールド08⇔ジュノーフィールド02
-yuno_fild08.gat,74,376,0	warp	ein40	1,1,yuno_fild02.gat,70,27
-yuno_fild02.gat,70,23,0	warp	ein41	1,1,yuno_fild08.gat,76,373
-yuno_fild08.gat,286,386,0	warp	ein42	1,1,yuno_fild02.gat,294,28
-yuno_fild02.gat,294,24,0	warp	ein43	1,1,yuno_fild08.gat,286,383
-//ジュノーフィールド08⇔ジュノーフィールド09
-yuno_fild08.gat,376,194,0	warp	ein44	1,1,yuno_fild09.gat,22,193
-yuno_fild09.gat,19,193,0	warp	ein45	1,1,yuno_fild08.gat,373,194
-//ジュノーフィールド09⇔ジュノーフィールド01
-yuno_fild09.gat,71,17,0	warp	ein40	1,1,yuno_fild01.gat,70,375
-yuno_fild01.gat,70,378,0	warp	ein41	1,1,yuno_fild09.gat,71,20
-yuno_fild09.gat,282,28,0	warp	ein42	1,1,yuno_fild01.gat,286,365
-yuno_fild01.gat,286,368,0	warp	ein43	1,1,yuno_fild09.gat,282,31
 
 
 //---アマツ追加マップ---
@@ -953,11 +906,11 @@ nif_fild02.gat,22,311,0		warp	niflheimwarp5002	1,1,nif_fild01.gat,340,322
 
 //==============================================================
 // ----- Louyang 龍之城 -----
-// lou_fild01.gat	龍之城フィールドへ
+// lou_fild01.gat	龍之城フィールド
 // -----
 // louyang.gat		古都 龍之城
 //==============================================================
-lou_fild01.gat,232,357,0	warp	louyangwarp0101		2,1,louyang.gat,217,40
+lou_fild01.gat,233,356,0	warp	louyangwarp0101		2,1,louyang.gat,218,22
 
 
 
@@ -973,71 +926,103 @@ lou_fild01.gat,232,357,0	warp	louyangwarp0101		2,1,louyang.gat,217,40
 // ayo_fild02.gat	アユタヤフィールド
 // -----
 //==============================================================
+ayo_fild01.gat,32,240,0		warp	ayothayawarp0101	1,1,ayothaya.gat,273,176
+
+ayo_fild02.gat,285,150,0	warp	ayothayawarp0501	1,1,ayo_dun01.gat,275,18
 
 
-
-//---ジュノーフィールド追加マップ
-// -- ジュノー にマップを追加。
 
 
 //---アルデバランターボトラック追加マップ
 
 
-//---鋼鉄都市アインブロク追加マップ
+//---鋼鉄の都市アインブロック追加マップ
 
 
 //==============================================================
-// ----- Einbroch アインブロク -----
-// ein_fild03.gat	アインブロクフィールド
-// ein_fild04.gat	アインブロクフィールド
-// ein_fild06.gat	アインブロクフィールド
-// ein_fild07.gat	アインブロクフィールド
-// ein_fild08.gat	アインブロクフィールド
-// ein_fild09.gat	アインブロクフィールド
-// ein_fild10.gat	アインブロクフィールド
-// -----
-// einbroch.gat		鋼鉄都市アインブロク
-// einbech.gat		採光村アインベフ
-// yuno_fild04.gat	エルメスプレート
+// ----- Einbroch アインブロック -----
+// -- ジュノーフィールド追加マップ --
+// yuno_fild05.gat	エルメスプレート
 // yuno_fild07.gat	エルメス峡谷 深淵の谷間
+// yuno_fild08.gat	キルハイル学校
+// yuno_fild09.gat	シュバルツバルド警備隊野営地
 // yuno_fild11.gat	ジュノーフィールド
-// lhz_fild03.gat	リヒタルゼンフィールド03
+// yuno_fild12.gat	国境検問所
+// ein_fild06.gat	アインブロックフィールド
+// ein_fild07.gat	アインブロックフィールド
+// ein_fild08.gat	アインブロックフィールド
+// ein_fild09.gat	アインブロックフィールド
+// ein_fild10.gat	アインブロックフィールド
+// -----
+// einbroch.gat		鋼鉄の都市アインブロック
+// einbech.gat		採鉱の村アインベフ
+// yuno_fild04.gat	エルメスプレート
 //==============================================================
-ein_fild04.gat,184,26,0		warp	einbrochwarp0101	1,1,einbroch.gat,158,327
-ein_fild08.gat,164,380,0	warp	einbrochwarp0102	2,2,einbroch.gat,150,27
-ein_fild09.gat,70,353,0		warp	einbrochwarp0104	2,2,einbech.gat,62,32
+ein_fild08.gat,164,380,0	warp	einbrochwarp0101	2,2,einbroch.gat,150,28
+ein_fild09.gat,71,352,0		warp	einbrochwarp0102	2,2,einbech.gat,62,32
 
-//アインフィールド09⇔アインフィールド08
-ein_fild09.gat,34,133,0	warp	ein07	1,1,ein_fild08.gat,361,129
-ein_fild08.gat,363,127,0	warp	ein08	1,1,ein_fild09.gat,37,133
-//アインフィールド09⇔アインフィールド10
-ein_fild09.gat,329,345,0	warp	ein11	1,1,ein_fild10.gat,27,330
-ein_fild10.gat,24,330,0	warp	ein12	1,1,ein_fild09.gat,326,345
-//アインフィールド10⇔アインフィールド07
-ein_fild10.gat,193,372,0	warp	ein13	1,1,ein_fild07.gat,190,44
-ein_fild07.gat,190,42,0	warp	ein14	1,1,ein_fild10.gat,193,370
-//アインフィールド07⇔アインフィールド06
-ein_fild07.gat,144,362,0	warp	ein15	1,1,ein_fild06.gat,136,38
-ein_fild06.gat,136,35,0	warp	ein16	1,1,ein_fild07.gat,146,360
-//アインフィールド06⇔ジュノーフィールド04
-ein_fild06.gat,252,365,0	warp	ein17	1,1,yuno_fild04.gat,250,24
-yuno_fild04.gat,250,21,0	warp	ein18	1,1,ein_fild06.gat,252,362
-//アインフィールド07⇔ジュノーフィールド11
-ein_fild07.gat,382,263,0	warp	ein21	1,1,yuno_fild11.gat,30,266
-yuno_fild11.gat,28,266,0	warp	ein22	1,1,ein_fild07.gat,380,263
+//YunoFild01⇔YunoFild09
+yuno_fild01.gat,70,377,0	warp	einbrochwarp5001	1,1,yuno_fild09.gat,70,21
+yuno_fild09.gat,70,18,0		warp	einbrochwarp5002	1,1,yuno_fild01.gat,70,374
+yuno_fild01.gat,287,367,0	warp	einbrochwarp5003	1,1,yuno_fild09.gat,280,32
+yuno_fild09.gat,280,29,0	warp	einbrochwarp5004	1,1,yuno_fild01.gat,287,364
+//YunoFild01⇔YunoFild12
+yuno_fild01.gat,26,246,0	warp	einbrochwarp5005	1,1,yuno_fild12.gat,366,244
+yuno_fild12.gat,369,244,0	warp	einbrochwarp5006	1,1,yuno_fild01.gat,31,248
+//YunoFild02⇔YunoFild08
+yuno_fild02.gat,69,22,0		warp	einbrochwarp5007	1,1,yuno_fild08.gat,75,372
+yuno_fild08.gat,75,375,0	warp	einbrochwarp5008	1,1,yuno_fild02.gat,69,25
+yuno_fild02.gat,287,16,0	warp	einbrochwarp5009	1,1,yuno_fild08.gat,285,382
+yuno_fild08.gat,285,385,0	warp	einbrochwarp5010	1,1,yuno_fild02.gat,290,20
+//YunoFild03⇔YunoFild07
+yuno_fild03.gat,178,15,0	warp	einbrochwarp5011	1,1,yuno_fild07.gat,179,351
+yuno_fild07.gat,179,354,0	warp	einbrochwarp5012	1,1,yuno_fild03.gat,178,18
+//YunoFild04⇔YunoFild05
+yuno_fild04.gat,42,370,0	warp	einbrochwarp5013	1,1,yuno_fild05.gat,61,33
+yuno_fild05.gat,61,29,0		warp	einbrochwarp5014	1,1,yuno_fild04.gat,42,366
+//YunoFild07⇔YunoFild08
+yuno_fild07.gat,360,72,0	warp	einbrochwarp5015	1,1,yuno_fild08.gat,35,61
+yuno_fild08.gat,31,58,0		warp	einbrochwarp5016	1,1,yuno_fild07.gat,357,75
+yuno_fild07.gat,352,292,0	warp	einbrochwarp5017	1,1,yuno_fild08.gat,27,275
+yuno_fild08.gat,24,275,0	warp	einbrochwarp5018	1,1,yuno_fild07.gat,348,288
+//YunoFild07⇔YunoFild11
+yuno_fild07.gat,92,28,0		warp	einbrochwarp5019	1,1,yuno_fild11.gat,91,369
+yuno_fild11.gat,91,372,0	warp	einbrochwarp5020	1,1,yuno_fild07.gat,92,31
+//YunoFild08⇔YunoFild09
+yuno_fild08.gat,375,194,0	warp	einbrochwarp5021	1,1,yuno_fild09.gat,23,193
+yuno_fild09.gat,20,193,0	warp	einbrochwarp5022	1,1,yuno_fild08.gat,372,194
+//YunoFild08⇔YunoFild12
+yuno_fild08.gat,134,29,0	warp	einbrochwarp5023	1,1,yuno_fild12.gat,197,371
+yuno_fild12.gat,193,372,0	warp	einbrochwarp5024	1,1,yuno_fild08.gat,134,33
+//YunoFild11⇔YunoFild12
+yuno_fild11.gat,364,218,0	warp	einbrochwarp5025	1,1,yuno_fild12.gat,26,230
+yuno_fild12.gat,23,226,0	warp	einbrochwarp5026	1,1,yuno_fild11.gat,361,218
+yuno_fild11.gat,368,361,0	warp	einbrochwarp5027	1,1,yuno_fild12.gat,27,336
+yuno_fild12.gat,23,339,0	warp	einbrochwarp5028	1,1,yuno_fild11.gat,364,356
+//EinFild06⇔YunoFild04
+ein_fild06.gat,251,365,0	warp	einbrochwarp5029	1,1,yuno_fild04.gat,249,25
+yuno_fild04.gat,249,22,0	warp	einbrochwarp5030	1,1,ein_fild06.gat,251,362
+//EinFild06⇔YunoFild07
+ein_fild06.gat,355,95,0		warp	einbrochwarp5031	1,1,yuno_fild07.gat,60,79
+yuno_fild07.gat,57,79,0		warp	einbrochwarp5032	1,1,ein_fild06.gat,352,95
+ein_fild06.gat,335,176,0	warp	einbrochwarp5033	1,1,yuno_fild07.gat,76,220
+yuno_fild07.gat,73,220,0	warp	einbrochwarp5034	1,1,ein_fild06.gat,332,176
+//EinFild06⇔EinFild07
+ein_fild06.gat,135,36,0		warp	einbrochwarp5035	1,1,ein_fild07.gat,147,359
+ein_fild07.gat,144,362,0	warp	einbrochwarp5036	1,1,ein_fild06.gat,135,39
+//EinFild07⇔YunoFild11
+ein_fild07.gat,381,264,0	warp	einbrochwarp5037	1,1,yuno_fild11.gat,31,266
+yuno_fild11.gat,28,266,0	warp	einbrochwarp5038	1,1,ein_fild07.gat,378,264
+//EinFild07⇔EinFild10
+ein_fild07.gat,183,43,0		warp	einbrochwarp5039	1,1,ein_fild10.gat,196,368
+ein_fild10.gat,196,371,0	warp	einbrochwarp5040	1,1,ein_fild07.gat,179,46
+//EinFild08⇔EinFild09
+ein_fild08.gat,361,129,0	warp	einbrochwarp5041	1,1,ein_fild09.gat,37,135
+ein_fild09.gat,34,135,0		warp	einbrochwarp5042	1,1,ein_fild08.gat,358,130
+//EinFild09⇔EinFild10
+ein_fild09.gat,328,344,0	warp	einbrochwarp5043	1,1,ein_fild10.gat,28,330
+ein_fild10.gat,25,330,0		warp	einbrochwarp5044	1,1,ein_fild09.gat,325,344
 
-ein_fild04.gat,20,251,0	warp	ein046	1,1,ein_fild03.gat,361,257
-ein_fild03.gat,363,257,0	warp	ein046a	1,1,ein_fild04.gat,22,251
-ein_fild04.gat,14,215,0	warp	ein047	1,1,ein_fild03.gat,359,219
-ein_fild03.gat,361,219,0	warp	ein047a	1,1,ein_fild04.gat,16,215
-ein_fild04.gat,14,205,0	warp	ein048	1,1,ein_fild03.gat,359,204
-ein_fild03.gat,361,204,0	warp	ein048a	1,1,ein_fild04.gat,16,205
-ein_fild03.gat,142,32,0	warp	ein049	1,1,lhz_fild02.gat,166,365
-lhz_fild02.gat,166,367,0	warp	ein049a	1,1,ein_fild03.gat,142,34
-lhz_fild02.gat,164,37,0	warp	ein050	1,1,lhz_fild03.gat,158,347
-lhz_fild03.gat,158,349,0	warp	ein050a	1,1,lhz_fild02.gat,164,39
-lhz_fild03.gat,363,283,0	warp	ein051	1,1,ein_fild08.gat,25,275
-ein_fild08.gat,23,275,0	warp	ein051a	1,1,lhz_fild03.gat,361,283
 
 
 //---企業都市リヒタルゼン追加マップ
@@ -1045,19 +1030,83 @@ ein_fild08.gat,23,275,0	warp	ein051a	1,1,lhz_fild03.gat,361,283
 
 //==============================================================
 // -----  リヒタルゼン -----
+// ein_fild03.gat	アインブロックフィールド
+// ein_fild04.gat	アインブロックフィールド
+// lhz_fild01.gat	リヒタルゼンフィールド
 // lhz_fild02.gat	リヒタルゼンフィールド
 // lhz_fild03.gat	リヒタルゼンフィールド
 // -----
 // lighthalzen.gat	企業都市リヒタルゼン
-// ein_fild03.gat	アインブロクフィールド
 // ein_fild08.gat	アインブロクフィールド
 //==============================================================
+ein_fild04.gat,184,26,0		warp	lighthalzenwarp0101	1,1,einbroch.gat,158,327
+//LhzFild01⇒Lighthalzen
+lhz_fild01.gat,210,16,0		warp	lighthalzenwarp0102	1,1,lighthalzen.gat,214,327
 
-//リヒタルゼンフィールド01⇒企業都市リヒタルゼン
-lhz_fild01.gat,210,16,0		warp	lighthalzenwarp0101	1,1,lighthalzen.gat,214,327
+//EinFild03⇒EinFild04
+ein_fild03.gat,361,204,0	warp	lighthalzenwarp5003	1,1,ein_fild04.gat,16,205
+ein_fild04.gat,14,205,0		warp	lighthalzenwarp5004	1,1,ein_fild03.gat,359,204
+ein_fild03.gat,361,219,0	warp	lighthalzenwarp5005	1,1,ein_fild04.gat,16,215
+ein_fild04.gat,14,215,0		warp	lighthalzenwarp5006	1,1,ein_fild03.gat,359,219
+ein_fild03.gat,363,257,0	warp	lighthalzenwarp5007	1,1,ein_fild04.gat,22,251
+ein_fild04.gat,20,251,0		warp	lighthalzenwarp5008	1,1,ein_fild03.gat,361,257
+//EinFild03⇒LhzFild02
+ein_fild03.gat,142,32,0		warp	lighthalzenwarp5009	1,1,lhz_fild02.gat,166,365
+lhz_fild02.gat,166,367,0	warp	lighthalzenwarp5010	1,1,ein_fild03.gat,142,34
+//EinFild08⇒LhzFild03
+ein_fild08.gat,23,275,0		warp	lighthalzenwarp5011	1,1,lhz_fild03.gat,361,283
+lhz_fild03.gat,363,283,0	warp	lighthalzenwarp5012	1,1,ein_fild08.gat,25,275
 
-//リヒタルゼンフィールド01⇔リヒタルゼンフィールド02
-lhz_fild01.gat,367,225,0	warp	lighthalzenwarp5001	1,1,lhz_fild02.gat,29,217
-lhz_fild02.gat,27,217,0		warp	lighthalzenwarp5002	1,1,lhz_fild01.gat,365,225
+//LhzFild01⇒LhzFild02
+lhz_fild01.gat,367,225,0	warp	lighthalzenwarp5013	1,1,lhz_fild02.gat,29,217
+lhz_fild02.gat,27,217,0		warp	lighthalzenwarp5014	1,1,lhz_fild01.gat,365,225
+//LhzFild02⇒LhzFild03
+lhz_fild02.gat,164,37,0		warp	lighthalzenwarp5015	1,1,lhz_fild03.gat,158,347
+lhz_fild03.gat,158,349,0	warp	lighthalzenwarp5016	1,1,lhz_fild02.gat,164,39
 
 
+
+//---ノーグハルト追加マップ
+
+
+//==============================================================
+// -----  フィゲル -----
+// hu_fild01.gat	フィゲルフィールド01
+// hu_fild04.gat	フィゲルフィールド04
+// hu_fild05.gat	フィゲルフィールド05
+// hu_fild07.gat	フィゲルフィールド07
+// -----
+// yuno_fild06.gat	ジュノーフィールド06
+//==============================================================
+//フィゲルフィールド05⇒アビスレイク地下洞窟
+hu_fild05.gat,197,210,0		warp	hugelwarp0401	1,1,abyss_01.gat,26,25
+
+//ジュノーフィールド02⇔フィゲルフィールド04
+yuno_fild02.gat,118,376,0	warp	hugelwarp5001	1,1,hu_fild04.gat,124,30
+hu_fild04.gat,124,26,0		warp	hugelwarp5002	1,1,yuno_fild02.gat,116,373
+//ジュノーフィールド02⇔フィゲルフィールド07
+yuno_fild02.gat,384,340,0	warp	hugelwarp5003	1,1,hu_fild07.gat,39,352
+hu_fild07.gat,35,352,0		warp	hugelwarp5004	1,1,yuno_fild02.gat,382,337
+//ジュノーフィールド03⇔ジュノーフィールド06
+yuno_fild03.gat,215,383,0	warp	hugelwarp5005	1,1,yuno_fild06.gat,215,31
+yuno_fild06.gat,215,27,0	warp	hugelwarp5006	1,1,yuno_fild03.gat,215,379
+//ジュノーフィールド05⇔ジュノーフィールド06
+yuno_fild05.gat,372,320,0	warp	hugelwarp5007	1,1,yuno_fild06.gat,44,320
+yuno_fild06.gat,40,320,0	warp	hugelwarp5008	1,1,yuno_fild05.gat,368,320
+//ジュノーフィールド06⇔フィゲルフィールド01
+yuno_fild06.gat,149,369,0	warp	hugelwarp5009	1,1,hu_fild01.gat,138,38
+hu_fild01.gat,139,35,0		warp	hugelwarp5010	1,1,yuno_fild06.gat,153,368
+//ジュノーフィールド06⇔フィゲルフィールド04
+yuno_fild06.gat,369,135,0	warp	hugelwarp5011	1,1,hu_fild04.gat,30,125
+hu_fild04.gat,26,125,0		warp	hugelwarp5012	1,1,yuno_fild06.gat,365,135
+//ジュノーフィールド09⇔フィゲルフィールド07
+yuno_fild09.gat,47,377,0	warp	hugelwarp5013	1,1,hu_fild07.gat,56,40
+hu_fild07.gat,56,36,0		warp	hugelwarp5014	1,1,yuno_fild09.gat,47,373
+yuno_fild09.gat,220,374,0	warp	hugelwarp5015	1,1,hu_fild07.gat,226,40
+hu_fild07.gat,226,36,0		warp	hugelwarp5016	1,1,yuno_fild09.gat,220,370
+//フィゲルフィールド04⇔フィゲルフィールド05
+hu_fild04.gat,381,188,0		warp	hugelwarp5017	1,1,hu_fild05.gat,36,201
+hu_fild05.gat,32,200,0		warp	hugelwarp5018	1,1,hu_fild04.gat,377,188
+//フィゲルフィールド05⇔フィゲルフィールド07
+hu_fild05.gat,88,42,0		warp	hugelwarp5019	1,1,hu_fild07.gat,80,367
+hu_fild07.gat,80,371,0		warp	hugelwarp5020	1,1,hu_fild05.gat,88,46

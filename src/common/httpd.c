@@ -25,6 +25,8 @@ static const char configfile[]="./conf/httpd.conf";	// 共通コンフィグ
 static char logfile[1024]="./log/httpd.log";	// ログファイル名
 void httpd_set_logfile( const char *str ){ strcpy( logfile, str ); }
 
+static int log_no_flush = 0;	// ログをフラッシュしないかどうか
+
 static int tz = -1;	// タイムゾーン
 
 static int auth_digest_period = 600*1000;	// Digest 認証での nonce 有効期限
@@ -42,7 +44,15 @@ void httpd_set_document_root( const char *str ){ strcpy( document_root,str ); }
 static int bigfile_threshold = 256*1024;	// 巨大ファイル転送モードに入る閾値
 static int bigfile_splitsize = 256*1024;	// 巨大ファイル転送モードの FIFO サイズ(128KB以上)
 
+static int max_uri_length = 255;	// URI の長さを制限
+
 static char servername[] = "Athena httpd";
+
+static int server_max_requests_per_second = 10;		// 全体の秒間のリクエスト数制限
+static int server_max_requests_period = 5000;		// 全体のリクエスト数制限のチェック間隔
+static int server_max_requests_count = 0;
+static int server_max_requests_tick = 0;
+
 
 static const char *weekdaymsg[]={ "Sun","Mon","Tue","Wed","Thu","Fri","Sat" };
 static const char *monthmsg[]={ "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec" };
@@ -82,6 +92,7 @@ enum httpd_enum {
 	HTTPD_USER_PASSWD_MASK	= 3,
 	
 	HTTPD_RESHEAD_LASTMOD	= 1,
+	HTTPD_RESHEAD_ACCRANGE	= 2,
 	
 	HTTPD_PRECOND_NONE		= 0,
 	HTTPD_PRECOND_IFMOD		= 1,
@@ -191,7 +202,10 @@ void httpd_log( struct httpd_session_data *sd, int status, int len )
 	// ログを出力
 	fprintf( logfp,"%d.%d.%d.%d - %s [%s] \"%s\" %d %s\n",
 		ip[0],ip[1],ip[2],ip[3], ((*sd->user)? (char*)sd->user: "-") , timestr, sd->request_line, status, lenstr );
-	fflush( logfp );
+	
+	// ログのフラッシュ
+	if( !log_no_flush )
+		fflush( logfp );
 }
 
 // ==========================================
@@ -294,7 +308,9 @@ const char *httpd_get_error( struct httpd_session_data* sd, int* status )
 	case 411: msg = "Length Required";          break;
 	case 412: msg = "Precondition failed";      break;
 	case 413: msg = "Request Entity Too Large"; break;
+	case 414: msg = "Request-URI Too Long";     break;
 	case 416: msg = "Requested Range Not Satisfiable"; break;
+	case 503: msg = "Service Unavailable";      break;
 	default:
 		*status = 500; msg = "Internal Server Error"; break;
 	}
@@ -389,8 +405,7 @@ void httpd_send_head(struct httpd_session_data* sd,int status,const char *conten
 
 	len = sprintf( head,
 		"HTTP/1.%d %d %s\r\n"
-		"Server: %s/mod%d\r\n"
-		"Accept-Ranges: bytes\r\n", sd->http_ver,status,msg, servername, ATHENA_MOD_VERSION );
+		"Server: %s/mod%d\r\n", sd->http_ver,status,msg, servername, ATHENA_MOD_VERSION );
 	
 	if( content_type )	// コンテントタイプ
 	{
@@ -447,6 +462,16 @@ void httpd_send_head(struct httpd_session_data* sd,int status,const char *conten
 			len += sprintf( head+len,
 				"WWW-Authenticate: Basic realm=\"%s\"\r\n", sd->access->realm );
 		}
+	}
+
+	if( status==503 )	// Retry-after 通知
+	{
+		len += sprintf( head + len, "Retry-After: %d\r\n", (server_max_requests_period+999)/1000 );
+	}
+	
+	if( sd->reshead_flag & HTTPD_RESHEAD_ACCRANGE )	// Accept-Ranges 通知
+	{
+		len += sprintf( head + len, "Accept-Ranges: bytes\r\n" );
 	}
 	
 	if( sd->date && (sd->reshead_flag & HTTPD_RESHEAD_LASTMOD))	// Last-modified の通知
@@ -548,15 +573,40 @@ int  httpd_parse(int fd) {
 			// リクエストが長すぎるので、エラー扱いする
 			sd->status = HTTPD_REQUEST_OK;
 			httpd_send_error(sd,400); // Bad Request
-		} else if( (int)( gettick() - sd->tick ) > request_timeout[sd->persist] ) {
+		}
+		else if( (int)( gettick() - sd->tick ) > request_timeout[sd->persist] )
+		{
 			// リクエストに時間がかかりすぎているので、エラー扱いする
 			sd->status = HTTPD_REQUEST_OK;
 			httpd_send_error(sd,408); // Request Timeout
-		} else if(sd->header_len == RFIFOREST(fd)) {
+		}
+		else if(sd->header_len == RFIFOREST(fd))
+		{
 			// 状態が以前と同じなので、リクエストを再解析する必要は無い
-		} else {
+		}
+		else
+		{
 			int limit = RFIFOREST(fd);
 			unsigned char *req = RFIFOP(fd,0);
+
+			// 秒間処理数制限のチェック
+			if( server_max_requests_count >= server_max_requests_per_second*server_max_requests_period/1000 )
+			{
+				int tick = gettick();
+				if( DIFF_TICK( server_max_requests_tick + server_max_requests_period, tick ) < 0 )
+				{
+					server_max_requests_count = 0;
+					server_max_requests_tick = tick;
+				}
+				else
+				{
+					// サーバーの処理制限を越えている
+					sd->status = HTTPD_REQUEST_OK;
+					httpd_send_error(sd,503); // Service Unavailable
+				}
+			}
+
+			// リクエストの解析
 			sd->header_len = RFIFOREST(fd);
 			do {
 				if(*req == '\n' && limit > 0) {
@@ -572,6 +622,7 @@ int  httpd_parse(int fd) {
 							sd->status = HTTPD_REQUEST_OK;
 							httpd_send_error(sd,status); 
 						}
+						server_max_requests_count++;
 						break;
 					}
 				}
@@ -1173,10 +1224,9 @@ int httpd_parse_header(struct httpd_session_data* sd) {
 		req++;
 	}
 	req = RFIFOP(sd->fd,0);
-	strcpy(sd->request_line,req);
+	strncpy( sd->request_line, req, sizeof(sd->request_line) );
 
-	if(!strncmp(req,"GET /",5)) {
-		// GET リクエスト
+	if(!strncmp(req,"GET /",5)) {		// GET リクエスト
 		req += 5;
 		for(i = 0;req[i]; i++) {
 			c = req[i];
@@ -1201,6 +1251,14 @@ int httpd_parse_header(struct httpd_session_data* sd) {
 		} else {
 			return 400; // Bad Request
 		}
+		
+		// URI が長すぎる
+		if( i > max_uri_length )
+		{
+			sd->request_line[ max_uri_length+5 ]='\0';
+			return 414;		// Request-URI Too Long
+		}
+		
 		// ヘッダ解析
 		if(!strncmp(&req[i+1] ,"HTTP/1.1",8)) {
 			sd->http_ver = 1;
@@ -1220,7 +1278,10 @@ int httpd_parse_header(struct httpd_session_data* sd) {
 
 		// printf("httpd: request %s %s\n",sd->url,sd->query);
 		httpd_parse_request_ok(sd);
-	} else if(!strncmp(req,"POST /",6)) {
+		
+
+	} else if(!strncmp(req,"POST /",6)) {	// POST リクエスト
+	
 		req += 6;
 		for(i = 0;req[i]; i++) {
 			c = req[i];
@@ -1230,6 +1291,14 @@ int httpd_parse_header(struct httpd_session_data* sd) {
 		if(req[i] != ' ') return 400; // Bad Request
 		req[i]     = 0;
 		sd->url    = req;
+		
+		// URI が長すぎる
+		if( i > max_uri_length )
+		{
+			sd->request_line[ max_uri_length+6 ]='\0';
+			return 414;		// Request-URI Too Long
+		}
+
 		// ヘッダ解析
 		if(!strncmp(&req[i+1] ,"HTTP/1.1",8)) {
 			sd->http_ver = 1;
@@ -1405,6 +1474,9 @@ void httpd_send_file(struct httpd_session_data* sd,const char* url) {
 	// url の最大長は約1010バイトなので、バッファオーバーフローの心配は無し
 	sprintf(file_buf,"%s%s",document_root,url);
 
+	// レジューム可能(Accept-Ranges の通知)
+	sd->reshead_flag |= HTTPD_RESHEAD_ACCRANGE;
+
 	// 日付確認
 	{
 		time_t date = 0;
@@ -1425,13 +1497,13 @@ void httpd_send_file(struct httpd_session_data* sd,const char* url) {
 			return;
 		}
 		
-		if( date==0 || (sd->precond == HTTPD_PRECOND_IFUNMOD && date != sd->date) )	// If-Unmodified-Since の処理
+		if( sd->precond == HTTPD_PRECOND_IFUNMOD && (date != sd->date || date==0) )	// If-Unmodified-Since の処理
 		{
 			httpd_send_error( sd, 412 );
 			return;
 		}
 		
-		if( date==0 || (sd->precond == HTTPD_PRECOND_IFRANGE && date != sd->date) )	// If-Range の処理
+		if( sd->precond == HTTPD_PRECOND_IFRANGE && (date != sd->date || date==0) )	// If-Range の処理
 		{
 			sd->range_start = 0;
 			sd->range_end   = -1;
@@ -1801,6 +1873,22 @@ int httpd_config_read(char *cfgName)
 		else if(strcmpi(w1,"auth_digest_period")==0)
 		{
 			httpd_set_auth_digest_period( atoi(w2) );
+		}
+		else if(strcmpi(w1,"log_no_flush")==0)
+		{
+			log_no_flush = atoi(w2);
+		}
+		else if(strcmpi(w1,"max_uri_length")==0)
+		{
+			max_uri_length = atoi(w2);
+		}
+		else if(strcmpi(w1,"server_max_requests_per_second")==0)
+		{
+			server_max_requests_per_second = atoi(w2);
+		}
+		else if(strcmpi(w1,"server_max_requests_period")==0)
+		{
+			server_max_requests_period = atoi(w2);
 		}
 		else if(strcmpi(w1,"document_root")==0)
 		{

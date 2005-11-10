@@ -1,4 +1,4 @@
-// $Id: core.c,v 1.1.1.1 2005/08/29 21:39:30 running_pinata Exp $
+// $Id: core.c,v 1.1.1.2 2005/11/10 20:58:56 running_pinata Exp $
 // original : core.c 2003/02/26 18:03:12 Rev 1.7
 
 #include <time.h>
@@ -91,14 +91,142 @@ double uptime(void) {
 	return (now - boot) / 86400.0;
 }
 
+#ifdef _WIN32
+
+#include <windows.h>
+#include <imagehlp.h>
+#pragma comment(lib, "imagehlp.lib")
+
+LONG WINAPI core_ExceptionRoutine(struct _EXCEPTION_POINTERS *e) {
+	HANDLE hProcess, hThread, hFile;
+	STACKFRAME stack;
+	IMAGEHLP_SYMBOL *symbol;
+	SYSTEMTIME time;
+	DWORD offset, len, temp;
+	char  buf[256];
+	const char* ErrType = "UNKNOWN";
+
+	switch( e->ExceptionRecord->ExceptionCode ) {
+	case EXCEPTION_ACCESS_VIOLATION:
+		ErrType = "ACCESS_VIOLATION";
+		break;
+	case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+		ErrType = "ARRAY_BOUNDS_EXCEEDED";
+		break;
+	case EXCEPTION_DATATYPE_MISALIGNMENT:
+		ErrType = "DATATYPE_MISALIGNMENT";
+		break;
+	case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+		ErrType = "FLT_DIVIDE_BY_ZERO";
+		break;
+	case EXCEPTION_ILLEGAL_INSTRUCTION:
+		ErrType = "ILLEGAL_INSTRUCTION";
+		break;
+	case EXCEPTION_IN_PAGE_ERROR:
+		ErrType = "IN_PAGE_ERROR";
+		break;
+	case EXCEPTION_INT_DIVIDE_BY_ZERO:
+		ErrType = "INT_DIVIDE_BY_ZERO";
+		break;
+	case EXCEPTION_PRIV_INSTRUCTION:
+		ErrType = "PRIV_INSTRUCTION";
+		break;
+	case EXCEPTION_STACK_OVERFLOW:
+		ErrType = "STACK_OVERFLOW";
+		break;
+	case EXCEPTION_NONCONTINUABLE_EXCEPTION:
+		ErrType = "NONCONTINUABLE_EXCEPTION";
+		break;
+	case EXCEPTION_INVALID_DISPOSITION:
+	default:
+		// 例外ハンドラのミス or 何もしない例外
+		return EXCEPTION_CONTINUE_SEARCH;
+	}
+
+	hThread  = GetCurrentThread();
+	hProcess = GetCurrentProcess();
+	hFile = CreateFile(
+		"crashdump.log", GENERIC_WRITE, FILE_SHARE_READ, NULL,
+		OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL
+	);
+	// ログが取れなかったので何もしない。
+	if( hFile == INVALID_HANDLE_VALUE ) return EXCEPTION_CONTINUE_SEARCH;
+	SetFilePointer( hFile, 0, NULL, FILE_END);
+	GetLocalTime( &time );
+	len = wsprintf(
+		buf, "%04u/%02u/%02u %02u:%02u:%02u crashed by %s.\n",
+		time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, ErrType
+	);
+	WriteFile( hFile, buf, len, &temp, NULL);
+
+	len = wsprintf(buf, "\t%s\n", GetCommandLine());
+	WriteFile( hFile, buf, len, &temp, NULL);
+
+	len = wsprintf(
+		buf, "\tEIP: %08x ESP: %08x EBP: %08x\n\n",
+		e->ContextRecord->Eip, e->ContextRecord->Esp,
+		e->ContextRecord->Ebp
+	);
+	WriteFile( hFile, buf, len, &temp, NULL);
+
+	symbol = GlobalAlloc( GMEM_FIXED, sizeof(IMAGEHLP_SYMBOL) + 512 );
+	ZeroMemory( symbol, sizeof(IMAGEHLP_SYMBOL) + 512 );
+	symbol->SizeOfStruct  = sizeof(IMAGEHLP_SYMBOL);
+	symbol->MaxNameLength = 512;
+
+	ZeroMemory(&stack, sizeof(STACKFRAME));
+	stack.AddrPC.Offset    = e->ContextRecord->Eip;
+	stack.AddrStack.Offset = e->ContextRecord->Esp;
+	stack.AddrFrame.Offset = e->ContextRecord->Ebp;
+	stack.AddrPC.Mode      = AddrModeFlat;
+	stack.AddrStack.Mode   = AddrModeFlat;
+	stack.AddrFrame.Mode   = AddrModeFlat;
+
+	SymInitialize(hProcess, NULL, TRUE);
+
+	while(StackWalk(IMAGE_FILE_MACHINE_I386, hProcess, hThread, &stack,
+					NULL, NULL, SymFunctionTableAccess, SymGetModuleBase, NULL)
+	) {
+#ifdef __BORLANDC__
+		// BCC の場合はシンボル名が分からないのでアドレスは引かない。
+		// シンボル名の出力はcrashdump.plで行う。
+		len = wsprintf(buf, "\t0x%08x : unknown\n", stack.AddrPC.Offset);
+#else
+		if(SymGetSymFromAddr(hProcess, stack.AddrPC.Offset, &offset, symbol)) {
+			len = wsprintf(buf, "\t0x%08x : %s + 0x%x\n", stack.AddrPC.Offset, symbol->Name, offset);
+		} else {
+			len = wsprintf(buf, "\t0x%08x : unknown\n", stack.AddrPC.Offset);
+		}
+#endif
+		WriteFile( hFile, buf, len, &temp, NULL);
+	}
+
+	SymCleanup( hProcess );
+	GlobalFree( symbol );
+
+	len = wsprintf(buf, "\n\n----------------------------------------\n");
+	WriteFile( hFile, buf, len, &temp, NULL);
+	CloseHandle( hFile );
+#ifdef _MSC_VER
+	return EXCEPTION_CONTINUE_SEARCH;
+#else
+	ExitProcess(0);
+	return EXCEPTION_CONTINUE_SEARCH;
+#endif
+}
+
+#endif
+
 int main(int argc,char **argv)
 {
 	int next;
 	pid_create(argv[0]);
 	do_init_memmgr(argv[0]); // 一番最初に実行する必要がある
 	do_socket();
+
 #ifdef _WIN32
 	SetConsoleCtrlHandler( core_CtrlHandlerRoutine, TRUE );
+	SetUnhandledExceptionFilter( core_ExceptionRoutine );
 #else
 	signal(SIGPIPE,SIG_IGN);
 	signal(SIGTERM,sig_proc);

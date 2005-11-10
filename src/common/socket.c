@@ -1,4 +1,4 @@
-// $Id: socket.c,v 1.1.1.1 2005/08/29 21:39:32 running_pinata Exp $
+// $Id: socket.c,v 1.1.1.2 2005/11/10 20:58:59 running_pinata Exp $
 // original : core.c 2003/02/26 18:03:12 Rev 1.7
 
 #include <stdio.h>
@@ -60,6 +60,14 @@ void socket_enable_ctrl_panel_httpd( int flag ){ socket_ctrl_panel_httpd = flag;
 static int unauth_timeout = 10*1000;
 static int auth_timeout = 10*60*1000;
 
+static int send_limit_buffer_size = 128*1024;
+
+static int recv_limit_rate_enable		= 1;
+static int recv_limit_rate_period		= 500;
+static int recv_limit_rate_bytes		= 1024;
+static int recv_limit_rate_wait_max		= 2000;
+static int recv_limit_rate_disconnect	= 5000;
+
 static int connect_check(unsigned int ip);
 /*======================================
  *	CORE : Set function
@@ -83,14 +91,57 @@ void set_sock_destruct(int (*func_destruct)(int))
 static int recv_to_fifo(int fd)
 {
 	int len;
+	unsigned int tick = gettick();
 
 	//printf("recv_to_fifo : %d %d\n",fd,session[fd]->eof);
-	if(session[fd]->eof)
+
+	if(session[fd]->eof || 
+		( recv_limit_rate_enable && session[fd]->auth >=0 && DIFF_TICK( session[fd]->rlr_tick, tick )>0 ) )	// 帯域制限中
+	{
 		return -1;
+	}
+
 	len=recv(sock(fd),session[fd]->rdata_size,RFIFOSPACE(fd),0);
-	//{ int i; printf("recv %d : ",fd); for(i=0;i<len;i++){ printf("%02x ",session[fd]->rdata[session[fd]->rdata_size+i]); } printf("\n");}
+	//{ int i; printf("recv %d : ",fd); for(i=0;i<len;i++){ printf("%02x ",session[fd]->rdata_size[i]); } printf("\n");}
 	if(len>0){
 		session[fd]->rdata_size += len;
+		
+//		printf("rs: %d %d\n",len, session[fd]->auth );
+		// 帯域制限用の計算
+		if( session[fd]->auth>=0 )
+		{
+			struct socket_data* sd = session[fd];
+			int tick_diff = DIFF_TICK( tick, sd->rlr_tick );
+			sd->rlr_bytes += len;
+
+			// 帯域の制限
+			if( tick_diff >= recv_limit_rate_period )
+			{
+				int rate = sd->rlr_bytes * 1000 / tick_diff;
+//				printf("rlr: %d %d\n", sd->rlr_bytes, rate );
+				if( rate > recv_limit_rate_bytes )
+				{
+					int wait = ( rate - recv_limit_rate_bytes ) * tick_diff / recv_limit_rate_bytes;
+					if( wait > recv_limit_rate_wait_max )
+						wait = recv_limit_rate_wait_max;
+					sd->rlr_tick += wait;
+					if( (sd->rlr_disc += wait) > recv_limit_rate_disconnect )
+					{
+						sd->eof = 1;
+						return -1;
+					}
+//					printf("rlr: on! %d %d tick wait\a\n", ( rate - recv_limit_rate_bytes ) * tick_diff / recv_limit_rate_bytes, wait );
+				}
+				else
+				{
+					sd->rlr_tick = tick;
+					sd->rlr_disc = 0;
+				}
+
+				sd->rlr_bytes = 0;
+			}
+		}
+
 #ifdef _WIN32
 	} else if(len == 0 || len == SOCKET_ERROR){
 		// printf("set eof :%d\n",fd);
@@ -113,7 +164,7 @@ static int send_from_fifo(int fd)
 	if(sd->eof || WFIFOREST(fd) == 0)
 		return -1;
 	len=send(sock(fd),sd->wdata_pos,WFIFOREST(fd),0);
-	//{ int i; printf("send %d : ",fd);  for(i=0;i<len;i++){ printf("%02x ",session[fd]->wdata[session[fd]->wdata_pos+i]); } printf("\n");}
+	//{ int i; printf("send %d : ",fd);  for(i=0;i<len;i++){ printf("%02x ",session[fd]->wdata_pos[i]); } printf("\n");}
 	if(len>0){
 		sd->wdata_pos += len;
 		if(sd->wdata_pos == sd->wdata_size) {
@@ -218,6 +269,11 @@ static int connect_client(int listen_fd)
 	session[fd]->socket      = socket;
 #endif
 	session[fd]->tick = gettick();
+	session[fd]->auth = 0;
+	session[fd]->rlr_tick = gettick();
+	session[fd]->rlr_bytes= 0;
+	session[fd]->rlr_disc = 0;
+	
 	session[fd]->func_destruct = default_func_destruct;
 	realloc_fifo(fd,rfifo_size,wfifo_size);
 
@@ -355,6 +411,10 @@ int make_connection(long ip,int port)
 #endif
 	session[fd]->func_destruct = default_func_destruct;
 	session[fd]->tick = gettick();
+	session[fd]->auth = 0;
+	session[fd]->rlr_tick = gettick();
+	session[fd]->rlr_bytes= 0;
+	session[fd]->rlr_disc = 0;
 	realloc_fifo(fd,rfifo_size,wfifo_size);
 	if(fd_max<=fd) fd_max=fd+1;
 
@@ -421,7 +481,17 @@ int WFIFORESERVE(int fd,int len)
 	struct socket_data *s = session[fd];
 	while( len+16384 > (s->max_wdata - s->wdata) )
 	{
-		realloc_fifo(fd,s->max_rdata - s->rdata,(s->max_wdata - s->wdata) <<1 );
+		int new_size = (s->max_wdata - s->wdata) <<1;
+
+		// 送信バッファの制限サイズ超過チェック
+		if( s->auth >= 0 && new_size > send_limit_buffer_size )
+		{
+			printf("socket: %d wdata (%d) exceed limited size.\n", new_size );
+			s->eof = 1;
+			return 0;
+		}
+	
+		realloc_fifo(fd,s->max_rdata - s->rdata,new_size );
 		printf("socket: %d wdata expanded to %d bytes.\n",fd,s->max_wdata - s->wdata);
 	}
 	return 0;
@@ -683,20 +753,36 @@ int do_sendrecv(int next)
 	fd_set rfd,wfd;
 	struct timeval timeout;
 	int ret,i;
+	unsigned int tick = gettick();
 
+	// select するための準備
 	memcpy(&rfd,&readfds,sizeof(fd_set));
 	FD_ZERO(&wfd);
 	for(i=0;i<fd_max;i++){
 		struct socket_data *sd = session[i];
-		if(sd && sd->wdata_size != sd->wdata_pos)
+
+		// バッファにデータがあるなら送信可能かチェックする
+		if( sd && sd->wdata_size != sd->wdata_pos )
 			FD_SET(sock(i),&wfd);
+		
+		// 受信帯域制限中ならこの socket は受信可能かチェックしない
+		if( sd && ( recv_limit_rate_enable && sd->auth >=0 && DIFF_TICK( sd->rlr_tick, tick )>0 )  )
+			FD_CLR(sock(i),&rfd);
 	}
+	
+	// タイムアウトの設定（最大1秒）
+	if( next > 1000 )
+		next = 1000;
 	timeout.tv_sec  = next/1000;
 	timeout.tv_usec = next%1000*1000;
+
+	// select で通信を待つ
 	ret = select(fd_max,&rfd,&wfd,NULL,&timeout);
 	if(ret<=0) {
 		return 0;
 	}
+	
+	// select 結果にしたがって送受信する
 	process_fdset(&rfd,&wfd);
 	return 0;
 }
@@ -731,10 +817,11 @@ int do_parsepacket(void)
 					if(sd->rdata_size - sd->rdata >= 2) {
 						if(sd->rdata[0] == 'G' && sd->rdata[1] == 'E') {
 							sd->func_parse = httpd_parse;
+							sd->auth = -1;
 						} else if(sd->rdata[0] == 'P' && sd->rdata[1] == 'O') {
 							sd->func_parse = httpd_parse;
+							sd->auth = -1;
 						}
-						sd->auth = -1;
 						sd->flag_httpd = 1;
 					}
 				}
@@ -989,7 +1076,7 @@ int socket_config_read2( const char *filename ) {
 	int i;
 	char line[1024],w1[1024],w2[1024];
 	FILE *fp;
-
+	
 	fp=fopen(filename,"r");
 	if(fp==NULL){
 		printf("file not found: %s\n","conf/socket.conf");
@@ -1003,14 +1090,18 @@ int socket_config_read2( const char *filename ) {
 		if(i!=2)
 			continue;
 
-		if(strcmpi(w1,"order")==0){
+		if(strcmpi(w1,"order")==0)
+		{
 			access_order=atoi(w2);
 			if(strcmpi(w2,"deny,allow")==0) access_order=ACO_DENY_ALLOW;
 			if(strcmpi(w2,"allow,deny")==0) access_order=ACO_ALLOW_DENY;
 			if(strcmpi(w2,"mutual-failure")==0) access_order=ACO_MUTUAL_FAILURE;
-		} else if(strcmpi(w1,"allow")==0){
+		}
+		else if(strcmpi(w1,"allow")==0)
+		{
 			if( strcmpi(w2,"clear")==0 )
 			{
+				aFree( access_allow );
 				access_allow = NULL;
 				access_allownum = 0;
 			}
@@ -1021,9 +1112,12 @@ int socket_config_read2( const char *filename ) {
 					access_allownum++;
 				}
 			}
-		} else if(strcmpi(w1,"deny")==0){
+		}
+		else if(strcmpi(w1,"deny")==0)
+		{
 			if( strcmpi(w2,"clear")==0 )
 			{
+				aFree( access_deny );
 				access_deny = NULL;
 				access_denynum = 0;
 			}
@@ -1034,39 +1128,63 @@ int socket_config_read2( const char *filename ) {
 					access_denynum++;
 				}
 			}
-		} else if(!strcmpi(w1,"ddos_interval")){
-			ddos_interval = atoi(w2);
-		} else if(!strcmpi(w1,"ddos_count")){
-			ddos_count = atoi(w2);
-		} else if(!strcmpi(w1,"ddos_autoreset")){
-			ddos_autoreset = atoi(w2);
-		} else if(
+		}
+		else if(
 			!strcmpi(w1,"httpd") ||
 			!strcmpi(w1,"httpd_request_timeout_first") ||
 			!strcmpi(w1,"httpd_request_timeout_persist") ||
-			!strcmpi(w1,"httpd_max_persist_requests") ){
-			
+			!strcmpi(w1,"httpd_max_persist_requests") )
+		{	
 			// socket.conf の httpd に関する設定は、httpd.conf に統合しました。
 			printf("socket_config_read: httpd setting in socket_athena.conf is no more\n");
 			printf("                    supported. Please use httpd.conf instead of this.\n\a");
-/*		} else if(!strcmpi(w1,"httpd")) {
-			httpd_enable   = atoi(w2);
-		} else if(!strcmpi(w1,"httpd_request_timeout_first")) {
-			httpd_set_request_timeout( 0, atoi(w2) );
-		} else if(!strcmpi(w1,"httpd_request_timeout_persist")) {
-			httpd_set_request_timeout( 1, atoi(w2) );
-		} else if(!strcmpi(w1,"httpd_max_persist_requests")) {
-			httpd_set_max_persist_requests( atoi(w2) );*/
-		} else if(!strcmpi(w1,"httpd_config")) {
+		}
+		else if(!strcmpi(w1,"httpd_config"))
+		{
 			httpd_config_read( w2 );
-		} else if(!strcmpi(w1,"socket_ctrl_panel")){
+		}
+		else if(!strcmpi(w1,"socket_ctrl_panel"))
+		{
 			socket_enable_ctrl_panel_httpd( atoi(w2) );
-		} else if(!strcmpi(w1,"import")) {
+		}
+		else if(!strcmpi(w1,"import"))
+		{
 			socket_config_read2( w2 );
-		} else if(!strcmpi(w1,"debug")){
-			access_debug = atoi(w2);
-		} else {
-			printf("socket_config_read: unknown config: %s",line);
+		}
+		else {
+		
+			static const struct
+			{
+				char name[64];
+				int* ptr;
+			}
+				list[] = 
+			{
+				{	"debug",						&access_debug				}, 
+				{	"ddos_interval",				&ddos_interval				}, 
+				{	"ddos_count",					&ddos_count					}, 
+				{	"ddos_autoreset",				&ddos_autoreset				}, 
+				{	"recv_limit_rate_enable",		&recv_limit_rate_enable		}, 
+				{	"recv_limit_rate_period",		&recv_limit_rate_period		}, 
+				{	"recv_limit_rate_bytes",		&recv_limit_rate_bytes		}, 
+				{	"recv_limit_rate_wait_max",		&recv_limit_rate_wait_max	}, 
+				{	"recv_limit_rate_disconnect",	&recv_limit_rate_disconnect	}, 
+				{	"send_limit_buffer_size",		&send_limit_buffer_size		},
+			};
+		
+			for( i=0; i<sizeof(list)/sizeof(list[0]); i++ )
+			{
+				if( strcmpi( w1, list[i].name ) == 0 )
+				{
+					*list[i].ptr = atoi( w2 );
+					break;
+				}
+			}
+		
+			if( i==sizeof(list)/sizeof(list[0]) )
+			{
+				printf("socket_config_read: unknown config: %s",line);
+			}
 		}
 	}
 	fclose(fp);
@@ -1351,7 +1469,7 @@ static void socket_httpd_page_connection( struct httpd_session_data *sd, const c
 		len = sprintf( WFIFOP(fd,0),
 					"<th>%d.%d.%d.%d</th><td>%s</td><td>%s</td><td>%s</td>"
 					"<td><input type=\"checkbox\" name=\"discon%04x\" value=\"1\"></td></tr>",
-					ip[0], ip[1], ip[2], ip[3], usage, user, status, i );
+					ip[0], ip[1], ip[2], ip[3], qusage, quser, qstatus, i );
 		WFIFOSET( fd, len );
 		n++;
 		

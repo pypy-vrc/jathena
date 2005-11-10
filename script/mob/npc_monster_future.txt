@@ -1,6 +1,6 @@
-//npc_monster.txt＠Athena 2005/5/13 22:03:23 (JST)
+//npc_monster.txt＠Athena 2005/10/11 06:40:17 (JST)
 
-//鉱山ダンジョン 01(ein_dun01.gat)
+//鉱山ダンジョン(ein_dun01.gat)
 ein_dun01.gat,0,0,0,0	monster	ピットメン	1616,20,0,0,0
 ein_dun01.gat,0,0,0,0	monster	ポールセリオ	1619,20,0,0,0
 ein_dun01.gat,0,0,0,0	monster	ノクシオス	1620,20,0,0,0
@@ -8,7 +8,7 @@ ein_dun01.gat,0,0,0,0	monster	ベノモス	1621,20,0,0,0
 ein_dun01.gat,0,0,0,0	monster	アンゴリアント	1618,2,0,0,0
 ein_dun01.gat,0,0,0,0	monster	屑鉄ストーブ	1617,20,0,0,0
 
-//鉱山ダンジョン 02(ein_dun02.gat)
+//鉱山ダンジョン(ein_dun02.gat)
 ein_dun02.gat,0,0,0,0	monster	ミネラル	1614,20,0,0,0
 ein_dun02.gat,0,0,0,0	monster	オブシディオン	1615,20,0,0,0
 ein_dun02.gat,0,0,0,0	monster	ベノモス	1621,20,0,0,0
@@ -16,7 +16,7 @@ ein_dun02.gat,0,0,0,0	monster	屑鉄ストーブ	1617,20,0,0,0
 ein_dun02.gat,0,0,0,0	monster	テディーベア	1622,20,0,0,0
 ein_dun02.gat,0,0,0,0	monster	RSX_0806	1623,1,3600000,1800000,1
 
-//アインブロクフィールド 10(ein_fild10.gat)
+//アインブロクフィールド(ein_fild10.gat)
 ein_fild10.gat,0,0,0,0	monster	ポポリン	1031,20,0,0,0
 ein_fild10.gat,0,0,0,0	monster	ヨーヨー	1057,20,0,0,0
 ein_fild10.gat,0,0,0,0	monster	フローラ	1118,20,0,0,0
@@ -26,7 +26,7 @@ ein_fild10.gat,0,0,0,0	monster	赤いきのこ	1085,15,0,0,0
 ein_fild10.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
 ein_fild10.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
 
-//アインブロクフィールド 09(ein_fild09.gat)
+//アインブロクフィールド(ein_fild09.gat)
 ein_fild09.gat,0,0,0,0	monster	ポリン	1002,20,0,0,0
 ein_fild09.gat,0,0,0,0	monster	ドロップス	1113,20,0,0,0
 ein_fild09.gat,0,0,0,0	monster	盗蟲の卵	1048,20,0,0,0
@@ -38,7 +38,7 @@ ein_fild09.gat,0,0,0,0	monster	赤いきのこ	1085,15,0,0,0
 ein_fild09.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
 ein_fild09.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
 
-//アインブロクフィールド 08(ein_fild08.gat)
+//アインブロクフィールド(ein_fild08.gat)
 ein_fild08.gat,0,0,0,0	monster	ポリン	1002,20,0,0,0
 ein_fild08.gat,0,0,0,0	monster	ドロップス	1113,20,0,0,0
 ein_fild08.gat,0,0,0,0	monster	ポポリン	1031,20,0,0,0
@@ -49,7 +49,7 @@ ein_fild08.gat,0,0,0,0	monster	赤いきのこ	1085,15,0,0,0
 ein_fild08.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
 ein_fild08.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
 
-//アインブロクフィールド 07(ein_fild07.gat)
+//アインブロクフィールド(ein_fild07.gat)
 ein_fild07.gat,0,0,0,0	monster	ポリン	1002,20,0,0,0
 ein_fild07.gat,0,0,0,0	monster	ポポリン	1031,20,0,0,0
 ein_fild07.gat,0,0,0,0	monster	フローラ	1118,20,0,0,0
@@ -60,7 +60,7 @@ ein_fild07.gat,0,0,0,0	monster	赤いきのこ	1085,15,0,0,0
 ein_fild07.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
 ein_fild07.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
 
-//アインブロクフィールド 06(ein_fild06.gat)
+//アインブロクフィールド(ein_fild06.gat)
 ein_fild06.gat,0,0,0,0	monster	プパ	1008,20,0,0,0
 ein_fild06.gat,0,0,0,0	monster	マーティン	1145,20,0,0,0
 ein_fild06.gat,0,0,0,0	monster	ガイアス	1121,20,0,0,0
@@ -71,53 +71,58 @@ ein_fild06.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
 
 //国境検問所(yuno_fild12.gat)
 yuno_fild12.gat,0,0,0,0	monster	パンク	1199,15,0,0,0
-yuno_fild12.gat,0,0,0,0	monster	ダスティネス	1114,15,0,0,0
-yuno_fild12.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild12.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild12.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
+yuno_fild12.gat,0,0,0,0	monster	ダスティネス	1114,25,0,0,0
+yuno_fild12.gat,0,0,0,0	monster	緑色草	1080,5,1800000,900000,0
+yuno_fild12.gat,0,0,0,0	monster	黄色草	1081,5,1800000,900000,0
+yuno_fild12.gat,0,0,0,0	monster	赤い草	1078,5,1800000,900000,0
+yuno_fild12.gat,0,0,0,0	monster	デーモンパンク	1378,10,0,0,0
 
 //ジュノーフィールド(yuno_fild11.gat)
-yuno_fild11.gat,0,0,0,0	monster	スリーパー	1386,5,0,0,0
-yuno_fild11.gat,0,0,0,0	monster	ジオグラファー	1368,10,0,0,0
-yuno_fild11.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild11.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild11.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
+yuno_fild11.gat,0,0,0,0	monster	スリーパー	1386,55,0,0,0
+yuno_fild11.gat,0,0,0,0	monster	ジオグラファー	1368,20,0,0,0
+yuno_fild11.gat,0,0,0,0	monster	緑色草	1080,15,1800000,900000,0
+yuno_fild11.gat,0,0,0,0	monster	黄色草	1081,15,1800000,900000,0
+yuno_fild11.gat,0,0,0,0	monster	赤い草	1078,15,1800000,900000,0
 
 //シュバルツバルド警備隊野営地(yuno_fild09.gat)
-yuno_fild09.gat,0,0,0,0	monster	ホルン	1128,20,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	ガーゴイル	1253,20,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	ダスティネス	1114,15,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1122,3,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1123,3,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1124,3,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1125,3,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1126,3,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild09.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
+yuno_fild09.gat,0,0,0,0	monster	ホルン	1128,25,0,0,0
+yuno_fild09.gat,0,0,0,0	monster	ガーゴイル	1253,5,0,0,0
+yuno_fild09.gat,0,0,0,0	monster	ダスティネス	1114,20,0,0,0
+yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1122,10,0,0,0
+yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1123,5,0,0,0
+yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1124,10,0,0,0
+yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1125,5,0,0,0
+yuno_fild09.gat,0,0,0,0	monster	ゴブリン	1126,5,0,0,0
+yuno_fild09.gat,0,0,0,0	monster	緑色草	1080,15,1800000,900000,0
+yuno_fild09.gat,0,0,0,0	monster	黄色草	1081,15,1800000,900000,0
+yuno_fild09.gat,0,0,0,0	monster	赤い草	1078,15,1800000,900000,0
 
-//シュケルハイル学校(yuno_fild08.gat)
-yuno_fild08.gat,0,0,0,0	monster	グランペコ	1369,20,0,0,0
-yuno_fild08.gat,0,0,0,0	monster	ダスティネス	1114,15,0,0,0
-yuno_fild08.gat,0,0,0,0	monster	ジオグラファー	1368,10,0,0,0
-yuno_fild08.gat,0,0,0,0	monster	ワイルドローズ	1261,20,0,0,0
-yuno_fild08.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild08.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild08.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
+//キルハイル学校(yuno_fild08.gat)
+yuno_fild08.gat,0,0,0,0	monster	グランペコ	1369,60,0,0,0
+yuno_fild08.gat,0,0,0,0	monster	ダスティネス	1114,30,0,0,0
+yuno_fild08.gat,0,0,0,0	monster	ジオグラファー	1368,20,0,0,0
+yuno_fild08.gat,0,0,0,0	monster	ワイルドローズ	1261,15,0,0,0
+yuno_fild08.gat,0,0,0,0	monster	緑色草	1080,15,1800000,900000,0
+yuno_fild08.gat,0,0,0,0	monster	黄色草	1081,15,1800000,900000,0
+yuno_fild08.gat,0,0,0,0	monster	赤い草	1078,15,1800000,900000,0
 
-//エルメス峡谷(深淵の谷間)(yuno_fild07.gat)
-yuno_fild07.gat,0,0,0,0	monster	ジオグラファー	1368,10,0,0,0
-yuno_fild07.gat,0,0,0,0	monster	ゴート	1372,10,0,0,0
-yuno_fild07.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild07.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild07.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
+//エルメス峡谷 深淵の谷間(yuno_fild07.gat)
+yuno_fild07.gat,0,0,0,0	monster	ジオグラファー	1368,15,0,0,0
+yuno_fild07.gat,0,0,0,0	monster	ゴート	1372,40,0,0,0
+yuno_fild07.gat,0,0,0,0	monster	緑色草	1080,5,1800000,900000,0
+yuno_fild07.gat,0,0,0,0	monster	黄色草	1081,5,1800000,900000,0
+yuno_fild07.gat,0,0,0,0	monster	赤い草	1078,5,1800000,900000,0
+yuno_fild07.gat,0,0,0,0	monster	一反木綿	1375,1,0,0,0
+yuno_fild07.gat,0,0,0,0	monster	ドリラー	1380,10,0,0,0
 
 //エルメスプレート(yuno_fild05.gat)
-yuno_fild05.gat,0,0,0,0	monster	ジオグラファー	1368,10,0,0,0
-yuno_fild05.gat,0,0,0,0	monster	ゴート	1372,10,0,0,0
-yuno_fild05.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild05.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild05.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
+yuno_fild05.gat,0,0,0,0	monster	緑色草	1080,15,1800000,900000,0
+yuno_fild05.gat,0,0,0,0	monster	黄色草	1081,15,1800000,900000,0
+yuno_fild05.gat,0,0,0,0	monster	赤い草	1078,15,1800000,900000,0
+yuno_fild05.gat,0,0,0,0	monster	ラフレシア	1162,20,0,0,0
+yuno_fild05.gat,0,0,0,0	monster	ビートル	1494,20,0,0,0
+yuno_fild05.gat,0,0,0,0	monster	アークエンジェリング	1388,1,3600000,1800000,0
+yuno_fild05.gat,0,0,0,0	monster	ダスティネス	1114,20,0,0,0
 
 //エルメスプレート(yuno_fild04.gat)
 yuno_fild04.gat,0,0,0,0	monster	ポリン	1002,40,0,0,0
@@ -125,104 +130,109 @@ yuno_fild04.gat,0,0,0,0	monster	プパ	1008,40,0,0,0
 yuno_fild04.gat,0,0,0,0	monster	ドロップス	1113,15,0,0,0
 yuno_fild04.gat,0,0,0,0	monster	コンドル	1009,15,0,0,0
 yuno_fild04.gat,0,0,0,0	monster	クリーミー	1018,15,0,0,0
+yuno_fild04.gat,0,0,0,0	monster	マスターリング	1090,1,1800000,900000,0
+yuno_fild04.gat,0,0,0,0	monster	赤い草	1078,10,1800000,900000,0
+yuno_fild04.gat,0,0,0,0	monster	緑色草	1080,10,1800000,900000,0
+yuno_fild04.gat,0,0,0,0	monster	黄色草	1081,10,1800000,900000,0
 
 //エルメスプレート(yuno_fild03.gat)
-yuno_fild03.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild03.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild03.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
-yuno_fild03.gat,0,0,0,0	monster	ドロップス	1113,15,0,0,0
-yuno_fild03.gat,0,0,0,0	monster	ポリン	1002,15,0,0,0
+yuno_fild03.gat,0,0,0,0	monster	緑色草	1080,15,1800000,900000,0
+yuno_fild03.gat,0,0,0,0	monster	黄色草	1081,15,1800000,900000,0
+yuno_fild03.gat,0,0,0,0	monster	赤い草	1078,15,1800000,900000,0
+yuno_fild03.gat,0,0,0,0	monster	ドロップス	1113,30,0,0,0
+yuno_fild03.gat,0,0,0,0	monster	ポリン	1002,40,0,0,0
 yuno_fild03.gat,0,0,0,0	monster	サイドワインダー	1037,5,0,0,0
-yuno_fild03.gat,0,0,0,0	monster	ポポリン	1031,15,0,0,0
-yuno_fild03.gat,0,0,0,0	monster	マーリン	1242,15,0,0,0
+yuno_fild03.gat,0,0,0,0	monster	ポポリン	1031,20,0,0,0
+yuno_fild03.gat,0,0,0,0	monster	マーリン	1242,20,0,0,0
 yuno_fild03.gat,0,0,0,0	monster	エンジェリング	1096,1,3600000,1800000,1
-yuno_fild03.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild03.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild03.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
+yuno_fild03.gat,0,0,0,0	monster	デビルリング	1582,1,3600000,1800000,0
 
 //キルハイルの別荘(yuno_fild02.gat)
 yuno_fild02.gat,0,0,0,0	monster	ダスティネス	1114,15,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	セージワーム	1281,10,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	ダスティネス	1114,15,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	ホルン	1128,20,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	ビートル	1494,20,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	スタイナー	1174,15,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	ワイルドローズ	1261,20,0,0,0
-yuno_fild02.gat,0,0,0,0	monster	アークエンジェリング	1388,1,3600000,1800000,1
+yuno_fild02.gat,0,0,0,0	monster	緑色草	1080,15,1800000,900000,0
+yuno_fild02.gat,0,0,0,0	monster	黄色草	1081,15,1800000,900000,0
+yuno_fild02.gat,0,0,0,0	monster	赤い草	1078,15,1800000,900000,0
+yuno_fild02.gat,0,0,0,0	monster	セージワーム	1281,5,0,0,0
+yuno_fild02.gat,0,0,0,0	monster	ホルン	1128,35,0,0,0
+yuno_fild02.gat,0,0,0,0	monster	ビートル	1494,15,0,0,0
+yuno_fild02.gat,0,0,0,0	monster	スタイナー	1174,25,0,0,0
+yuno_fild02.gat,0,0,0,0	monster	ワイルドローズ	1261,15,0,0,0
 
 //国境検問所(yuno_fild01.gat)
 yuno_fild01.gat,0,0,0,0	monster	ポリン	1002,40,0,0,0
 yuno_fild01.gat,0,0,0,0	monster	ポポリン	1031,30,0,0,0
 yuno_fild01.gat,0,0,0,0	monster	ダスティネス	1114,20,0,0,0
-yuno_fild01.gat,0,0,0,0	monster	輝く草	1083,15,0,0,0
-yuno_fild01.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
-yuno_fild01.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
-yuno_fild01.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
+yuno_fild01.gat,200,300,400,200	monster	グランペコ	1369,3,0,0,0
+yuno_fild01.gat,0,0,0,0	monster	緑色草	1080,15,1800000,900000,0
+yuno_fild01.gat,0,0,0,0	monster	黄色草	1081,15,1800000,900000,0
+yuno_fild01.gat,0,0,0,0	monster	赤い草	1078,15,1800000,900000,0
+yuno_fild01.gat,70,370,20,20	monster	輝く草	1083,1,1800000,900000,0
+yuno_fild01.gat,210,320,50,50	monster	輝く草	1083,1,1800000,900000,0
+yuno_fild01.gat,260,310,50,50	monster	輝く草	1083,1,1800000,900000,0
 
-//アユタヤフィールド(ayo_fild01.gat)
-ayo_fild01.gat,0,0,0,0	monster	リーフキャット	1586,20,0,0,0
-ayo_fild01.gat,0,0,0,0	monster	スモーキー	1056,20,0,0,0
-ayo_fild01.gat,0,0,0,0	monster	コーコー	1104,25,0,0,0
-ayo_fild01.gat,0,0,0,0	monster	ヨーヨー	1057,20,0,0,0
-ayo_fild01.gat,0,0,0,0	monster	緑色草	1080,10,0,0,0
-
-//アユタヤフィールド(ayo_fild02.gat)
-ayo_fild02.gat,0,0,0,0	monster	リーフキャット	1586,20,0,0,0
-ayo_fild02.gat,0,0,0,0	monster	ビートル	1494,20,0,0,0
-ayo_fild02.gat,0,0,0,0	monster	ウータンファイター	1499,20,0,0,0
-ayo_fild02.gat,0,0,0,0	monster	黄色草	1081,10,0,0,0
-
-//古代神殿迷宮(ayo_dun01.gat)
-ayo_dun01.gat,0,0,0,0	monster	ウィスパー	1179,30,0,0,0
-ayo_dun01.gat,0,0,0,0	monster	グール	1036,30,0,0,0
-ayo_dun01.gat,0,0,0,0	monster	マイムモンキー	1585,20,0,0,0
-ayo_dun01.gat,0,0,0,0	monster	クラベン	1587,20,0,0,0
+//白羊宮(lou_dun03.gat)
+lou_dun03.gat,0,0,0,0	monster	チュンイー	1519,1,300000,150000,0
+lou_dun03.gat,0,0,0,0	monster	バクソジン	1518,1,7200000,3600000,0
 
 //古代神殿内部(ayo_dun02.gat)
-ayo_dun02.gat,0,0,0,0	monster	ウィスパー	1179,30,0,0,0
-ayo_dun02.gat,0,0,0,0	monster	クラベン	1587,30,0,0,0
-ayo_dun02.gat,0,0,0,0	monster	タムルアン	1584,20,0,0,0
-ayo_dun02.gat,0,0,0,0	monster	タオグンカ	1583,1,3600000,1800000,1
+ayo_dun02.gat,0,0,0,0	monster	レディタニー	1688,1,7200000,3600000,0
 
-//王陵(lou_dun01.gat)
-lou_dun01.gat,0,0,0,0	monster	サイドワインダー	1037,25,0,0,0
-lou_dun01.gat,0,0,0,0	monster	ホロン	1129,25,0,0,0
-lou_dun01.gat,0,0,0,0	monster	グリズリー	1381,15,0,0,0
-lou_dun01.gat,0,0,0,0	monster	レイブオルマイ	1306,1,0,0,0
-lou_dun01.gat,0,0,0,0	monster	インクリースソイル	1516,15,0,0,0
-lou_dun01.gat,0,0,0,0	monster	アイミーマンリャン	1517,15,0,0,0
-lou_dun01.gat,0,0,0,0	monster	黒いきのこ	1084,15,0,0,0
-lou_dun01.gat,0,0,0,0	monster	輝く草	1083,6,0,0,0
+//西洞窟 カル(beach_dun.gat)
+beach_dun.gat,0,0,0,0	monster	タオグンカ	1583,1,7200000,3600000,0
 
-//王陵内部(lou_dun02.gat)
-lou_dun02.gat,0,0,0,0	monster	ムナック	1026,30,0,0,0
-lou_dun02.gat,0,0,0,0	monster	ヒェグン	1512,15,0,0,0
-lou_dun02.gat,0,0,0,0	monster	ダンシングドラゴン	1514,25,0,0,0
-lou_dun02.gat,0,0,0,0	monster	ミミック	1191,15,0,0,0
+//ゲフェンフィールド 10(gef_fild10.gat)
+gef_fild10.gat,0,0,0,0	monster	オークベベ	1686,1,0,0,0
 
-//センヤンググング(lou_dun03.gat)
-lou_dun03.gat,0,0,0,0	monster	ダンシングドラゴン	1514,20,0,0,0
-lou_dun03.gat,0,0,0,0	monster	ヒェグン	1512,15,0,0,0
-lou_dun03.gat,0,0,0,0	monster	ガジョマート	1309,1,0,0,0
-lou_dun03.gat,0,0,00	monster	シビルサーバント	1513,25,0,0,0
+//リヒタルゼンフィールド(lhz_fild03.gat)
+lhz_fild03.gat,0,0,0,0	monster	メタルリング	1613,15,0,0,0
+lhz_fild03.gat,0,0,0,0	monster	ヒルウィンド	1680,15,0,0,0
+lhz_fild03.gat,0,0,0,0	monster	ホルン	1128,15,0,0,0
+lhz_fild03.gat,0,0,0,0	monster	キャラメル	1103,15,0,0,0
+lhz_fild03.gat,0,0,0,0	monster	ラフレシア	1162,10,0,0,0
+lhz_fild03.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
+lhz_fild03.gat,0,0,0,0	monster	赤い草	1078,15,0,0,0
+lhz_fild03.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
+lhz_fild03.gat,0,0,0,0	monster	ポールセリオ	1619,10,0,0,0
 
-//洛陽フィールド(lou_fild01.gat)
-lou_fild01.gat,0,0,00	monster	マンティス	1139,25,0,0,0
-lou_fild01.gat,0,0,0,0	monster	ビックフット	1060,15,0,0,0
-lou_fild01.gat,0,0,0,0	monster	キャラメル	1103,15,0,0,0
-lou_fild01.gat,0,0,0,0	monster	アナコンダク	1030,15,0,0,0
-lou_fild01.gat,0,0,0,0	monster	インクリースソイル	1516,15,0,0,0
-lou_fild01.gat,0,0,0,0	monster	黒いきのこ	1084,15,0,0,0
-lou_fild01.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
+//リヒタルゼンフィールド(使臣の谷)(lhz_fild02.gat)
+lhz_fild02.gat,0,0,0,0	monster	メタルリング	1613,15,0,0,0
+lhz_fild02.gat,0,0,0,0	monster	ホルン	1128,15,0,0,0
+lhz_fild02.gat,0,0,0,0	monster	キャラメル	1103,10,0,0,0
+lhz_fild02.gat,0,0,0,0	monster	モール	1628,20,0,0,0
+lhz_fild02.gat,0,0,0,0	monster	アノフェレス	1627,30,0,0,0
+lhz_fild02.gat,0,0,0,0	monster	黄色草	1081,15,0,0,0
+lhz_fild02.gat,0,0,0,0	monster	緑色草	1080,15,0,0,0
 
-//フェイヨン迷いの森 04(pay_fild04.gat)
-pay_fild04.gat,0,0,0,0	monster	デビルリング	1582,1,3600000,1800000,1
+//アインブロクフィールド(ein_fild04.gat)
+ein_fild04.gat,0,0,0,0	monster	メタルリング	1613,15,0,0,0
+ein_fild04.gat,0,0,0,0	monster	ミネラル	1614,30,0,0,0
+ein_fild04.gat,0,0,0,0	monster	ジオグラファー	1368,10,0,0,0
+ein_fild04.gat,0,0,0,0	monster	ガイアス	1121,20,0,0,0
+ein_fild04.gat,0,0,0,0	monster	モール	1628,10,0,0,0
+ein_fild04.gat,0,0,0,0	monster	黄色草	1081,5,180000,90000,1
+ein_fild04.gat,0,0,0,0	monster	赤い草	1078,5,180000,90000,1
 
-//おもちゃ工場倉庫(xmas_dun01.gat)
-xmas_dun01.gat,0,0,0,0	monster	クッキー	1265,20,0,0,0
+//アインブロクフィールド(ein_fild03.gat)
+ein_fild03.gat,0,0,0,0	monster	メタルリング	1613,30,0,0,0
+ein_fild03.gat,0,0,0,0	monster	ジオグラファー	1368,5,0,0,0
+ein_fild03.gat,0,0,0,0	monster	キャラメル	1103,20,0,0,0
+ein_fild03.gat,0,0,0,0	monster	ホルン	1128,20,0,0,0
+ein_fild03.gat,0,0,0,0	monster	モール	1628,10,0,0,0
+ein_fild03.gat,0,0,0,0	monster	黄色草	1081,5,180000,90000,1
+ein_fild03.gat,0,0,0,0	monster	緑色草	1080,5,180000,90000,1
 
-//おもちゃ分類所(xmas_dun02.gat)
-xmas_dun02.gat,0,0,0,0	monster	クッキー	1265,20,0,0,0
+//ヒュゲルフィールド(hu_fild04.gat)
+hu_fild04.gat,0,0,0,0	monster	プティット	1156,5,60000,30000,0
+hu_fild04.gat,0,0,0,0	monster	デリーター	1384,15,120000,60000,0
+hu_fild04.gat,0,0,0,0	monster	プティット	1155,5,60000,30000,0
+hu_fild04.gat,0,0,0,0	monster	デリーター	1385,5,120000,60000,0
+hu_fild04.gat,0,0,0,0	monster	デリーター	1385,15,0,0,0
+hu_fild04.gat,0,0,0,0	monster	赤い草	1078,10,180000,90000,0
+
+//アビス湖(hu_fild05.gat)
+hu_fild05.gat,0,0,0,0	monster	プティット	1156,5,60000,30000,0
+hu_fild05.gat,0,0,0,0	monster	デリーター	1384,15,120000,60000,0
+hu_fild05.gat,0,0,0,0	monster	プティット	1155,5,60000,30000,0
+hu_fild05.gat,0,0,0,0	monster	デリーター	1385,5,120000,60000,0
+hu_fild05.gat,0,0,0,0	monster	デリーター	1385,15,0,0,0
+hu_fild05.gat,0,0,0,0	monster	ミュータントドラゴン	1262,1,7200000,3600000,0

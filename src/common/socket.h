@@ -65,6 +65,7 @@ struct socket_data{
 	int (*func_destruct)(int);
 	int flag_destruct;	// デストラクタが再度呼ばれない為のフラグ
 	int flag_httpd;		// 0:httpd 未解析 1;解析済み
+	unsigned int rlr_tick, rlr_bytes, rlr_disc;	// 帯域制限用
 	void* session_data;
 	void* session_data2;
 #ifdef _WIN32

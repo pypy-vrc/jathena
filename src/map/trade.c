@@ -24,15 +24,21 @@ void trade_traderequest(struct map_session_data *sd,int target_id)
 
 	nullpo_retv(sd);
 
+	if(sd->npc_id)
+		npc_event_dequeue(sd);
+
 	if((target_sd = map_id2sd(target_id)) != NULL){
-		if(target_sd->npc_id != 0 || target_sd->vender_id != 0) return;
+		if(target_sd->vender_id != 0) {
+				clif_tradestart(sd,4);
+				return;
+		}
 		if(!battle_config.invite_request_check) {
 			if(target_sd->guild_invite>0 || target_sd->party_invite>0){
 				clif_tradestart(sd,2);	// ‘Šè‚ÍPT—v¿’†‚©Guild—v¿’†
 				return;
 			}
 		}
-		if(target_sd->trade_partner !=0){
+		if(target_sd->trade_partner !=0) {
 			clif_tradestart(sd,2); //person is in another trade
 		}
 		else{
@@ -40,8 +46,7 @@ void trade_traderequest(struct map_session_data *sd,int target_id)
 			 || (sd->bl.x - target_sd->bl.x < -2 || sd->bl.x - target_sd->bl.x > 2)
 			 || (sd->bl.y - target_sd->bl.y < -2 || sd->bl.y - target_sd->bl.y > 2)) {
 				clif_tradestart(sd,0); //too far
-			}
-			else{
+			}else{
 				target_sd->trade_partner = sd->status.account_id;
 				sd->trade_partner = target_sd->status.account_id;
 				clif_traderequest(target_sd,sd->status.name);
@@ -63,6 +68,9 @@ void trade_tradeack(struct map_session_data *sd,int type)
 
 	nullpo_retv(sd);
 
+	if(sd->npc_id != 0)
+		npc_event_dequeue(sd);
+
 	if((target_sd = map_id2sd(sd->trade_partner)) != NULL){
 		if(sd->bl.m != target_sd->bl.m
 		 || (sd->bl.x - target_sd->bl.x < -2 || sd->bl.x - target_sd->bl.x > 2)
@@ -70,8 +78,6 @@ void trade_tradeack(struct map_session_data *sd,int type)
 			trade_tradecancel(sd);
 			return;
 		}
-		sd->deal_mode=1;
-		target_sd->deal_mode=1;
 		clif_tradestart(target_sd,type);
 		clif_tradestart(sd,type);
 		if(type == 4){ // Cancel
@@ -81,11 +87,10 @@ void trade_tradeack(struct map_session_data *sd,int type)
 			target_sd->deal_locked=0;
 			target_sd->deal_mode=0;
 			target_sd->trade_partner=0;
+		}else{
+			sd->deal_mode=1;
+			target_sd->deal_mode=1;
 		}
-		if(sd->npc_id != 0)
-			npc_event_dequeue(sd);
-		if(target_sd->npc_id != 0)
-			npc_event_dequeue(target_sd);
 	}
 }
 

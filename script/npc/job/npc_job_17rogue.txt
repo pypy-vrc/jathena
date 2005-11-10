@@ -1,7 +1,466 @@
 //====================================================================
-//Ragnarok Online Rogue jobchange script 不完全
+//Ragnarok Online Rogue jobchange script
 //====================================================================
-in_rogue.gat,376,23,4	script	スミスラト	57,{
+//change_rogue
+//1	面接試験
+//2	面接試験クリア
+//3	アイテム収集１
+//4	アイテム収集２
+//5	アイテム収集３
+//6	アイテム収集４
+//7	アイテム収集クリア
+//8	アントニオJr.
+//9	ヘルマンソンJr.		//未実装
+//10	アラガムJr.		//未実装
+//11	ホルグレンJr.		//未実装
+//12	アントニオJr.再試験
+//13	ヘルマンソンJr.再試験	//未実装
+//14	アラガムJr.再試験	//未実装
+//15	ホルグレンJr.再試験	//未実装
+//16	最終試験クリア
+
+in_rogue.gat,363,122,4	script	ローグギルド員	747,{
+	if (Class == 17) goto L_Rogue;
+	if ((Class == 6) && (change_rogue == 16)) goto L_Start3;
+	if ((Class == 6) && (change_rogue >= 3)) goto L_Start2;
+	if ((Class == 6) && (change_rogue == 2)) goto L_Start1;
+	if ((Class == 6) && (change_rogue == 1)) goto L_ReTest;
+	if (Class == 6) goto L_Thief;
+	mes "[マキ]";
+	mes "ん？";
+	mes "何の用？";
+	mes "見る物なんてここにはないよ～";
+	close;
+L_Rogue:
+	mes "[マキ]";
+	mes "おや、久しぶり～";
+	mes "ギルドからの仕事は今は無いよ。";
+	next;
+	mes "[マキ]";
+	mes "元気でやってるかい？";
+	mes "何かあったら言ってくれよ。";
+	next;
+	mes "[マキ]";
+	mes "ああそうそう、";
+	mes "上納忘れないでよ～？";
+	mes "ふふっ";
+	close;
+L_Thief:
+	if (JobLevel < 40) goto L_Error1;
+	if (Skillpoint != 0) goto L_Error2;
+	mes "[ローグギルド員]";
+	mes "なに？こんなところまで";
+	mes "何の用事で来たのさ。";
+	if (Sex == 0) mes "ローグになりたいっていう姉さんか。";
+	if (Sex == 1) mes "ローグになりたいっていう兄さんか。";
+	next;
+	mes "[ローグギルド員]";
+	mes "会えてうれしいわ。";
+	mes "あたいはローグギルドの";
+	mes "「マキ」ってんだ。";
+	mes "あんた名前は？";
+	next;
+	mes "[マキ]";
+	mes "うん？"+strcharinfo(0)+"だと？";
+	mes "いい名前じゃないか。";
+	next;
+	mes "[マキ]";
+	mes "ところで、またなんでこんな";
+	mes "ところに来たのかい？";
+	mes "さっきから正直に答えてくれてる";
+	mes "からイイヤツみたいだけど。";
+	next;
+	mes "[マキ]";
+	mes "でも、他でもそんなふうに";
+	mes "なんでもかんでも教えてやっちゃ";
+	mes "あぶないよ。";
+	mes "ローグギルドの外では身の安全に";
+	mes "注意しな。";
+	next;
+	mes "[マキ]";
+	mes "さて、あんたみどころありそうだし";
+	mes "あたいらんとこに入るテストでも";
+	mes "受けてもらおうか。";
+	next;
+	mes "[マキ]";
+	mes "あん、そんなに緊張しないで。";
+	mes "手続き取ってる間にいくつか";
+	mes "試すだけだからさ。";
+	next;
+	menu "わかった",-,"ちょっとまってくれ",L_Cancel;
+		mes "[マキ]";
+		mes "うん、それじゃはじめましょ。";
+		next;
+		mes "[マキ]";
+		mes "これから問題を出すから";
+		mes "よく聴いて正しいものを選んでね。";
+		next;
+		set change_rogue,1;
+		goto L_Test;
+L_ReTest:
+	mes "[マキ]";
+	mes "また来たね。";
+	mes "緊張しないでもう一度やってみて。";
+	mes "さぁ、はじめるよ。";
+	next;
+	menu "わかった",-,"ちょっとまってくれ",L_Cancel;
+		mes "[マキ]";
+		mes "うん、それじゃはじめましょ。";
+		next;
+		mes "[マキ]";
+		mes "これから問題を出すから";
+		mes "よく聴いて正しいものを選んでね。";
+		next;
+		goto L_Test;
+L_Cancel:
+	mes "[マキ]";
+	mes "そう、じゃ準備してらっしゃい。";
+	close;
+L_Test:
+	set @score,0;
+	set @rand,rand(2);
+	if(@rand == 1) goto L_Test2_1;
+	if(@rand == 2) goto L_Test3_1;
+	L_Test1_1:
+		mes "[マキ]";
+		mes "1.";
+		mes "ローグのスキル「トンネルドライブ」";
+		mes "を覚えるために必要なスキルは？";
+		next;
+		menu "ハイディング",-,"スティール",L_Test1_2,"回避率向上",L_Test1_2,"バッシュ",L_Test1_2;
+		set @score,@score+10;
+	L_Test1_2:
+		mes "[マキ]";
+		mes "2.";
+		mes "ローグのスキル";
+		mes "「コンパルションディスカウント」";
+		mes "の割引率は、商人の「ディスカウント」";
+		mes "Lv10より何%高いか。";
+		next;
+		menu "3 %",L_Test1_3,"2 %",L_Test1_3,"1 %",-,"0 %",L_Test1_3;
+		set @score,@score+10;
+	L_Test1_3:
+		mes "[マキ]";
+		mes "3.";
+		mes "スキル「スティールコイン」の能力は？";
+		next;
+		menu "プレイヤーからアイテムを盗む",L_Test1_4,"モンスターからアイテムを盗む",L_Test1_4,"モンスターからZenyを盗む",-,"プレイヤーからZenyを盗む",L_Test1_4;
+		set @score,@score+10;
+	L_Test1_4:
+		mes "[マキ]";
+		mes "4.";
+		mes "シーフ系で習得できるスキルで、";
+		mes "素早く後ろに後退するスキルは";
+		mes "何というか。";
+		next;
+		menu "バックダッシュ",L_Test1_5,"緊急回避",L_Test1_5,"バックスタブ",L_Test1_5,"バックステップ",-;
+		set @score,@score+10;
+	L_Test1_5:
+		mes "[マキ]";
+		mes "5.";
+		mes "スキル「ストリップヘルム」Lv5";
+		mes "を習得することで新たに出現する";
+		mes "スキルは？";
+		next;
+		menu "インベナム",L_Test1_6,"トンネルドライブ",L_Test1_6,"ベノムスプラッシャー",L_Test1_6,"ストリップシールド",-;
+		set @score,@score+10;
+	L_Test1_6:
+		mes "[マキ]";
+		mes "6.";
+		mes "次の中で、周囲の目を盗んで";
+		mes "移動するスキルは？";
+		next;
+		menu "ハイディング",L_Test1_7,"バックステップ",L_Test1_7,"トンネルドライブ",-,"砂まき",L_Test1_7;
+		set @score,@score+10;
+	L_Test1_7:
+		mes "[マキ]";
+		mes "7.";
+		mes "次の中で、物理攻撃の命中率を";
+		mes "上げてくれるカードは？";
+		next;
+		menu "アンドレ",L_Test1_8,"ファミリアーカード",L_Test1_8,"マミーカード",-,"マリナカード",L_Test1_8;
+		set @score,@score+10;
+	L_Test1_8:
+		mes "[マキ]";
+		mes "8.";
+		mes "次の中で、バドンカード";
+		mes "(火属性に20%追加ダメージ)";
+		mes "を刺した武器で攻撃するのに";
+		mes "適しているモンスターは？";
+		next;
+		menu "バドン",L_Test1_9,"デビルチ",L_Test1_9,"エルダーウィロー",-,"バフォメット",L_Test1_9;
+		set @score,@score+10;
+	L_Test1_9:
+		mes "[マキ]";
+		mes "9.";
+		mes "短剣でダブルアタックが";
+		mes "発動した場合のSP消費量は？";
+		next;
+		menu "15",L_Test1_10,"パッシブなので 0",-,"パッシブなので 10で固定",L_Test1_10,"54",L_Test1_10;
+		set @score,@score+10;
+	L_Test1_10:
+		mes "[マキ]";
+		mes "10.";
+		mes "イズルードダンジョンで効果を";
+		mes "発揮する武器は次のうちどれか。";
+		next;
+		menu "ウインド マインゴーシュ",-,"アイス マインゴーシュ",L_TestEnd,"アース マインゴーシュ",L_TestEnd,"ファイア マインゴーシュ",L_TestEnd;
+		set @score,@score+10;
+		goto L_TestEnd;
+	L_Test2_1:
+		mes "[マキ]";
+		mes "1.";
+		mes "スロットの多いグラディウスを落とす";
+		mes "モンスターは次のうちどれか。";
+		next;
+		menu "盗蟲",L_Test2_2,"ペコペコ",L_Test2_2,"デザートウルフ",L_Test2_2,"コボルド",-;
+		set @score,@score+10;
+	L_Test2_2:
+		mes "[マキ]";
+		mes "2.";
+		mes "ソケットのあるマインゴーシュは";
+		mes "どのモンスターから得られるか。";
+		next;
+		menu "ホーネット",-,"デザートウルフ",L_Test2_3,"マリオネット",L_Test2_3,"ミスト",L_Test2_3;
+		set @score,@score+10;
+	L_Test2_3:
+		mes "[マキ]";
+		mes "3.";
+		mes "ポーションを製造することができる";
+		mes "職業は？";
+		next;
+		menu "商人",L_Test2_4,"アルケミスト",-,"ブラックスミス",L_Test2_4,"プリースト",L_Test2_4;
+		set @score,@score+10;
+	L_Test2_4:
+		mes "[マキ]";
+		mes "4.";
+		mes "次の中でローグが使うことが";
+		mes "できない武器は？";
+		next;
+		menu "角弓",L_Test2_5,"クロスボウ",L_Test2_5,"グラディウス",L_Test2_5,"カタール",-;
+		set @score,@score+10;
+	L_Test2_5:
+		mes "[マキ]";
+		mes "5.";
+		mes "ホードの属性は何か。";
+		next;
+		menu "水属性",L_Test2_6,"火属性",L_Test2_6,"風属性",L_Test2_6,"地属性",-;
+		set @score,@score+10;
+	L_Test2_6:
+		mes "[マキ]";
+		mes "6.";
+		mes "次の中で、ペットにすることが";
+		mes "できないモンスターは？";
+		next;
+		menu "ポポリン",L_Test2_7,"クリーミー",-,"オークウォリアー",L_Test2_7,"ポイズンスポア",L_Test2_7;
+		set @score,@score+10;
+	L_Test2_7:
+		mes "[マキ]";
+		mes "7.";
+		mes "火属性短剣が一番効果的な";
+		mes "モンスターを選びなさい。";
+		next;
+		menu "短剣ゴブリン",L_Test2_8,"メイスゴブリン",L_Test2_8,"フレイルゴブリン",L_Test2_8,"ハンマーゴブリン",-;
+		set @score,@score+10;
+	L_Test2_8:
+		mes "[マキ]";
+		mes "8.";
+		mes "次の中で、ギルド砦の無い街は？";
+		next;
+		menu "プロンテラ",L_Test2_9,"アルデバラン",L_Test2_9,"アルベルタ",-,"フェイヨン",L_Test2_9;
+		set @score,@score+10;
+	L_Test2_9:
+		mes "[マキ]";
+		mes "9.";
+		mes "次の中で、青ハーブを落とす";
+		mes "モンスターを選べ。";
+		next;
+		menu "緑色草",L_Test2_10,"黄色草",L_Test2_10,"青い草",-,"輝く草",-;
+		set @score,@score+10;
+	L_Test2_10:
+		mes "[マキ]";
+		mes "10.";
+		mes "次の中で、アンデッドではない";
+		mes "モンスターを選べ。";
+		next;
+		menu "ゾンビ",L_TestEnd,"メガロドン",L_TestEnd,"ファミリアー",-,"カーリッツバーグ",L_TestEnd;
+		set @score,@score+10;
+		goto L_TestEnd;
+	L_Test3_1:
+		mes "[マキ]";
+		mes "1.";
+		mes "シーフの「回避率向上」スキル";
+		mes "をマスターした時上昇するFLEEは？";
+		next;
+		menu "30",-,"40",L_Test3_2,"160",L_Test3_2,"20",L_Test3_2;
+		set @score,@score+10;
+	L_Test3_2:
+		mes "[マキ]";
+		mes "2.";
+		mes "次の中で、ハイディングや";
+		mes "クローキングを見破るモンスターは？";
+		next;
+		menu "ワームテール",L_Test3_3,"アルゴス",-,"マミー",L_Test3_3,"ソルジャースケルトン",L_Test3_3;
+		set @score,@score+10;
+	L_Test3_3:
+		mes "[マキ]";
+		mes "3.";
+		mes "次の中で、ローグギルドがある";
+		mes "所の地名を答えろ。";
+		next;
+		menu "コモド",L_Test3_4,"ココモビーチ",L_Test3_4,"ファロス燈台島",-,"モロク",L_Test3_4;
+		set @score,@score+10;
+	L_Test3_4:
+		mes "[マキ]";
+		mes "4.";
+		mes "シーフギルドがある街は？";
+		next;
+		menu "コモド",L_Test3_5,"ルティエ",L_Test3_5,"アルベルタ",L_Test3_5,"モロク",-;
+		set @score,@score+10;
+	L_Test3_5:
+		mes "[マキ]";
+		mes "5.";
+		mes "DEXと関係ないカードは？";
+		next;
+		menu "ロッカーカード",L_Test3_6,"マミーカード",-,"ゼロムカード",L_Test3_6,"ドロップスカード",L_Test3_6;
+		set @score,@score+10;
+	L_Test3_6:
+		mes "[マキ]";
+		mes "6.";
+		mes "ローグの特徴を答えろ。";
+		next;
+		menu "すぐれた身のこなし",-,"すぐれた洞察力",-,"すぐれたずうずうしさ",-,"すぐれた攻撃力",-;
+		set @score,@score+10;
+	L_Test3_7:
+		mes "[マキ]";
+		mes "7.";
+		mes "シーフからローグになるための";
+		mes "JobLv最低値はいくつか。";
+		next;
+		menu "30",L_Test3_8,"41",L_Test3_8,"40",-,"50",L_Test3_8;
+		set @score,@score+10;
+	L_Test3_8:
+		mes "[マキ]";
+		mes "8.";
+		mes "髪を染めるにはどこに行けば良いか。";
+		next;
+		menu "モロク 7時方向建物の内",L_Test3_9,"プロンテラ 7時方向建物の内",-,"モロク 5時方向建物の内",L_Test3_9,"プロンテラ 1時方向建物の内",L_Test3_9;
+		set @score,@score+10;
+	L_Test3_9:
+		mes "[マキ]";
+		mes "9.";
+		mes "ノービスがシーフになる場合";
+		mes "必要になるきのこの名前は？";
+		next;
+		menu "紅の毛ベトベトキノコ",-,"赤毛ベトベトキノコ",L_Test3_10,"紅の毛網キノコ",-,"紅シイタケ",L_Test3_10;
+		set @score,@score+10;
+	L_Test3_10:
+		mes "[マキ]";
+		mes "10.";
+		mes "比較的ローグと関係の無いカードは？";
+		next;
+		menu "ウィスパーカード",L_TestEnd,"エルダーウィローカード",-,"ゼロムカード",L_TestEnd,"マーターカード",L_TestEnd;
+		set @score,@score+10;
+		goto L_TestEnd;
+L_TestEnd:
+	mes "[マキ]";
+	mes "ふぅ……";
+	mes "おつかれさん。";
+	next;
+	if (@score >= 90) goto L_OK;
+	mes "[マキ]";
+	mes "ん……点数は……";
+	mes @score+"点か。";
+	mes "だめだ。";
+	mes "そんなんじゃローグとして";
+	mes "やっていけないよ。";
+	mes "もう少し情報を集めてから来な。";
+	close;
+L_OK:
+	mes "[マキ]";
+	mes "ん……点数は……";
+	mes @score+"点か。";
+	mes "へ～";
+	mes "なかなかみどころが";
+	mes "あるじゃないー。";
+	next;
+	mes "[マキ]";
+	mes "さて、これからが本番よ。";
+	mes "「スミスラト」が次のテストの";
+	mes "担当だ。";
+	mes "気をつけな、奴は集金担当だから";
+	mes "かなり気難しいよ……";
+	set change_rogue,2;
+	close;
+L_Start1:
+	mes "[マキ]";
+	mes "「スミスラト」のとこに行きな。";
+	mes "奴のテストはちょっと厄介だ……";
+	mes "集金担当だからさ……";
+	mes "性格がしつっこくてね……(ひそひそ)";
+	next;
+	mes "[マキ]";
+	mes "間違えると大変だよ。";
+	mes "とにかくがんばって！";
+	close;
+L_Start2:
+	mes "[マキ]";
+	mes "がんばって！";
+	mes "(何か機嫌がいい)";
+	next;
+	mes "[マキ]";
+	mes "フフ……これでまた儲けやすく……";
+	mes "あ……ああなんでもないよ！";
+	mes "アハハ……アハハ……ハ……";
+	close;
+L_Start3:
+	if (Skillpoint != 0) goto L_Error2;
+	set @joblv,JobLevel;
+	mes "[マキ]";
+	mes "おっがんばったじゃないか！";
+	mes "苦労しただろう～";
+	mes "じゃ転職させてやるよ。";
+	next;
+	unequip;
+	jobchange 17;
+	mes "[マキ]";
+	mes "おめでとう！";
+	mes "がんばったねぇ";
+	mes "これからは自由に生きるんだよ！";
+	mes "ふふ……";
+	next;
+	mes "[マキ]";
+	mes "あ、でも一つ言っておくよ。";
+	mes "自分の自由を大事に思うなら、";
+	mes "人の自由も尊重してやらなきゃ";
+	mes "ならないってことよ。";
+	mes "それじゃ～ね～～";
+	close2;
+	if (@joblv < 50) getitem 1219,1;
+	if (@joblv >= 50) getitem 1220,1;
+	end;
+L_Error1:
+	mes "[マキ]";
+	mes "ローグはシーフのJobLvが";
+	mes "40以上のヤツだけがなれるんだ。";
+	mes "あんたのようなひよっこには";
+	mes "まだ早いよ。";
+	mes "もう少し鍛えておいで。";
+	close;
+L_Error2:
+	mes "[ローグギルド員]";
+	mes "スキルポイントが残っていたら";
+	mes "転職できないねぇ。";
+	mes "全部消費してらっしゃい。";
+	close;
+}
+
+in_rogue.gat,376,23,2	script	スミスラト	57,{
+	if (change_rogue >= 12) goto L_End;
+	if ((Class == 6) && (change_rogue >= 8)) goto L_TestInfo;
+	if ((Class == 6) && (change_rogue == 7)) goto L_Test3;
+	if ((Class == 6) && (change_rogue >= 3)) goto L_Test2;
+	if ((Class == 6) && (change_rogue == 2)) goto L_Test1;
 	mes "[スミスラト]";
 	mes "ひぃふぅみぃ……………";
 	mes "取引先が……";
@@ -17,13 +476,866 @@ in_rogue.gat,376,23,4	script	スミスラト	57,{
 	mes "[スミスラト]";
 	mes "……ったく……";
 	close;
+L_Test1:
+	mes "[スミスラト]";
+	mes "ローグギルドに来たことを";
+	mes "歓迎する。";
+	mes "今から、ローグになるための";
+	mes "基本的なテストをやる。";
+	next;
+	mes "[スミスラト]";
+	mes "ただ、テストの前に用意して";
+	mes "もらいたいものがある。";
+	next;
+	mes "[スミスラト]";
+	mes "授業料があるから少し金を";
+	mes "用意するんだ。";
+	mes "オレ達ローグギルドも資本金から";
+	mes "仕事を始めて収益を出さなければ";
+	mes "ならない。";
+	mes "では次の物を持って来い。";
+	next;
+	set @rand,rand(4);
+	if (@rand == 0) goto L_Item1;
+	if (@rand == 1) goto L_Item2;
+	if (@rand == 2) goto L_Item3;
+	if (@rand == 3) goto L_Item4;
+	L_Item1:
+		set change_rogue,3;
+		mes "[スミスラト]";
+		mes "まず、ギルド登録料^FF333310000Zeny^000000と";
+		mes "スケルボーン 10個";
+		mes "青ハーブ 6個";
+		next;
+		mes "[スミスラト]";
+		mes "亡者の爪 10個";
+		mes "亡者の牙 10個";
+		mes "うん……あと……";
+		next;
+		goto L_ItemEnd;
+	L_Item2:
+		set change_rogue,4;
+		mes "[スミスラト]";
+		mes "まず、ギルド登録料^FF333310000Zeny^000000と";
+		mes "緑ハーブ 10個";
+		mes "かにのこうら 10個";
+		next;
+		mes "[スミスラト]";
+		mes "蛇の鱗 10個";
+		mes "ガレット 10個";
+		mes "うん……あと……";
+		next;
+		goto L_ItemEnd;
+	L_Item3:
+		set change_rogue,5;
+		mes "[スミスラト]";
+		mes "まず、ギルド登録料^FF333310000Zeny^000000と";
+		mes "黄ハーブ 10個";
+		mes "かたい皮 10個";
+		next;
+		mes "[スミスラト]";
+		mes "バッタの足 10個";
+		mes "くまの足の裏 10個";
+		mes "うん……あと……";
+		next;
+		goto L_ItemEnd;
+	L_Item4:	//メッセージ未取得
+		set change_rogue,6;
+		mes "[スミスラト]";
+		mes "まず、ギルド登録料^FF333310000Zeny^000000と";
+		mes "さなぎの皮 5個";
+		mes "空きビン 5個";
+		mes "鉄鉱石 5個";
+		mes "岩の心臓 5個";
+		mes "赤ハーブ 5個";
+		next;
+		mes "[スミスラト]";
+		mes "獣の皮 5個";
+		mes "イエロージェムストーン 5個";
+		mes "こうもりの牙 5個";
+		mes "サソリの尻尾 5個";
+		mes "サルのしっぽ 5個";
+		mes "化け物のエサ 5個";
+		mes "それから……";
+		next;
+		mes "[スミスラト]";
+		mes "綿毛 5個";
+		mes "クローバー 5個";
+		mes "鳥の羽毛 5個";
+		mes "鳥のつめ 5個";
+		mes "かえるの卵 5個";
+		mes "タヌキ木の葉 5個";
+		mes "うん……あと……";
+		next;
+		goto L_ItemEnd;
+	L_ItemEnd:
+		mes "[スミスラト]";
+		mes "これくらいにしておこう。";
+		if (change_rogue == 6) {mes "ん？数が多いって？";}	//メッセージ未取得
+		if (change_rogue == 6) {mes "…気にするな。";}		//メッセージ未取得
+		mes "では全部揃えてからまた来い。";
+		close;
+L_Test2:
+	if ((change_rogue == 3) && (Zeny>=10000) && (countitem(932)>=10) && (countitem(510)>=6) && (countitem(957)>=10) && (countitem(958)>=10)) goto L_ItemOK;
+	if ((change_rogue == 4) && (Zeny>=10000) && (countitem(511)>=10) && (countitem(964)>=10) && (countitem(926)>=10) && (countitem(910)>=10)) goto L_ItemOK;
+	if ((change_rogue == 5) && (Zeny>=10000) && (countitem(508)>=10) && (countitem(935)>=10) && (countitem(940)>=10) && (countitem(948)>=10)) goto L_ItemOK;
+	if ((change_rogue == 6) && (Zeny>=10000) && (countitem(915)>=5) && (countitem(713)>=5) && (countitem(1002)>=5) && (countitem(953)>=5) && (countitem(507)>=5) && (countitem(919)>=5) && (countitem(715)>=5) && (countitem(913)>=5) && (countitem(904)>=5) && (countitem(942)>=5) && (countitem(528)>=5) && (countitem(914)>=5) && (countitem(705)>=5) && (countitem(916)>=5) && (countitem(917)>=5) && (countitem(908)>=5) && (countitem(945)>=5)) goto L_ItemOK;
+	mes "[スミスラト]";
+	mes "ん……足りない物がある。";
+	mes "何を頼んだかもう一度言う。";
+	next;
+	mes "[スミスラト]";
+	mes "ギルド登録料^FF333310000Zeny^000000";
+	next;
+	mes "[スミスラト]";
+	if (change_rogue == 3) {
+		mes "スケルボーン 10個";
+		mes "青ハーブ 6個";
+		mes "亡者の爪 10個";
+		mes "亡者の牙 10個";
+	}
+	if (change_rogue == 4) {
+		mes "緑ハーブ 10個";
+		mes "かにのこうら 10個";
+		mes "蛇の鱗 10個";
+		mes "ガレット 10個";
+	}
+	if (change_rogue == 5) {
+		mes "黄ハーブ 10個";
+		mes "かたい皮 10個";
+		mes "バッタの足 10個";
+		mes "くまの足の裏 10個";
+	}
+	if (change_rogue == 6) {
+		mes "さなぎの皮 5個";
+		mes "空きビン 5個";
+		mes "鉄鉱石 5個";
+		mes "岩の心臓 5個";
+		mes "赤ハーブ 5個";
+		next;
+		mes "獣の皮 5個";
+		mes "イエロージェムストーン 5個";
+		mes "こうもりの牙 5個";
+		mes "サソリの尻尾 5個";
+		mes "サルのしっぽ 5個";
+		mes "化け物のエサ 5個";
+		next;
+		mes "綿毛 5個";
+		mes "クローバー 5個";
+		mes "鳥の羽毛 5個";
+		mes "鳥のつめ 5個";
+		mes "かえるの卵 5個";
+		mes "タヌキ木の葉 5個";
+	}
+	mes "だ。それでは待っている。";
+	close;
+L_ItemOK:
+	mes "[スミスラト]";
+	mes "まず、ギルド登録料^FF333310000Zeny^000000と";
+	set Zeny,Zeny-10000;
+	if (change_rogue == 3) {
+		delitem 932,10;
+		delitem 510,6;
+		delitem 957,10;
+		delitem 958,10;
+		mes "スケルボーン 10個";
+		mes "青ハーブ 6個";
+		mes "よしよし……";
+		next;
+		mes "亡者の爪 10個";
+		mes "亡者の牙 10個";
+		mes "ふむ……完璧だ。";
+	}
+	if (change_rogue == 4) {
+		delitem 511,10;
+		delitem 964,10;
+		delitem 926,10;
+		delitem 910,10;
+		mes "緑ハーブ 10個";
+		mes "かにのこうら 10個";
+		next;
+		mes "蛇の鱗 10個";
+		mes "ガレット 10個";
+		mes "よし、全部あるな。";
+	}
+	if (change_rogue == 5) {
+		delitem 508,10;
+		delitem 935,10;
+		delitem 940,10;
+		delitem 948,10;
+		mes "黄ハーブ 10個";
+		mes "かたい皮 10個";
+		next;
+		mes "バッタの足 10個";
+		mes "くまの足の裏 10個";
+		mes "よし、全部あるな。";
+	}
+	if (change_rogue == 6) {
+		delitem 915,5;
+		delitem 713,5;
+		delitem 1002,5;
+		delitem 953,5;
+		delitem 507,5;
+		delitem 919,5;
+		delitem 715,5;
+		delitem 913,5;
+		delitem 904,5;
+		delitem 942,5;
+		delitem 528,5;
+		delitem 914,5;
+		delitem 705,5;
+		delitem 916,5;
+		delitem 917,5;
+		delitem 908,5;
+		delitem 945,5;
+		mes "さなぎの皮 5個";
+		mes "空きビン 5個";
+		mes "鉄鉱石 5個";
+		mes "岩の心臓 5個";
+		mes "赤ハーブ 5個";
+		next;
+		mes "獣の皮 5個";
+		mes "イエロージェムストーン 5個";
+		mes "こうもりの牙 5個";
+		mes "サソリの尻尾 5個";
+		mes "サルのしっぽ 5個";
+		mes "化け物のエサ 5個";
+		next;
+		mes "綿毛 5個";
+		mes "クローバー 5個";
+		mes "鳥の羽毛 5個";
+		mes "鳥のつめ 5個";
+		mes "かえるの卵 5個";
+		mes "タヌキ木の葉 5個";
+		mes "……";
+	}
+	if (change_rogue == 6) {	//メッセージ未取得
+		next;
+		mes "[スミスラト]";
+		mes "よくこれだけの物を";
+		mes "集めて来られたな。";
+		mes "これは褒美だ。とっておきなさい。";
+		getitem 1097,1;
+	}
+	set change_rogue,7;
+	next;
+	mes "[スミスラト]";
+	mes "よし、ちょっと準備するから";
+	mes "待っていろ。";
+	mes "また話しかけてくれ。";
+	mes "次のテストは……と……";
+	close;
+L_Test3:
+	mes "[スミスラト]";
+	mes "次のテストの担当は……";
+	mes "誰がいいか……";
+	next;
+	mes "[スミスラト]";
+	mes "ああ……ヤツがいたな。";
+	next;
+	set @rand,rand(4);	//アントニオ以外未実装
+	if (@rand == 0) goto L_Test3_1;
+	if (@rand == 1) goto L_Test3_2;
+	if (@rand == 2) goto L_Test3_3;
+	if (@rand == 3) goto L_Test3_4;
+	L_Test3_1:
+	L_Test3_2:
+	L_Test3_3:
+	L_Test3_4:
+		set change_rogue,8;
+		mes "[スミスラト]";
+		mes "アントニオJr.がいい。";
+		mes "アントニオさんの息子だ。";
+		mes "もしや知っているか？";
+		mes "親父さんが何の失敗をしたか";
+		mes "知らないが、なんでも命を狙われて";
+		mes "いるらしい……";
+		next;
+		mes "[スミスラト]";
+		mes "東方のフェイヨン出身だが";
+		mes "ココモビーチの空き家を使って";
+		mes "暮らしている。";
+		mes "たまに外で騒ぐヤツが居ると";
+		mes "出て行って暴れるらしい……";
+		next;
+		mes "[スミスラト]";
+		mes "神経が研ぎ澄まされていて";
+		mes "近づくヤツには容赦なくナイフを";
+		mes "投げるらしい……";
+		mes "オレたちのギルドマスターも";
+		mes "辛うじて説得に成功して";
+		mes "ローグギルドに入れたらしい。";
+		next;
+		mes "[スミスラト]";
+		mes "そんなヤツだが、腕前は良くて";
+		mes "仕事は早い。特に足技が";
+		mes "得意だったな……";
+		next;
+		mes "[スミスラト]";
+		mes "また、賭博が好きだから";
+		mes "その話で気に入られれば";
+		mes "色々教えてもらえると思う。";
+		next;
+		mes "[スミスラト]";
+		mes "あ、一応ヤツに近づく合言葉を";
+		mes "教えておく。";
+		mes "^3333FFアントニオは精錬品を壊すのが^000000";
+		mes "^3333FF好きではない^000000";
+		mes "だ。気をつけろ。";
+		close;
+L_TestInfo:
+	mes "[スミスラト]";
+	mes "なんだ、場所でも忘れたか？";
+	mes "今度はしっかりメモしておくんだ。";
+	next;
+	mes "[スミスラト]";
+	mes "ここからコモドの方の砂浜、";
+	mes "ココモビーチにある建物。";
+	mes "アントニオJr.に会え。";
+	mes "合言葉は";
+	mes "^3333FFアントニオは精錬品を壊すのが^000000";
+	mes "^3333FF好きではない^000000";
+	close;
+L_End:
+	mes "[スミスラト]";
+	mes "ここにはもう用は無いだろう？";
+	close;
 }
 
-in_rogue.gat,363,122,4	script	ローグギルド員	747,{
-	callfunc "jobchanger3","Rogue",17,6;
-//	mes "[マキ]";
-//	mes "ん？";
-//	mes "何の用？";
-//	mes "見る物なんてここにはないよ～";
-//	close;
+//==============================================================================
+
+cmd_fild04.gat,304,180,0	script	roguewarp0401	45,1,1,{
+	mes "[　]";
+	mes "誰だ!?";
+	mes "ここに何のようだ！";
+	next;
+	menu "アンティオニオは",L_Menu1_1,"アラガムは",L_Menu1_2,"アントニオは",L_Menu1_3,"ホルグレンは",L_Menu1_4;
+	L_Menu1_1:
+		set @rogueword1$,"アンティオニオは";
+		goto L_Menu2;
+	L_Menu1_2:
+		set @rogueword1$,"アラガムは";
+		goto L_Menu2;
+	L_Menu1_3:
+		set @rogueword1$,"アントニオは";
+		goto L_Menu2;
+	L_Menu1_4:
+		set @rogueword1$,"ホルグレンは";
+		goto L_Menu2;
+L_Menu2:
+	mes "["+strcharinfo(0)+"]";
+	mes @rogueword1$;
+	menu "精錬物品を",L_Menu2_1,"精錬品を",L_Menu2_2,"精錬物品は",L_Menu2_3,"精錬品",L_Menu2_4;
+	L_Menu2_1:
+		set @rogueword2$,"精錬物品を";
+		goto L_Menu3;
+	L_Menu2_2:
+		set @rogueword2$,"精錬品を";
+		goto L_Menu3;
+	L_Menu2_3:
+		set @rogueword2$,"精錬物品は";
+		goto L_Menu3;
+	L_Menu2_4:
+		set @rogueword2$,"精錬品";
+		goto L_Menu3;
+L_Menu3:
+	mes @rogueword2$;
+	menu "壊すことを",L_Menu3_1,"壊すのが",L_Menu3_2,"直すことを",L_Menu3_3,"直すのを",L_Menu3_4;
+	L_Menu3_1:
+		set @rogueword3$,"壊すことを";
+		goto L_Menu4;
+	L_Menu3_2:
+		set @rogueword3$,"壊すのが";
+		goto L_Menu4;
+	L_Menu3_3:
+		set @rogueword3$,"直すことを";
+		goto L_Menu4;
+	L_Menu3_4:
+		set @rogueword3$,"直すのを";
+		goto L_Menu4;
+L_Menu4:
+	mes @rogueword3$;
+	menu "好むようだ",L_Menu4_1,"好きかもしれない",L_Menu4_2,"好きではない",L_Menu4_3,"好きである",L_Menu4_4,"好きだ",L_Menu4_5,"好まない",L_Menu4_6;
+	L_Menu4_1:
+		set @rogueword4$,"好むようだ";
+		goto L_End;
+	L_Menu4_2:
+		set @rogueword4$,"好きかもしれない";
+		goto L_End;
+	L_Menu4_3:
+		set @rogueword4$,"好きではない";
+		goto L_End;
+	L_Menu4_4:
+		set @rogueword4$,"好きである";
+		goto L_End;
+	L_Menu4_5:
+		set @rogueword4$,"好きだ";
+		goto L_End;
+	L_Menu4_6:
+		set @rogueword4$,"好まない";
+		goto L_End;
+L_End:
+	mes @rogueword4$;
+	next;
+	if ((@rogueword1$ == "アントニオは") && (@rogueword2$ == "精錬品を") && (@rogueword3$ == "壊すのが") && (@rogueword4$ == "好きではない")) goto L_Go;
+	mes "[　]";
+	mes "あっちにいけ！";
+	close;
+L_Go:
+	mes "--カチャリ--";
+	mes "カギが開いた。";
+	close2;
+	warp "in_rogue.gat",164,106;
+	end;
+}
+cmd_fild07.gat,355,286,0	warp	roguewarp0402	1,1,in_rogue.gat,247,126
+cmd_fild09.gat,106,195,0	script	roguewarp0403	45,1,1,{
+	mes "[　]";
+	mes "誰だ!?";
+	mes "ここに何のようだ！";
+	next;
+	menu "うちの父は",L_Menu1_1,"アラガムは",L_Menu1_2,"アラゴンは",L_Menu1_3,"レゴールラスは",L_Menu1_4;
+	L_Menu1_1:
+		set @rogueword1$,"うちの父は";
+		goto L_Menu2;
+	L_Menu1_2:
+		set @rogueword1$,"アラガムは";
+		goto L_Menu2;
+	L_Menu1_3:
+		set @rogueword1$,"アラゴンは";
+		goto L_Menu2;
+	L_Menu1_4:
+		set @rogueword1$,"レゴールラスは";
+		goto L_Menu2;
+L_Menu2:
+	mes "["+strcharinfo(0)+"]";
+	mes @rogueword1$;
+	menu "精錬物品を",L_Menu2_1,"精錬武器を",L_Menu2_2,"精錬用品を",L_Menu2_3,"精錬品物を",L_Menu2_4;
+	L_Menu2_1:
+		set @rogueword2$,"精錬物品を";
+		goto L_Menu3;
+	L_Menu2_2:
+		set @rogueword2$,"精錬武器を";
+		goto L_Menu3;
+	L_Menu2_3:
+		set @rogueword2$,"精錬用品を";
+		goto L_Menu3;
+	L_Menu2_4:
+		set @rogueword2$,"精錬品物を";
+		goto L_Menu3;
+L_Menu3:
+	mes @rogueword2$;
+	menu "直して",L_Menu3_1,"横領して",L_Menu3_2,"ぶん取って",L_Menu3_3,"叩いて",L_Menu3_4,"抜き取って",L_Menu3_5;
+	L_Menu3_1:
+		set @rogueword3$,"直して";
+		goto L_Menu4;
+	L_Menu3_2:
+		set @rogueword3$,"横領して";
+		goto L_Menu4;
+	L_Menu3_3:
+		set @rogueword3$,"ぶん取って";
+		goto L_Menu4;
+	L_Menu3_4:
+		set @rogueword3$,"叩いて";
+		goto L_Menu4;
+	L_Menu3_5:
+		set @rogueword3$,"抜き取って";
+		goto L_Menu4;
+L_Menu4:
+	mes @rogueword3$;
+	menu "いない",L_Menu4_1,"座った",L_Menu4_2,"抱いた",L_Menu4_3,"なかった",L_Menu4_4;
+	L_Menu4_1:
+		set @rogueword4$,"いない";
+		goto L_End;
+	L_Menu4_2:
+		set @rogueword4$,"座った";
+		goto L_End;
+	L_Menu4_3:
+		set @rogueword4$,"抱いた";
+		goto L_End;
+	L_Menu4_4:
+		set @rogueword4$,"なかった";
+		goto L_End;
+L_End:
+	mes @rogueword4$;
+	next;
+	if ((@rogueword1$ == "アラガムは") && (@rogueword2$ == "精錬用品を") && (@rogueword3$ == "横領して") && (@rogueword4$ == "いない")) goto L_Go;
+	mes "[　]";
+	mes "あっちにいけ！";
+	close;
+L_Go:
+	mes "--カチャリ--";
+	mes "カギが開いた。";
+	close2;
+	warp "in_rogue.gat",244,25;
+	end;
+}
+cmd_fild09.gat,335,143,0	script	roguewarp0404	45,1,1,{
+	mes "[　]";
+	mes "誰だ!?";
+	mes "ここに何のようだ！";
+	next;
+	menu "うちの父は",L_Menu1_1,"アラガムは",L_Menu1_2,"アラゴンは",L_Menu1_3,"レゴールラスは",L_Menu1_4;
+	L_Menu1_1:
+		set @rogueword1$,"うちの父は";
+		goto L_Menu2;
+	L_Menu1_2:
+		set @rogueword1$,"アラガムは";
+		goto L_Menu2;
+	L_Menu1_3:
+		set @rogueword1$,"アラゴンは";
+		goto L_Menu2;
+	L_Menu1_4:
+		set @rogueword1$,"レゴールラスは";
+		goto L_Menu2;
+L_Menu2:
+	mes "["+strcharinfo(0)+"]";
+	mes @rogueword1$;
+	menu "精錬物品を",L_Menu2_1,"精錬武器を",L_Menu2_2,"精錬用品を",L_Menu2_3,"精錬品物を",L_Menu2_4;
+	L_Menu2_1:
+		set @rogueword2$,"精錬物品を";
+		goto L_Menu3;
+	L_Menu2_2:
+		set @rogueword2$,"精錬武器を";
+		goto L_Menu3;
+	L_Menu2_3:
+		set @rogueword2$,"精錬用品を";
+		goto L_Menu3;
+	L_Menu2_4:
+		set @rogueword2$,"精錬品物を";
+		goto L_Menu3;
+L_Menu3:
+	mes @rogueword2$;
+	menu "修理して",L_Menu3_1,"精錬して",L_Menu3_2,"壊して",L_Menu3_3,"盗んで",L_Menu3_4,"横領して",L_Menu3_5;
+	L_Menu3_1:
+		set @rogueword3$,"修理して";
+		goto L_Menu4;
+	L_Menu3_2:
+		set @rogueword3$,"精錬して";
+		goto L_Menu4;
+	L_Menu3_3:
+		set @rogueword3$,"壊して";
+		goto L_Menu4;
+	L_Menu3_4:
+		set @rogueword3$,"盗んで";
+		goto L_Menu4;
+	L_Menu3_5:
+		set @rogueword3$,"横領して";
+		goto L_Menu4;
+L_Menu4:
+	mes @rogueword3$;
+	menu "いない",L_Menu4_1,"座った",L_Menu4_2,"抱いた",L_Menu4_3,"なかった",L_Menu4_4;
+	L_Menu4_1:
+		set @rogueword4$,"いない";
+		goto L_End;
+	L_Menu4_2:
+		set @rogueword4$,"座った";
+		goto L_End;
+	L_Menu4_3:
+		set @rogueword4$,"抱いた";
+		goto L_End;
+	L_Menu4_4:
+		set @rogueword4$,"なかった";
+		goto L_End;
+L_End:
+	mes @rogueword4$;
+	next;
+	if ((@rogueword1$ == "うちの父は") && (@rogueword2$ == "精錬用品を") && (@rogueword3$ == "横領して") && (@rogueword4$ == "いない")) goto L_Go;
+	mes "[　]";
+	mes "あっちにいけ！";
+	close;
+L_Go:
+	mes "--カチャリ--";
+	mes "カギが開いた。";
+	close2;
+	warp "in_rogue.gat",169,34;
+	end;
+}
+in_rogue.gat,161,103,0		warp	roguewarp0501	1,1,cmd_fild04.gat,302,177
+in_rogue.gat,247,122,0		warp	roguewarp0502	1,1,cmd_fild07.gat,349,285
+in_rogue.gat,244,21,0		warp	roguewarp0503	1,1,cmd_fild09.gat,106,191
+in_rogue.gat,172,34,0		warp	roguewarp0504	1,1,cmd_fild09.gat,341,143
+in_rogue.gat,270,130,0		script	roguewarp6001	45,1,1,{
+	mes "カギがかかっている。";
+	mes "数字を合わせるところが";
+	mes "あるようだ。";
+	next;
+	input @rogue_pass;
+	if (@rogue_pass == 0) close;
+	if (@rogue_pass == 3019) goto L_Go;
+	mes "何も起こらない";
+	close;
+L_Go:
+	mes "[ヘルマンソンJr.]";
+	mes "パスワード変えたよ。";
+	close;
+}
+
+in_rogue.gat,177,109,2	script	アントニオ Jr	88,{
+	if (Class == 17) goto L_Rogue;
+	if (change_rogue == 12) goto L_ReTest;
+	if (change_rogue == 8) goto L_Test;
+	mes "[アントニオJr.]";
+	mes "なに！";
+	mes "ローグギルドから来たんじゃ";
+	mes "ないのか！";
+	mes "だめだ……";
+	mes "来るな！……来るな！";
+	next;
+	mes "[アントニオJr.]";
+	mes "お前も我が一族に恨みが";
+	mes "ある奴だろう！";
+	mes "オレは死ぬわけにはいかない。";
+	mes "ここから消えなければ";
+	mes "オレがお前を！";
+	close;
+L_Rogue:
+	mes "[アントニオJr.]";
+	mes "ここまで何しに？";
+	mes "せっかくだから休んでいきな。";
+	close;
+L_Test:
+	mes "[アントニオJr.]";
+	mes "ローグギルドから来た人か。";
+	next;
+	mes "[アントニオJr.]";
+	mes "ローグになりたくて来たのかい？";
+	mes "それなら教えてあげるよ。";
+	next;
+	mes "[アントニオJr.]";
+	mes "オレ達ローグは^3333FF強者は避け";
+	mes "弱者にあたる^000000ことが大事だ。";
+	mes "よってモンスターと対峙する時も";
+	mes "それなりの身のこなし方がある。";
+	next;
+	mes "[アントニオJr.]";
+	mes "モンスターでもやはり";
+	mes "弱いものには積極的に攻め";
+	mes "強いものからは逃げるというのが";
+	mes "原則だ。";
+	next;
+	mes "[アントニオJr.]";
+	mes "さぁ、この原則にしたがって";
+	mes "^3333FFローグギルドまで通じている地下水路^000000";
+	mes "を通り、無事にたどりついてみろ。";
+	mes "お前の持つスキルでうまくこなすんだ。";
+	next;
+	menu "出発する",-,"やめる",L_Cancel1;
+		mes "[アントニオJr.]";
+		mes "失敗を繰り返して";
+		mes "ギルドの足を引っ張るなよ？";
+		close2;
+		set change_rogue,12;
+		warp "in_rogue.gat",15,105;
+		end;
+	L_Cancel1:
+		mes "[アントニオJr.]";
+		mes "オレは忙しい。";
+		mes "お前の冗談に付き合ってる";
+		mes "ヒマはないんだ。";
+		close;
+L_ReTest:
+	mes "[アントニオJr.]";
+	mes "うん……残念だ。";
+	mes "だけどオレは何も言わない。";
+	mes "自分で理解しろ。";
+	next;
+	menu "出発する",-,"やめる",L_Cancel2;
+		mes "[アントニオJr.]";
+		mes "では送ろう、健闘を祈る。";
+		close2;
+		warp "in_rogue.gat",15,105;
+		end;
+	L_Cancel2:
+		mes "[アントニオJr.]";
+		mes "オレは忙しい。";
+		mes "お前は転職するつもりが";
+		mes "あるのか？";
+		close;
+}
+
+in_rogue.gat,272,135,2	script	ヘルマンソン Jr	85,{
+	mes "[ヘルマンソンJr.]";
+	mes "うん？何の用だ！";
+	mes "ローグギルドから来た奴じゃ";
+	mes "ないな！";
+	mes "ほら、出て行け……";
+	next;
+	mes "[ヘルマンソンJr.]";
+	mes "お前……お前も我が一族を";
+	mes "憎む輩か！";
+	mes "まってくれ……死にたくない！";
+	mes "どっか行け！";
+	mes "行かないとオレがお前を!!!!";
+	close;
+}
+
+in_rogue.gat,244,39,5	script	アラガム Jr	99,{
+	if (Class == 17) goto L_Rogue;
+	mes "[アラガムJr.]";
+	mes "な……なに！";
+	mes "あなたはローグギルドから";
+	mes "来た者ではないな！";
+	mes "あっちに行け!!";
+	next;
+	mes "[アラガムJr.]";
+	mes "あなたも我が一族に恨みを持つ";
+	mes "者か……！";
+	mes "私はまだ死ぬわけにいかない。";
+	mes "どこかに行かないのならば";
+	mes "私があなたを！";
+	close;
+L_Rogue:
+	mes "[アラガムJr.]";
+	mes "うん？何の用か？";
+	mes "せっかくだから休んでいきなさい。";
+	close;
+}
+
+in_rogue.gat,243,61,0	script	怪しい男	748,{
+	mes "[クアーク･ドノン]";
+	mes "な、何なんだお前！";
+	mes "どうやってここに入ってきた?!";
+	mes "あ、あ、あっちに行け！行けったら!!";
+	mes "う、ううう、うあぁあぁぁぁぁぁ!!!!";
+	close;
+}
+
+in_rogue.gat,160,34,2	script	ホルグレン Jr	85,{
+	if (Class == 17) goto L_Rogue;
+	mes "[ホルグレンJr.]";
+	mes "！";
+	mes "お前は……なんだ！";
+	mes "ローグギルドから来た奴じゃ";
+	mes "ないな！";
+	next;
+	mes "[ホルグレンJr.]";
+	mes "ぐおおお！";
+	next;
+	mes "[ホルグレンJr.]";
+	mes "すぐに出て行け！";
+	next;
+	mes "[ホルグレンJr.]";
+	mes "お前もうちの一族に恨みを持つ";
+	mes "奴か？";
+	mes "くそっオレはここで死ぬわけには";
+	mes "いかない。";
+	mes "出て行け！さもないと";
+	mes "オレがお前を！";
+	close;
+L_Rogue:
+	mes "[アントニオJr.]";
+	mes "よう、何の用だい？";
+	mes "せっかくだから休んでいきなよ。";
+	close;
+}
+
+//==============================================================================
+
+in_rogue.gat,15,185,0	script	rogue_mob1	139,8,0,{
+	monster "in_rogue.gat",13,188,"--ja--",1015,1;
+	monster "in_rogue.gat",14,189,"--ja--",1015,1;
+	monster "in_rogue.gat",15,190,"--ja--",1015,1;
+	monster "in_rogue.gat",16,188,"--ja--",1015,1;
+	monster "in_rogue.gat",17,189,"--ja--",1015,1;
+	monster "in_rogue.gat",18,190,"--ja--",1015,1;
+	end;
+}
+in_rogue.gat,15,245,0	script	rogue_mob2	139,8,0,{
+	monster "in_rogue.gat",13,248,"--ja--",1041,1;
+	monster "in_rogue.gat",15,248,"--ja--",1041,1;
+	monster "in_rogue.gat",17,248,"--ja--",1041,1;
+	end;
+}
+in_rogue.gat,15,333,0	script	rogue_mob3	139,8,0,{
+	monster "in_rogue.gat",15,336,"--ja--",1015,3;
+	end;
+}
+in_rogue.gat,35,342,0	script	rogue_mob4	139,0,8,{
+	monster "in_rogue.gat",38,340,"--ja--",1041,1;
+	monster "in_rogue.gat",37,342,"--ja--",1219,1;
+	monster "in_rogue.gat",39,342,"--ja--",1036,1;
+	monster "in_rogue.gat",38,344,"--ja--",1041,1;
+	end;
+}
+in_rogue.gat,57,306,0	script	rogue_mob5	139,4,0,{
+	monster "in_rogue.gat",59,301,"--ja--",1132,1;
+	end;
+}
+in_rogue.gat,96,333,0	script	rogue_mob6	139,0,4,{
+	monster "in_rogue.gat",92,325,"--ja--",1132,1;
+	end;
+}
+in_rogue.gat,139,313,0	script	rogue_mob7	139,4,0,{
+	monster "in_rogue.gat",139,309,"--ja--",1219,1;
+	end;
+}
+in_rogue.gat,135,246,0	script	rogue_mob8	139,0,4,{
+	monster "in_rogue.gat",140,246,"--ja--",1015,1;
+	monster "in_rogue.gat",141,246,"--ja--",1015,1;
+	monster "in_rogue.gat",142,246,"--ja--",1015,1;
+	monster "in_rogue.gat",148,246,"--ja--",1015,1;
+	monster "in_rogue.gat",149,246,"--ja--",1015,1;
+	monster "in_rogue.gat",150,246,"--ja--",1015,1;
+	end;
+}
+in_rogue.gat,199,218,0	script	rogue_mob09	139,0,8,{
+	monster "in_rogue.gat",157,218,"--ja--",1015,10;
+	monster "in_rogue.gat",157,218,"--ja--",1219,1;
+	monster "in_rogue.gat",157,218,"--ja--",1036,1;
+	monster "in_rogue.gat",157,218,"--ja--",1016,1;
+	end;
+}
+in_rogue.gat,86,187,0	script	rogue_mob10	139,0,8,{
+	monster "in_rogue.gat",88,190,"--ja--",1041,1;
+	monster "in_rogue.gat",88,187,"--ja--",1041,1;
+	monster "in_rogue.gat",88,184,"--ja--",1041,1;
+	end;
+}
+in_rogue.gat,225,187,0	script	rogue_mob11	139,0,8,{
+	monster "in_rogue.gat",232,191,"--ja--",1219,1;
+	monster "in_rogue.gat",233,190,"--ja--",1219,1;
+	monster "in_rogue.gat",234,189,"--ja--",1219,1;
+	end;
+}
+in_rogue.gat,252,320,0	script	rogue_mob12	139,0,8,{
+	monster "in_rogue.gat",252,319,"--ja--",1041,1;
+	monster "in_rogue.gat",252,321,"--ja--",1041,1;
+	monster "in_rogue.gat",252,319,"--ja--",1036,1;
+	monster "in_rogue.gat",252,321,"--ja--",1036,1;
+	monster "in_rogue.gat",257,320,"--ja--",1016,1;
+	monster "in_rogue.gat",248,320,"--ja--",1016,1;
+	end;
+}
+
+in_rogue.gat,0,0,0 script rogue_killtimer -1,{
+	end;
+OnMinute03:
+OnMinute06:
+OnMinute09:
+OnMinute12:
+OnMinute15:
+OnMinute18:
+OnMinute21:
+OnMinute24:
+OnMinute27:
+OnMinute30:
+OnMinute33:
+OnMinute36:
+OnMinute39:
+OnMinute42:
+OnMinute45:
+OnMinute48:
+OnMinute51:
+OnMinute54:
+OnMinute57:
+OnMinute60:
+	killmonsterall "in_rogue.gat";
+	end;
+}
+
+in_rogue.gat,370,320,0	script	roguewarp6002	45,1,1,{
+	set change_rogue,16;
+	warp "in_rogue.gat",378,113;
+	end;
 }

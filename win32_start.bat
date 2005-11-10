@@ -50,26 +50,26 @@ if "%_athenatmp_%" == "1" set _athenatmp_=
 
 IF NOT EXIST .\save\castle.txt echo creating .\save\castle.txt
 IF NOT EXIST .\save\castle.txt set _athenatmp_=1
-if "%_athenatmp_%" == "1" echo 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
-if "%_athenatmp_%" == "1" echo 19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 2,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 3,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 4,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 5,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 6,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 7,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 8,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 9,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 10,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 11,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 12,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 13,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 14,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 15,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 16,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 17,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 18,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
+if "%_athenatmp_%" == "1" echo 19,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0 >>.\save\castle.txt
 if "%_athenatmp_%" == "1" set _athenatmp_=
 
 IF NOT EXIST .\conf\login_athena.conf echo Missing .\conf\login_athena.conf

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1.1.1 2005/08/29 21:38:19 running_pinata Exp $
+# $Id: Makefile,v 1.1.1.2 2005/11/10 20:57:51 running_pinata Exp $
 
 CC = gcc -pipe
 PACKETDEF = -DPACKETVER=6 -DNEW_006b
@@ -26,7 +26,7 @@ else
 MAKE = make
 endif
 
-CFLAGS = -D_XOPEN_SOURCE -D_BSD_SOURCE -Wall -I../common $(PACKETDEF) $(OS_TYPE)
+CFLAGS = -D_XOPEN_SOURCE -D_BSD_SOURCE -Wall -Wno-sign-compare -I../common $(PACKETDEF) $(OS_TYPE)
 
 ifdef SQLFLAG
 	CFLAGS += -I$(MYSQL_INCLUDE)

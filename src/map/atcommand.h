@@ -8,6 +8,7 @@ enum AtCommandType {
 	AtCommand_LocalBroadcast,
 	AtCommand_MapMove,
 	AtCommand_ResetState,
+	AtCommand_ResetSkill,
 	AtCommand_RuraP,
 	AtCommand_Rura,
 	AtCommand_Where,
@@ -147,6 +148,15 @@ enum AtCommandType {
 	AtCommand_Econ,
 	AtCommand_Ecoff,
 	AtCommand_Icon,
+	AtCommand_Ranking,
+	AtCommand_Blacksmith,
+	AtCommand_Alchemist,
+	AtCommand_TaeKwon,
+	AtCommand_ResetFeel,
+	AtCommand_ResetHate,
+	AtCommand_emotion,
+	AtCommand_statall,
+	AtCommand_RankingPoint,
 	AtCommand_Unknown,
 	AtCommand_MAX,
 };
@@ -173,6 +183,5 @@ int get_atcommand_level(const AtCommandType type);
 int atcommand_config_read(const char *cfgName);
 int msg_config_read(const char *cfgName);
 extern char msg_table[200][1024];
-
 #endif
 

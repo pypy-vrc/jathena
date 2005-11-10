@@ -9,7 +9,6 @@
 #define pc_setdead(sd) ((sd)->state.dead_sit = 1)
 #define pc_setsit(sd) ((sd)->state.dead_sit = 2)
 //#define pc_setstand(sd) ((sd)->state.dead_sit = 0)
-#define pc_isdead(sd) ((sd)->state.dead_sit == 1)
 #define pc_issit(sd) ((sd)->state.dead_sit == 2)
 #define pc_setdir(sd,b,h) ((sd)->dir = (char)(b) ,(sd)->head_dir = (char)(h) )
 #define pc_setchatid(sd,n) ((sd)->chatID = n)
@@ -21,15 +20,16 @@
 #define pc_isfalcon(sd) ((sd)->status.option&0x0010)
 #define pc_isriding(sd) ((sd)->status.option&0x0020)
 #define pc_isinvisible(sd) ((sd)->status.option&0x0040)
-#define pc_is50overweight(sd) (sd->weight*2 >= sd->max_weight) 
+#define pc_is50overweight(sd) (sd->weight*2 >= sd->max_weight)
 #define pc_is90overweight(sd) (sd->weight*10 >= sd->max_weight*9)
+
+extern int max_job_table[3][28];
 
 void pc_set_gm_account_fname(char *str);
 int pc_isGM(struct map_session_data *sd);
 int pc_numisGM(int account_id);
 int pc_isquitable(struct map_session_data *sd);
 
-int pc_counttargeted(struct map_session_data *sd,struct block_list *src,int target_lv);
 int pc_setrestartvalue(struct map_session_data *sd,int type);
 int pc_makesavestatus(struct map_session_data *);
 int pc_setnewpc(struct map_session_data*,int,int,int,int,int,int);
@@ -37,6 +37,7 @@ int pc_authok(int,struct mmo_charstatus *);
 int pc_authfail(int);
 
 int pc_isequip(struct map_session_data *sd,int n);
+int pc_check_noequip(struct map_session_data *sd, int inv_index);
 int pc_equippoint(struct map_session_data *sd,int n);
 
 int pc_checkskill(struct map_session_data *sd,int skill_id);
@@ -46,10 +47,8 @@ int pc_checkequip(struct map_session_data *sd,int pos);
 int pc_checkoverhp(struct map_session_data*);
 int pc_checkoversp(struct map_session_data*);
 
-int pc_can_reach(struct map_session_data*,int,int);
-int pc_walktoxy(struct map_session_data*,int,int);
-int pc_stop_walking(struct map_session_data*,int);
-int pc_movepos(struct map_session_data*,int,int);
+
+int pc_walktodir(struct map_session_data *sd,int step);
 int pc_setpos(struct map_session_data*,char*,int,int,int);
 int pc_setsavepoint(struct map_session_data*,char*,int,int);
 int pc_randomwarp(struct map_session_data *sd,int type);
@@ -82,6 +81,7 @@ int pc_checkweighticon(struct map_session_data *sd);
 int pc_bonus(struct map_session_data*,int,int);
 int pc_bonus2(struct map_session_data *sd,int,int,int);
 int pc_bonus3(struct map_session_data *sd,int,int,int,int);
+int pc_bonus4(struct map_session_data *sd,int,int,int,int,int);
 int pc_skill(struct map_session_data*,int,int,int);
 
 int pc_bonus_autospell(struct map_session_data* sd,int skillid,int skilllv,int rate, short flag);
@@ -97,9 +97,6 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *bl);
 
 int pc_modifybuyvalue(struct map_session_data*,int);
 int pc_modifysellvalue(struct map_session_data*,int);
-
-int pc_attack(struct map_session_data*,int,int);
-int pc_stopattack(struct map_session_data*);
 
 int pc_checkbaselevelup(struct map_session_data *sd);
 int pc_checkjoblevelup(struct map_session_data *sd);
@@ -156,6 +153,8 @@ int pc_ismarried(struct map_session_data *sd);
 int pc_marriage(struct map_session_data *sd,struct map_session_data *dstsd);
 int pc_divorce(struct map_session_data *sd);
 struct map_session_data *pc_get_partner(struct map_session_data *sd);
+int pc_adoption(struct map_session_data* sd,struct map_session_data *parent);
+int pc_adoption_sub(struct map_session_data* sd,struct map_session_data *papa,struct map_session_data *mama);
 
 int pc_break_equip(struct map_session_data *sd, unsigned short where);
 int pc_break_equip2(struct map_session_data *sd, unsigned short where);
@@ -164,7 +163,6 @@ int pc_candrop(struct map_session_data *sd,int item_id);
 
 void pc_setstand(struct map_session_data *sd);
 int pc_calc_skilltree(struct map_session_data *sd);
-int pc_remove_map(struct map_session_data *sd,int clrtype);
 int pc_check_guild_skill_effective_range(struct map_session_data *sd);
 struct pc_base_job{
 	int job; //E‹ÆA‚½‚¾‚µ“]¶E‚â—{qE‚Ìê‡‚ÍŒ³‚ÌE‹Æ‚ğ•Ô‚·(”pƒvƒŠ¨ƒvƒŠ)
@@ -173,7 +171,7 @@ struct pc_base_job{
 };
 
 int pc_isupper(struct map_session_data *sd);
-int pc_isadoptee(struct map_session_data *sd);
+int pc_isbaby(struct map_session_data *sd);
 
 struct pc_base_job pc_calc_base_job(int b_class);//“]¶‚â—{qE‚ÌŒ³‚ÌE‹Æ‚ğ•Ô‚·
 
@@ -182,6 +180,14 @@ int pc_setinvincibletimer(struct map_session_data *sd,int);
 int pc_delinvincibletimer(struct map_session_data *sd);
 int pc_addspiritball(struct map_session_data *sd,int,int);
 int pc_delspiritball(struct map_session_data *sd,int,int);
+
+int pc_runtodir(struct map_session_data *sd);
+int pc_highjumptoxy(struct map_session_data *sd,int x,int y);
+int pc_highjumptodir(struct map_session_data *sd,int distance);
+
+int pc_check_dir_cell(struct map_session_data *sd);
+
+int pc_check_skillup(struct map_session_data *sd,int skill_num);
 
 //DBÄ“Ç—p
 int pc_readdb(void);

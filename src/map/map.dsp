@@ -219,7 +219,15 @@ SOURCE=..\..\src\map\date.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\map\ranking.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\map\vending.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\map\unit.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -355,11 +363,15 @@ SOURCE=..\..\src\map\trade.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\map\vending.h
+SOURCE=..\..\src\map\date.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\map\date.h
+SOURCE=..\..\src\map\ranking.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\map\vending.h
 # End Source File
 # Begin Source File
 
@@ -372,6 +384,10 @@ SOURCE=..\..\src\common\zconf_win32.h
 # Begin Source File
 
 SOURCE=..\..\src\common\zlib_win32.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\map\unit.h
 # End Source File
 # End Group
 # End Target

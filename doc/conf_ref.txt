@@ -1274,29 +1274,34 @@ combo_delay_lower_limits
 	コンボに最低入力保障時間を設けます
 	パラメーターが大きくなりすぎる場合に使ってください
 
-reveff_plus_addeff : no
+reveff_plus_addeff: no
 	攻撃を受けた時の状態異常の反撃に武器の異常確率を加算する
 	yes : reveff + addeff
 	no  : reveff
 
-summonslave_no_exp  :  no
-summonslave_no_drop :  no
-summonslave_no_mvp  :  no
-	yesで取巻き・召還のEXP,DROP,MVPをなくします
+summonslave_no_exp: no
+summonslave_no_drop: no
+summonslave_no_mvp: no
+	yesで取巻きのEXP,DROP,MVPをなくします
 
-cannibalize_no_exp :  no
-cannibalize_no_drop :  no
-cannibalize_no_mvp :  no
+summonmonster_no_exp: no
+summonmonster_no_drop: no
+summonmonster_no_mvp: no
+	yesで召還MobのEXP,DROP,MVPをなくします
+
+cannibalize_no_exp: no
+cannibalize_no_drop: no
+cannibalize_no_mvp: no
 	バイオプラントのEXP,DROP,MVPをなくします
 
-branch_mob_no_exp  : no
-branch_mob_no_drop : no
-branch_mob_no_mvp  : no
+branch_mob_no_exp: no
+branch_mob_no_drop: no
+branch_mob_no_mvp: no
 	枝MOB(非BOSS属性)のEXP,DROP,MVPをなくします
 
-branch_boss_no_exp  : no
-branch_boss_no_drop : no
-branch_boss_no_mvp  : no
+branch_boss_no_exp: no
+branch_boss_no_drop: no
+branch_boss_no_mvp: no
 	枝MOB(BOSS属性)のEXP,DROP,MVPをなくします
 
 	※アゾート,カード効果で変えたMOBはドロップがあります
@@ -1310,7 +1315,7 @@ death_by_unrig_penalty
 	yes :　装備解除ペナルティで死ねます
 	no  :  装備解除ペナルティで死ぬ場合１残ります
 
-dance_and_play_duration : 20000
+dance_and_play_duration: 20000
 	演奏・踊りの効果場の持続時間です
 	デフォルトは20000(単位ミリ秒)
 
@@ -1511,6 +1516,147 @@ pet0078_hair_id: 100
 	jRO-2005-08-02b では 100, jRO-2005-07-12b では 24,
 	jRO-2005-05-09e や、それより古い物は 20 で良いと思う。
 	韓蔵や桜井はチェックしていない。
+
+job_soul_check: yes
+	～魂スキルを使う際に対象の職業をチェックするかどうか
+
+repeal_die_counter_rate: 100
+	スパノビの魂　死亡カウンタを一時的に無効化する(万分率)
+
+tripleattack_rate_up_keeptime: 2000
+	三段掌発動率アップの持続時間
+
+tk_counter_rate_up_keeptime: 2000
+	カウンター姿勢発動率アップの持続時間
+
+disp_job_soul_state_change: no
+	魂状態に～の表示ON/OFF
+
+check_knowlege_map: yes
+	太陽と月と星の知識のマップチェック
+
+allow_skill_without_day: no
+	ケンセイスキルの日時条件を無視する
+
+debug_new_disp_status_icon_system: no
+	状態アイコンの表示非表示の内部処理を新方式にする(テスト用)
+	成功すれば、SC_SENDMAX以下の空きを利用できるかもしれない(謎)
+
+save_hate_mob: no
+	太陽と月と星の憎悪データを保存するか
+
+twilight_party_check: yes
+	トワイライトファーマシーのPT条件をチェックするか
+
+alchemist_point_type: 0
+	アルケミストのランキングポイントの計算方法
+	0: 累計型 3,5,7,10回成功時にそれぞれポイントを獲得(本鯖らしい)
+	1: 3回以上成功後の失敗時、または10回成功時にポイントを獲得
+
+save_am_pharmacy_success: no
+	アルケミランキング用のファーマシー連続成功回数を保存する
+
+pharmacy_get_point_type: 0
+	アルケミストのランキングポイントの取得方法
+	0:スリムのみ対象(本鯖)
+	1:全てのファーマシーが対象
+
+marionette_type: 0
+	マリオネットコントロールの計算
+	0:上限99の本鯖
+	1:純粋に半分を付与
+
+baby_status_max: 80
+	//養子のステータス限界
+
+baby_hp_rate: 70
+	//養子のHP補正(%)
+
+baby_sp_rate: 70
+	//養子のSP補正(%)
+
+baby_weight_rate: 100
+	//養子の所持量補正(%)
+
+no_emergency_call: yes
+	//緊急招集を使えなくする
+
+save_all_ranking_point_when_logout: no
+	//ログアウト時に全てのランキングポイントを保存するか
+	//(独自実装用)
+
+soul_linker_battle_mode: 0
+	//ソウルリンカーの戦闘モード
+	//0:準備動作と飛び蹴りが使えない(本鯖仕様)
+	//1:魂状態のみ使える
+	//2:条件無し
+
+soul_linker_battle_mode_ka: 0
+	//ソウルリンカーのカー系列の魔法使用条件
+	//0:魂状態のみ他のPCに使える(本鯖仕様)
+	//1:条件無し
+
+skillup_type: 0
+	//スキルを上げるときに下位スキルに規定ポイントを振っていないと
+	//上位スキルを上げられないようにする(二次スキルも見えるタイプ)
+	//1:本鯖の再振りシステム
+	//0:自由
+
+allow_me_dance_effect: no
+	//演奏・踊りのスキル効果を自分にも適用する
+
+allow_me_concert_effect: no
+	//合奏スキル効果を自分にも適用する
+
+soulskill_can_be_used_for_myself: no
+	//魂を自分に使用可能か(no:本鯖)
+
+hermode_wp_check_range: 3
+	//ヘルモードの杖のWPチェックを範囲
+
+hermode_gvg_only: yes
+	//ヘルモードの杖はGvG中しか使用できない
+
+hermode_wp_check: yes
+	//ヘルモードの杖のWPチェックを行うか
+
+hermode_no_walking: no
+	//ヘルモードの杖の使用中に歩けるか
+
+atcommand_go_significant_values: 16
+	//@goの有効数字を制限
+
+expansion_job1_skill_cloneable: no
+	//テコン系のスキルをクローン完全にクローン可能にするか
+	//yes:魂スキル以外可能(ビーストストレイフィング除外)
+	//no :飛び蹴りのみ
+
+questskill2_cloneable: no
+	//二次職のクエストスキルをクローン可能にするか
+
+redemptio_penalty_type: 0
+	//レディムプティオのペナルティタイプ
+	//0:無条件に死ぬ
+	//+1:蘇生人数0人だとペナルティ無し
+	//+2:蘇生5人以上でHP1で生き残る
+	//+4:HP1で生き残る
+	//+8:ペナルティ無し
+
+boss_no_knockbacking: no
+	//ボスはノックバックしない
+
+allow_create_scroll: no
+	//スクロール製造を許す
+
+scroll_produce_rate: 100
+	// スクロール製造スキルでの製造確率調整（100で通常、200で倍の確率…）
+
+scroll_item_name_input: no
+	// 製造で作られたスクロールに製造者の名前を付けるかどうか
+
+pet_leave: yes
+	ペットとの新密度が0になったらすぐに消えるかどうか
+	本鯖だと、すぐに消えるそうなので、yesがデフォルトです。
 
 
 import
@@ -1717,6 +1863,45 @@ noexp_hiding: no
 noexp_trickdead: no
 serverside_friendlist: yes
 pet0078_hair_id: 100
+job_soul_check: yes
+repeal_die_counter_rate: 100
+tripleattack_rate_up_keeptime: 2000
+tk_counter_rate_up_keeptime: 2000
+disp_job_soul_state_change: no
+check_knowlege_map: yes
+allow_skill_without_day: no
+debug_new_disp_status_icon_system: no
+save_hate_mob: no
+twilight_party_check: yes
+alchemist_point_type: 0
+save_am_pharmacy_success: no
+pharmacy_get_point_type: 0
+marionette_type: 0
+baby_status_max: 80
+baby_hp_rate: 70
+baby_sp_rate: 70
+baby_weight_rate: 100
+no_emergency_call: yes
+save_all_ranking_point_when_logout: no
+soul_linker_battle_mode: 0
+soul_linker_battle_mode_ka: 0
+skillup_type: 0
+allow_me_dance_effect: no
+allow_me_concert_effect: no
+soulskill_can_be_used_for_myself: no
+hermode_wp_check_range: 3
+hermode_gvg_only: yes
+hermode_wp_check: yes
+hermode_no_walking: no
+atcommand_go_significant_values: 16
+expansion_job1_skill_cloneable: no
+questskill2_cloneable: no
+redemptio_penalty_type: 0
+boss_no_knockbacking: no
+allow_create_scroll: no
+scroll_produce_rate: 100
+scroll_item_name_input: no
+pet_leave: yes
 
 
 ==========================================================================
@@ -2046,6 +2231,7 @@ mesweb: 1
 httpd_config
 	全サーバー共通の httpd の設定が書かれたファイルを指定します。
 
+
  ** ddos攻撃と判断する為のルール設定 **
  ddos_interval msec以内の接続要求がddos_count回続いた場合に、
  ddos攻撃されたと判定します。
@@ -2058,6 +2244,34 @@ ddos_count
 
 ddos_autoreset: 600000
 	この時間経過すると、接続制限が解除されます。
+
+
+ ** 受信帯域制限に関するルール設定 **
+   受信の通信速度を recv_limit_rate_bytes の帯域幅に制限します
+   recv_limit_rate_period を小さくすると帯域の増大に敏感になりますが、誤反応しやすくなります。
+   recv_limit_rate_period を大きくすると鈍感になります。
+   recv_limit_rate_wait_max は制限解除待ちの時間に上限を与えます。
+   recv_limit_rate_disconnect 以上の間、帯域制限が続くと切断します
+
+recv_limit_rate_enable: 1
+ 受信帯域制限を有効にするかどうか( 0 で無効)
+
+recv_limit_rate_period: 500
+	チェック間隔（msec）
+
+recv_limit_rate_bytes: 1024
+	制限する帯域幅（bytes/sec)
+
+recv_limit_rate_wait_max: 2000
+	制限する無通信時間の上限（msec）
+
+recv_limit_rate_disconnect: 5000
+	この時間、帯域制限が続くと切断する（msec）
+	recv_limit_rate_wait_max より大きくする必要がある
+
+
+send_limit_buffer_size: 131072
+	送信バッファの最大サイズ（鯖間リンクや httpd を除く）
 
 
  ** アクセス制御のルール設定 **
@@ -2108,6 +2322,12 @@ httpd_config: conf/httpd.conf
 ddos_interval: 1000
 ddos_count: 5
 ddos_autoreset: 600000
+recv_limit_rate_enable: 1
+recv_limit_rate_period: 500
+recv_limit_rate_bytes: 1024
+recv_limit_rate_wait_max: 2000
+recv_limit_rate_disconnect: 5000
+send_limit_buffer_size: 131072
 order: deny,allow
 deny: all
 allow: 127.0.0.1
@@ -2146,6 +2366,9 @@ request_timeout_persist
 max_persist_requests
 	持続通信の最大リクエスト数
 
+max_uri_length: 255
+	URI の長さ制限
+
 auth_digest_period
 	Digest 認証の nonce 有効期限（ミリ秒）
 
@@ -2153,11 +2376,25 @@ timezone
 	タイムゾーン(auto または時差) ログの表示に使います。
 	auto で警告がでるなら手動設定が必要です。
 	英国は 0 , 日本は +9 …etc。
+	
+log_no_flush: 0
+	ログをフラッシュしないかどうか(0でフラッシュする)
+
+
+ ** 秒間リクエスト数の制限 **
+ 
+server_max_requests_per_second: 10
+	サーバー全体で処理する秒間リクエスト数をこの個数に制限する
+
+server_max_requests_period: 2000
+	サーバー全体で処理数を制限する場合のチェック間隔（ミリ秒）
+	この値が小さい場合、アクセスの集中度合いに時間的なムラがあると 503 を返しやすくなる。
+	大きい場合、一度制限がかかると解除に時間(設定したミリ秒)がかかる。
 
 
  ** url 単位でのアクセス制御 **
 
- このあたりは .htaccess の構文と似ているのでそちらの解説を
+ このあたりは apache の .htaccess の構文と似ているのでそちらの解説を
  参照するとかなりわかりやすいとおもいます。
 
 target
@@ -2185,8 +2422,9 @@ deny
 	clear を指定すると、全ての禁止 IP を削除します。
 
 authtype
-	認証タイプを指定します。"basic" か "digest" です。
-	Basic 認証か Digest 認証かを設定します。省略すると認証は行われません。
+	認証タイプを指定します。"basic" か "digest" か "none" です。
+	Basic 認証か Digest 認証か、または認証しないかを設定します。
+	省略すると認証は行われません（"none" になります）。
 	Digest 認証はブラウザによってはサポートされていないかもしれませんが、
 	安全性は高いです。またサーバーの負担が大きいです。
 	Basic 認証は安全性は皆無ですが、サーバーの負担が少ないです。
@@ -2234,8 +2472,10 @@ document_root: httpd/
 request_timeout_first: 2500
 request_timeout_persist: 60000
 max_persist_requests: 32
+max_uri_length: 255
 timezone: auto
 auth_digest_period: 600000
+log_no_flush: 0
 
 target: /memberspage/
 satisfy: any

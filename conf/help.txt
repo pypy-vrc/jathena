@@ -65,6 +65,7 @@
 @hide              ---- 透明 ON/OFF
 @heal   HP回復量 SP回復量           ---- HP,SPを回復する。(何も渡さないと完全回復)
 @str,@agi,@vit,@int,@dex,@luk 数字  ---- 基本ステータスの増減
+@statall           ---- 全ステータスMAX、指定された場合は全ステータスの増減
 
 @makepet モンスターのIDor卵のID     ---- ペットの作成
 @petfriendly 数字  ---- ペット新密度変更(0-1000)
@@ -105,6 +106,7 @@
 @gat                ---- デバッグ用(周辺gatを調べる)
 @packet             ---- デバッグ用(パケット色々)
 @icon	数字  0/1   ---- デバック用(状態アイコンのON/OFF)
+@emotion            ---- デバッグ用(エモーションの表示)
 @spiritball 数字    ---- 数字[1～1000]自分の周りに孔を出す(1000↑にすると鞍がパンクするので注意)
 
 @allskill                ---- 全スキルを取得
@@ -165,7 +167,6 @@
 @mes comment		--- すべてのプレイヤーにメッセージを送信
 @users 		--- サーバー内の人数分布を表示
 
-
 @idsearch 文字列	--- 指定した文字を含むItemを検索
 @shuffle 数字1		--- PC、MOBを配置(シャッフル)しなおす
 @maintenance 数字	--- 1:メンテナンス状態にする
@@ -174,14 +175,11 @@
 @summon MOBのIDor名前 	--- 偽コールホムンクルス
 @im MOB名orアイテム名orアイテムID	--- MOBやアイテムの召還、装備以外のアイテムは30個召還
 
-
 @npctalk npc名 comment	--- 指定したNPCにcommentを発言させる
 @pettalk comment	--- ペットにcommentを発言させる
 
-
 @itemcheck		--- 不明
 @param			--- コメントアウトされている
-
 
 
 broadcast	--- ワールド全体に発言
@@ -199,6 +197,17 @@ resetstate
 	/resetstate	--- ステータスリセット
 	/resetskill	--- スキルリセット
 
-
 @econ	---- 緊急招集受諾！※ギルドメンバー以外使っても効果なし
 @ecoff	---- 緊急召集拒否！※ギルドメンバー以外使っても効果なし
+
+@ranking 数字	---ランキングを表示
+@blacksmith 	---ブラックスミスランキングを表示
+@alchemist	---アルケミストランキングを表示
+@taekwon	---テコンランカーを表示
+@rankingpoint タイプ ポイント		--- ランキングポイントを変える
+	数字1はタイプ 0:ブラックスミス 1:アルケミスト 2テコン
+
+@resetfeel 数字  ---0:太陽 1:月 2:星
+		    太陽と月と星の感情をリセット
+@resethate 数字  ---0:太陽 1:月 2:星
+		    太陽と月と星の憎悪をリセット

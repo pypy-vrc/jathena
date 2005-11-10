@@ -1638,6 +1638,7 @@ end;
 
 L3:/*HPが0になりニブルヘイムへ転送。死んでしまうので99*/
 mapannounce "umbala.gat","バンジージャンプ台: " + strcharinfo(0) + " : ウワアアアアアアア～～～！",8;
+	percentheal 100,0;
 	percentheal -99,0;
 	warp "nif_in.gat",68,14;
 end;

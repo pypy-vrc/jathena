@@ -1,4 +1,4 @@
-// $Id: db.c,v 1.1.1.1 2005/08/29 21:39:30 running_pinata Exp $
+// $Id: db.c,v 1.1.1.2 2005/11/10 20:58:56 running_pinata Exp $
 #define MALLOC_DBN
 #include <stdio.h>
 #include <stdlib.h>
@@ -127,6 +127,7 @@ struct dbt* numdb_init_(const char *file,int line)
 void* db_search(struct dbt *table,void* key)
 {
 	struct dbn *p;
+	if( table == NULL ) return NULL;
 
 	for(p=table->ht[table->hash(table,key) % HASH_SIZE];p;){
 		int c=table->cmp(table,key,p->key);
@@ -476,13 +477,20 @@ void* db_erase(struct dbt *table,void* key)
 
 void db_foreach(struct dbt *table,int (*func)(void*,void*,va_list),...)
 {
+	va_list ap;
+
+	va_start(ap, func);
+	db_foreach_sub(table, func, ap);
+	va_end(ap);
+}
+
+void db_foreach_sub(struct dbt* table,int(*func)(void*,void*,va_list), va_list ap)
+{
 	int i,sp;
 	int count = table->item_count;
 	// red-black tree‚È‚Ì‚Å64ŒÂstack‚ª‚ ‚ê‚Î2^32ŒÂƒm[ƒh‚Ü‚Å‘åä•v
 	struct dbn *p,*pn,*stack[64];
-	va_list ap;
 
-	va_start(ap,func);
 	db_free_lock(table);
 	for(i=0;i<HASH_SIZE;i++){
 		if((p=table->ht[i])==NULL)
@@ -519,43 +527,141 @@ void db_foreach(struct dbt *table,int (*func)(void*,void*,va_list),...)
 	// else {
 	// 	printf("db_foreach : ok\n");
 	// }
-	va_end(ap);
 }
 
 void db_final(struct dbt *table,int (*func)(void*,void*,va_list),...)
 {
-	int i,sp;
-	struct dbn *p,*pn,*stack[64];
+	int i;
+	struct dbn *p;
 	va_list ap;
 
 	va_start(ap,func);
-	db_free_lock(table);
 	for(i=0;i<HASH_SIZE;i++){
-		if((p=table->ht[i])==NULL)
-			continue;
-		sp=0;
-		while(1){
-			if(func && !p->deleted)
-				func(p->key,p->data,ap);
-			if((pn=p->left)!=NULL){
-				if(p->right){
-					stack[sp++]=p->right;
-				}
-			} else {
-				if(p->right){
-					pn=p->right;
-				} else {
-					if(sp==0)
-						break;
-					pn=stack[--sp];
-				}
+		while( ( p = table->ht[i] ) ) {
+			while( p->left || p->right ) {
+				p = (p->right ? p->right : p->left);
 			}
+			if( !p->parent ) {
+				table->ht[i] = NULL;
+			} else if( p->parent->left == p ) {
+				p->parent->left  = NULL;
+			} else {
+				p->parent->right = NULL;
+			}
+			if( func ) 
+				func( p->key, p->data, ap );
+#ifdef MALLOC_DBN
 			free_dbn(p);
-			p=pn;
+#else
+			aFree(p);
+#endif
 		}
 	}
-	db_free_unlock(table);
 	free(table->free_list);
 	free(table);
 	va_end(ap);
 }
+
+void  linkdb_insert( struct linkdb_node** head, void *key, void* data) {
+	struct linkdb_node *node;
+	if( head == NULL ) return ;
+	node = aMalloc( sizeof(struct linkdb_node) );
+	if( *head == NULL ) {
+		// first node
+		*head      = node;
+		node->prev = NULL;
+		node->next = NULL;
+	} else {
+		// link nodes
+		node->next    = *head;
+		node->prev    = (*head)->prev;
+		(*head)->prev = node;
+		(*head)       = node;
+	}
+	node->key  = key;
+	node->data = data;
+}
+
+void* linkdb_search( struct linkdb_node** head, void *key) {
+	int n = 0;
+	struct linkdb_node *node;
+	if( head == NULL ) return NULL;
+	node = *head;
+	while( node ) {
+		if( node->key == key ) {
+			if( node->prev && n > 5 ) {
+				// ˆ—Œø—¦‰ü‘P‚Ìˆ×‚Éhead‚ÉˆÚ“®‚³‚¹‚é
+				if(node->prev) node->prev->next = node->next;
+				if(node->next) node->next->prev = node->prev;
+				node->next = *head;
+				node->prev = (*head)->prev;
+				(*head)->prev = node;
+				(*head)       = node;
+			}
+			return node->data;
+		}
+		node = node->next;
+		n++;
+	}
+	return NULL;
+}
+
+void* linkdb_erase( struct linkdb_node** head, void *key) {
+	struct linkdb_node *node;
+	if( head == NULL ) return NULL;
+	node = *head;
+	while( node ) {
+		if( node->key == key ) {
+			void *data = node->data;
+			if( node->prev == NULL )
+				*head = node->next;
+			else
+				node->prev->next = node->next;
+			if( node->next )
+				node->next->prev = node->prev;
+			aFree( node );
+			return data;
+		}
+		node = node->next;
+	}
+	return NULL;
+}
+
+void linkdb_replace( struct linkdb_node** head, void *key, void *data ) {
+	int n = 0;
+	struct linkdb_node *node;
+	if( head == NULL ) return ;
+	node = *head;
+	while( node ) {
+		if( node->key == key ) {
+			if( node->prev && n > 5 ) {
+				// ˆ—Œø—¦‰ü‘P‚Ìˆ×‚Éhead‚ÉˆÚ“®‚³‚¹‚é
+				if(node->prev) node->prev->next = node->next;
+				if(node->next) node->next->prev = node->prev;
+				node->next = *head;
+				node->prev = (*head)->prev;
+				(*head)->prev = node;
+				(*head)       = node;
+			}
+			node->data = data;
+			return ;
+		}
+		node = node->next;
+		n++;
+	}
+	// Œ©‚Â‚©‚ç‚È‚¢‚Ì‚Å‘}“ü
+	linkdb_insert( head, key, data );
+}
+
+void  linkdb_final( struct linkdb_node** head ) {
+	struct linkdb_node *node, *node2;
+	if( head == NULL ) return ;
+	node = *head;
+	while( node ) {
+		node2 = node->next;
+		aFree( node );
+		node = node2;
+	}
+	*head = NULL;
+}
+

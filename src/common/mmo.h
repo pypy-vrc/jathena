@@ -3,6 +3,9 @@
 #ifndef	_MMO_H_
 #define	_MMO_H_
 
+#include <stdio.h>
+#include <string.h>
+
 #pragma pack(4)
 
 #ifdef CYGWIN
@@ -12,14 +15,15 @@
 #	define RETCODE "\n"	// (LFÅFUnixånÅj
 #endif
 
+#define AUTH_FIFO_SIZE 256
 #define FIFOSIZE_SERVERLINK	128*1024
 
-#define MAX_MAP_PER_SERVER 512
+#define MAX_MAP_PER_SERVER (512+64)
 #define MAX_INVENTORY 100
 #define MAX_AMOUNT 30000
 #define MAX_ZENY 1000000000	// 1G zeny
 #define MAX_CART 100
-#define MAX_SKILL 500
+#define MAX_SKILL 1020
 #define GLOBAL_REG_NUM 96
 #define ACCOUNT_REG_NUM 16
 #define ACCOUNT_REG2_NUM 16
@@ -45,6 +49,7 @@
 #define MIN_CLOTH_COLOR 0
 #define MAX_CLOTH_COLOR 4
 
+#define MOB_ID_MAX 2000
 // for produce
 #define MIN_ATTRIBUTE 0
 #define MAX_ATTRIBUTE 4
@@ -109,6 +114,8 @@ struct mmo_charstatus {
 	int char_id;
 	int account_id;
 	int partner_id;
+	int parent_id[2];
+	int baby_id;
 
 	int base_exp,job_exp,zeny;
 

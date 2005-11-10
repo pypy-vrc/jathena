@@ -607,7 +607,7 @@ close;
 //---------------------------
 //==== チャージアロー ===
 //---------------------------
-payon.gat,30,94,3	script	カイゴ	88,{
+payon.gat,103,63,4	script	カイゴ	88,{
 	if ((Class == Job_Archer) && (JobLevel < 35)) goto LStartLowlv;
 	if (!((Class == Job_Archer) || (Class == Job_Hunter) || (Class == Job_Bard) || (Class == Job_Dancer))) goto LStartOther;
 	if (getskilllv(148)>0) goto LStartTwice;
@@ -2445,7 +2445,7 @@ LStartOther:
 //-----------------------------------------------
 //==== ポケット販売商人(skill_thief_1関連)
 //-----------------------------------------------
-payon.gat,30,120,4	script	ポケット販売商人	99,{
+payon.gat,91,77,4	script	ポケット販売商人	99,{
 	mes "[ルルムニ]";
 	mes "私はこのフェイヨン地方で";
 	mes "弓と矢で狩りする";

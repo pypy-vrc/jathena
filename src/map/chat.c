@@ -1,4 +1,4 @@
-// $Id: chat.c,v 1.1.1.1 2005/08/29 21:39:43 running_pinata Exp $
+// $Id: chat.c,v 1.1.1.2 2005/11/10 20:59:08 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,6 +28,9 @@ int chat_createchat(struct map_session_data *sd,int limit,int pub,char* pass,cha
 	struct chat_data *cd;
 
 	nullpo_retr(0, sd);
+	chat_leavechat(sd);
+	if(sd->joinchat)
+		return 0;
 
 	cd = aCalloc(1,sizeof(struct chat_data));
 
@@ -53,7 +56,9 @@ int chat_createchat(struct map_session_data *sd,int limit,int pub,char* pass,cha
 		return 0;
 	}
 	pc_setchatid(sd,cd->bl.id);
-
+	
+	sd->joinchat = 1;
+	
 	clif_createchat(sd,0);
 	clif_dispchat(cd,0);
 
@@ -74,7 +79,7 @@ int chat_joinchat(struct map_session_data *sd,int chatid,char* pass)
 	if(cd==NULL)
 		return 1;
 
-	if(cd->bl.m != sd->bl.m || cd->limit <= cd->users){
+	if(cd->bl.m != sd->bl.m ||  sd->vender_id || cd->limit <= cd->users){
 		clif_joinchatfail(sd,0);
 		return 0;
 	}
@@ -82,7 +87,12 @@ int chat_joinchat(struct map_session_data *sd,int chatid,char* pass)
 		clif_joinchatfail(sd,1);
 		return 0;
 	}
-
+	
+	if(sd->joinchat){
+		clif_joinchatfail(sd,0);
+		return 0;
+	}
+	
 	cd->usersd[cd->users] = sd;
 	cd->users++;
 

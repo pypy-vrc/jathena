@@ -55,7 +55,26 @@ void* db_search(struct dbt *table,void* key);
 struct dbn* db_insert(struct dbt *table,void* key,void* data);
 void* db_erase(struct dbt *table,void* key);
 void db_foreach(struct dbt*,int(*)(void*,void*,va_list),...);
+void db_foreach_sub(struct dbt*,int(*)(void*,void*,va_list), va_list ap);
 void db_final(struct dbt*,int(*)(void*,void*,va_list),...);
 void exit_dbn(void);
+
+// リンクリストDB -- treedb よりも規模が小さいやつ向けのデータベース
+// 　・キーの重複チェックはreplace のみ
+// 　・負荷対策のため、事前の初期化はheadにNULLを代入するだけ
+// 　・linkdb_node は関数内で確保するため、利用側はポインタ１つを宣言するだけ
+
+struct linkdb_node {
+	struct linkdb_node *next;
+	struct linkdb_node *prev;
+	void               *key;
+	void               *data;
+};
+
+void  linkdb_insert ( struct linkdb_node** head, void *key, void* data); // 重複を考慮しない
+void  linkdb_replace( struct linkdb_node** head, void *key, void* data); // 重複を考慮する
+void* linkdb_search ( struct linkdb_node** head, void *key);
+void* linkdb_erase  ( struct linkdb_node** head, void *key);
+void  linkdb_final  ( struct linkdb_node** head );
 
 #endif

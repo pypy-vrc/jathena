@@ -1126,6 +1126,8 @@ S 0203 <id1>.l <id2>.l
 	友達リストから削除要求
 S 0204 <ragexe md5>.16B
 	ログイン要求に付加されるパケット。16バイトは固定？
+R 0205 ？
+	～さんと～さんが離婚しました
 R 0206 <id1>.l <id2>.l <flag>.B
 	友達リストの接続情報通知
 	flag=1 ログアウト、flag=0 ログイン
@@ -1141,3 +1143,50 @@ R 020A <id1>.l <id2>.l
 	友達リストから削除通知
 S 020B <?>.B<ragexe md5>.16B
 	キャラクタサーバ接続要求0065に付加されるパケット。1+0204の16バイトで17バイト？
+
+R 020e
+	上に何か表示？ある程度長いパケットを送ると青白い光がキャラに出る。
+R 0210
+	PVPのポイント表示
+R 0214 { <Val>.w }*25
+	ステータス表示？
+			STR,AGI,VIT,INT,DEX,LUK,
+standard	STR,AGI,VIT,INT,DEX,LUK,
+			attPower,refiningPower,MAXmatpow,Minmatpower,ASPD,
+			itemdefPow,plusdefPow,mdefPower,plusmdefPow,plusASPD,
+			hitSuccsesVal,avoidSuccsesVal,plusAvoidSuccsesValue
+S 0217
+	/blacksmith
+S 0218
+	/alchemist
+R 0219 { <charname>.24B }*10 { <point>.L }*10
+	BSランキング
+R 021a { <charname>.24B }*10 { <point>.L }*10
+	アルケミランキング
+R 021b <point>.L <total>.L
+	BSランキングポイントが<point>上昇して、<total>になりました。
+R 021c <point>.L <total>.L
+	アルケミランキングポイントが<point>上昇して、<total>になりました。
+R 0221 <len>.l { <?1>.w <RefineItemID>.w <?2>.9B }.13B*
+	精錬選択ウィンドウ
+S 0222 <?1>.w
+	精錬アイテム選択
+R 0224 <point>.L <total>.L
+	テコンミッションランキングポイントが<point>上昇して、<total>になりました。
+R 0226 { <charname>.24B }*10 { <point>.L }*10
+	テコンランキング
+R 022a
+	表示関連か？蔵エラーが出る
+R 022b
+	表示関連か？蔵エラーが出る
+R 022c
+	表示関連か？蔵エラーが出る
+R 0236 <point>.L <total>.L
+	虐殺者ランキングポイントが<point>上昇して、<total>になりました。
+S 0237
+	/pk
+R 0238 { <charname>.24B }*10 { <point>.L }*10
+	虐殺者ランキング
+R 0253
+	ﾒｯｾｰｼﾞ「一度指定すると変更は不可能です！」
+	OKを押すと、鯖キャンさせられる
