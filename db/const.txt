@@ -5,7 +5,8 @@
 //ñàì˙çsÇ»Ç§èÍçáÇÕGvGWeekDayÇ127Ç…Ç∑ÇÈ
 //åéójÇ∆êÖójÇ»ÇÁ10ÅAìyì˙Ç»ÇÁ65
 
-GvGWeekDay	1
+GvGWeekDay	127
+//GvGWeekDay	1
 
 
 //--------------GvGéûä‘ (0éûÅ`23éû)ÇÃê›íË-------------------
@@ -14,7 +15,7 @@ GvGWeekDay	1
 
 //ñàâÒìØÇ∂éûä‘ÇÃèÍçáÅiójì˙Ç≤Ç∆Ç…ïœÇ¶ÇΩÇ¢Ç∆Ç´ÇÕóºï˚0Åj
 GvGTimeST	0
-GvGTimeED	0
+GvGTimeED	24
 
 //--------------GvGéûä‘ (0éûÅ`23éû)ÇÃå¬ï ÇÃê›íË-------------------
 //ó·ÇÕåéÅ`ã‡20Å`22éûÅAìyì˙ÇÕìyój22éûÇ©ÇÁì˙ój2éûÇ‹Ç≈
@@ -76,6 +77,8 @@ Job_TaeKwonBoy	24
 Job_StarGladiator	25
 Job_StarGladiator2	26
 Job_SoulLinker	27
+Job_Gunslinger  28
+Job_Ninja	29
 
 mf_nomemo	0
 mf_noteleport	1
@@ -90,6 +93,9 @@ mf_gvg_noparty	9
 mf_nozenypenalty	10
 mf_notrade	11
 mf_noskill		12
+mf_noportal	13
+mf_noabra	14
+mf_noicewall	15
 
 StatusPoint	9	1
 BaseLevel	11	1
@@ -255,6 +261,16 @@ bAddShortWeaponDamage	1119
 bAddLongWeaponDamage	1120
 bWeaponComaEle2	1121
 bWeaponComaRace2	1122
+bGetZenyNum2	1123
+bAddGetZenyNum2	1124
+bAddEffShort	1125
+bAddEffLong	1126
+bAtkRangeRate	1127
+bAtkRange2	1128
+bAtkRangeRate2	1129
+bAutoStatusCalcPc 1130
+bEternalStatusChange 1131
+bItemNoUse	1132
 
 bRestartFullRecover	2000
 bNoCastCancel	2001
@@ -293,10 +309,11 @@ SC_Confusion	135
 SC_Blind	136
 SC_Bleed	137
 SC_DPoison	182
-SC_Undead	326
+SC_Hallucination	34
 SC_SpeedPot0	37
 SC_SpeedPot1	38
 SC_SpeedPot2	39
+SC_ItemDelay	41
 SC_INCATK	185
 SC_INCMATK	186
 SC_WEDDING	187
@@ -345,13 +362,26 @@ SC_ResistDark	322
 SC_ResistTelekinesis	323
 SC_ResistUndead	324
 SC_ResistAll	325
+SC_RaceUnknown	326
+SC_RaceUndead	327
+SC_RaceBeast	328
+SC_RacePlant	329
+SC_RaceInsect	330
+SC_RaceFish	332
+SC_RaceDevil	333
+SC_RaceHuman	334
+SC_RaceAngel	335
+SC_RaceDragon	336
+SC_Tigereye	337
 SC_REDEMPTIO	342
 SC_INCREASEAGI	12
 SC_DECREASEAGI	13
 
 //sc_endêÍóp
 SC_ResistClear	1001
-
+SC_RaceClear	1002
+SC_Soul		1003
+SC_SoulClear	1004
 
 GD_APPROVAL	10000
 GD_KAFRACONTACT	10001
@@ -368,10 +398,11 @@ GD_RESTORE	10012
 GD_EMERGENCYCALL	10013
 GD_DEVELOPMENT	10014
 
-EAS_ATTACK	1
-EAS_REVENGE	2
-EAS_LONG_ATTACK	4
-EAS_LONG_REVENGE	8
+EAS_SHORT	1
+EAS_LONG	2
+EAS_WEAPON	3
+EAS_MAGIC	4
+EAS_MISC	8
 EAS_TARGET	16
 EAS_SELF	32
 EAS_TARGET_RAND	64
@@ -383,6 +414,10 @@ EAS_NOSP	4096
 EAS_SPCOST1	8192
 EAS_SPCOST2	16384
 EAS_SPCOST3	32768
+EAS_ATTACK	65536
+EAS_REVENGE	131072
+EAS_NORMAL	262144
+EAS_SKILL	524288
 
 BLUE_BOX	-1
 VIOLET_BOX	-2
@@ -397,4 +432,5 @@ DIAMOND_HOOD	-10
 DIAMOND_HELM	-11
 DIAMOND_SHOES	-12
 DIAMOND_SHIELD	-13
-MEIJI_ALMOND	-14
+JEWEL_BOX	-14
+MEIJI_ALMOND	-15

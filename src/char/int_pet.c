@@ -322,7 +322,6 @@ int  pet_sql_new(struct s_pet *p,int account_id,int char_id) {
 	MYSQL_ROW  sql_row = NULL;
 
 	printf("Request make pet  (------)[");
-	numdb_insert(pet_db,p->pet_id,p);
 	// rename_flag = -1, incuvate = char_id のダミーデータを入れて、  
 	sprintf(
 		tmp_sql,
@@ -334,7 +333,8 @@ int  pet_sql_new(struct s_pet *p,int account_id,int char_id) {
 	);
 	if(mysql_query(&mysql_handle, tmp_sql)){
 		printf("failed (insert pet), SQL error: %s\n", mysql_error(&mysql_handle));
-		return 0;
+		aFree(p);
+		return 1;
 	}
 
 	// ダミーデータを頼りにペットIDを読み出して、
@@ -345,13 +345,15 @@ int  pet_sql_new(struct s_pet *p,int account_id,int char_id) {
 	);
 	if(mysql_query(&mysql_handle, tmp_sql)){
 		printf("failed (get pet_id), SQL error: %s\n", mysql_error(&mysql_handle));
-		return 0;
+		aFree(p);
+		return 1;
 	} else {
 		//query ok -> get the data!
 		sql_res = mysql_store_result(&mysql_handle);
 		if(!sql_res){
 			printf("failed (get pet_id res), SQL error: %s\n", mysql_error(&mysql_handle));
-			return 0;
+			aFree(p);
+			return 1;
 		}
 		sql_row = mysql_fetch_row(sql_res);
 		p->pet_id = atoi(sql_row[0]);
@@ -365,8 +367,10 @@ int  pet_sql_new(struct s_pet *p,int account_id,int char_id) {
 	);
 	if(mysql_query(&mysql_handle, tmp_sql)){
 		printf("failed (get pet_id), SQL error: %s\n", mysql_error(&mysql_handle));
-		return 0;
+		aFree(p);
+		return 1;
 	}
+	numdb_insert(pet_db,p->pet_id,p);
 	return 0;
 }
 
@@ -490,10 +494,9 @@ int mapif_create_pet(int fd,int account_id,int char_id,short pet_class,short pet
 	else if(p->intimate > 1000)
 		p->intimate = 1000;
 	
-	pet_new(p,account_id,char_id);
-	
-	mapif_pet_created(fd,account_id,p);
-	
+	if(pet_new(p,account_id,char_id) == 0) {
+		mapif_pet_created(fd,account_id,p);
+	}
 	return 0;
 }
 

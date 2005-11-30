@@ -16,6 +16,12 @@
 		mes "空港に入りますか？";
 		next;
 		menu "はい",-,"いいえ",L_Cancel;
+			if (countitem(7311) >= 1) {
+			close2;
+			delitem 7311,1;
+			warp "airport.gat",148,51;
+			end;
+			}
 			if (Zeny<1200) goto L_Error;
 			close2;
 			set Zeny,Zeny-1200;
@@ -84,6 +90,12 @@ yuno.gat,141,175,5	script	飛行船職員	67,{
 		mes "飛行船に乗りますか？";
 		next;
 		menu "はい",-,"いいえ",L_Cancel;
+			if (countitem(7311) >= 1) {
+			close2;
+			delitem 7311,1;
+			warp "airplane.gat",224,64;
+			end;
+			}
 			if (Zeny<1200) goto L_Error;
 			close2;
 			set Zeny,Zeny-1200;
@@ -97,6 +109,100 @@ yuno.gat,141,175,5	script	飛行船職員	67,{
 		mes "[飛行船職員]";
 		mes "飛行船の利用料金は";
 		mes "1200zenyです。";
+		close;
+}
+
+yuno.gat,142,183,5	script	飛行船広報社員	100,{
+	mes "[飛行船広報社員]";
+	mes "いらっしゃいませ。";
+	mes "この度、こちらジュノーで";
+	mes "運行いたします飛行船の";
+	mes "ご紹介に参りました。";
+	next;
+	mes "[飛行船広報社員]";
+	mes "飛行船は、現在試験運行中です。";
+	mes "そこで、先にお客様へのご案内を";
+	mes "行っております。";
+	next;
+	mes "[飛行船広報社員]";
+	mes "飛行船を一言で表しますと";
+	mes "「空飛ぶ船」とでも申しましょうか。";
+	mes "え？　空に船が浮かぶわけがない？";
+	mes "あの～、今、いらっしゃるこの街も";
+	mes "空に浮かんでいるんですよ……";
+	mes "おや、まだ、信じられないようですね。";
+	next;
+	mes "[飛行船広報社員]";
+	mes "ゴホン、では気を取り直して……";
+	mes "飛行船を利用すると、各街へすごく楽に";
+	mes "移動でき、観光も存分に楽しむことが";
+	mes "できます。しかも各地の特産品を船内で";
+	mes "販売しております。もちろん、";
+	mes "飛行船内部の設備も充実していますよ。";
+	next;
+	mes "[飛行船広報社員]";
+	mes "まもなく正式運行を開始する予定です。";
+	mes "運行開始後は、是非ご利用ください。";
+	mes "その代わりといってはなんですが、";
+	mes "只今、こちらで空間移動サービスを";
+	mes "行っております。いかがでしょうか。";
+	next;
+	mes "[飛行船広報社員]";
+	mes "空間移動料金は、全て1800Zenyです。";
+	mes "ご希望の目的地を";
+	mes "おっしゃってください。";
+	next;
+	menu "プロンテラ",L_prt,"イズルード",L_iz,"ゲフェン",L_gef,"モロク",L_moc,"フェイヨン",L_pay,"アルベルタ",L_alb,"コモド",L_cmd,"取り消し",-;
+		mes "[飛行船広報社員]";
+		mes "わかりました。";
+		mes "では、よい旅を。";
+		close;
+	L_prt:
+		if (Zeny<1800) goto L_Error;
+		close2;
+		set Zeny,Zeny-1800;
+		warp "prontera.gat",116,72;
+		end;
+	L_iz:
+		if (Zeny<1800) goto L_Error;
+		close2;
+		set Zeny,Zeny-1800;
+		warp "izlude.gat",91,105;
+		end;
+	L_gef:
+		if (Zeny<1800) goto L_Error;
+		close2;
+		set Zeny,Zeny-1800;
+		warp "geffen.gat",120,39;
+		end;
+	L_moc:
+		if (Zeny<1800) goto L_Error;
+		close2;
+		set Zeny,Zeny-1800;
+		warp "morocc.gat",156,46;
+		end;
+	L_pay:
+		if (Zeny<1800) goto L_Error;
+		close2;
+		set Zeny,Zeny-1800;
+		warp "payon.gat",160,58;
+		end;
+	L_alb:
+		if (Zeny<1800) goto L_Error;
+		close2;
+		set Zeny,Zeny-1800;
+		warp "alberta.gat",117,56;
+		end;
+	L_cmd:
+		if (Zeny<1800) goto L_Error;
+		close2;
+		set Zeny,Zeny-1800;
+		warp "comodo.gat",209,143;
+		end;
+	L_Error:
+		mes "[飛行船広報社員]";
+		mes "お客様、お金が不足しております。";
+		mes "再度ご確認ください。";
 		close;
 }
 
@@ -160,12 +266,3 @@ airplane.gat,240,64,5	script	出口	857,{}
 airplane.gat,247,64,5	script	出口	857,{}
 airplane.gat,240,40,0	script	出口	857,{}
 airplane.gat,247,40,0	script	出口	857,{}
-
-airplane.gat,100,69,3	script	乗務員	852,{
-	mes "[乗務員]";
-	mes "飛行船をご利用の方は、";
-	mes "そこの階段を上ってください。";
-	mes "いつも飛行船を利用してくださり";
-	mes "ありがとうございます。";
-	close;
-}

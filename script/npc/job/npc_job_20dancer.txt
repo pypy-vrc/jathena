@@ -30,6 +30,7 @@ L1:
 }
 //==================================================================
 job_duncer.gat,43,93,4	script	エイル	724,{
+	if (Upper == 1) goto LUpper1;
 	if ((Class == 3) && (Sex == 0)) goto Larcher;
 	if (Class == 20) goto Ldancer;
 	mes "[エイル]";
@@ -51,7 +52,6 @@ Ldancer:
 	mes "人々を楽しませていますか？";
 	close;
 Larcher:
-	if (Upper == 1) goto LUpper1;
 	if (change_dancer == 1) goto LStart2;
 	if (change_dancer == 2) goto LItem1;
 	if (change_dancer == 3) goto LItem2;
@@ -219,8 +219,22 @@ Llowlv:
 	close;
 LUpper1:
 	mes "[エイル]";
-	mes "あなたは転生されていますので";
-	mes "ここでは転職案内できません。";
+	mes "いち、に、さん、し……";
+	mes "うーん";
+	next;
+	mes "[エイル]";
+	mes "そんなに見られていると";
+	mes "練習に集中できないわ！";
+	next;
+	mes "[エイル]";
+	mes "……";
+	mes "……どこかでお会いしたような";
+	mes "気がしますが……";
+	next;
+	mes "[エイル]";
+	mes "でも思い出せないわ……";
+	mes "私には練習があるから";
+	mes "向こうへ行っていただけます？";
 	close;
 
 }

@@ -37,7 +37,8 @@ set __common__=..\common\core.c ..\common\db.c ..\common\grfio.c ..\common\lock.
 :set __NO_HTTPD__=-DNO_HTTPD
 
 @rem TKSGSLでごにょごにょ (通常はコメントアウト)
-:set __TKSGSL__=-DTKSGSL
+:set __EXCLASS__=-DTKSGSL
+:set __EXCLASS__=-DTKSGSLGSNJ
 
 @rem CPU最適化スイッチ 以下の例を参考にCPU名を記入してください。
 set _model_=Pentium4
@@ -80,7 +81,7 @@ if "%_model_%"=="Pentium4C" set __cpu__=-5 -Ov -Oi
 if "%_model_%"=="AMD32" set __cpu__=-5 -Oc -Ov -f -ff
 if "%_model_%"=="AMD64" set __cpu__=-6 -Oc -Ov -f -ff -tWM
 
-set __define__=%__cpu__% -DPACKETVER=6 -DNEW_006b -DFD_SETSIZE=4096 %__base__% %__NO_HTTPD__% %__ZLIB__% %__SKIP__% %__TKSGSL__%
+set __define__=%__cpu__% -DPACKETVER=6 -DNEW_006b -DFD_SETSIZE=4096 %__base__% %__NO_HTTPD__% %__ZLIB__% %__SKIP__% %__EXCLASS__%
 set __include__=-I../common/
 
 @echo ■コンパイルオプション表示■

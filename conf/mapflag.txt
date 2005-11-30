@@ -96,7 +96,6 @@ einbech.gat	mapflag	nopenalty	dummy
 einbech.gat	mapflag	nozenypenalty	dummy
 einbroch.gat	mapflag	nomemo	dummy
 einbroch.gat	mapflag	noteleport	dummy
-einbroch.gat	mapflag	noreturn	dummy
 einbroch.gat	mapflag	nobranch	dummy
 einbroch.gat	mapflag	nopenalty	dummy
 einbroch.gat	mapflag	nozenypenalty	dummy
@@ -112,13 +111,9 @@ ayo_fild02.gat	mapflag	nomemo	dummy
 ayothaya.gat	mapflag	nopenalty	dummy
 ayothaya.gat	mapflag	nozenypenalty	dummy
 gefenia01.gat	mapflag	nomemo	dummy
-gefenia01.gat	mapflag	nosave	SavePoint
 gefenia02.gat	mapflag	nomemo	dummy
-gefenia02.gat	mapflag	nosave	SavePoint
 gefenia03.gat	mapflag	nomemo	dummy
-gefenia03.gat	mapflag	nosave	SavePoint
 gefenia04.gat	mapflag	nomemo	dummy
-gefenia04.gat	mapflag	nosave	SavePoint
 jawaii.gat	mapflag	nomemo	dummy
 jawaii.gat	mapflag	nopenalty	dummy
 jawaii.gat	mapflag	nozenypenalty	dummy
@@ -139,6 +134,7 @@ louyang.gat	mapflag	nozenypenalty	dummy
 valkyrie.gat	mapflag	nomemo	dummy
 valkyrie.gat	mapflag	noteleport	dummy
 valkyrie.gat	mapflag	nobranch	dummy
+valkyrie.gat	mapflag	nosave	SavePoint
 yggdrasil01.gat	mapflag	nomemo	dummy
 yggdrasil01.gat	mapflag	noteleport	dummy
 yggdrasil01.gat	mapflag	nosave	SavePoint

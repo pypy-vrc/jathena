@@ -20,6 +20,7 @@
 //16	最終試験クリア
 
 in_rogue.gat,363,122,4	script	ローグギルド員	747,{
+	if (Upper == 1) goto L_Upper;
 	if (Class == 17) goto L_Rogue;
 	if ((Class == 6) && (change_rogue == 16)) goto L_Start3;
 	if ((Class == 6) && (change_rogue >= 3)) goto L_Start2;
@@ -452,6 +453,21 @@ L_Error2:
 	mes "スキルポイントが残っていたら";
 	mes "転職できないねぇ。";
 	mes "全部消費してらっしゃい。";
+	close;
+L_Upper:
+	mes "[マキ]";
+	mes "あら？あんた、";
+	mes "昔に私と会ったこと無いかい？";
+	next;
+	mes "[マキ]";
+	mes "……";
+	mes "そうかい、見間違えたみたいだね。";
+	mes "変だね……";
+	next;
+	mes "[マキ]";
+	mes "あたいが間違えるなんてめったに";
+	mes "無いんだけどね……";
+	mes "ま、気をつけて帰りな。";
 	close;
 }
 

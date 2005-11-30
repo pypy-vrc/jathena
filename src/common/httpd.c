@@ -20,6 +20,10 @@
 #include "md5calc.h"
 
 
+
+#define NONCE_LOG_SIZE	256		// Digest 認証の nonce を保存できる個数
+
+
 static const char configfile[]="./conf/httpd.conf";	// 共通コンフィグ
 
 static char logfile[1024]="./log/httpd.log";	// ログファイル名
@@ -52,6 +56,10 @@ static int server_max_requests_per_second = 10;		// 全体の秒間のリクエスト数制限
 static int server_max_requests_period = 5000;		// 全体のリクエスト数制限のチェック間隔
 static int server_max_requests_count = 0;
 static int server_max_requests_tick = 0;
+
+
+static HTTPD_AUTH_FUNC auth_func[8];	// 認証関数の関数ポインタ
+void httpd_set_auth_func( int func_id, HTTPD_AUTH_FUNC func ){ auth_func[func_id]=func; }
 
 
 static const char *weekdaymsg[]={ "Sun","Mon","Tue","Wed","Thu","Fri","Sat" };
@@ -115,6 +123,7 @@ struct httpd_access {
 	int dip_count, aip_count, dip_max, aip_max;
 	unsigned int *dip, *aip;
 
+	int auth_func_id;
 	unsigned char realm[256], privkey[32];
 	int user_count, user_max;
 	struct httpd_access_user *user;
@@ -125,9 +134,10 @@ static struct httpd_access ** htaccess=NULL;
 // Digest 認証の nonce-count ログ用構造体
 struct httpd_auth_nonce {
 	unsigned char nonce[48];
-	unsigned int nc;
+	unsigned nc : 31;
+	unsigned access_flag: 1;
 };
-static struct httpd_auth_nonce nonce_log[256];
+static struct httpd_auth_nonce nonce_log[NONCE_LOG_SIZE];
 static int nonce_log_pos = 0;
 
 static FILE *logfp=NULL;
@@ -142,7 +152,7 @@ void httpd_set_timezone( int tz3 )
 	time_t time_temp = time(&time_temp);
 	time_t time_local = mktime(localtime(&time_temp));
 	time_t time_global = mktime(gmtime(&time_temp));
-	tz2 = (time_local - time_global) / (-60);
+	tz2 = (int)((time_local - time_global) / (-60));
 	
 	tz = tz3;
 	if( tz==-1 )
@@ -444,13 +454,21 @@ void httpd_send_head(struct httpd_session_data* sd,int status,const char *conten
 			// nonce 作成
 			{
 				char buf[128];
+				int i;
 				sprintf( buf, "%08x:%s", gettick(), sd->access->privkey );
 				sprintf( nonce, "%08x", gettick() );
 				MD5_String( buf, nonce+8 ); 
 
+				for( i=0; nonce_log[ nonce_log_pos ].access_flag && i<NONCE_LOG_SIZE; i++ )
+				{
+					nonce_log[ nonce_log_pos ].access_flag = 0;
+					nonce_log_pos = ( nonce_log_pos + 1 ) % NONCE_LOG_SIZE;
+				}
+
+				nonce_log[ nonce_log_pos ].access_flag = 1;
 				nonce_log[ nonce_log_pos ].nc = 1;
 				strcpy( nonce_log[ nonce_log_pos ].nonce, nonce );
-				nonce_log_pos = ( nonce_log_pos + 1 )%( sizeof(nonce_log)/sizeof(nonce_log[0]) );
+				nonce_log_pos = ( nonce_log_pos + 1 ) % NONCE_LOG_SIZE;
 			}
 			
 			len += sprintf( head+len,
@@ -603,6 +621,7 @@ int  httpd_parse(int fd) {
 					// サーバーの処理制限を越えている
 					sd->status = HTTPD_REQUEST_OK;
 					httpd_send_error(sd,503); // Service Unavailable
+					break;
 				}
 			}
 
@@ -800,7 +819,7 @@ int httpd_check_access_ip( struct httpd_access *a, struct httpd_session_data *sd
 int httpd_check_access_user_digest( struct httpd_access *a, struct httpd_session_data *sd )
 {
 	char buf[1024];
-	char response[33]="",nonce[128]="",uri[1024]="";
+	char response[33]="",nonce[128]="",uri[1024]="",passwd[33]="";
 	char username[33]="",realm[256]="",cnonce[256]="",nc[9]="";
 	struct httpd_access_user *au=NULL;
 	int i = 7 ,n;
@@ -934,7 +953,14 @@ int httpd_check_access_user_digest( struct httpd_access *a, struct httpd_session
 //	printf("response=[%s]\nnonce=[%s]\nusername=[%s]\nrealm=[%s]\ncnonce=[%s]\nnc=[%s]\nuri=[%s]\n",
 //		response,nonce,username,realm,cnonce,nc,uri);
 
-	// ユーザー名の確認
+
+	// ユーザー名の確認とパスワードの取得（登録された認証関数を使う）
+	if( !auth_func[a->auth_func_id] || !auth_func[a->auth_func_id]( a, sd, username, passwd ) )
+	{
+		passwd[0]=0;
+	}
+
+	// ユーザー名の確認（authuser で登録されたもの）
 	for( i=0; i<a->user_count; i++ )
 	{
 		if( a->user[i].type != HTTPD_USER_PASSWD_MD5 &&
@@ -944,7 +970,7 @@ int httpd_check_access_user_digest( struct httpd_access *a, struct httpd_session
 			break;
 		}
 	}
-	if( i==a->user_count )
+	if( i==a->user_count && !passwd[0] )	// 登録ユーザーじゃないのでここで処理打ち切り
 		return 0;
 
 	// uri の妥当性検査
@@ -1000,7 +1026,7 @@ int httpd_check_access_user_digest( struct httpd_access *a, struct httpd_session
 		if( nci<=0 )
 			return 0;
 
-		for( i=0; i<sizeof(nonce_log)/sizeof(nonce_log[0]); i++ )
+		for( i=0; i<NONCE_LOG_SIZE; i++ )
 		{
 			if( strcmpi( nonce_log[i].nonce, nonce )==0 )
 			{
@@ -1009,12 +1035,13 @@ int httpd_check_access_user_digest( struct httpd_access *a, struct httpd_session
 				break;
 			}
 		}
-		if( i==sizeof(nonce_log)/sizeof(nonce_log[0]) )	// 古すぎて(？) nonce ログに無いので stale フラグ設定
+		if( i==NONCE_LOG_SIZE )	// nonce ログに無いので stale フラグ設定
 		{
 			sd->auth_digest_stale = 1;
 			return 0;
 		}
 		nonce_log[i].nc++;
+		nonce_log[i].access_flag = 1;
 	}
 	
 	// rensponse の妥当性検査
@@ -1023,12 +1050,17 @@ int httpd_check_access_user_digest( struct httpd_access *a, struct httpd_session
 		char a1[33],a2[33],res[33];
 		
 		// A1 計算
-		if( au->type == HTTPD_USER_PASSWD_PLAIN )
+		if( passwd[0] )								// 認証関数による
+		{
+			sprintf( buf, "%s:%s:%s", username, realm, passwd );
+			MD5_String( buf, a1 );			
+		}
+		else if( au->type == HTTPD_USER_PASSWD_PLAIN )	// プレーンパスワード
 		{
 			sprintf( buf, "%s:%s:%s", username, realm, au->passwd );
 			MD5_String( buf, a1 );
 		}
-		else if( au->type == HTTPD_USER_PASSWD_DIGEST )
+		else if( au->type == HTTPD_USER_PASSWD_DIGEST )	// 計算済み
 		{
 			strcpy( a1, au->passwd );
 		}
@@ -1060,7 +1092,7 @@ int httpd_check_access_user_digest( struct httpd_access *a, struct httpd_session
 int httpd_check_access_user_basic( struct httpd_access *a, struct httpd_session_data *sd )
 {
 	// ユーザーチェック
-	char buf[1024], name[1024], passwd[1024];
+	char buf[1024], name[1024], passwd[1024], passwd2[33];
 	int i;
 	
 	if( !sd->auth || httpd_strcasencmp( sd->auth, "Basic ", 6 )!=0 )
@@ -1069,6 +1101,14 @@ int httpd_check_access_user_basic( struct httpd_access *a, struct httpd_session_
 	if( httpd_decode_base64( buf, sd->auth+6 ) && sscanf(buf,"%[^:]:%[^\r]",name,passwd) == 2 )
 	{
 		char *apass[4]={NULL,NULL,NULL,""};
+
+		// 登録された認証関数があればそれを使って比較する
+		if( auth_func[a->auth_func_id] && auth_func[a->auth_func_id]( a, sd, name, passwd2 ) && strcmp(passwd, passwd2)==0 )
+		{
+			strcpy( sd->user, name );
+			return 1;
+		}
+		
 		apass[0]=passwd;
 		apass[1]=buf;
 		apass[2]=buf+64;
@@ -1078,6 +1118,7 @@ int httpd_check_access_user_basic( struct httpd_access *a, struct httpd_session_
 		sprintf( buf+128, "%s:%s:%s", name, a->realm, passwd );
 		MD5_String( buf+128, buf+64 );
 
+		// authuser で設定されたアカウントを調べる
 		for( i=0; i<a->user_count; i++ )
 		{
 					
@@ -1952,6 +1993,7 @@ int httpd_config_read(char *cfgName)
 					a->user = NULL;
 					a->url[0]= '\0';
 					a->urllen = 0;
+					a->auth_func_id = 0;
 					strcpy( a->realm, "Athena Authorization" );
 					if( strlen(w2)>=sizeof(a->url) )
 						printf("httpd_config_read: too long target url [%s]\n", w2);
@@ -1987,6 +2029,14 @@ int httpd_config_read(char *cfgName)
 				printf("httpd_config_read: authtype: unknown authtype [%s]\n", w2);
 			else
 				a->type = (a->type & ~HTTPD_ACCESS_AUTH_MASK) | i;
+		}
+		else if(strcmpi(w1,"authfunc")==0)
+		{
+			int i = atoi(w2);
+			if( i<0 || i>=sizeof(auth_func)/sizeof(auth_func[0]) )
+				printf("httpd_config_read: authfunc: unknown func id [%d]\n", i);
+			else
+				a->auth_func_id = i;
 		}
 		else if(strcmpi(w1,"authname")==0 || strcmpi(w1,"authrealm")==0 )
 		{

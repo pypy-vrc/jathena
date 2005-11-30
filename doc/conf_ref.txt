@@ -387,20 +387,32 @@ mapreg_txt
 	MAPサーバー内キャラクター共有変数を保存するファイルを指定します。
 	省略可能で、デフォルトはsave/mapreg_txtです。
 
+read_grf_files_txt
+	data.grf 等ののパス指定ファイル grf-files.txt を読むかどうかを指定します。
+	0 を指定すると、ファイル grf-files.txt が存在しても読まなくなり、
+	以下の data_grf などの設定を利用するようになります。
+	デフォルトは 1 です。
+
 data_grf
 	ROデータファイル data.grf へのパスです。
 	省略可能で、デフォルトは ./data.grf です。
-	grf-files.txtがある場合そちらの設定が優先されます。
+	grf-files.txt を読み込む場合、そちらの設定が優先されます。
 
 sdata_grf
 	サクライデータファイル sdata.grf へのパスです。
 	省略可能で、デフォルトは ./sdata.grf です。
-	grf-files.txtがある場合そちらの設定が優先されます。
+	grf-files.txt を読み込む場合、そちらの設定が優先されます。
 
 adata_grf
 	αデータファイル adata.grf へのパスです。
 	省略可能で、デフォルトは ./adata.grf です。
-	grf-files.txtがある場合そちらの設定が優先されます。
+	grf-files.txt を読み込む場合、そちらの設定が優先されます。
+
+read_map_from_cache
+	マップキャッシュを使用するかどうか
+	 0 : 使用しない 1 : 非圧縮で保存 2 : 圧縮して保存
+	圧縮すると1MB程に縮まるようです。
+	全てのマップがキャッシュ内にあれば、grf を読み込まなくても起動できます。
 
 npc
 	読み込むnpcデータファイルへのパスです。
@@ -895,6 +907,11 @@ natural_heal_weight_rate
 	natural_heal_weight_rate未満の時に自動回復するからです。(つまり101なら
 	いつでも自動回復できます。)
 	デフォルトは50です。
+
+natural_heal_weight_rate_icon: no
+	重量50%アイコンを重量がnatural_heal_weight_rateになったときに表示する。
+	noでnatural_heal_weight_rateに関係なく50%で表示。
+	デフォルトはno
 
 item_name_override_grffile
 	アイテムの名前(英語以外の名前です。)を.grfファイルから読むかどうかです。
@@ -1563,8 +1580,29 @@ pharmacy_get_point_type: 0
 
 marionette_type: 0
 	マリオネットコントロールの計算
-	0:上限99の本鯖
+	0:上限を個別に指定する
 	1:純粋に半分を付与
+
+	以下、marionette_type:0のときの上限値。
+	0でmax_parameterの値。デフォルトは99。
+
+max_marionette_str: 99
+	マリオネットコントロールのstr上限を設定。
+
+max_marionette_agi: 99
+	マリオネットコントロールのagi上限を設定。
+
+max_marionette_vit: 99
+	マリオネットコントロールのvit上限を設定。）
+
+max_marionette_int: 99
+	マリオネットコントロールのint上限を設定。
+
+max_marionette_dex: 99
+	マリオネットコントロールのdex上限を設定。
+
+max_marionette_luk: 99
+	マリオネットコントロールのluk上限を設定。
 
 baby_status_max: 80
 	//養子のステータス限界
@@ -1607,6 +1645,10 @@ allow_me_dance_effect: no
 
 allow_me_concert_effect: no
 	//合奏スキル効果を自分にも適用する
+
+allow_me_rokisweil: no
+	allow_me_concert_effect:yesのとき、ロキの効果も適用するか。
+	noで適用。デフォルトはno。
 
 soulskill_can_be_used_for_myself: no
 	//魂を自分に使用可能か(no:本鯖)
@@ -1658,6 +1700,22 @@ pet_leave: yes
 	ペットとの新密度が0になったらすぐに消えるかどうか
 	本鯖だと、すぐに消えるそうなので、yesがデフォルトです。
 
+extended_abracadabra: no
+	アブラカタブラで転生職スキルが発動した場合、セージでの使用を許可するか。
+	noの場合、セージは使用できないが、プロフェッサーでは使用できる。
+	デフォルトはno。
+
+can_attack_pet:no
+	ペットに飼い主以外のプレイヤーとモンスターが攻撃できるかどうか
+	デフォルトはno。
+
+pet_damage_delay:no
+	デフォルトはnoですが、yesにすると、ペットが攻撃を受けたとき、
+	一定時間移動できなくなります。
+
+pet_damage_delay_rate:100
+	ペットが攻撃を受けたとき、移動できなくなる時間の割合を設定します
+	100がデフォルトの値で、200にすると倍に、0にするとディレイがなくなります
 
 import
 	その行を別ファイルの中身と置き換えます。
@@ -1750,6 +1808,7 @@ natural_healhp_interval:4000
 natural_healsp_interval:8000
 natural_heal_skill_interval:10000
 natural_heal_weight_rate: 50
+natural_heal_weight_rate_icon: no
 item_name_override_grffile: yes
 arrow_decrement: yes
 max_aspd: 199
@@ -1877,6 +1936,12 @@ alchemist_point_type: 0
 save_am_pharmacy_success: no
 pharmacy_get_point_type: 0
 marionette_type: 0
+max_marionette_str: 99
+max_marionette_vit: 99
+max_marionette_agi: 99
+max_marionette_int: 99
+max_marionette_dex: 99
+max_marionette_luk: 99
 baby_status_max: 80
 baby_hp_rate: 70
 baby_sp_rate: 70
@@ -1888,6 +1953,7 @@ soul_linker_battle_mode_ka: 0
 skillup_type: 0
 allow_me_dance_effect: no
 allow_me_concert_effect: no
+allow_me_rokisweil: no
 soulskill_can_be_used_for_myself: no
 hermode_wp_check_range: 3
 hermode_gvg_only: yes
@@ -1902,6 +1968,7 @@ allow_create_scroll: no
 scroll_produce_rate: 100
 scroll_item_name_input: no
 pet_leave: yes
+extended_abracadabra: no
 
 
 ==========================================================================
@@ -2428,6 +2495,18 @@ authtype
 	Digest 認証はブラウザによってはサポートされていないかもしれませんが、
 	安全性は高いです。またサーバーの負担が大きいです。
 	Basic 認証は安全性は皆無ですが、サーバーの負担が少ないです。
+
+authfunc
+	認証のアカウント情報として、 authuser で追加するもの以外に 
+	Athena の機能を用いてアカウント情報を得るかどうかを設定します。
+	指定する値は以下の通りです。
+	
+	  0 : authuser で指定されたユーザー情報のみ使います
+	  1 : Athena のアカウント情報も利用できるようになります
+	
+	login サーバーでは 0 か 1 を指定できます。
+	char、map サーバーでは 0 しか指定できません。
+	省略すると 0 を指定したことになります。
 
 authname
 	認証の際にブラウザに通知する領域名(realm)を設定します。

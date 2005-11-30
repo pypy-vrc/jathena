@@ -120,10 +120,11 @@ int accreg_fromstr(const char *str,struct accreg *reg)
 		return 1;
 	
 	for(j=0,p+=n;j<ACCOUNT_REG_NUM;j++,p+=n){
-		if( sscanf(p,"%[^,],%d %n",buf,&v,&n)!=2 )
+		if( sscanf(p,"%[^,],%d%n",buf,&v,&n)!=2 )
 			break;
 		memcpy(reg->reg[j].str,buf,32);
 		reg->reg[j].value=v;
+		n++;
 	}
 	reg->reg_num=j;
 	return 0;
@@ -366,20 +367,56 @@ int inter_config_read(const char *cfgName)
 	return 0;
 }
 
+//--------------------------------------------------------
 // ログ書き出し
+
+#ifdef TXT_ONLY
+
 int inter_log(char *fmt,...)
 {
 	FILE *logfp;
 	va_list ap;
 	va_start(ap,fmt);
+
 	logfp=fopen(inter_log_filename,"a");
 	if(logfp){
 		vfprintf(logfp,fmt,ap);
+		fprintf(logfp,RETCODE);
 		fclose(logfp);
 	}
 	va_end(ap);
 	return 0;
 }
+
+#else /* TXT_ONLY */
+
+int inter_log(char *fmt,...)
+{
+	char *log;
+	char buf[512];
+	va_list ap;
+
+	if ((log = malloc(256)) == NULL)
+		return 0;
+
+	va_start(ap,fmt);
+	
+	(void) vsnprintf(log,256,fmt,ap);
+	va_end(ap);
+	
+	sprintf(tmp_sql,"INSERT INTO `interlog` (`time`,`log`) VALUES (NOW(),'%s')",strecpy(buf,log));
+
+	if(mysql_query(&mysql_handle, tmp_sql) ){
+		printf("DB server Error - %s\n", mysql_error(&mysql_handle) );
+	}
+
+	free(log);
+	return 0;
+}
+
+#endif /* TXT_ONLY */
+
+//--------------------------------------------------------
 
 // セーブ
 int inter_sync()

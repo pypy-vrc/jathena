@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "timer.h"
 #include "socket.h"
@@ -36,7 +37,9 @@
 #define MOB_LAZYMOVEPERC 50		// 手抜きモードMOBの移動確率（千分率）
 #define MOB_LAZYWARPPERC 20		// 手抜きモードMOBのワープ確率（千分率）
 
-struct mob_db mob_db[MOB_ID_MAX+1];
+struct mob_db mob_db_real[MOB_ID_MAX-MOB_ID_MIN+1];
+struct mob_db *mob_db = &mob_db_real[-MOB_ID_MIN];
+
 /*	簡易設定	*/
 #define CLASSCHANGE_BOSS_NUM 21
 
@@ -59,7 +62,7 @@ int mobdb_searchname(const char *str)
 {
 	int i;
 
-	for(i=0;i<sizeof(mob_db)/sizeof(mob_db[0]);i++){
+	for(i=MOB_ID_MIN;i<MOB_ID_MAX;i++){
 		if( strcmpi(mob_db[i].name,str)==0 || strcmp(mob_db[i].jname,str)==0 ||
 			memcmp(mob_db[i].name,str,24)==0 || memcmp(mob_db[i].jname,str,24)==0)
 			return i;
@@ -132,7 +135,7 @@ int mob_once_spawn(struct map_session_data *sd,char *mapname,
 			}while((mob_db[class].max_hp <= 0 || mob_db[class].summonper[j] <= k ||
 				 (lv<mob_db[class].lv && battle_config.random_monster_checklv)) && (i++) < MOB_ID_MAX);
 			if(i>=MOB_ID_MAX){
-				class=mob_db[0].summonper[j];
+				class=mob_db[MOB_ID_MIN].summonper[j];
 			}
 		}else{
 			return 0;
@@ -159,7 +162,7 @@ int mob_once_spawn(struct map_session_data *sd,char *mapname,
 		md->bl.m=m;
 		md->bl.x=x;
 		md->bl.y=y;
-		if(r<0&&battle_config.dead_branch_active) md->mode=0x1+0x4+0x80; //移動してアクティブで反撃する
+		if(r<0&&battle_config.dead_branch_active) md->mode=mob_db[class].mode|(0x1+0x4+0x80); //移動してアクティブで反撃する
 		md->m =m;
 		md->x0=x;
 		md->y0=y;
@@ -194,6 +197,7 @@ int mob_once_spawn_area(struct map_session_data *sd,char *mapname,
 	m=map_mapname2mapid(mapname);
 
 	max=(y1-y0+1)*(x1-x0+1)*3;
+	if(x0<=0 && y0<=0) max=50;	//mob_spawnに倣って50
 	if(max>1000)max=1000;
 
 	if(m<0 || amount<=0 || (class>=0 && class<=1000) || class>MOB_ID_MAX)	// 値が異常なら召喚を止める
@@ -202,9 +206,14 @@ int mob_once_spawn_area(struct map_session_data *sd,char *mapname,
 	for(i=0;i<amount;i++){
 		int j=0;
 		do{
-			x=rand()%(x1-x0+1)+x0;
-			y=rand()%(y1-y0+1)+y0;
-		}while(map_getcell(m,x,y,CELL_CHKNOPASS)&& (++j)<max);
+			if(x0<=0 && y0<=0){	//x0,y0が0以下のとき位置ランダム湧き
+				x=rand()%(map[m].xs-2)+1;
+				y=rand()%(map[m].ys-2)+1;
+			} else {
+				x=rand()%(x1-x0+1)+x0;
+				y=rand()%(y1-y0+1)+y0;
+			}
+		} while(map_getcell(m,x,y,CELL_CHKNOPASS)&& (++j)<max);
 		if(j>=max){
 			if(lx>=0){	// 検索に失敗したので以前に沸いた場所を使う
 				x=lx;
@@ -389,13 +398,9 @@ int mob_spawn(int id)
 	for(i=0,c=tick-1000*3600*10;i<MAX_MOBSKILL;i++)
 		md->skilldelay[i] = c;
 
-	memset(md->dmglog,0,sizeof(md->dmglog));
 	if(md->lootitem)
 		memset(md->lootitem,0,sizeof(md->lootitem));
 	md->lootitem_count = 0;
-
-	for(i=0;i<MAX_MOBSKILLTIMERSKILL;i++)
-		md->skilltimerskill[i].timer = -1;
 
 	for(i=0;i<MAX_STATUSCHANGE;i++) {
 		md->sc_data[i].timer=-1;
@@ -570,7 +575,7 @@ static int mob_ai_sub_hard_search(struct block_list *bl,va_list ap)
 {
 	struct map_session_data *tsd=NULL;
 	struct mob_data  *smd,*tmd=NULL;
-	int mode,race,dist,*cnt,flag;
+	int mode,race,dist,range,*cnt,flag;
 
 	nullpo_retr(0, bl);
 	nullpo_retr(0, ap);
@@ -583,9 +588,10 @@ static int mob_ai_sub_hard_search(struct block_list *bl,va_list ap)
 	mode = status_get_mode( &smd->bl );
 	race = status_get_race( &smd->bl );
 	dist = unit_distance(smd->bl.x,smd->bl.y,bl->x,bl->y);
+	range = (smd->sc_data[SC_BLIND].timer != -1 || smd->sc_data[SC_FOGWALLPENALTY].timer!=-1)?1:10;
 
 	// アクティブ
-	if( (flag & 1) && dist<11 && battle_check_target(&smd->bl,bl,BCT_ENEMY)>=1) {
+	if( (flag & 1) && dist<=range && battle_check_target(&smd->bl,bl,BCT_ENEMY)>=1) {
 		int active_flag = 0;
 		// ターゲット射程内にいるなら、ロックする
 		if(tsd && !unit_isdead(&tsd->bl) && tsd->invincible_timer == -1 && !pc_isinvisible(tsd) ) {
@@ -598,11 +604,14 @@ static int mob_ai_sub_hard_search(struct block_list *bl,va_list ap)
 					active_flag = 1;
 				}
 			}
-		} else if(tmd && dist<9) {
+		// battle_check_target() で弾かれる相手を含めるとAI性能が落ちる
+		// } else if(bl->type == BL_PET){
+		// 	active_flag = 1;
+		} else if(tmd && dist<=range) {
 			active_flag = 1;
 		}
 		if(active_flag) {
-			if(mob_can_reach(smd,bl,12) && rand()%1000<1000/(++cnt[0]) ) {	// 範囲内PCで等確率にする
+			if(mob_can_reach(smd,bl,range) && rand()%1000<1000/(++cnt[0]) ) {	// 範囲内PCで等確率にする
 				smd->target_id=bl->id;
 				smd->min_chase=13;
 			}
@@ -835,6 +844,7 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 {
 	struct mob_data *md,*tmd=NULL;
 	struct map_session_data *tsd=NULL;
+	struct pet_data *tpd=NULL;	//added by フェルシア
 	struct block_list *tbl=NULL;
 	struct flooritem_data *fitem;
 	unsigned int tick;
@@ -855,7 +865,7 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 	if(  md->ud.attacktimer != -1 || md->ud.skilltimer != -1)
 		return 0;
 	// 歩行中は３歩ごとにAI処理を行う
-	if( md->ud.walktimer != -1 && md->ud.walkpath.path_pos <= 2)
+	if( md->ud.walktimer != -1 && md->ud.walkpath.path_pos <= 1)
 		return 0;
 
 	if( md->ud.skilltimer!=-1 || md->bl.prev==NULL ){	// スキル詠唱中か死亡中
@@ -871,7 +881,7 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 	if((md->opt1 > 0 && md->opt1 != 6) || md->sc_data[SC_BLADESTOP].timer != -1)
 		return 0;
 
-	if(!(mode&0x80) && md->target_id > 0)
+	if(md->target_id > 0 && (!(mode&0x80) || md->sc_data[SC_BLIND].timer != -1 || md->sc_data[SC_FOGWALLPENALTY].timer!=-1) )
 		md->target_id = 0;
 
 	if( md->target_id == 0 )
@@ -881,6 +891,7 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 	if( mode>0 && md->attacked_id>0 && (!md->target_id || (mode&0x04 && rand()%100<25 ) ) ){
 		struct block_list *abl=map_id2bl(md->attacked_id);
 		struct map_session_data *asd=NULL;
+		md->attacked_players = 0;
 		if(abl){
 			if(abl->type==BL_PC)
 				asd=(struct map_session_data *)abl;
@@ -951,12 +962,14 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 				unit_stop_walking(&md->bl,5);	// 歩行中なら停止
 			return 0;
 		}
-	} else if(tbl->type==BL_PC || tbl->type==BL_MOB) {
-		// 対象がPCもしくはMOB
+	} else if(tbl->type==BL_PC || tbl->type==BL_MOB|| tbl->type==BL_PET) {	//changed by フェルシア
+		// 対象がPC、MOB、PET
 		if(tbl->type==BL_PC)
 			tsd=(struct map_session_data *)tbl;
 		else if(tbl->type==BL_MOB)
 			tmd=(struct mob_data *)tbl;
+		else if(tbl->type==BL_PET)	//changed by フェルシア
+			tpd=(struct pet_data *)tbl;
 		if( tsd && !(mode&0x20) && (tsd->sc_data[SC_TRICKDEAD].timer != -1 || tsd->sc_data[SC_HIGHJUMP].timer!=-1 
 			 || md->sc_data[SC_WINKCHARM].timer != -1 || ((pc_ishiding(tsd) || tsd->state.gangsterparadise) && race!=4 && race!=6)) )
 			mob_unlocktarget(md,tick);	// スキルなどによる策敵妨害
@@ -970,7 +983,7 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 				return 0;
 			md->state.skillstate=MSS_CHASE;	// 突撃時スキル
 			mobskill_use(md,tick,-1);
-			if(unit_distance(md->ud.to_x,md->ud.to_y,tbl->x,tbl->y)<2)
+			if(md->ud.walktimer != -1 && unit_distance(md->ud.to_x,md->ud.to_y,tbl->x,tbl->y)<2)
 				return 0; // 既に移動中
 			if( !mob_can_reach(md,tbl,(md->min_chase>13)?md->min_chase:13) )
 				mob_unlocktarget(md,tick);	// 移動できないのでタゲ解除（IWとか？）
@@ -1308,23 +1321,27 @@ int mob_deleteslave(struct mob_data *md)
  */
 int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 {
-	int i,count,minpos,mindmg;
-	struct map_session_data *sd = NULL,*tmpsd[DAMAGELOG_SIZE];
+	int i,count;
+	struct map_session_data *sd = NULL,**tmpsd = NULL;
 	struct {
 		struct party *p;
 		int id;
 		atn_bignumber base_exp,job_exp;
-	} pt[DAMAGELOG_SIZE];
+	} *pt = NULL;
+	struct {
+		struct map_session_data *sd;
+		int dmg;
+	} mvp[3];
 	int pnum=0;
 	int mvp_damage,max_hp;
 	unsigned int tick = gettick();
-	struct map_session_data *mvp_sd = NULL, *second_sd = NULL,*third_sd = NULL;
 	atn_bignumber tdmg,temp;
 	struct item item;
 	int ret;
 	int drop_rate;
 	int skill,sp;
 	int race_id = 7;
+	struct linkdb_node *node;
 
 	nullpo_retr(0, md); //srcはNULLで呼ばれる場合もあるので、他でチェック
 
@@ -1332,7 +1349,6 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 
 	if(src && src->type == BL_PC) {
 		sd = (struct map_session_data *)src;
-		mvp_sd = sd;
 	}
 
 //	if(battle_config.battle_log)
@@ -1351,7 +1367,7 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 		return 0;
 	}
 
-	if(battle_config.monster_damage_delay && md->sc_data[SC_ENDURE].timer == -1)
+	if(md->sc_data[SC_ENDURE].timer == -1)
 		unit_stop_walking(&md->bl,3);
 	if(damage > max_hp>>2)
 		skill_stop_dancing(&md->bl,0);
@@ -1364,79 +1380,40 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 		damage=md->hp;
 
 	if(!(type&2)) {
-		if(sd!=NULL){
-			for(i=0,minpos=0,mindmg=0x7fffffff;i<DAMAGELOG_SIZE;i++){
-				if(md->dmglog[i].id==sd->status.char_id)
-					break;
-				if(md->dmglog[i].id==0){
-					minpos=i;
-					mindmg=0;
-				}
-				else if(md->dmglog[i].dmg<mindmg){
-					minpos=i;
-					mindmg=md->dmglog[i].dmg;
-				}
-			}
-			if(i<DAMAGELOG_SIZE)
-				md->dmglog[i].dmg+=damage;
-			else {
-				md->dmglog[minpos].id=sd->status.char_id;
-				md->dmglog[minpos].dmg=damage;
-			}
+		if(sd!=NULL) {
+			int damage2 = damage + (int)linkdb_search( &md->dmglog, (void*)sd->status.char_id );
+			linkdb_replace( &md->dmglog, (void*)sd->status.char_id, (void*)damage2 );
 
-			if(md->attacked_id <= 0 && md->state.special_mob_ai==0)
+			if(md->attacked_id <= 0 && md->state.special_mob_ai==0 &&
+				atn_rand() % 1000 < 1000 / (++md->attacked_players)
+			) {
 				md->attacked_id = sd->bl.id;
+			}
 		}
 		if(src && src->type == BL_PET && battle_config.pet_attack_exp_to_master) {
 			struct pet_data *pd = (struct pet_data *)src;
+			int damage2;
 			nullpo_retr(0, pd);
-			for(i=0,minpos=0,mindmg=0x7fffffff;i<DAMAGELOG_SIZE;i++){
-				if(md->dmglog[i].id==pd->msd->status.char_id)
-					break;
-				if(md->dmglog[i].id==0){
-					minpos=i;
-					mindmg=0;
-				}
-				else if(md->dmglog[i].dmg<mindmg){
-					minpos=i;
-					mindmg=md->dmglog[i].dmg;
-				}
-			}
-			if(i<DAMAGELOG_SIZE)
-				md->dmglog[i].dmg+=(damage*battle_config.pet_attack_exp_rate)/100;
-			else {
-				md->dmglog[minpos].id=pd->msd->status.char_id;
-				md->dmglog[minpos].dmg=(damage*battle_config.pet_attack_exp_rate)/100;
-			}
+			damage2 = damage*(battle_config.pet_attack_exp_rate)/100;
+			damage2 += (int)linkdb_search( &md->dmglog, (void*)pd->msd->status.char_id );
+			linkdb_replace( &md->dmglog, (void*)pd->msd->status.char_id, (void*)damage2 );
 		}
 		if(src && src->type == BL_MOB && ((struct mob_data*)src)->state.special_mob_ai){
+			int damage2;
 			struct mob_data *md2 = (struct mob_data *)src;
 			struct map_session_data *msd = map_id2sd(md2->master_id);
 			nullpo_retr(0, md2);
 			nullpo_retr(0, msd);
-			for(i=0,minpos=0,mindmg=0x7fffffff;i<DAMAGELOG_SIZE;i++){
-				if(md->dmglog[i].id==msd->status.char_id)
-					break;
-				if(md->dmglog[i].id==0){
-					minpos=i;
-					mindmg=0;
-				}
-				else if(md->dmglog[i].dmg<mindmg){
-					minpos=i;
-					mindmg=md->dmglog[i].dmg;
-				}
-			}
-			if(i<DAMAGELOG_SIZE)
-				md->dmglog[i].dmg+=damage;
-			else {
-				md->dmglog[minpos].id=msd->status.char_id;
-				md->dmglog[minpos].dmg=damage;
 
-			if(md->attacked_id <= 0 && md->state.special_mob_ai==0)
+			damage2 = damage + (int)linkdb_search( &md->dmglog, (void*)msd->status.char_id );
+			linkdb_replace( &md->dmglog, (void*)msd->status.char_id, (void*)damage2 );
+
+			if(md->attacked_id <= 0 && md->state.special_mob_ai==0 &&
+				atn_rand() % 1000 < 1000 / (++md->attacked_players)
+			) {
 				md->attacked_id = md2->master_id;
 			}
 		}
-
 	}
 
 	md->hp-=damage;
@@ -1466,8 +1443,7 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 	map_freeblock_lock();
 	mobskill_use(md,tick,-1);	// 死亡時スキル
 
-	memset(tmpsd,0,sizeof(tmpsd));
-	memset(pt,0,sizeof(pt));
+	memset(mvp,0,sizeof(mvp));
 
 	max_hp = status_get_max_hp(&md->bl);
 
@@ -1533,40 +1509,79 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 
 	// map外に消えた人は計算から除くので
 	// overkill分は無いけどsumはmax_hpとは違う
-
-	tdmg = 0;
-	for(i=0,count=0,mvp_damage=0;i<DAMAGELOG_SIZE;i++){
-		if(md->dmglog[i].id==0)
-			continue;
-		tmpsd[i] = map_nick2sd(map_charid2nick(md->dmglog[i].id));
-		if(tmpsd[i] == NULL)
-			continue;
-		count++;
-		if(tmpsd[i]->bl.m != md->bl.m || unit_isdead(&tmpsd[i]->bl))
-			continue;
-
-		tdmg += (atn_bignumber)md->dmglog[i].dmg;
-		if(mvp_damage<md->dmglog[i].dmg){
-			third_sd = second_sd;
-			second_sd = mvp_sd;
-			mvp_sd=tmpsd[i];
-			mvp_damage=md->dmglog[i].dmg;
-		}
+	i     = 0;
+	node  = md->dmglog;
+	while( node ) {
+		node = node->next;
+		i++;
 	}
+	if( i > 0 ) {
+		pt    = aCalloc( i, sizeof(*pt) );
+		tmpsd = aCalloc( i, sizeof(*tmpsd) );
+	}
+
+	i     = 0;
+	tdmg  = 0;
+	count = 0;
+	node  = md->dmglog;
+	mvp_damage = 0;
+	while( node ) {
+		int damage2;
+		tmpsd[i] = map_nick2sd(map_charid2nick( (int)node->key ) );
+		if(tmpsd[i] == NULL) {
+			node = node->next; i++;
+			continue;
+		}
+		count++;
+		if(tmpsd[i]->bl.m != md->bl.m || unit_isdead(&tmpsd[i]->bl)) {
+			node = node->next; i++;
+			continue;
+		}
+
+		damage2 = (int)node->data;
+		tdmg += (atn_bignumber)damage2;
+		if(mvp_damage < damage2) {
+			if( mvp[0].sd == NULL || damage2 > mvp[0].dmg ) {
+				// 一番大きいダメージ
+				mvp[2] = mvp[1];
+				mvp[1] = mvp[0];
+				mvp[0].sd  = tmpsd[i];
+				mvp[0].dmg = damage2;
+				mvp_damage = (mvp[2].sd == NULL ? 0 : mvp[2].dmg );
+			} else if( mvp[1].sd == NULL || damage2 > mvp[1].dmg ) {
+				// ２番目に大きいダメージ
+				mvp[2]     = mvp[1];
+				mvp[1].sd  = tmpsd[i];
+				mvp[1].dmg = damage2;
+				mvp_damage = (mvp[2].sd == NULL ? 0 : mvp[2].dmg );
+			} else {
+				// ３番目に大きいダメージ
+				mvp[2].sd  = tmpsd[i];
+				mvp[2].dmg = damage2;
+				mvp_damage = damage2;
+			}
+		}
+		node = node->next; i++;
+	}
+
 //	if((double)max_hp < tdmg)
 //		dmg_rate = ((double)max_hp) / tdmg;
 //	else dmg_rate = 1;
 
 	// 経験値の分配
 	if(!md->state.noexp && tdmg > 0) {
-		for(i=0;i<DAMAGELOG_SIZE;i++){
+		i    = 0;
+		node = md->dmglog;
+		while( node ){
 			int pid,flag=1;
 			atn_bignumber per,base_exp,job_exp;
 			int base_exp_rate,job_exp_rate;
 			int tk_exp_rate;
 			struct party *p;
-			if(tmpsd[i]==NULL || tmpsd[i]->bl.m != md->bl.m || unit_isdead(&tmpsd[i]->bl))
+			if(tmpsd[i]==NULL || tmpsd[i]->bl.m != md->bl.m || unit_isdead(&tmpsd[i]->bl)) {
+				node = node->next; i++;
 				continue;
+			}
 
 			if(map[md->bl.m].base_exp_rate)
 				base_exp_rate=(map[md->bl.m].base_exp_rate<0)?0:map[md->bl.m].base_exp_rate;
@@ -1577,7 +1592,7 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 			else
 				job_exp_rate =battle_config.job_exp_rate;
 
-			per = (10000/10) * ((atn_bignumber)md->dmglog[i].dmg)*(9+((count > 6)? 6:count))/tdmg;
+			per = (10000/10) * (atn_bignumber)((int)node->data)*(9+((count > 6)? 6:count))/tdmg;
 			base_exp = (((atn_bignumber)mob_db[md->class].base_exp * base_exp_rate ) /100 ) * per / 10000;
 			if(mob_db[md->class].base_exp > 0 && base_exp < 1) base_exp = 1;
 			if(base_exp < 0) base_exp = 0;
@@ -1632,49 +1647,52 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 						(base_exp_ > 0x7fffffff)? 0x7fffffff : (int)base_exp_,
 						(job_exp_  > 0x7fffffff)? 0x7fffffff : (int)job_exp_  );
 			}
+			node = node->next; i++;
 		}
 		// 公平分配
 		for(i=0;i<pnum;i++)
 			party_exp_share(pt[i].p, md->bl.m, pt[i].base_exp, pt[i].job_exp);
 	}
+	aFree( pt );
+	aFree( tmpsd );
 
 	// item drop
 	if(!(type&1) && !map[md->bl.m].flag.nodrop) {
+		if(!md->state.nodrop) {
+			for(i=0;i<10;i++){
+				struct delay_item_drop *ditem;
+				int drop_rate;
 
-		if(!md->state.nodrop)
-		for(i=0;i<10;i++){
-			struct delay_item_drop *ditem;
-			int drop_rate;
+				if(mob_db[md->class].dropitem[i].nameid <= 0)
+					continue;
+				drop_rate = mob_db[md->class].dropitem[i].p;
+				if(drop_rate <= 0 && battle_config.drop_rate0item)
+					drop_rate = 1;
+				if(drop_rate <= rand()%10000)
+					continue;
 
-			if(mob_db[md->class].dropitem[i].nameid <= 0)
-				continue;
-			drop_rate = mob_db[md->class].dropitem[i].p;
-			if(drop_rate <= 0 && battle_config.drop_rate0item)
-				drop_rate = 1;
-			if(drop_rate <= rand()%10000)
-				continue;
-
-			ditem=(struct delay_item_drop *)aCalloc(1,sizeof(struct delay_item_drop));
-			ditem->nameid = mob_db[md->class].dropitem[i].nameid;
-			ditem->amount = 1;
-			ditem->m = md->bl.m;
-			ditem->x = md->bl.x;
-			ditem->y = md->bl.y;
-			ditem->first_sd = mvp_sd;
-			ditem->second_sd = second_sd;
-			ditem->third_sd = third_sd;
-			add_timer(tick+500+i,mob_delay_item_drop,(int)ditem,0);
+				ditem=(struct delay_item_drop *)aCalloc(1,sizeof(struct delay_item_drop));
+				ditem->nameid = mob_db[md->class].dropitem[i].nameid;
+				ditem->amount = 1;
+				ditem->m = md->bl.m;
+				ditem->x = md->bl.x;
+				ditem->y = md->bl.y;
+				ditem->first_sd  = mvp[0].sd;
+				ditem->second_sd = mvp[1].sd;
+				ditem->third_sd  = mvp[2].sd;
+				add_timer(tick+500+i,mob_delay_item_drop,(int)ditem,0);
+			}
 		}
-
-		if(sd && sd->state.attack_type == BF_WEAPON) {
+		if(sd){// && (sd->state.attack_type == BF_WEAPON)) {
 			for(i=0;i<sd->monster_drop_item_count;i++) {
 				struct delay_item_drop *ditem;
 				int race = status_get_race(&md->bl);
+				int mode = status_get_mode(&md->bl);
 				if(sd->monster_drop_itemid[i] <= 0)
 					continue;
 				if(sd->monster_drop_race[i] & (1<<race) ||
-					(mob_db[md->class].mode & 0x20 && sd->monster_drop_race[i] & 1<<10) ||
-					(!(mob_db[md->class].mode & 0x20) && sd->monster_drop_race[i] & 1<<11) ) {
+					(mode & 0x20 && sd->monster_drop_race[i] & 1<<10) ||
+					(!(mode & 0x20) && sd->monster_drop_race[i] & 1<<11) ) {
 					if(sd->monster_drop_itemrate[i] <= rand()%10000)
 						continue;
 
@@ -1684,17 +1702,19 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 					ditem->m = md->bl.m;
 					ditem->x = md->bl.x;
 					ditem->y = md->bl.y;
-					ditem->first_sd = mvp_sd;
-					ditem->second_sd = second_sd;
-					ditem->third_sd = third_sd;
+					ditem->first_sd  = mvp[0].sd;
+					ditem->second_sd = mvp[1].sd;
+					ditem->third_sd  = mvp[2].sd;
 					add_timer(tick+520+i,mob_delay_item_drop,(int)ditem,0);
 				}
 			}
 			if(sd->get_zeny_num > 0)
 				pc_getzeny(sd,mob_db[md->class].lv*10 + rand()%(sd->get_zeny_num+1));
+			if(sd->get_zeny_num2 > 0 && rand()%100 < sd->get_zeny_num2)
+				pc_getzeny(sd,mob_db[md->class].lv*10);
 		}
 		// 鉱石発見処理
-		if (sd == mvp_sd && pc_checkskill(sd, BS_FINDINGORE) > 0) {
+		if (sd == mvp[0].sd && pc_checkskill(sd, BS_FINDINGORE) > 0) {
 			int rate = battle_config.finding_ore_drop_rate;
 			rate *= battle_config.item_rate;
 			rate /= 100;
@@ -1710,9 +1730,9 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 				ditem->m = md->bl.m;
 				ditem->x = md->bl.x;
 				ditem->y = md->bl.y;
-				ditem->first_sd = mvp_sd;
-				ditem->second_sd = second_sd;
-				ditem->third_sd = third_sd;
+				ditem->first_sd  = mvp[0].sd;
+				ditem->second_sd = mvp[1].sd;
+				ditem->third_sd  = mvp[2].sd;
 				add_timer(tick + 520 + i, mob_delay_item_drop, (int)ditem, 0);
 			}
 		}
@@ -1725,16 +1745,16 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 				ditem->m = md->bl.m;
 				ditem->x = md->bl.x;
 				ditem->y = md->bl.y;
-				ditem->first_sd = mvp_sd;
-				ditem->second_sd = second_sd;
-				ditem->third_sd = third_sd;
+				ditem->first_sd  = mvp[0].sd;
+				ditem->second_sd = mvp[1].sd;
+				ditem->third_sd  = mvp[2].sd;
 				add_timer(tick+540+i,mob_delay_item_drop2,(int)ditem,0);
 			}
 		}
 	}
 
 	// mvp処理
-	if(mvp_sd && mob_db[md->class].mexp > 0 && !md->state.nomvp){
+	if(mvp[0].sd && mob_db[md->class].mexp > 0 && !md->state.nomvp){
 		int j;
 		int mexp;
 		temp = ((atn_bignumber)mob_db[md->class].mexp * battle_config.mvp_exp_rate * (9+count)/1000);
@@ -1743,12 +1763,14 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 		if(battle_config.mpv_announce){
 			char output[256];
 			snprintf(output, sizeof output,
-				"【MVP情報】%sさんが%sを倒しました！",mvp_sd->status.name,mob_db[md->class].jname);
-			clif_GMmessage(&mvp_sd->bl,output,strlen(output)+1,0x10);
+				"【MVP情報】%sさんが%sを倒しました！",mvp[0].sd->status.name,mob_db[md->class].jname);
+			clif_GMmessage(&mvp[0].sd->bl,output,strlen(output)+1,0x10);
 		}
-		clif_mvp_effect(mvp_sd);					// エフェクト
-		clif_mvp_exp(mvp_sd,mexp);
-		pc_gainexp(mvp_sd,mexp,0);
+		clif_mvp_effect(mvp[0].sd);					// エフェクト
+		if(mob_db[md->class].mexpper > rand()%10000){
+			clif_mvp_exp(mvp[0].sd,mexp);
+			pc_gainexp(mvp[0].sd,mexp,0);
+		}
 		for(j=0;j<3;j++){
 			i = rand() % 3;
 			if(mob_db[md->class].mvpitem[i].nameid <= 0)
@@ -1761,12 +1783,12 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 			memset(&item,0,sizeof(item));
 			item.nameid=mob_db[md->class].mvpitem[i].nameid;
 			item.identify=!itemdb_isequip3(item.nameid);
-			clif_mvp_item(mvp_sd,item.nameid);
-			if(mvp_sd->weight*2 > mvp_sd->max_weight)
-				map_addflooritem(&item,1,mvp_sd->bl.m,mvp_sd->bl.x,mvp_sd->bl.y,mvp_sd,second_sd,third_sd,1);
-			else if((ret = pc_additem(mvp_sd,&item,1))) {
+			clif_mvp_item(mvp[0].sd,item.nameid);
+			if(mvp[0].sd->weight*2 > mvp[0].sd->max_weight)
+				map_addflooritem(&item,1,mvp[0].sd->bl.m,mvp[0].sd->bl.x,mvp[0].sd->bl.y,mvp[0].sd,mvp[1].sd,mvp[2].sd,1);
+			else if((ret = pc_additem(mvp[0].sd,&item,1))) {
 				clif_additem(sd,0,0,ret);
-				map_addflooritem(&item,1,mvp_sd->bl.m,mvp_sd->bl.x,mvp_sd->bl.y,mvp_sd,second_sd,third_sd,1);
+				map_addflooritem(&item,1,mvp[0].sd->bl.m,mvp[0].sd->bl.x,mvp[0].sd->bl.y,mvp[0].sd,mvp[1].sd,mvp[2].sd,1);
 			}
 			break;
 		}
@@ -1786,8 +1808,8 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 		if(src && src->type == BL_PET)
 			sd = ((struct pet_data *)src)->msd;
 		if(sd == NULL) {
-			if(mvp_sd != NULL)
-				sd = mvp_sd;
+			if(mvp[0].sd != NULL)
+				sd = mvp[0].sd;
 			else {
 				struct map_session_data *tmpsd;
 				int i;
@@ -1836,7 +1858,7 @@ int mob_class_change_randam(struct mob_data *md,int lv)
 		}while((mob_db[class].max_hp <= 0 || mob_db[class].summonper[j] <= k ||
 			 (lv<mob_db[class].lv && battle_config.random_monster_checklv)) && (i++) < MOB_ID_MAX);
 		if(i>=MOB_ID_MAX){
-			class=mob_db[0].summonper[j];
+			class=mob_db[MOB_ID_MIN].summonper[j];
 		}
 	}
 
@@ -1866,7 +1888,7 @@ int mob_class_change_id(struct mob_data *md,int mob_id)
 	max_hp = status_get_max_hp(&md->bl);
 	if(battle_config.monster_class_change_full_recover) {
 		md->hp = max_hp;
-		memset(md->dmglog,0,sizeof(md->dmglog));
+		linkdb_final( &md->dmglog );
 	}
 	else
 		md->hp = max_hp*hp_rate/100;
@@ -2231,6 +2253,8 @@ int mobskill_command_use_id_sub(struct block_list *bl, va_list ap )
 		return 0;
 	if(src->type!=BL_MOB)
 		return 0;
+	if(bl->type!=BL_PC && bl->type!=BL_MOB)// && bl->type!=BL_PET)
+		return 0;
 	
 	md = (struct mob_data*)src;
 
@@ -2325,7 +2349,7 @@ int mobskill_command(struct block_list *bl, va_list ap )
 		return 0;
 	
 	nullpo_retr(0, ms=&mob_db[md->class].skill[skill_idx]);
-	
+
 	switch(command_target_type)
 	{
 		case MCT_SELF:
@@ -2373,8 +2397,8 @@ int mobskill_command(struct block_list *bl, va_list ap )
 			target_id = bl->id;
 			break;
 		case MCT_TARGET:
-			map_foreachinarea( mobskill_command_use_id_sub,bl->m,bl->x-range,bl->y-range,bl->x+range,bl->y+range,
-				BL_PC|BL_MOB,commander_id,bl,target_type,skill_idx,&once_flag);
+			map_foreachinarea(mobskill_command_use_id_sub,bl->m,bl->x-range,bl->y-range,bl->x+range,bl->y+range,
+				0,commander_id,bl,target_type,skill_idx,&once_flag);
 			*flag = 1;
 			return *flag;
 			break;
@@ -2390,7 +2414,6 @@ int mobskill_command(struct block_list *bl, va_list ap )
 			return 0;
 			break;
 	}
-	
 	*flag = 1;
 	casttime = skill_castfix(bl, ms->casttime);
 	md->skillidx = skill_idx;
@@ -2594,11 +2617,11 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 			continue;
 			
 		//コマンド専用
-		if(ms[i].state==MSS_COMMANDONLY)
+		if(ms[i].state==MSS_COMMANDONLY || ms[i].state == MSS_DISABLE)
 			continue;
 		
 		// 状態判定
-		if(ms[i].state>=0 && ms[i].state!=md->state.skillstate )
+		if(ms[i].state != MSS_ANY && ms[i].state!=md->state.skillstate )
 			continue;
 		
 		// 条件判定
@@ -2656,19 +2679,17 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 				break;
 			case MSC_TARGETSTATUSON:	// target status[num] on
 			case MSC_TARGETSTATUSOFF:	// target status[num] off
-				{
-					if(tsd){
-						if( ms[i].cond2==-1 ){
-							int j = 0;
-							if(md->sc_data[SC_STONE].timer!=-1)
-								flag= md->sc_data[SC_STONE].val2==0;
-							for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
-								flag=(md->sc_data[j].timer!=-1 );
-							}
-						}else
-							flag=( md->sc_data[ms[i].cond2].timer!=-1 );
-						flag^=( ms[i].cond1==MSC_MYSTATUSOFF );
-					}
+				if(tsd){
+					if( ms[i].cond2==-1 ){
+						int j = 0;
+						if(md->sc_data[SC_STONE].timer!=-1)
+							flag= md->sc_data[SC_STONE].val2==0;
+						for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
+							flag=(md->sc_data[j].timer!=-1 );
+						}
+					}else
+						flag=( md->sc_data[ms[i].cond2].timer!=-1 );
+					flag^=( ms[i].cond1==MSC_MYSTATUSOFF );
 				}
 				break;
 			case MSC_MASTERHPGTMAXRATE:	// master HP < maxhp%
@@ -2681,19 +2702,17 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 				break;
 			case MSC_MASTERSTATUSON:	// master status[num] on
 			case MSC_MASTERSTATUSOFF:	// master status[num] off
-				{
-					if(master_md){
-						if( ms[i].cond2==-1 ){
-							int j = 0;
-							if(master_md->sc_data[SC_STONE].timer!=-1)
-								flag= master_md->sc_data[SC_STONE].val2==0;
-							for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
-								flag=(master_md->sc_data[j].timer!=-1 );
-							}
-						}else
-							flag=( master_md->sc_data[ms[i].cond2].timer!=-1 );
-						flag^=( ms[i].cond1==MSC_MYSTATUSOFF );
-					}
+				if(master_md){
+					if( ms[i].cond2==-1 ){
+						int j = 0;
+						if(master_md->sc_data[SC_STONE].timer!=-1)
+							flag= master_md->sc_data[SC_STONE].val2==0;
+						for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
+							flag=(master_md->sc_data[j].timer!=-1 );
+						}
+					}else
+						flag=( master_md->sc_data[ms[i].cond2].timer!=-1 );
+					flag^=( ms[i].cond1==MSC_MYSTATUSOFF );
 				}
 				break;
 			}
@@ -2769,10 +2788,16 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 						case MCT_GROUP:
 							{
 								use_flag = 1;
-								once_flag=0;
 								if(md)
-									map_foreachinarea( mobskill_command,
-										md->bl.m,md->bl.x-range,md->bl.y-range,md->bl.x+range,md->bl.y+range,BL_MOB,md->bl.id,ms[i].skill_id,MCT_SELF,ms[i].val[2],ms[i].val[3],&once_flag);											once_flag=0;
+								{
+									int casttime = skill_castfix(&md->bl, ms[i].casttime);
+									md->skilldelay[i] = gettick() + casttime;
+									md->skillidx = i;
+									unit_skilluse_id2(&md->bl,md->bl.id, ms[i].skill_id,
+										ms[i].skill_lv,casttime, ms[i].cancel);
+								}
+								//map_foreachinarea( mobskill_command,
+								//	md->bl.m,md->bl.x-range,md->bl.y-range,md->bl.x+range,md->bl.y+range,BL_MOB,md->bl.id,ms[i].skill_id,MCT_SELF,ms[i].val[2],ms[i].val[3],&once_flag);
 								if(md)
 									map_foreachinarea( mobskill_command,
 										md->bl.m,md->bl.x-range,md->bl.y-range,md->bl.x+range,md->bl.y+range,BL_MOB,md->bl.id,ms[i].skill_id,MCT_SLAVES,ms[i].val[2],ms[i].val[3],&once_flag);
@@ -2790,7 +2815,7 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 							}
 							break;
 						}
-						skill_addtimerskill_mob_commanddelay(md,i,tick);
+						md->skilldelay[ i ] = gettick() + ms[i].delay;
 					}
 						break;
 					case MST_MODECHANGE:
@@ -2821,15 +2846,12 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 							}
 							break;
 						}
-						if(md)
-							skill_addtimerskill_mob_commanddelay(md,i,tick);
+						md->skilldelay[ i ] = gettick() + ms[i].delay;
 					}
 						break;
 					case MST_TARGETCHANGE:
-					{
 						if(md)
-							skill_addtimerskill_mob_commanddelay(md,i,tick);
-					}
+							md->skilldelay[ i ] = gettick() + ms[i].delay;
 						break;
 				}
 			}
@@ -2975,7 +2997,7 @@ static int mob_readdb(void)
 	char *filename[]={ "db/mob_db.txt","db/mob_db2.txt" };
 	int n;
 
-	memset(mob_db,0,sizeof(mob_db));
+	memset(mob_db_real,0,sizeof(mob_db_real));
 
 	for(n=0;n<2;n++){
 		fp=fopen(filename[n],"r");
@@ -3073,7 +3095,7 @@ static int mob_readdb(void)
 					SETRATE2(    1,   10,   1 );
 					SETRATE2(   10,  100,  10 );
 					SETRATE2(  100, 1000, 100 );
-					SETRATE2( 1000,10000,1000 );
+					SETRATE2( 1000,10001,1000 );
 					#undef SETRATE2
 				}
 				else if (battle_config.item_rate_details==0)	//ドロップレート詳細項目が0の時
@@ -3226,7 +3248,7 @@ static int mob_read_randommonster(void)
 		"db/mob_boss.txt" };
 
 	for(i=0;i<MAX_RANDOMMONSTER;i++){
-		mob_db[0].summonper[i] = 1002;	// 設定し忘れた場合はポリンが出るようにしておく
+		mob_db[MOB_ID_MIN].summonper[i] = 1002;	// 設定し忘れた場合はポリンが出るようにしておく
 		fp=fopen(mobfile[i],"r");
 		if(fp==NULL){
 			printf("can't read %s\n",mobfile[i]);
@@ -3248,14 +3270,21 @@ static int mob_read_randommonster(void)
 
 			class = atoi(str[0]);
 			per=atoi(str[2]);
-			if((class>1000 && class<=MOB_ID_MAX) || class==0)
+			if(class>1000 && class<=MOB_ID_MAX)
 				mob_db[class].summonper[i]=per;
+			else if( class == 0 )
+				mob_db[MOB_ID_MIN].summonper[i]=per;
 		}
 		fclose(fp);
 		printf("read %s done\n",mobfile[i]);
 	}
 	return 0;
 }
+/*==========================================
+ * db/mob_skill_db.txt読み込み
+ *------------------------------------------
+ */
+
 /*==========================================
  * db/mob_skill_db.txt読み込み
  *------------------------------------------
@@ -3312,7 +3341,7 @@ static int mob_readskilldb(void)
 		{	"sight",		SC_SIGHT		},
 		{	"lexaeterna",	SC_AETERNA		},
 	}, state[] = {
-		{	"any",		-1			},
+		{	"any",		MSS_ANY		},
 		{	"idle",		MSS_IDLE	},
 		{	"walk",		MSS_WALK	},
 		{	"attack",	MSS_ATTACK	},
@@ -3350,7 +3379,7 @@ static int mob_readskilldb(void)
 		{ "master",		MCT_MASTER	},
 	};
 
-	int x;
+	int x, lineno;
 	char *filename[]={ "db/mob_skill_db.txt","db/mob_skill_db2.txt" };
 
 	for(x=0;x<2;x++){
@@ -3361,20 +3390,25 @@ static int mob_readskilldb(void)
 				printf("can't read %s\n",filename[x]);
 			continue;
 		}
+		lineno = 0;
 		while(fgets(line,1020,fp)){
 			char *sp[20],*p;
 			int mob_id;
 			struct mob_skill *ms;
 			int j=0;
 
+			lineno++;
 			if(line[0] == '/' && line[1] == '/')
 				continue;
 
 			memset(sp,0,sizeof(sp));
 			for(i=0,p=line;i<18 && p;i++){
 				sp[i]=p;
-				if((p=strchr(p,','))!=NULL)
+				if((p=strchr(p,','))!=NULL) {
 					*p++=0;
+				} else {
+					break;
+				}
 			}
 			if( (mob_id=atoi(sp[0]))<=0 )
 				continue;
@@ -3382,6 +3416,11 @@ static int mob_readskilldb(void)
 			if( strcmp(sp[1],"clear")==0 ){
 				memset(mob_db[mob_id].skill,0,sizeof(mob_db[mob_id].skill));
 				mob_db[mob_id].maxskill=0;
+				continue;
+			}
+
+			if( i != 17 ) {
+				printf("mob_skill: invalid param count(%d) line %d\n", i, lineno);
 				continue;
 			}
 
@@ -3394,10 +3433,16 @@ static int mob_readskilldb(void)
 				continue;
 			}
 
-			ms->state=atoi(sp[2]);
+			// ms->state = -1;
 			for(j=0;j<sizeof(state)/sizeof(state[0]);j++){
-				if( strcmp(sp[2],state[j].str)==0)
+				if( strcmp(sp[2],state[j].str)==0) {
 					ms->state=state[j].id;
+					break;
+				}
+			}
+			if( j == sizeof(state)/sizeof(state[0]) ) {
+				ms->state = MSS_COMMANDONLY; // 無効にする
+				printf("mob_skill: unknown state %s line %d\n", sp[2], lineno);
 			}
 			ms->skill_id=atoi(sp[3]);
 			ms->skill_lv=atoi(sp[4]);
@@ -3406,36 +3451,89 @@ static int mob_readskilldb(void)
 			ms->delay=atoi(sp[7]);
 			ms->cancel=atoi(sp[8]);
 			if( strcmp(sp[8],"yes")==0 ) ms->cancel=1;
-			ms->target=atoi(sp[9]);
+
+			// ms->target=atoi(sp[9]);
 			for(j=0;j<sizeof(target)/sizeof(target[0]);j++){
-				if( strcmp(sp[9],target[j].str)==0)
+				if( strcmp(sp[9],target[j].str)==0) {
 					ms->target=target[j].id;
+					break;
+				}
 			}
-			ms->cond1=-1;
+			if( j == sizeof(target)/sizeof(target[0]) ) {
+				ms->state = MSS_DISABLE; // 無効にする
+				printf("mob_skill: unknown target %s line %d\n", sp[9], lineno);
+			}
+
+			// ms->cond1=-1;
 			for(j=0;j<sizeof(cond1)/sizeof(cond1[0]);j++){
-				if( strcmp(sp[10],cond1[j].str)==0)
+				if( strcmp(sp[10],cond1[j].str)==0) {
 					ms->cond1=cond1[j].id;
+					break;
+				}
 			}
+			if( j == sizeof(cond1)/sizeof(cond1[0]) ) {
+				ms->state = MSS_DISABLE; // 無効にする
+				printf("mob_skill: unknown cond1 %s line %d\n", sp[10], lineno);
+			}
+
 			ms->cond2=atoi(sp[11]);
 			for(j=0;j<sizeof(cond2)/sizeof(cond2[0]);j++){
-				if( strcmp(sp[11],cond2[j].str)==0)
+				if( strcmp(sp[11],cond2[j].str)==0) {
 					ms->cond2=cond2[j].id;
+					break;
+				}
 			}
+			if(
+				(ms->cond1 == MSC_MYSTATUSON	    || ms->cond1 == MSC_MYSTATUSOFF	||
+				 ms->cond1 == MSC_FRIENDSTATUSON	|| ms->cond1 == MSC_FRIENDSTATUSOFF) ^
+				( j != sizeof(cond2)/sizeof(cond2[0]) )
+			) {
+				ms->state = MSS_DISABLE; // 無効にする
+				printf("mob_skill: invalid combination (%s,%s) line %d\n", sp[10], sp[11], lineno );
+			}
+
 			ms->val[0]=atoi(sp[12]);
 			for(j=0;j<sizeof(command_target)/sizeof(command_target[0]);j++){
-				if( strcmp(sp[12],command_target[j].str)==0)
+				if( strcmp(sp[12],command_target[j].str)==0) {
 					ms->val[0]=command_target[j].id;
+					break;
+				}
 			}
+			if( j == sizeof(command_target)/sizeof(command_target[0]) ) {
+				if( isalpha( (unsigned char)sp[12][0] ) ) {
+					ms->state = MSS_DISABLE; // 無効にする
+					printf("mob_skill: unknown val0 %s line %d\n", sp[12], lineno );
+				}
+			}
+
 			ms->val[1]=atoi(sp[13]);
 			for(j=0;j<sizeof(command_target)/sizeof(command_target[0]);j++){
-				if( strcmp(sp[13],command_target[j].str)==0)
+				if( strcmp(sp[13],command_target[j].str)==0) {
 					ms->val[1]=command_target[j].id;
+					break;
+				}
 			}
+			if( j == sizeof(command_target)/sizeof(command_target[0]) ) {
+				if( isalpha( (unsigned char)sp[13][0] ) ) {
+					ms->state = MSS_DISABLE; // 無効にする
+					printf("mob_skill: unknown val1 %s line %d\n", sp[13], lineno );
+				}
+			}
+
 			ms->val[2]=atoi(sp[14]);
 			for(j=0;j<sizeof(command_target)/sizeof(command_target[0]);j++){
-				if( strcmp(sp[14],command_target[j].str)==0)
+				if( strcmp(sp[14],command_target[j].str)==0) {
 					ms->val[2]=command_target[j].id;
+					break;
+				}
 			}
+			if( j == sizeof(command_target)/sizeof(command_target[0]) ) {
+				if( isalpha( (unsigned char)sp[14][0] ) ) {
+					ms->state = MSS_DISABLE; // 無効にする
+					printf("mob_skill: unknown val2 %s line %d\n", sp[14], lineno );
+				}
+			}
+
 			ms->val[3]=atoi(sp[15]);
 			ms->val[4]=atoi(sp[16]);
 			if(strlen(sp[17])>2)

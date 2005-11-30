@@ -1,4 +1,4 @@
-// $Id: db.c,v 1.1.1.2 2005/11/10 20:58:56 running_pinata Exp $
+// $Id: db.c,v 1.1.1.3 2005/11/30 00:05:40 running_pinata Exp $
 #define MALLOC_DBN
 #include <stdio.h>
 #include <stdlib.h>
@@ -663,5 +663,344 @@ void  linkdb_final( struct linkdb_node** head ) {
 		node = node2;
 	}
 	*head = NULL;
+}
+
+// csvdb -- csv のデータ読み込み関数
+
+// csv の読み込み。skip_comment が真のときは、行頭に//がある行を読み飛ばす。
+struct csvdb_data* csvdb_open(const char* file, int skip_comment) {
+	int  i;
+	char buf[8192];
+	FILE *fp = fopen(file, "r");
+	struct csvdb_data *csv = (struct csvdb_data*)calloc( sizeof(struct csvdb_data), 1);
+	csv->file = strdup( file );
+	if(fp == NULL) {
+		return csv;
+	}
+
+	while( fgets( buf, sizeof(buf)-1, fp) ) {
+		int max = 0;
+		char *s;
+		struct csvdb_line *line;
+		if( buf[0] == '\n' || !buf[0] )                      continue; // 空行
+		if( skip_comment && buf[0] == '/' && buf[1] == '/' ) continue; // コメント
+		if( csv->row_count == csv->row_max ) {
+			csv->row_max += 64;
+			csv->data  = (struct csvdb_line*)realloc(
+				csv->data, sizeof(struct csvdb_line) * csv->row_max );
+			csv->index = (int*)realloc(
+				csv->index, sizeof(int) * csv->row_max );
+		}
+		max = strlen(buf);
+		if( buf[max-1] == '\n' ) buf[--max] = 0;
+
+		// lineにコピーし、行末にNUL を２つ続けさせる
+		buf[max  ] = ' '; // ダミー文字
+		buf[max+1] = 0;
+		line = &csv->data[csv->row_count++];
+		line->buf = strdup( buf );
+		line->num = 0;
+		line->buf[max  ] = 0;
+		line->buf[max+1] = 0;
+		for(s = line->buf; s[0] && line->num < MAX_CSVCOL; ) {
+			if( *s == '"' ) {
+				// [""] を ["] に置き換え、[",] を終了の合図とする。
+				// 行末にNUL が２つ続くので、k[n] がNUL のとき
+				// k[n+1]を参照しても安全。
+				char *j = ++s, *k = s;
+				while( k[0] ) {
+					if( k[0] == '"' ) {
+						if( k[1] == ',' || k[1] == 0) break;
+						*(j++) = (*k++); k++;
+					} else {
+						*(j++) = (*k++);
+					}
+				}
+				*j = 0;
+				line->data_p[line->num] = s;
+				line->data_v[line->num] = strtol(s, NULL, 0);
+				line->num++;
+				if( k[1] == 0 ) break;
+				s = k + 2;
+			} else {
+				char *p = strchr( s, ',');
+				if( p ) *p = 0;
+				line->data_p[line->num] = s;
+				line->data_v[line->num] = strtol(s, NULL, 0);
+				s = p + 1;
+				line->num++;
+				if( !p ) break;
+			}
+		}
+	}
+	fclose(fp);
+	for(i = 0; i < csv->row_count; i++) {
+		csv->index[i] = i;
+	}
+	csv->row_notempty = csv->row_count;
+	return csv;
+}
+
+// 行数を返す
+int csvdb_get_rows(struct csvdb_data *csv) {
+	return ( csv == NULL ? -1 : csv->row_notempty );
+}
+
+// 指定した行の列数を返す
+int csvdb_get_columns(struct csvdb_data *csv, int row) {
+	return ( csv == NULL || row < 0 || csv->row_notempty <= row ? -1 : csv->data[csv->index[row]].num);
+}
+
+// 指定した行、列のデータを整数にして返す
+int csvdb_get_num(struct csvdb_data *csv, int row, int col) {
+	if( csv == NULL || row < 0 || csv->row_notempty <= row || col < 0 || csv->data[csv->index[row]].num <= col )
+		return -1;
+	else
+		return csv->data[csv->index[row]].data_v[col];
+}
+
+// 指定した行、列のデータへのポインタを返す
+const char* csvdb_get_str(struct csvdb_data *csv, int row, int col) {
+	if( csv == NULL || row < 0 || csv->row_notempty <= row || col < 0 || csv->data[csv->index[row]].num <= col )
+		return NULL;
+	else
+		return csv->data[csv->index[row]].data_p[col];
+}
+
+// 先頭の行にある数字がvalue と一致する行を返す
+int csvdb_find_num(struct csvdb_data *csv, int col, int value) {
+	int i;
+	if( csv == NULL || col < 0 || col >= MAX_CSVCOL) return -1;
+	for(i = 0; i < csv->row_notempty; i++) {
+		struct csvdb_line *line = &csv->data[csv->index[i]];
+		if( line->num > col && line->data_v[col] == value ) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+// 先頭の行にある文字がvalue と一致する行を返す
+int csvdb_find_str(struct csvdb_data *csv, int col, const char* value) {
+	int i;
+	if( csv == NULL || col < 0 || col >= MAX_CSVCOL) return -1;
+	for(i = 0; i < csv->row_notempty; i++) {
+		struct csvdb_line *line = &csv->data[csv->index[i]];
+		if( line->num > col && !strcmp(line->data_p[col], value) ) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+// csv のリサイズ(ただし、列数は無視される)
+int csvdb_resize(struct csvdb_data *csv, int row, int col) {
+	int i;
+	if( csv == NULL || col < 0 || row < 0 || col >= MAX_CSVCOL) return 0;
+	// 行の拡張
+	if( csv->row_count < row ) {
+		while( csv->row_max <= row ) {
+			csv->row_max += 32;
+			csv->data = (struct csvdb_line*)realloc(
+				csv->data, sizeof(struct csvdb_data) * csv->row_max
+			);
+			csv->index = (int*)realloc(
+				csv->index, sizeof(int) * csv->row_max
+			);
+		}
+		for(i = csv->row_count; i < row; i++) {
+			csv->data[i].num = 0;
+			csv->data[i].buf = strdup("");
+			csv->index[i]    = i;
+		}
+		csv->row_count = row;
+	}
+	return 1;
+}
+
+// 指定した行、列のデータを設定する
+int csvdb_set_num(struct csvdb_data *csv, int row, int col, int num) {
+	char buf[256];
+	sprintf(buf, "%d", num);
+	return csvdb_set_str(csv, row, col, buf);
+}
+
+// 指定した行、列のデータを設定する
+int csvdb_set_str(struct csvdb_data *csv, int row, int col, const char* str) {
+	int i;
+	struct csvdb_line *line;
+	if( csv == NULL || col < 0 || col >= MAX_CSVCOL || row < 0) return 0;
+	if( csv->row_notempty <= row ) {
+		if(!csvdb_resize(csv, row + 1, col + 1)) return 0;
+		csv->row_notempty = row + 1;
+	}
+	line = &csv->data[ csv->index[row] ];
+	if( line->buf != NULL ) {
+		for( i = 0; i < line->num; i++) {
+			line->data_p[i] = strdup( line->data_p[i] );
+		}
+		free( line->buf );
+		line->buf = NULL;
+	}
+	for(i = line->num; i <= col; i++) {
+		line->data_p[i] = strdup("");
+		line->data_v[i] = 0;
+	}
+	csv->dirty = 1;
+	if(line->num < col + 1)
+		line->num = col + 1;
+	free(line->data_p[col]);
+	line->data_p[col] = strdup(str);
+	line->data_v[col] = strtol( str, NULL, 0);
+	return 1;
+}
+
+// 指定した行、列のデータをクリアする
+int csvdb_clear_row(struct csvdb_data *csv, int row) {
+	int i;
+	struct csvdb_line *line;
+	if( csv == NULL || row < 0 || csv->row_notempty <= row ) return 0;
+	line = &csv->data[ csv->index[ row ] ];
+	if( line->buf == NULL ) {
+		for(i = 0; i < line->num; i++) {
+			free( line->data_p[i] );
+		}
+	} else {
+		free( line->buf );
+	}
+	line->buf = strdup("");
+	line->num = 0;
+	return 1;
+}
+
+// 並び替え関数群
+static int    csvdb_sort_key = 0;
+static struct csvdb_line * csvdb_sort_data = NULL;
+
+static int csvdb_sort_asc(const void *a, const void *b) {
+	const struct csvdb_line *p1 = &csvdb_sort_data[*(int*)a];
+	const struct csvdb_line *p2 = &csvdb_sort_data[*(int*)b];
+	int v1 = (p1->num < csvdb_sort_key ? 0 : p1->data_v[csvdb_sort_key]);
+	int v2 = (p2->num < csvdb_sort_key ? 0 : p2->data_v[csvdb_sort_key]);
+	return  v1 - v2;
+}
+
+static int csvdb_sort_desc(const void *a, const void *b) {
+	const struct csvdb_line *p1 = &csvdb_sort_data[*(int*)a];
+	const struct csvdb_line *p2 = &csvdb_sort_data[*(int*)b];
+	int v1 = (p1->num < csvdb_sort_key ? 0 : p1->data_v[csvdb_sort_key]);
+	int v2 = (p2->num < csvdb_sort_key ? 0 : p2->data_v[csvdb_sort_key]);
+	return  v2 - v1;
+}
+
+int csvdb_sort(struct csvdb_data *csv, int key, int order) {
+	if(csv == NULL || key < 0) return 0;
+	csvdb_sort_key  = key;
+	csvdb_sort_data = csv->data;
+	if( order != -1 ) {
+		// 昇順
+		qsort( csv->index, csv->row_notempty, sizeof(int), csvdb_sort_asc);
+	} else {
+		// 降順
+		qsort( csv->index, csv->row_notempty, sizeof(int), csvdb_sort_desc);
+	}
+	csv->dirty = 1;
+	return 1;
+}
+
+// 指定した行を削除する
+int csvdb_delete_row(struct csvdb_data *csv, int row) {
+	int i; 
+	if(csv == NULL || row < 0 || csv->row_notempty <= row) return 0;
+	csvdb_clear_row(csv,row);
+	i = csv->index[row];
+	memmove(&csv->index[row], &csv->index[row+1], sizeof(int)*(csv->row_count-row-1));
+	csv->index[csv->row_count-1] = i;
+	csv->row_notempty--;
+	return 1;
+}
+
+// 行を挿入する
+int csvdb_insert_row(struct csvdb_data *csv, int row) {
+	int i;
+	if( csv == NULL || row < 0 || csv->row_notempty <= row) return 0;
+	csvdb_resize(csv, csv->row_notempty + 1, 0);
+	i = csv->index[csv->row_count-1];
+	memmove(&csv->index[row+1],&csv->index[row],sizeof(int)*(csv->row_count-row));
+	csv->index[row] = i;
+	return 1;
+}
+
+// メモリを解放する
+void csvdb_close(struct csvdb_data *csv) {
+	int i, j;
+	if( csv == NULL ) return;
+
+	if( csv->dirty ) {
+		FILE *fp = fopen( csv->file, "w" );
+		if( fp ) {
+			for(i = 0; i < csv->row_notempty; i++) {
+				struct csvdb_line *line = &csv->data[csv->index[i]];
+				for( j = 0; j < line->num; j++) {
+					if( strchr( line->data_p[j], '\"' ) || strchr( line->data_p[j], '\"' ) ) {
+						char *p = line->data_p[j];
+						fprintf(fp, "\"");
+						for( ; *p; p++) {
+							if( *p == '\"' ) {
+								fprintf(fp, "\"\"");
+							} else {
+								fprintf(fp, "%c", *p);
+							}
+						}
+						fprintf(fp, "\",");
+					} else {
+						fprintf(fp, "%s,", line->data_p[j]);
+					}
+				}
+				fprintf(fp, "\n");
+			}
+		}
+		fclose(fp);
+	}
+
+	for( i = 0; i < csv->row_count; i++) {
+		if( csv->data[i].buf == NULL ) {
+			struct csvdb_line *line = &csv->data[i];
+			for(j = 0; j < line->num; j++) {
+				free( line->data_p[j] );
+			}
+		} else {
+			free( csv->data[i].buf );
+		}
+	}
+	free( csv->file );
+	free( csv->data );
+	free( csv->index );
+	free( csv );
+}
+
+// デバッグ用
+void csvdb_dump(struct csvdb_data* csv) {
+	int i, j;
+	struct csvdb_line *line;
+	if( csv == NULL ) return;
+	printf("csvdb_dump: index\n");
+	for(i = 0; i < csv->row_notempty; i++) {
+		printf("% 3d", csv->index[i]);
+	}
+	printf("[");
+	for( ; i < csv->row_count; i++) {
+		printf("% 3d", csv->index[i]);
+	}
+	printf("]\n");
+
+	for(i = 0; i < csv->row_count; i++) {
+		printf("line% 4d : ", i);
+		line = &csv->data[csv->index[i]];
+		for( j = 0; j < line->num; j++) {
+			printf("[%s],", line->data_p[j]);
+		}
+		printf("\n");
+	}
 }
 

@@ -39,10 +39,9 @@ RSC=rc.exe
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
-# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "../common/" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D PACKETVER=6 /D "NEW_006b" /D FD_SETSIZE=4096 /YX /FD /c
+# ADD CPP /nologo /W3 /Gi /GX /O2 /I "../common/" /D PACKETVER=6 /D "NEW_006b" /D FD_SETSIZE=4096 /D "_CRT_SECURE_NO_DEPRECATE" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FD /c
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
 # ADD RSC /l 0x411 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,7 +49,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /out:"../../map-server.exe"
+# ADD LINK32 kernel32.lib user32.lib /nologo /subsystem:console /incremental:yes /map:"../../map-server.map" /machine:I386 /out:"../../map-server.exe"
 
 !ELSEIF  "$(CFG)" == "map - Win32 Debug"
 
@@ -63,10 +62,9 @@ LINK32=link.exe
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
-# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "../common/" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D PACKETVER=6 /D "NEW_006b" /D FD_SETSIZE=4096 /FR /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /Gi /GX /ZI /Od /I "../common/" /D PACKETVER=6 /D "NEW_006b" /D FD_SETSIZE=4096 /D "_CRT_SECURE_NO_DEPRECATE" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
 # ADD BASE RSC /l 0x411 /d "_DEBUG"
 # ADD RSC /l 0x411 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -74,7 +72,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"../../map-server.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib /nologo /subsystem:console /map:"../../map-server.map" /debug /machine:I386 /out:"../../map-server.exe" /pdbtype:sept
 
 !ENDIF 
 
@@ -108,6 +106,10 @@ SOURCE=..\..\src\map\clif.c
 # Begin Source File
 
 SOURCE=..\..\src\common\core.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\map\date.c
 # End Source File
 # Begin Source File
 
@@ -187,6 +189,10 @@ SOURCE=..\..\src\map\pet.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\map\ranking.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\map\script.c
 # End Source File
 # Begin Source File
@@ -215,19 +221,11 @@ SOURCE=..\..\src\map\trade.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\map\date.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\map\ranking.c
+SOURCE=..\..\src\map\unit.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\map\vending.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\map\unit.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -256,6 +254,10 @@ SOURCE=..\..\src\map\clif.h
 # Begin Source File
 
 SOURCE=..\..\src\common\core.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\map\date.h
 # End Source File
 # Begin Source File
 
@@ -335,6 +337,10 @@ SOURCE=..\..\src\map\pet.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\map\ranking.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\map\script.h
 # End Source File
 # Begin Source File
@@ -363,11 +369,7 @@ SOURCE=..\..\src\map\trade.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\map\date.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\map\ranking.h
+SOURCE=..\..\src\map\unit.h
 # End Source File
 # Begin Source File
 
@@ -384,10 +386,6 @@ SOURCE=..\..\src\common\zconf_win32.h
 # Begin Source File
 
 SOURCE=..\..\src\common\zlib_win32.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\map\unit.h
 # End Source File
 # End Group
 # End Target

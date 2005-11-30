@@ -1,4 +1,4 @@
-// $Id: char.c,v 1.1.1.2 2005/11/10 20:58:54 running_pinata Exp $
+// $Id: char.c,v 1.1.1.3 2005/11/30 00:05:38 running_pinata Exp $
 // original : char2.c 2003/03/14 11:58:35 Rev.1.5
 #define DUMP_UNKNOWN_PACKET	1
 
@@ -54,6 +54,7 @@ int  login_port = 6900;
 char char_ip_str[16];
 int  char_ip;
 int  char_port = 6121;
+int  char_loginaccess_autorestart;
 int  char_maintenance;
 int  char_new;
 char unknown_char_name[1024]="Unknown";
@@ -94,6 +95,7 @@ static int mmo_char_tostr(char *str,struct mmo_charstatus *p)
 {
 	int i;
 	char *str_p = str;
+	unsigned short sk_lv;
 	
 	nullpo_retr(-1,p);
 	
@@ -139,8 +141,13 @@ static int mmo_char_tostr(char *str,struct mmo_charstatus *p)
 	*(str_p++)='\t';
 	
 	for(i=0;i<MAX_SKILL;i++)
-		if(p->skill[i].id && p->skill[i].flag!=1)
-			str_p += sprintf(str_p,"%d,%d ",p->skill[i].id,(p->skill[i].flag==0)?p->skill[i].lv:p->skill[i].flag-2);
+		if(p->skill[i].id && p->skill[i].flag!=1 && p->skill[i].flag!=CLONE_SKILL_FLAG){
+			if(p->skill[i].flag == CLONE_SKILL_FLAG)
+				sk_lv = p->skill[i].lv + CLONE_SKILL_FLAG;
+			else
+				sk_lv = (p->skill[i].flag==0)?p->skill[i].lv:p->skill[i].flag-2;
+			str_p += sprintf(str_p,"%d,%d ",p->skill[i].id,sk_lv);
+		}
 	*(str_p++)='\t';
 	
 	for(i=0;i<p->global_reg_num;i++)
@@ -358,8 +365,16 @@ static int mmo_char_fromstr(char *str,struct mmo_charstatus *p)
 		&tmp_int[0],&tmp_int[1],&len);
 		if(set!=2)
 			return 0;
+		if(ATHENA_MOD_VERSION<=1586 && tmp_int[1]==11){
+			next+=len;
+			continue;
+		}
 		p->skill[tmp_int[0]].id=tmp_int[0];
-		p->skill[tmp_int[0]].lv=tmp_int[1];
+		if(tmp_int[1] > CLONE_SKILL_FLAG){
+			p->skill[tmp_int[0]].lv = tmp_int[1] - CLONE_SKILL_FLAG;
+			p->skill[tmp_int[0]].flag = CLONE_SKILL_FLAG;
+		}else
+			p->skill[tmp_int[0]].lv = tmp_int[1];
 		next+=len;
 		if(str[next]==' ')
 			next++;
@@ -966,7 +981,11 @@ const struct mmo_charstatus* char_sql_load(int char_id) {
 		for(i=0;(sql_row = mysql_fetch_row(sql_res));i++){
 			n = atoi(sql_row[0]);
 			p->skill[n].id = n; //memory!? shit!.
-			p->skill[n].lv = atoi(sql_row[1]);
+			if(atoi(sql_row[1]) > CLONE_SKILL_FLAG){
+				p->skill[n].lv = atoi(sql_row[1]) - CLONE_SKILL_FLAG;
+				p->skill[n].flag = CLONE_SKILL_FLAG;
+			}else
+				p->skill[n].lv = atoi(sql_row[1]);
 		}
 		mysql_free_result(sql_res);
 	}
@@ -1055,6 +1074,7 @@ int  char_sql_save(struct mmo_charstatus *st2) {
 	char buf[256];
 	char *p = tmp_sql;
 	int  i;
+	unsigned short sk_lv;
 
 	if(st1 == NULL) return 0;
 	printf("Request save char (%6d)[",st2->char_id);
@@ -1164,8 +1184,12 @@ int  char_sql_save(struct mmo_charstatus *st2) {
 		p += sprintf(p,"INSERT INTO `%s`(`char_id`, `id`, `lv`) VALUES",skill_db);
 		sep = ' ';
 		for(i=0;i<MAX_SKILL;i++){
-			if(st2->skill[i].id && st2->skill[i].flag!=1){
-				p += sprintf(p,"%c('%d','%d','%d')",sep,st2->char_id, st2->skill[i].id, (st2->skill[i].flag==0)?st2->skill[i].lv:st2->skill[i].flag-2);
+			if(st2->skill[i].flag == CLONE_SKILL_FLAG)
+				sk_lv = st2->skill[i].lv + CLONE_SKILL_FLAG;
+			else
+				sk_lv = (st2->skill[i].flag==0)?st2->skill[i].lv:st2->skill[i].flag-2;
+			if(st2->skill[i].id && st2->skill[i].flag!=1 && st2->skill[i].flag!=CLONE_SKILL_FLAG){
+				p += sprintf(p,"%c('%d','%d','%d')",sep,st2->char_id, st2->skill[i].id, sk_lv);
 				sep = ',';
 			}
 		}
@@ -1622,7 +1646,10 @@ int mmo_char_send006b(int fd,struct char_session_data *sd)
 		WFIFOW(fd,offset+(i*106)+ 46) = (st->sp     > 0x7fff) ? 0x7fff : st->sp;
 		WFIFOW(fd,offset+(i*106)+ 48) = (st->max_sp > 0x7fff) ? 0x7fff : st->max_sp;
 		WFIFOW(fd,offset+(i*106)+ 50) = DEFAULT_WALK_SPEED; // char_dat[j].speed;
-		WFIFOW(fd,offset+(i*106)+ 52) = st->class;
+		if(st->class==28 || st->class==29)
+			WFIFOW(fd,offset+(i*106)+ 52) = st->class-4;
+		else
+			WFIFOW(fd,offset+(i*106)+ 52) = st->class;
 		WFIFOW(fd,offset+(i*106)+ 54) = st->hair;
 		WFIFOW(fd,offset+(i*106)+ 56) = st->weapon;
 		WFIFOW(fd,offset+(i*106)+ 58) = st->base_level;
@@ -1780,7 +1807,7 @@ int parse_tologin(int fd)
 	int i,fdc;
 	struct char_session_data *sd;
 
-	printf("parse_tologin : %d %d %d\n",fd,RFIFOREST(fd),RFIFOW(fd,0));
+//	printf("parse_tologin : %d %d %d\n",fd,RFIFOREST(fd),RFIFOW(fd,0));
 	sd=session[fd]->session_data;
 	while(RFIFOREST(fd)>=2){
 		switch(RFIFOW(fd,0)){
@@ -1808,7 +1835,7 @@ int parse_tologin(int fd)
 				RFIFOSKIP(fd,15);
 				break;
 			}
-			printf("parse_tologin 2713 : %d\n",RFIFOB(fd,6));
+//			printf("parse_tologin 2713 : %d\n",RFIFOB(fd,6));
 			if(RFIFOB(fd,6)!=0){
 				WFIFOW(fdc,0)=0x6c;
 				WFIFOB(fdc,2)=0x42;
@@ -2095,8 +2122,8 @@ int parse_frommap(int fd)
 		case 0x2afc:
 			if(RFIFOREST(fd)<23)
 				return 0;
-			printf("auth_fifo search %08x %08x %08x %08x %08x\n",
-				RFIFOL(fd,2),RFIFOL(fd,6),RFIFOL(fd,10),RFIFOL(fd,14),RFIFOL(fd,18));
+//			printf("auth_fifo search %08x %08x %08x %08x %08x\n",
+//				RFIFOL(fd,2),RFIFOL(fd,6),RFIFOL(fd,10),RFIFOL(fd,14),RFIFOL(fd,18));
 			for(i=0;i<AUTH_FIFO_SIZE;i++){
 				if( cmp_authfifo(i,RFIFOL(fd,2),RFIFOL(fd,10),RFIFOL(fd,14),RFIFOL(fd,18)) &&
 					auth_fifo[i].char_id==RFIFOL(fd,6) &&
@@ -2184,8 +2211,8 @@ int parse_frommap(int fd)
 			if(auth_fifo_pos>=AUTH_FIFO_SIZE){
 				auth_fifo_pos=0;
 			}
-			printf("auth_fifo set 0x2b02 %d - %08x %08x %08x %08x\n",
-				auth_fifo_pos,RFIFOL(fd,2),RFIFOL(fd,6),RFIFOL(fd,10),RFIFOL(fd,14));
+//			printf("auth_fifo set 0x2b02 %d - %08x %08x %08x %08x\n",
+//				auth_fifo_pos,RFIFOL(fd,2),RFIFOL(fd,6),RFIFOL(fd,10),RFIFOL(fd,14));
 			auth_fifo[auth_fifo_pos].account_id = RFIFOL(fd,2);
 			auth_fifo[auth_fifo_pos].char_id    = 0;
 			auth_fifo[auth_fifo_pos].login_id1  = RFIFOL(fd,6);
@@ -2214,7 +2241,7 @@ int parse_frommap(int fd)
 			memcpy(WFIFOP(fd,2),RFIFOP(fd,2),38);
 			WFIFOW(fd,0)=0x2b06;
 
-			printf("auth_fifo set 0x2b05 %d - %08x %08x\n",auth_fifo_pos,RFIFOL(fd,2),RFIFOL(fd,6));
+//			printf("auth_fifo set 0x2b05 %d - %08x %08x\n",auth_fifo_pos,RFIFOL(fd,2),RFIFOL(fd,6));
 			auth_fifo[auth_fifo_pos].account_id = RFIFOL(fd,2);
 			auth_fifo[auth_fifo_pos].char_id    = RFIFOL(fd,10);
 			auth_fifo[auth_fifo_pos].login_id1  = RFIFOL(fd,6);
@@ -2472,7 +2499,7 @@ int search_mapserver_char(char *map, struct mmo_charstatus *cd)
 	int i , j;
 	i = search_mapserver(map);
 	if(i != -1) {
-		printf("search_mapserver %s : success -> %d\n",map,i);
+//		printf("search_mapserver %s : success -> %d\n",map,i);
 		return i;
 	}
 	if(cd) {
@@ -2537,13 +2564,13 @@ int parse_char(int fd)
 			(RFIFOREST(fd)<6 || RFIFOW(fd,4)==0x65)	){	// 次に何かパケットが来てるなら、接続でないとだめ
 			RFIFOSKIP(fd,4);
 			cmd = RFIFOW(fd,0);
-			printf("parse_char : %d crc32 skipped\n",fd);
+//			printf("parse_char : %d crc32 skipped\n",fd);
 			if(RFIFOREST(fd)==0)
 				return 0;
 		}
 
-		if(cmd<30000 && cmd!=0x187)
-			printf("parse_char : %d %d %d\n",fd,RFIFOREST(fd),cmd);
+//		if(cmd<30000 && cmd!=0x187)
+//			printf("parse_char : %d %d %d\n",fd,RFIFOREST(fd),cmd);
 
 		// 不正パケットの処理
 		if (sd == NULL && cmd != 0x65 && cmd != 0x20b && cmd != 0x187 &&
@@ -2681,8 +2708,8 @@ int parse_char(int fd)
 				if(auth_fifo_pos>=AUTH_FIFO_SIZE){
 					auth_fifo_pos=0;
 				}
-				printf("auth_fifo set 0x66 %d - %08x %08x %08x %08x\n",
-					auth_fifo_pos,sd->account_id,st.char_id,sd->login_id1,sd->login_id2);
+//				printf("auth_fifo set 0x66 %d - %08x %08x %08x %08x\n",
+//					auth_fifo_pos,sd->account_id,st.char_id,sd->login_id1,sd->login_id2);
 				auth_fifo[auth_fifo_pos].account_id = sd->account_id;
 				auth_fifo[auth_fifo_pos].char_id    = st.char_id;
 				auth_fifo[auth_fifo_pos].login_id1  = sd->login_id1;
@@ -2917,7 +2944,10 @@ int check_connect_login_server(int tid,unsigned int tick,int id,int data)
 {
 	if(login_fd<=0 || session[login_fd]==NULL){
 		login_fd=make_connection(login_ip,login_port);
-		if(login_fd <= 0) { return 0; }
+		if(login_fd <= 0) {
+			if(char_loginaccess_autorestart>= 1) { exit(1); }
+			return 0;
+		}
 		session[login_fd]->func_parse=parse_tologin;
 		session[login_fd]->func_destruct = parse_login_disconnect;
 		realloc_fifo(login_fd,FIFOSIZE_SERVERLINK,FIFOSIZE_SERVERLINK);	
@@ -2988,6 +3018,9 @@ int char_config_read(const char *cfgName)
 		}
 		else if(strcmpi(w1,"char_maintenance")==0){
 			char_maintenance=atoi(w2);
+		}
+		else if(strcmpi(w1,"char_loginaccess_autorestart")==0){
+			char_loginaccess_autorestart=atoi(w2);
 		}
 		else if(strcmpi(w1,"char_new")==0){
 			char_new=atoi(w2);
@@ -3101,13 +3134,13 @@ void do_final(void)
 	gstorage_final();
 	if(gm_account_db)
 		numdb_final(gm_account_db,gm_account_db_final);
-	numdb_final(char_online_db,char_online_db_final);
 	delete_session(login_fd);
 	delete_session(char_fd);
 	for(i=0;i<MAX_MAP_SERVERS;i++){
 		if(server_fd[i]>0)
 			delete_session(server_fd[i]);
 	}
+	numdb_final(char_online_db,char_online_db_final);
 	char_final();
 	exit_dbn();
 	do_final_timer();

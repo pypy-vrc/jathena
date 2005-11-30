@@ -1,4 +1,4 @@
-// $Id: socket.c,v 1.1.1.2 2005/11/10 20:58:59 running_pinata Exp $
+// $Id: socket.c,v 1.1.1.3 2005/11/30 00:05:42 running_pinata Exp $
 // original : core.c 2003/02/26 18:03:12 Rev 1.7
 
 #include <stdio.h>
@@ -486,7 +486,7 @@ int WFIFORESERVE(int fd,int len)
 		// 送信バッファの制限サイズ超過チェック
 		if( s->auth >= 0 && new_size > send_limit_buffer_size )
 		{
-			printf("socket: %d wdata (%d) exceed limited size.\n", new_size );
+			printf("socket: %d wdata (%d) exceed limited size.\n", fd, new_size );
 			s->eof = 1;
 			return 0;
 		}

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1.1.2 2005/11/10 20:57:51 running_pinata Exp $
+# $Id: Makefile,v 1.1.1.3 2005/11/30 00:03:53 running_pinata Exp $
 
 CC = gcc -pipe
 PACKETDEF = -DPACKETVER=6 -DNEW_006b
@@ -56,6 +56,7 @@ CFLAGS += -O3
 
 # usable TKSGSL
 #CFLAGS += -DTKSGSL
+#CFLAGS += -DTKSGSLGSNJ
 
 #-----------------CPU MARCH-------------------
 #GCC 3.2.x~

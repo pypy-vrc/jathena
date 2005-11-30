@@ -35,7 +35,7 @@ struct mob_db {
 	int maxskill;
 	struct mob_skill skill[MAX_MOBSKILL];
 };
-extern struct mob_db mob_db[];
+extern struct mob_db *mob_db;
 
 enum {
 	MST_TARGET				=	0,
@@ -97,13 +97,15 @@ enum {
 };
 
 enum {
-	MSS_IDLE,	// 待機
-	MSS_WALK,	// 移動
-	MSS_ATTACK,	// 攻撃
-	MSS_DEAD,	// 死亡
-	MSS_LOOT,	// ルート
-	MSS_CHASE,	// 突撃
-	MSS_COMMANDONLY,//命令専用
+	MSS_DISABLE = -2,	// 無効
+	MSS_ANY     = -1,	// 常時発動
+	MSS_IDLE,			// 待機
+	MSS_WALK,			// 移動
+	MSS_ATTACK,			// 攻撃
+	MSS_DEAD,			// 死亡
+	MSS_LOOT,			// ルート
+	MSS_CHASE,			// 突撃
+	MSS_COMMANDONLY,	//命令専用
 };
 
 int mobdb_searchname(const char *str);

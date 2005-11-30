@@ -1770,7 +1770,7 @@ int mapif_parse_CreateGuild(int fd,int account_id,char *name,struct guild_member
 	mapif_guild_created(fd,account_id,&g);
 	mapif_guild_info(-1,&g);
 
-	inter_log("guild %s (id=%d) created by master %s (id=%d)" RETCODE,
+	inter_log("guild %s (id=%d) created by master %s (id=%d)",
 		name, g.guild_id, master->name, master->account_id );
 
 	return 0;
@@ -1906,7 +1906,7 @@ int mapif_parse_GuildChangeMemberInfoShort(int fd,int guild_id,
 int mapif_parse_BreakGuild(int fd,int guild_id)
 {
 	guild_delete(guild_id);
-	inter_log("guild (id=%d) broken" RETCODE,guild_id);
+	inter_log("guild (id=%d) broken",guild_id);
 	return 0;
 }
 
@@ -2160,7 +2160,7 @@ int mapif_parse_GuildCastleDataSave(int fd,int castle_id,int index,int value)
 		if( gc->guild_id != value ){
 			int gid = (value)?value:gc->guild_id;
 			inter_log(
-				"guild id=%d %s castle id=%d" RETCODE,
+				"guild id=%d %s castle id=%d",
 				gid, (value)?"occupy":"abandon", index
 			);
 		}

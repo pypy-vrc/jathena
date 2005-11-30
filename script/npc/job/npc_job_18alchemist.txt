@@ -20,6 +20,7 @@
 //15	幻想の花による短縮転職
 ////////////////////////////////////////////////////////////////
 alde_alche.gat,27,185,5	script	錬金術師ギルド員	744,{
+	if (Upper == 1) goto LUpper1;
 	if (Class==5) goto Lmerchant;
 	if (Class==18) goto Ltwice;
 	mes "[バルミジャニーノ]";
@@ -34,7 +35,6 @@ alde_alche.gat,27,185,5	script	錬金術師ギルド員	744,{
 	mes "我々は常に求めております。";
 	close;
 Lmerchant:
-	if (Upper == 1) goto LUpper1;
 	if ((change_alchemist == 1) || (change_alchemist == 2)) goto LStart2;
 	if (change_alchemist == 3) goto LStart3;
 	if (change_alchemist >= 4) goto LStart4;
@@ -259,8 +259,14 @@ Ltwice:
 	close;
 LUpper1:
 	mes "[パルミジァニーノ]";
-	mes "あなたは転生されていますので";
-	mes "ここでは転職案内できません。";
+	mes "いらっしゃいませ。";
+	mes "こちらは錬金術師ギルドです。";
+	mes "今日もとっても忙しいんですよ。";
+	next;
+	mes "[パルミジァニーノ]";
+	mes "あれ、前にこの街でお会いしました？";
+	mes "う～む前に見かけたような……";
+	mes "気のせいでしょうか……";
 	close;
 }
 //==============================================================================

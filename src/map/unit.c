@@ -22,6 +22,7 @@
 #include "malloc.h"
 #include "mob.h"
 #include "db.h"
+#include "vending.h"
 
 static int dirx[8]={0,-1,-1,-1,0,1,1,1};
 static int diry[8]={1,1,0,-1,-1,-1,0,1};
@@ -249,7 +250,11 @@ static int unit_walktoxy_timer(int tid,unsigned int tick,int id,int data)
 				skill_check_cloaking(bl);
 		}
 
+		if(pd)
+			clif_pet_hp(pd->msd);
+		
 		if(sd) {
+			clif_pet_hp(sd);
 			if(sd->status.party_id>0){	// パーティのＨＰ情報通知検査
 				struct party *p=party_search(sd->status.party_id);
 				if(p!=NULL){
@@ -480,6 +485,11 @@ int unit_movepos(struct block_list *bl,int dst_x,int dst_y)
 				sd->party_hp=-1;
 		}
 	}
+	if(sd)
+		clif_pet_hp(sd);
+		
+	if(pd)
+		clif_pet_hp(pd->msd);
 
 	if(sd && !(sd->status.option&0x4000) && sd->status.option&4)	// クローキングの消滅検査
 	{
@@ -558,8 +568,11 @@ int unit_stop_walking(struct block_list *bl,int type)
 	if(type&0x02) { // ダメージ食らう
 		unsigned int tick = gettick();
 		int delay = status_get_dmotion(bl);
-		if( (sd &&battle_config.pc_damage_delay) || (md && battle_config.monster_damage_delay) ) {
+		if( (sd &&battle_config.pc_damage_delay) || (md && battle_config.monster_damage_delay) ||(pd && battle_config.pet_damage_delay)) {	//changed by フェルシア
 			ud->canmove_tick = tick + delay;
+		}
+		else if( (sd &&battle_config.pc_damage_delay) || (md && battle_config.monster_damage_delay==0) ||(pd && battle_config.pet_damage_delay==0)) {	//changed by フェルシア
+			ud->canmove_tick = (tick)/2 + (delay)/5;
 		}
 	}
 	if(type&0x04 && md) {
@@ -605,14 +618,43 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 	struct block_list      * target;
 	struct map_session_data* target_sd = NULL;
 	struct mob_data         *target_md = NULL;
+	struct pet_data         *target_pd = NULL;
 	struct unit_data        *target_ud = NULL;
-	int forcecast  = 0;
+	int forcecast  = 0,zone = 0;
 	struct status_change *sc_data;
 	struct status_change *tsc_data;
 
 	nullpo_retr(0, src);
 	skilldb_id = skill_get_skilldb_id(skill_num);
 
+	//スキル制限
+	zone = skill_db[skilldb_id].zone;
+	if(zone){
+		int m = src->m;
+		int ban = 0;
+		if(map[m].flag.normal && zone&1)
+			ban = 1;
+		else if(map[m].flag.turbo && zone&16)
+			ban = 1;
+		else if(map[m].flag.pvp && zone&2)
+			ban = 1;
+		else if(map[m].flag.gvg && zone&4)
+			ban = 1;
+		else if(map[m].flag.pk && zone&8)
+			ban = 1;
+		if(ban)
+		{
+			if(src_sd)
+			{
+				if(skill_num == AL_TELEPORT || skill_num == AL_WARP)
+					clif_skill_teleportmessage(src_sd,0);
+				else
+					clif_skill_fail(src_sd,skill_num,0,0);
+			}
+			return 0;
+		}
+	}
+	
 	if( (target=map_id2bl(target_id)) == NULL ) return 0;
 	if(src->m != target->m)                     return 0; // 同じマップかどうか
 	if(!src->prev || !target->prev)             return 0; // map 上に存在するか
@@ -630,6 +672,8 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 		target_ud = &target_sd->ud;
 	} else if( BL_CAST( BL_MOB, target, target_md ) ) {
 		target_ud = &target_md->ud;
+	} else if( BL_CAST( BL_PET, target, target_pd ) ) {	//added by フェルシア
+		target_ud = &target_pd->ud;
 	}
 
 	if(unit_isdead(src))			return 0; // 死んでいないか
@@ -869,6 +913,7 @@ int unit_skilluse_pos2( struct block_list *src, int skill_x, int skill_y, int sk
 	struct pet_data         *src_pd = NULL;
 	struct mob_data         *src_md = NULL;
 	struct unit_data        *src_ud = NULL;
+	int zone;
 	unsigned int tick = gettick();
 	int delay=0,skilldb_id,range;
 	struct status_change *sc_data;
@@ -893,6 +938,34 @@ int unit_skilluse_pos2( struct block_list *src, int skill_x, int skill_y, int sk
 	sc_data    = status_get_sc_data(src);
 	skilldb_id = skill_get_skilldb_id(skill_num);
 
+	//スキル制限
+	zone = skill_db[skilldb_id].zone;
+	if(zone){
+		int m = src->m;
+		int ban = 0;
+		if(map[m].flag.normal && zone&1)
+			ban = 1;
+		else if(map[m].flag.turbo && zone&16)
+			ban = 1;
+		else if(map[m].flag.pvp && zone&2)
+			ban = 1;
+		else if(map[m].flag.gvg && zone&4)
+			ban = 1;
+		else if(map[m].flag.pk && zone&8)
+			ban = 1;
+		if(ban)
+		{
+			if(src_sd)
+			{
+				if(skill_num == AL_TELEPORT)
+					clif_skill_teleportmessage(src_sd,0);
+				else
+					clif_skill_fail(src_sd,skill_num,0,0);
+			}
+			return 0;
+		}
+	}
+	
 	//チェイスウォークだと設置系失敗
 	if(src_sd && pc_ischasewalk(src_sd))
 	 	return 0;
@@ -1406,8 +1479,9 @@ int unit_isdead(struct block_list *bl) {
 	} else if(bl->type == BL_MOB) {
 		struct mob_data *md = (struct mob_data *)bl;
 		return md->hp<=0;
-	} else if(bl->type == BL_PET) {
-		return 0;
+	} else if(bl->type == BL_PET) {	//added by フェルシア
+		struct pet_data *pd = (struct pet_data *)bl;
+		return is_petdead(pd);
 	} else {
 		return 0;
 	}
@@ -1442,7 +1516,7 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 	nullpo_retr(0, ud);
 
 	if(bl->prev == NULL) {
-		printf("unit_remove_map: nullpo bl->prev\n");
+		// printf("unit_remove_map: nullpo bl->prev\n");
 		return 1;
 	}
 	unit_stop_walking(bl,1);			// 歩行中断
@@ -1452,33 +1526,44 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 
 	// tickset 削除
 	linkdb_final( &ud->skilltickset );
+	status_clearpretimer( bl );
 
 	if(bl->type == BL_PC) {
 		struct map_session_data *sd = (struct map_session_data*)bl;
 		// チャットから出る
 		if(sd->chatID)
 			chat_leavechat(sd);
+
 		// 取引を中断する
 		if(sd->trade_partner)
 			trade_tradecancel(sd);
+
+		// 露天を閉じる
+		if(sd->vender_id)
+			vending_closevending(sd);
 
 		// 倉庫を開いてるなら保存する
 		if(sd->state.storage_flag)
 			storage_guild_storage_quit(sd,0);
 		else
 			storage_storage_quit(sd);
+
 		// 友達リスト勧誘を拒否する
 		if(sd->friend_invite>0)
 			friend_add_reply(sd,sd->friend_invite,sd->friend_invite_char,0);
+
 		// パーティ勧誘を拒否する
 		if(sd->party_invite>0)
 			party_reply_invite(sd,sd->party_invite_account,0);
+
 		// ギルド勧誘を拒否する
 		if(sd->guild_invite>0)
 			guild_reply_invite(sd,sd->guild_invite,0);
+
 		// ギルド同盟勧誘を拒否する
 		if(sd->guild_alliance>0)
 			guild_reply_reqalliance(sd,sd->guild_alliance_account,0);
+
 		pc_delinvincibletimer(sd);		// 無敵タイマー削除
 		// ブレードストップを終わらせる
 		if(sd->sc_data[SC_BLADESTOP].timer!=-1)
@@ -1497,6 +1582,7 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 	} else if(bl->type == BL_MOB) {
 		struct mob_data *md = (struct mob_data*)bl;
 
+		linkdb_final( &md->dmglog );
 //		mobskill_deltimer(md);
 		// バシリカ削除
 		if (md->sc_data[SC_BASILICA].timer!=-1) {
@@ -1514,6 +1600,7 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 			delete_timer(md->deletetimer,mob_timer_delete);
 		md->deletetimer=-1;
 		md->hp=md->target_id=md->attacked_id=0;
+		md->attacked_players = 0;
 
 		if(mob_get_viewclass(md->class) <= 1000) {
 			clif_clearchar_area(&md->bl,clrtype);
@@ -1557,6 +1644,10 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 		nullpo_retr(0, sd);
 		if(sd->pet_hungry_timer != -1)
 			pet_hungry_timer_delete(sd);
+		if(pd->revive_timer != -1)
+			delete_timer(pd->revive_timer, pet_revive_timer);
+		pd->revive_timer = -1;
+		status_change_clear(&pd->bl,2);	// ステータス異常を解除する
 		clif_clearchar_area(&pd->bl,0);
 		if (pd->a_skill)
 		{

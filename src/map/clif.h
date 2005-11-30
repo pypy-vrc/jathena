@@ -101,7 +101,6 @@ void clif_sitting(struct map_session_data *sd);
 void clif_soundeffect(struct map_session_data *sd,struct block_list *bl,char *name,int type);
 
 int clif_getareachar(struct block_list* bl,va_list ap);
-int clif_changeoption_clear(struct block_list* bl);
 // trade
 int clif_traderequest(struct map_session_data *sd,char *name);
 int clif_tradestart(struct map_session_data *sd,int type);
@@ -278,6 +277,7 @@ int clif_pet_emotion(struct pet_data *pd,int param);
 int clif_pet_performance(struct block_list *bl,int param);
 int clif_pet_equip(struct pet_data *pd,int nameid);
 int clif_pet_food(struct map_session_data *sd,int foodid,int fail);
+int clif_pet_hp(struct map_session_data *sd);
 
 //friend
 void clif_friend_send_info( struct map_session_data *sd );

@@ -1,190 +1,207 @@
 //==============================================================================
-//Ragnarok Online EPxx - Transmigration NPC Script	by kalen
+//Ragnarok Online - Transmigration NPC Script	by Blaze
 //==============================================================================
-//会話は超脳内、合ってるとすればNPC配置くらいかも
-//TESTスクリプトとします。欠陥言わないように('A`)ﾉ
-//------------------------Warp------------------------------
-valkyrie.gat,49,7,0	warp	warpv00	1,1,yuno_in05.gat,49,61
-valkyrie.gat,49,66,0	warp	warpv01	1,1,valkyrie.gat,49,76
-valkyrie.gat,49,73,0	warp	warpv02	1,1,valkyrie.gat,49,63
-//------------------------MAPFlag---------------------------
-valkyrie.gat	mapflag	nomemo	dummy
-valkyrie.gat	mapflag	nobranch	dummy
-valkyrie.gat	mapflag	nosave	SavePoint
-//------------------------NPC-------------------------------
-yuno_in02.gat,88,164,4	script	メテウスシルプ	742,{
-	if (job_transmigration >= 1) goto Ltwice;
+yuno_in02.gat,88,164,5	script	メテウスシルプ	742,{
+	if (job_transmigration >= 1) goto L_2;
+	if ((BaseLevel >= 99) && (JobLevel >= 50) && (Class >= 7) && (Class <= 21) && (Upper == 0)) goto L_1;
 	mes "[メテウスシルプ]";
-	mes "いらっしゃいませ";
-	mes "シュバイチェル魔法学校";
-	mes "図書館です。ここまで来た目的は";
-	mes "^3355ffイミルの本^000000を見るためでしょう?";
-	next;
-	mes "[メテウスシルプ]";
-	mes "^3355ffイミルの本^000000の観覧は皆に公開";
-	mes "しているのですが、直接読みたい";
-	mes "と願う方もたくさんいます、しかし";
-	mes "原本の状態があまり良くないので";
-	mes "閲覧をしたい方には特別に";
-	mes "寄付金を受けて許可しております。";
-	next;
-	mes "[メテウスシルプ]";
-	mes "寄付金は^3355ff128,500^000000Zenyです。";
-	mes "書籍の安全な保存と古書籍研究を";
-	mes "ため、閲覧を望むならば今すぐ";
-	mes "納めていただけると助かります。";
-	mes "寄付金を寄付しますか？";
-	next;
-	menu "寄付する",L1,"しない",-;
-		mes "[メテウスシルプ]";
-		mes "それでは、イミルの本の閲覧は";
-		mes "出来ませんが、本は沢山あります。";
-		mes "どうぞゆっくりしていって下さい。";
-		close;
-	L1:
-		if (Zeny < 128500) goto LError;
-		set Zeny,Zeny-128500;
-		set job_transmigration,1;
-		mes "[メテウスシルプ]";
-		mes "ありがとうございます。";
-		mes "それではこちらになります。";
-		next;
-		mes "^3355ff許可証を獲得^000000";
-		next;
-		mes "[メテウスシルプ]";
-		mes "それでは、奥にお進みください。";
-		close;
-Ltwice:
-	mes "[メテウスシルプ]";
-	mes "いらっしゃいませ";
-	mes "シュバイチェル魔法学校";
-	mes "図書館です。";
-	mes "図書館内では静かにお願いします。";
+	mes "いらっしゃいませ。";
+	mes "こちらはシュバイチェル";
+	mes "魔法アカデミー図書館です。";
+	mes "ここには貴重な書籍が";
+	mes "たくさんあります。";
+	mes "ゆっくりご見学ください。";
 	close;
-LError:
+L_1:
 	mes "[メテウスシルプ]";
-	mes "お客様、お金が足りないようです。";
+	mes "いらっしゃいませ。";
+	mes "こちらはシュバイチェル";
+	mes "魔法アカデミー図書館です。";
+	mes "今回ご来館されたのは、";
+	mes "「ユミルの書」をお読みになる";
+	mes "ためでしょう？";
+	next;
+	mes "[メテウスシルプ]";
+	mes "ユミルの書は印刷物としても";
+	mes "公開しております。";
+	mes "それでも時々、直接読みたいと";
+	mes "おっしゃる方がいます……";
+	next;
+	mes "[メテウスシルプ]";
+	mes "しかし原本の状態があまり";
+	mes "良くありません。";
+	mes "そこで閲覧をご希望の方には、";
+	mes "寄付金を頂くことによって";
+	mes "特別に許可をしております。";
+	next;
+	mes "[メテウスシルプ]";
+	mes "寄付金は1,285,000Zenyです。";
+	mes "これは書籍の安全な保存と";
+	mes "古書籍研究に利用させて頂きます。";
+	mes "申し訳ありませんが、閲覧を";
+	mes "ご希望でしたらお納めください。";
+	mes "ご寄付なさいますか？";
+	next;
+	menu "寄付する",-,"やめる",L_Close;
+		if (Zeny < 1285000) goto L_Error;
+		set Zeny,Zeny-1285000;
+		set job_transmigration,1;
+		goto L_2;
+L_2:
+	mes "[メテウスシルプ]";
+	mes "ありがとうございます。";
+	mes "寄付金は当アカデミーの研究資金として";
+	mes "大切に使わせて頂きます。";
+	mes "では、どうぞ中へお入りください。";
+	close;
+L_Error:
+	mes "[メテウスシルプ]";
+	mes "少々持ち合わせが足りないようですね。";
+	mes "所持金を再度ご確認なさってから";
+	mes "お越しください。";
+	close;
+L_Close:
+	mes "[メテウスシルプ]";
+	mes "ゆっくりご見学ください。";
+	mes "楽しい旅行になるとよいですね。";
 	close;
 }
 
 //----------------------------------------------------------
-yuno_in02.gat,93,207,0	script	イミルの本	111,{
-	if (job_transmigration >= 1) goto L1;
-	mes "ずいぶんと古い本だ。";
-	mes "所々破れかかっている";
+yuno_in02.gat,93,207,0	script	ユミルの書	111,{
+	if ( Upper == 1 ) goto L_Upper;
+	if (job_transmigration >= 1) goto L_1;
+	mes "[ユミルの書]";
+	mes "…………";
 	close;
-L1:
-	mes "ずいぶんと古い本だ。";
-	mes "所々破れかかっている";
-	mes " ";
-	mes "あなたは、係員に従い";
-	mes "慎重にその本を紐解いた。";
+L_1:
+	mes "[ユミルの書]";
+	mes "……そして先代の幾多の業績の数々と";
+	mes "共に疑問視されたことは、英雄達にも";
+	mes "不可避に迫り来る「死」という";
+	mes "問題であった。英雄といえども";
+	mes "最期の瞬間は必ず訪れるものであろう。";
 	next;
-	mes "[イミルの本]";
-	mes "...そして先代の幾多の業績等と";
-	mes "一緒に疑問視になることは,英雄たちに";
-	mes "不可欠で迫って来る'死'に関する";
-	mes "問題だった,英雄の呼称と呼ばれる";
-	mes "その誰も最後の瞬間はあるから.";
+	mes "[ユミルの書]";
+	mes "しかしどんな英雄にまつわる詩や";
+	mes "記録、口頭による伝承さえも、";
+	mes "その最期の記録は残っていなかった。";
+	mes "これに対し一つ注目する点がある。";
+	mes "それは「ラグナロク」に記述された";
+	mes "ヴァルキリーに関する内容だ。";
 	next;
-	mes "[イミルの本]";
-	mes "しかしそのどんな英雄に対する歌や";
-	mes "記録たち,口頭で伝わる話さえ";
-	mes "その最後の記録は残っていなかった.";
-	mes "これについて一つ注目する点がある.";
-	mes "それは'ラグナロク'に技術された";
-	mes "バルキリに関する内容だ.";
+	mes "[ユミルの書]";
+	mes "人間として最上の時に最高の資質を";
+	mes "持ちし者。その者は最終聖戦において";
+	mes "戦士として戦った。そしてその魂は";
+	mes "ヴァルキリーの導きにより、";
+	mes "ヴァルハラへ向かったようである。";
+	mes "これは普通の人々の最期とは異なる。";
 	next;
-	mes "[イミルの本]";
-	mes "人間として最高のスンガルに偉い";
-	mes "資質を持ったからは,最後の聖典で";
-	mes "戦死として争ってその魂はバルキリの";
-	mes "導くによってバルハルラでのだ.";
-	mes "これは一般的なすべての人々の最後と";
-	mes "ダリ,英雄たちのユンフィに関することであり";
+	mes "[ユミルの書]";
+	mes "英雄達は輪廻することによって";
+	mes "真の英雄として生まれ変わり、";
+	mes "新たな時代へ光明を照らす者となる。";
+	mes "そして倒れし肉体は再び蘇り、";
+	mes "魂は新しい能力を得るであろう。";
 	next;
-	mes "[イミルの本]";
-	mes "真正な英雄で生まれ変わって新しい";
-	mes "時代の光明を照らす者になろう,";
-	mes "倒れた肉身はまた起きるソッで";
-	mes "魂は新しい能力を悟らせよう.";
-	mes "しかしブルヘングヒもイミルの心臓は";
-	mes "戦乱以後大陸に消失したし";
+	mes "[ユミルの書]";
+	mes "しかし不幸にも、ユミルの心臓は";
+	mes "聖戦後、大陸全土へ消失してしまった。";
+	mes "そこで私は様々な方法によって";
+	mes "更なる解明を目指した。だが……";
 	next;
-	mes "[イミルの本]";
-	mes "少しずつ発見されたソッでは私たちの";
-	mes "研究に許可されなかった,検証されるの";
-	mes "ないその何も試みることができなかった.";
-	mes "そして私はこの記録を残して,";
-	mes "後代に誰かがこの欺惑を見付けて";
-	mes "その意志と希望,時代の最後の光を";
+	mes "[ユミルの書]";
+	mes "残念ながらこれ以上";
+	mes "何も知ることができなかった。";
+	mes "それゆえ私はここに記録を残そう。";
 	next;
-	mes "[イミルの本]";
-	mes "明らかにする英雄で生まれ変わるのを";
-	mes "バラであり,再び金バルキリの神殿で";
-	mes "英雄たちを導く者が現われるのを";
-	mes "待ちこがれるところだ,またその後に...";
-	mes "..........";
+	mes "[ユミルの書]";
+	mes "後代の誰かがこの記録を見つけ出し、";
+	mes "その意志と希望、時代の最後の光を";
+	mes "見出す英雄として生まれ変わることを、";
+	mes "そして今一度ヴァルキリーの神殿で";
+	mes "英雄達を導く者が現われることを";
+	mes "切に待ち望む。またその後に……";
 	if (job_transmigration == 1) set job_transmigration,2;
 	close;
+L_Upper:
+	mes "[ユミルの書]";
+	mes "……栄光の神殿への入り口は";
+	mes "生まれ変わりし者全てに開かれている。";
+	mes "英雄が歩む道への手助けとして";
+	mes "世界中どこでも開かれている。";
+	next;
+	mes "[ユミルの書]";
+	mes "そこでは、彼らの為にあらゆる";
+	mes "準備がなされている。";
+	mes "更に現実では成すことができぬ";
+	mes "願いすらも、その神殿では";
+	mes "成就できると言われている。";
+	next;
+	menu "読むのをやめる",-,"続きを読む",L_2;
+		mes "[ユミルの書]";
+		mes "…………";
+		close;
+	L_2:
+		mes "[ユミルの書]";
+		mes "空に一番近き場所。そこに";
+		mes "ヴァルキリーの神殿へ通じる道ありき。";
+		mes "だが、資格なき者は永遠に";
+		mes "知ることはできぬ。";
+		close2;
+		warp "valkyrie.gat",48,8;
+		end;
 }
 //----------------------------------------------------------
-yuno_in05.gat,49,43,0	script	イミルの心臓	111,{
-	if (job_transmigration == 2) goto Lwarp;
-	close;
-Lwarp:
-	mes "なにやら、怪しい影が見える。";
-	mes "あなたは深くそこを覗き込んでみた";
-	next;
-	mes "ゴゴゴゴゴ……";
-	close2;
-	warp "valkyrie.gat",49,14;
+yuno_in05.gat,49,43,0	script	ユミルの心臓	111,{
+	if (job_transmigration == 2) goto L_Go;
+	end;
+L_Go:
+	warp "valkyrie.gat",48,8;
 	end;
 }
 //----------------------------------------------------------
-valkyrie.gat,48,86,4	script	バルキリー	811,{
-	if (Class == 23) goto LSuperNovice;
-	if (Upper == 1) goto LUpper1;
-	if ((BaseLevel < 99) || (JobLevel < 50)) goto LError2;
-	if ((Weight > 0) || (Zeny > 0)) goto LError;
-	mes "[バルキリ]";
-	mes "栄誉のバルハルラに";
-	mes "ようこそおいでくださいました。";
-	mes "あなたは今、現在までの記憶を整理して";
-	mes "新しい生命をもう一度得るように";
-	mes "なります。";
-	mes "戦士たちに栄光を!";
+valkyrie.gat,48,86,4	script	ヴァルキリー	811,{
+	if ( Upper == 1 ) goto L_Upper;
+	mes "[ヴァルキリー]";
+	mes "栄光のヴァルハラへよくぞ";
+	mes "お越しくださいました。";
+	mes "これから現在までの生を整理し、";
+	mes "新たな生を得ることになります。";
+	mes "戦士達に光あれ！";
 	next;
-	mes "[バルキリ]";
-	mes "身と心を留守にしましたよね。";
-	mes "これで準備OKです。名誉というのは";
-	mes "身と心を留守にする時に出る";
-	mes "のですね。";
+	if ((Weight > 0) || (Zeny > 0) || (skillpoint > 0) || (checkcart(0)) || (checkfalcon(0)) || (checkriding(0))) goto L_Error;
+	mes "[ヴァルキリー]";
+	mes "身も心も無にしましたね。";
+	mes "……綺麗なお心です。";
+	mes "無心になった今、あなたの";
+	mes "名誉がよく表れております。";
 	next;
-	mes "[バルキリ]";
-	mes "さあ…もうあなたの身で過去の";
-	mes "記憶を消して、";
-	mes "あなたの精神に現在までの栄光の";
-	mes "瞬間たちのみを記憶させます。";
+	mes "[ヴァルキリー]";
+	mes "お眠りなさい……";
+	mes "あなたに刻まれている";
+	mes "過去の記憶を消し、";
+	mes "あなたの精神に";
+	mes "現在までの栄光の証を";
+	mes "記憶させます。";
 	next;
-	mes "[バルキリ]";
-	mes "さあ…今,";
-	mes "一つのウルドにあなたの過去の記憶を";
-	mes "残すようになって";
-	mes "ふたつのベルダンディに現在の栄光の";
-	mes "瞬間たちのみを憶えて、";
-	mes "三つのカウント後に未来への";
-	mes "生を暮すようになります。";
+	mes "[ヴァルキリー]";
+	mes "では……";
+	mes "一つ、ウルドに過去の記憶を残します。";
+	mes "二つ、ヴェルダンディに現在の";
+	mes "栄光の瞬間を憶えてもらいます。";
+	mes "三つ、スクルドに未来への生を";
+	mes "与えさせるようにします。";
 	next;
-	mes "[バルキリ]";
+	mes "[ヴァルキリー]";
 	mes "一つ";
 	next;
-	mes "[バルキリ]";
-	mes "二つ…";
+	mes "[ヴァルキリー]";
+	mes "二つ……";
 	next;
-	mes "[バルキリ]";
+	mes "[ヴァルキリー]";
 	mes "三つ……";
-	next;
 	set oldjob,Class;
 	jobchange 0,1;
 	set BaseLevel,1;
@@ -194,129 +211,445 @@ valkyrie.gat,48,86,4	script	バルキリー	811,{
 	skill 143,1,0;
 	skill 142,1,0;
 	set skill_nov,6;
-	getitem 1202,1;
-	getitem 2302,1;
 	set SkillPoint,0;
 	set StatusPoint,100;
 	set job_transmigration,0;
-	mes "[バルキリ]";
-	mes "さあ、おめでとうございます。";
-	mes "すべての過程が終了しました。";
-	mes "これで、新しい道を開いて行こうとする";
-	mes "戦士に私の差し上げる物は";
-	mes "ありません。";
 	next;
-	mes "[バルキリ]";
-	mes "出来るだけ、過去のウルドにあなたの";
-	mes "生が無駄ではないようにして欲しいし";
-	mes "現在のベルダンディにあなたの";
-	mes "栄光をまた再現するように願って";
-	mes "未来のスクルドに記録されるあなたの鳥";
-	mes "生に栄光があるように願います。";
+	getitem 1202,1;
+	getitem 2302,1;
+	mes "[ヴァルキリー]";
+	mes "おめでとうございます。";
+	mes "全ての儀式が終了いたしました。";
+	mes "こちらは、新たな道を歩む";
+	mes "戦士へのささやかな贈り物です。";
 	next;
-	if ((oldjob ==7) || (oldjob ==14)) goto Lkni;
-	if ((oldjob ==8) || (oldjob ==15)) goto Lpri;
-	if ((oldjob ==9) || (oldjob ==16)) goto Lwiz;
-	if ((oldjob ==10) || (oldjob ==18)) goto Lbla;
-	if ((oldjob ==11) || (oldjob ==19) || (oldjob ==20)) goto Lhun;
-	if ((oldjob ==12) || (oldjob ==17)) goto Lass;
-Lkni:
+	mes "[ヴァルキリー]";
+	mes "くれぐれも、過去のウルドが";
+	mes "記憶したあなたの生が無駄に";
+	mes "ならないようにして欲しいと思います。";
+	mes "また現在のヴェルダンディが記憶した";
+	mes "あなたの栄光が再現することを、";
+	next;
+	mes "[ヴァルキリー]";
+	mes "そして未来のスクルドが記憶した";
+	mes "あなたの新たな生に光あることを";
+	mes "願います。";
+	close2;
+	if ((oldjob ==7) || (oldjob ==14)) goto L_iz;
+	if ((oldjob ==8) || (oldjob ==15)) goto L_prt;
+	if ((oldjob ==9) || (oldjob ==16)) goto L_gef;
+	if ((oldjob ==10) || (oldjob ==18)) goto L_alb;
+	if ((oldjob ==11) || (oldjob ==19) || (oldjob ==20)) goto L_pay;
+	if ((oldjob ==12) || (oldjob ==17)) goto L_moc;
+L_iz:
 	savepoint "izlude.gat",94,103;
 	warp "izlude",94,103;
 	end;
-Lwiz:
-	savepoint "geffen.gat",120,100;
-	warp "geffen",120,100;
-	end;
-Lpri:
+L_prt:
 	savepoint "prontera.gat",273,354;
 	warp "prontera",273,354;
 	end;
-Lbla:
+L_gef:
+	savepoint "geffen.gat",120,100;
+	warp "geffen",120,100;
+	end;
+L_alb:
 	savepoint "alberta.gat",116,57;
 	warp "alberta",116,57;
 	end;
-Lhun:
-	savepoint "payon.gat",87,117;
-	warp "payon",87,117;
+L_pay:
+	savepoint "payon.gat",160,58;
+	warp "payon",160,58;
 	end;
-Lass:
+L_moc:
 	savepoint "morocc.gat",160,94;
 	warp "morocc",160,94;
 	end;
-LError:
-	mes "[バルキリ]";
-	mes "あなたはまだ過去を捨てる";
-	mes "準備が出来ていないようです。";
-	mes "お金と重量を0にして下さい。";
+L_Error:
+	mes "[ヴァルキリー]";
+	mes "あなたは準備しなければ";
+	mes "ならないことがあります。";
+	mes "しばしお休みください……";
+	mes "そして、身と心を無にしてください。";
+	mes "名誉というのは無心の時に";
+	mes "表れるものですから。";
+	next;
+	mes "[ヴァルキリー]";
+	mes "アイテムやお金……何も持たない";
+	mes "空の状態でなければなりません。";
+	mes "旅を共にした動物達やカートなども";
+	mes "持って行くことはできません。";
+	mes "それでは……用意ができましたら";
+	mes "お越しください。";
+	close2;
+	warp "yuno_in02.gat",93,205;
+	end;
+L_Upper:
+	mes "[ヴァルキリー]";
+	mes "栄光のヴァルハラへよくぞ";
+	mes "お越しくださいました。";
+	mes "少しお体を休ませるとよいでしょう。";
+	mes "戦士達に光あれ！";
 	close;
-LError2:
-	mes "[バルキリ]";
-	mes "あなたはまだ過去を捨てる";
-	mes "準備が出来ていないようです。";
-	mes "BaseLv99、JobLv50になってから";
-	mes "また訪ねてください";
+}
+//----------------------------------------------------------
+valkyrie.gat,44,33,5	script	テレポーター	124,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[テレポーター]";
+	mes "転生おめでとう！";
+	mes "戦士達に光あれ！";
 	close;
-LSuperNovice:
-	mes "[バルキリ]";
-	mes "あなたは過去を捨てる";
-	mes "ことは出来ません。";
+L_Rand:
+	mes "[テレポーター]";
+	mes "展示品に触らないで！";
 	close;
-LUpper1:
-	mes "[バルキリ]";
-	mes "あなたはすでに転生しています。";
-	close;
+L_Upper:
+	mes "[テレポーター]";
+	mes "戦士、どこへ帰りたい？";
+	next;
+	menu "プロンテラ",L_prt,"モロク",L_moc,"フェイヨン",L_pay,"ゲフェン",L_gef,"アルベルタ",L_alb,"イズルード",L_iz,"アルデバラン",L_alde,"コモド",L_cmd,"ジュノー",L_yuno;
+	L_prt:
+		savepoint "prontera.gat",116,72;
+		warp "prontera.gat",116,72;
+		end;
+	L_moc:
+		savepoint "morocc.gat",156,46;
+		warp "morocc.gat",156,46;
+		end;
+	L_pay:
+		savepoint "payon.gat",160,58;
+		warp "payon.gat",160,58;
+		end;
+	L_gef:
+		savepoint "geffen.gat",120,39;
+		warp "geffen.gat",120,39;
+		end;
+	L_alb:
+		savepoint "alberta.gat",117,56;
+		warp "alberta.gat",117,56;
+		end;
+	L_iz:
+		savepoint "izlude.gat",91,105;
+		warp "izlude.gat",91,105;
+		end;
+	L_alde:
+		savepoint "aldebaran.gat",160,109;
+		warp "aldebaran.gat",160,109;
+		end;
+	L_cmd:
+		savepoint "comodo.gat",209,143;
+		warp "comodo.gat",209,143;
+		end;
+	L_yuno:
+		savepoint "yuno.gat",328,101;
+		warp "yuno.gat",328,101;
+		end;
 }
 
 //----------------------------------------------------------
-valkyrie.gat,44,39,4	script	Load Knight	56,{
-	callfunc "jobchanger2","Load Knight",7,1;
+valkyrie.gat,44,39,5	script	ロードナイト	56,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[ロードナイト]";
+	mes "転生おめでとう！";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:
+	mes "[ロードナイト]";
+	mes "皆、君を評価している。";
+	mes "君に異を唱える者は誰もいない。";
+	mes "あとは君自身の評価だな。";
+	mes "君の評価は……";
+	next;
+	mes "[ロードナイト]";
+	mes "よし、大丈夫だな。";
+	close;
+L_Upper:
+	if (( Class == 1 ) && ( JobLevel >= 40 ) && ( oldjob == 7 )) callfunc "jobchanger2","ロードナイト",7,1;
+	mes "[ロードナイト]";
+	mes "栄光のヴァルハラへよく来たな。";
+	mes "しばし休息をとりたまえ。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,53,39,4	script	Paladin	752,{
-	callfunc "jobchanger2","Paladin",14,1;
+valkyrie.gat,53,39,3	script	パラディン	752,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[パラディン]";
+	mes "転生の祝いを申し上げよう。";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:
+	mes "[パラディン]";
+	mes "聖戦が近づきつつあることを決して";
+	mes "忘れずに、絶えず己を鍛えなさい！";
+	mes "君にオーディンのご加護があるように！";
+	mes "さあ、行きなさい！";
+	close;
+L_Upper:
+	if (( Class == 1 ) && ( JobLevel >= 40 ) && ( oldjob == 14 )) callfunc "jobchanger2","パラディン",14,1;
+	mes "[パラディン]";
+	mes "栄光のヴァルハラへよくぞ来た。";
+	mes "少し休んでいきなさい。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,44,42,4	script	High Priest	60,{
-	callfunc "jobchanger2","High Priest",8,4;
+valkyrie.gat,44,42,5	script	ハイプリースト	60,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[ハイプリースト]";
+	mes "転生のお祝いを申し上げます。";
+	mes "英雄に祝福を！";
+	close;
+L_Rand:
+	mes "[ハイプリースト]";
+	mes "神よ、今ここに立つ者に";
+	mes "祝福の鐘をお鳴らしください。";
+	mes "そしてこの者が奥深き意志を";
+	mes "地上へ広める為の力を";
+	mes "お与えください。";
+	close;
+L_Upper:
+	if (( Class == 4 ) && ( JobLevel >= 40 ) && ( oldjob == 8 )) callfunc "jobchanger2","ハイプリースト",8,4;
+	mes "[ハイプリースト]";
+	mes "栄光のヴァルハラへよくぞ";
+	mes "お越しくださいました。";
+	mes "是非、休息をおとりください。";
+	mes "戦士に祝福を！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,53,42,4	script	Champion	52,{
-	callfunc "jobchanger2","Champion",15,4;
+valkyrie.gat,53,42,3	script	チャンピオン	52,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[チャンピオン]";
+	mes "転生おめでとう！";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:
+	mes "[チャンピオン]";
+	mes "ではこれから換骨奪胎の儀を行う。";
+	next;
+	mes "[チャンピオン]";
+	mes "……おい。お前は既に";
+	mes "転職してるじゃないか。";
+	close;
+L_Upper:
+	if (( Class == 4 ) && ( JobLevel >= 40 ) && ( oldjob == 15 )) callfunc "jobchanger2","チャンピオン",15,4;
+	mes "[チャンピオン]";
+	mes "栄光のヴァルハラへよく来た。";
+	mes "少し休んでいきな。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,44,47,4	script	High Wizard	735,{
-	callfunc "jobchanger2","High Wizard",9,2;
+valkyrie.gat,44,47,5	script	ハイウィザード	735,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[ハイウィザード]";
+	mes "転生おめでとうございます。";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:	//職に関係なく言われる
+	mes "[ハイウィザード]";
+	mes "君も正式なハイウィザードですから、";
+	mes "ハイウィザードらしい行動を";
+	mes "心がけてください。";
+	mes "私達ハイウィザードは";
+	mes "強力な魔法を持つゆえ、控え目に";
+	mes "行動しなければなりません。";
+	close;
+L_Upper:
+	if (( Class == 2 ) && ( JobLevel >= 40 ) && ( oldjob == 9 )) callfunc "jobchanger2","ハイウィザード",9,2;
+	mes "[ハイウィザード]";
+	mes "栄光のヴァルハラへようこそ。";
+	mes "しばし休息をおとりください。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,53,47,4	script	Professor	743,{
-	callfunc "jobchanger2","Professor",16,2;
+valkyrie.gat,53,47,3	script	プロフェッサー	743,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[プロフェッサー]";
+	mes "転生おめでとう。";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:
+	mes "[プロフェッサー]";
+	mes "論文は大切に保管しなさい。";
+	mes "君が書いた大事な書物だからね。";
+	mes "いつかそれが役立つことも";
+	mes "あるでしょう。";
+	mes "読み返して記憶しておきなさい。";
+	close;
+L_Upper:
+	if (( Class == 2 ) && ( JobLevel >= 40 ) && ( oldjob == 16 )) callfunc "jobchanger2","プロフェッサー",16,2;
+	mes "[プロフェッサー]";
+	mes "栄光のヴァルハラによくぞ来ました。";
+	mes "しばしの休息を得なさい。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,44,50,4	script	Whitesmith	731,{
-	callfunc "jobchanger2","Whitesmith",10,5;
+valkyrie.gat,44,50,5	script	ホワイトスミス	731,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[ホワイトスミス]";
+	mes "転生おめでとう！";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:
+	mes "[ホワイトスミス]";
+	mes "配達ご苦労様。";
+	mes "ほれ"+strcharinfo(0)+"、領収書だ。";
+	mes "ん？なんだ違うのか。";
+	close;
+L_Upper:
+	if (( Class == 5 ) && ( JobLevel >= 40 ) && ( oldjob == 10 )) callfunc "jobchanger2","ホワイトスミス",10,5;
+	mes "[ホワイトスミス]";
+	mes "栄光のヴァルハラによく来たな。";
+	mes "まあ、少し休んでいけよ。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,53,50,4	script	Creator	122,{
-	callfunc "jobchanger2","Creator",18,5;
-}
-//SS死角----------------------------------------------------
-valkyrie.gat,44,55,4	script	Sniper	732,{
-	callfunc "jobchanger2","Sniper",11,3;
+valkyrie.gat,53,50,3	script	クリエイター	122,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[クリエイター]";
+	mes "転生おめでとう。";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:
+	mes "[クリエイター]";
+	mes "突然だが、質問だ。";
+	mes "防具商人からヘルム5個を";
+	mes "ディスカウント24%で買った場合と";
+	mes "ディスカウント20%で買った場合の";
+	mes "金額の差はいくらか？";
+	mes "どうだ？こんなの簡単だろ。";
+	close;
+L_Upper:
+	if (( Class == 5 ) && ( JobLevel >= 40 ) && ( oldjob == 18 )) callfunc "jobchanger2","クリエイター",18,5;
+	mes "[クリエイター]";
+	mes "栄光のヴァルハラへようこそ！";
+	mes "少しここで休んでいきな。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,53,54,4	script	Clown	741,{
-	callfunc "jobchanger2","Clown",19,3;
+valkyrie.gat,44,55,5	script	スナイパー	727,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[スナイパー]";
+	mes "転生お祝い申し上げます。";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:
+	mes "[スナイパー]";
+	mes "^6B8C21では、転職試験を始めましょう。";
+	mes "たくさんいるモンスターの中で";
+	mes "名前が「転職試験用モンスター」のみを";
+	mes "倒してください。あと";
+	mes "- 落とし穴に気をつけてください。 -^000000";
+	mes "ん？違いましたか？";
+	close;
+L_Upper:
+	if (( Class == 3 ) && ( JobLevel >= 40 ) && ( oldjob == 11 )) callfunc "jobchanger2","スナイパー",11,3;
+	mes "[スナイパー]";
+	mes "栄光のヴァルハラへようこそ。";
+	mes "是非おくつろぎください。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,53,56,4	script	Gypsy	101,{
-	callfunc "jobchanger2","Gypsy",20,3;
+valkyrie.gat,53,54,3	script	クラウン	741,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[クラウン]";
+	mes "転生お祝い申し上げます。";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:
+	mes "[クラウン]";
+	mes "私と一緒に歌ってみましょう。";
+	mes "この曲なんかどうです？";
+	close;
+L_Upper:
+	if (( Class == 3 ) && ( JobLevel >= 40 ) && ( oldjob == 19 )) callfunc "jobchanger2","クラウン",19,3;
+	mes "[クラウン]";
+	mes "栄光のヴァルハラへようこそ。";
+	mes "少しここで休息をとるとよいでしょう。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,44,58,4	script	Assassin Closs	725,{
-	callfunc "jobchanger2","Assassin Closs",12,6;
+valkyrie.gat,53,56,3	script	ジプシー	101,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[ジプシー]";
+	mes "転生おめでとう！";
+	mes "戦士に光あれ！";
+	close;
+L_Rand:
+	mes "[ジプシー]";
+	mes "はい左、みーぎ : [→]";
+	mes "…………";
+	close;
+L_Upper:
+	if (( Class == 3 ) && ( JobLevel >= 40 ) && ( oldjob == 20 )) callfunc "jobchanger2","ジプシー",20,3;
+	mes "[ジプシー]";
+	mes "栄光のヴァルハラへようこそ！";
+	mes "少し休んでから帰りなさいな。";
+	mes "戦士に光あれ！";
+	close;
 }
 //----------------------------------------------------------
-valkyrie.gat,53,58,4	script	Stalker	747,{
-	callfunc "jobchanger2","Stalker",17,6;
+valkyrie.gat,44,58,5	script	アサシンクロス	725,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[アサシンクロス]";
+	mes "転生お祝い申し上げる。";
+	mes "幸運を祈る！";
+	close;
+L_Rand:
+	mes "[アサシンクロス]";
+	mes "誰が何と言おうと「砂漠の牙」としての";
+	mes "プライドは大事にしろ！";
+	mes "決してプライドを捨てるなよ！";
+	close;
+L_Upper:
+	if (( Class == 6 ) && ( JobLevel >= 40 ) && ( oldjob == 12 )) callfunc "jobchanger2","アサシンクロス",12,6;
+	mes "[アサシンクロス]";
+	mes "ヴァルハラへよく来たな。";
+	mes "少し休んでいけ。";
+	mes "幸運を祈る！";
+	close;
+}
+//----------------------------------------------------------
+valkyrie.gat,53,58,3	script	チェイサー	747,{
+	if ( Upper == 1 ) goto L_Upper;
+	if ( rand(3) == 0 ) goto L_Rand;
+	mes "[チェイサー]";
+	mes "転生おめでと～！";
+	mes "幸運を祈るよ！";
+	close;
+L_Rand:
+	mes "[チェイサー]";
+	mes "そうそう、合言葉は";
+	mes "^3333FFアラガムは精錬用品を";
+	mes "横領していない^000000だよ。";
+	mes "な～んてね。あはは！";
+	close;
+L_Upper:
+	if (( Class == 6 ) && ( JobLevel >= 40 ) && ( oldjob == 17 )) callfunc "jobchanger2","チェイサー",17,6;
+	mes "[チェイサー]";
+	mes "ヴァルハラへよく来たな～！";
+	mes "ちょいと休みなよ。";
+	mes "幸運を祈る！";
+	close;
 }

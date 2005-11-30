@@ -265,7 +265,7 @@ int storage_storageaddfromcart(struct map_session_data *sd,int index,int amount)
 
 	if( (stor->storage_amount <= MAX_STORAGE) && (stor->storage_status == 1) ) { // storage not full & storage open
 		if(index>=0 && index<MAX_INVENTORY) { // valid index
-			if( (amount <= sd->status.cart[index].amount) && (amount > 0) ) { //valid amount
+			if( (amount <= sd->status.cart[index].amount) && (amount > 0) && itemdb_isstorageable(sd->status.cart[index].nameid)) { //valid amount
 				if(storage_additem(sd,stor,&sd->status.cart[index],amount)==0)
 					pc_cart_delitem(sd,index,amount,0);
 			} // valid amount
@@ -288,7 +288,7 @@ int storage_storagegettocart(struct map_session_data *sd,int index,int amount)
 
 	if(stor->storage_status == 1) { //  storage open
 		if(index>=0 && index<MAX_STORAGE) { // valid index
-			if( (amount <= stor->storage[index].amount) && (amount > 0) ) { //valid amount
+			if( (amount <= stor->storage[index].amount) && (amount > 0) && itemdb_iscartable(stor->storage[index].nameid) ) { //valid amount
 				if(pc_cart_additem(sd,&stor->storage[index],amount)==0){
 					storage_delitem(sd,stor,index,amount);
 				}

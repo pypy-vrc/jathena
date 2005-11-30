@@ -235,7 +235,7 @@ cmd_in01.gat,164,115,1	script	ニルス	731,{
 //==================================================================
 //お金⇒肉
 umbala.gat,70,106,3	script	ウータン族の子供#1	781,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[？？？]";
 	mes "あれ？あなたは、";
 	mes "私達ウンバラの者じゃないね？";
@@ -345,7 +345,7 @@ LError:
 
 //肉→ゼロピ・クローバー・綿毛
 umbala.gat,59,243,5	script	ウータン族の子供#4	787,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[コタン]";
 	mes "…………";
 	mes "……ううっ。";
@@ -847,7 +847,7 @@ LStart5:
 	set event_umbala,5;
 	close;
 LStart6:
-if (countitem(2278)>=1) goto Lsmileok;
+	if (countitem(2278)>=1) goto Lsmileok;
 	mes "[カルカタン]";
 	mes "^3377FFスマイルマスク^000000を1個じゃと言わなかっ";
 	mes "たか？それがなければ、彼女は絶対に";
@@ -875,10 +875,10 @@ Lsmileok:
 }
 
 um_in.gat,44,71,2	script	ウータン族シャーマン	782,{
-if (event_umbala<3) goto LumWord;
-if ((event_umbala==4) || (event_umbala==5)) goto LStart2;
-if (event_umbala==6) goto LStart3;
-if (event_umbala==7) goto LStart4;
+	if (event_umbala<3) goto LumWord;
+	if ((event_umbala==4) || (event_umbala==5)) goto LStart2;
+	if (event_umbala==6) goto LStart3;
+	if (event_umbala==7) goto LStart4;
 	mes "[プツチァルタン]";
 	mes "人間が私達ウータン族の村まで訪ねて";
 	mes "くるようになるとは、思いませんでした";
@@ -1002,7 +1002,7 @@ L1:
 		mes "[プツチァルタン]";
 		if (@umchange[1]==947) mes "この沸いている釜に、その角を";
 		if (@umchange[1]==904) mes "この沸いている釜に、その尾を";
-		if ((@umchange[1]==1013) && (@umchange[1]==946)) mes "この沸いている釜に、その皮を";
+		if (@umchange[1]==1013 || @umchange[1]==946) mes "この沸いている釜に、その皮を";
 		mes "入れなさい。私は神聖な呪文を";
 		mes "唱えます。君は先程の数字を心に思い";
 		mes "描きなさい。それでも、力が集まるかは";
@@ -1146,7 +1146,7 @@ L2:
 		mes "作り出したものです……目的を";
 		mes "よく考えてから使うようにしなさい。";
 		close;
-2_cancel:
+L2_cancel:
 	mes "[プツチァルタン]";
 	mes "望まないのですね。それも一つの選択";
 	mes "でしょう。後で、もし助けが必要に";
@@ -1277,7 +1277,7 @@ umbala.gat,80,146,4	script	ユーキ	753,{
 }
 
 um_in.gat,101,73,3	script	ウェナタン	783,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[ウェナタン]";
 	mes "はぁ……夜になると現われて";
 	mes "訳もなく横をうろついて、大騷ぎを";
@@ -1293,7 +1293,7 @@ LumWord:
 }
 
 um_in.gat,94,123,5	script	ベルツタン	783,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[ベルツタン]";
 	mes "もう……ウムポコリオタンは変態";
 	mes "みたいな奴よ！いくら大嫌いだと";
@@ -1310,7 +1310,7 @@ LumWord:
 }
 
 umbala.gat,140,157,6	script	ウータン族の青年#1	785,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[セイルタン]";
 	mes "バンジージャンプはすごく危ない。";
 	mes "命がけなんだ。だからそれを";
@@ -1326,7 +1326,7 @@ LumWord:
 }
 
 umbala.gat,146,157,4	script	ウータン族の青年#2	786,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[アロタン]";
 	mes "バンジージャンプを無事に成功させる";
 	mes "のは、とても大変。だから、無事に成功";
@@ -1341,7 +1341,7 @@ LumWord:
 }
 
 umbala.gat,149,165,4	script	ウータン族の子供#3	781,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[クリューバタン]";
 	mes "あんなに高い所から落ちるのは";
 	mes "とても恐ろしいです。ところが";
@@ -1358,7 +1358,7 @@ LumWord:
 }
 
 umbala.gat,92,159,4	script	ベルタン	785,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[ベルタン]";
 	mes "ウンバラの住民の肌は、";
 	mes "どうして真っ黒いのかなぁ？";
@@ -1385,7 +1385,7 @@ LumWord:
 }
 
 umbala.gat,194,104,4	script	ウータン族の子供#2	787,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[ブルカタン]";
 	mes "外の人？";
 	mes "バンジージャンプをしてみたいの？";
@@ -1424,7 +1424,7 @@ LumWord:
 }
 
 umbala.gat,193,208,6	script	ウータン族の青年#3	789,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[フェイタン]";
 	mes "俺も若い頃、バンジージャンプをした。";
 	mes "危うく死にかけたが、成功したよ。その";
@@ -1441,7 +1441,7 @@ LumWord:
 }
 
 umbala.gat,139,205,4	script	ウータン族の青年#5	785,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[ツナタン]";
 	mes "久しぶりに見る外人だね！";
 	mes "ここはバンジージャンプをする所だ。";
@@ -1484,7 +1484,7 @@ LumWord:
 }
 
 um_in.gat,158,71,3	script	ウータン族の住民	787,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[ムタクタン]";
 	mes "ウンバラは、木がとーっても多い！";
 	mes "僕ムタクタン、木が大好きなの。";
@@ -1549,7 +1549,7 @@ LumWord:
 }
 
 umbala.gat,145,217,3	script	チャビバタン	783,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[チャビバタン]";
 	mes "ふぅ……ウムポコリオタンは奥さんが";
 	mes "いるみたいです。なのにどうして、";
@@ -1566,7 +1566,7 @@ LumWord:
 }
 
 um_in.gat,139,48,5	script	プレネタン	783,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[プレネタン]";
 	mes "全く、この人はすぐ浮気する";
 	mes "んだから……ああ！今度やったら、";
@@ -1593,7 +1593,7 @@ emotion 6;end;
 }
 
 um_in.gat,144,45,5	script	ウムポコリオタン	789,{
-if (event_umbala<3) goto LumWord;
+	if (event_umbala<3) goto LumWord;
 	mes "[ウムポコリオタン]";
 	mes "うう……うちの家内は乱暴";
 	mes "過ぎるよ……痛い痛い。";
@@ -1618,30 +1618,20 @@ LumWord:
 //==============================================================================
 //Bungee jumping!
 //==============================================================================
-umbala.gat,140,197,0	script	#シボンヌチェック	139,0,1,{
-set @jumprand,rand(4);
-if (@jumprand == 1) goto L1;
-if (@jumprand == 2) goto L2;
-if (@jumprand == 3) goto L3;
-mapannounce "umbala.gat","バンジージャンプ台: " + strcharinfo(0) + " : イ～ヤッホ～～～ゥ！",8;
-end;
-
-L1:/*死亡*/
-mapannounce "umbala.gat","バンジージャンプ台: " + strcharinfo(0) + " : ウギャアアアアアアアア～～～!!",8;
-	percentheal -100,0;
-end;
-
-L2:/*HP50%のダメージ*/
-mapannounce "umbala.gat","バンジージャンプ台: " + strcharinfo(0) + " : キャアアアアアアア～～～！",8;
-	percentheal -50,0;
-end;
-
-L3:/*HPが0になりニブルヘイムへ転送。死んでしまうので99*/
-mapannounce "umbala.gat","バンジージャンプ台: " + strcharinfo(0) + " : ウワアアアアアアア～～～！",8;
-	percentheal 100,0;
-	percentheal -99,0;
-	warp "nif_in.gat",68,14;
-end;
+umbala.gat,140,197,0	script	#バンジージャンプ	139,0,1,{
+	switch ( rand(4) ) {
+	case 0:	mapannounce "umbala.gat","バンジージャンプ台: " + strcharinfo(0) + " : イ～ヤッホ～～～ゥ！",0;
+		break;
+	case 1:	mapannounce "umbala.gat","バンジージャンプ台: " + strcharinfo(0) + " : ウギャアアアアアアアア～～～!!",0;
+		percentheal -100,0;
+		break;
+	case 2:	mapannounce "umbala.gat","バンジージャンプ台: " + strcharinfo(0) + " : キャアアアアアアア～～～！",0;
+		percentheal -50,0;
+		break;
+	case 3:	mapannounce "umbala.gat","バンジージャンプ台: " + strcharinfo(0) + " : ウワアアアアアアア～～～！",0;
+		heal -(Hp-1),0;
+		warp "nif_in.gat",68,14;
+	}
 }
 
 umbala.gat,136,195,0	script	#ワープポイント	139,1,1,{

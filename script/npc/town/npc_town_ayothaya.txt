@@ -1699,7 +1699,7 @@ Q1Z:
 		mes "[強そうな女性]";
 		mes "なによ、その態度は?!";
 		next;
-		emotion 29;	//自キャラに出る
+		gmcommand "@emotion 29";	//自キャラに出る
 		mes "["+strcharinfo(0)+"]";
 		mes "いや、だって君みたいな人が婚約してる";
 		mes "だなんて、ちょっと信じられないよ。";
@@ -1911,7 +1911,7 @@ L_Find:
 		mes "出来ないわよね。";
 		mes "おほほほほほほ。";
 		next;
-		emotion 9;	//自キャラに出る
+		gmcommand "@emotion 9";	//自キャラに出る
 		mes "["+strcharinfo(0)+"]";
 		mes "……こんな女に関わるんじゃなかった。";
 		mes "あー、ついてないな……";
@@ -2129,7 +2129,7 @@ OnTouch:
 	if(ayo_Q3 == 4) goto L_Find;
 	close;
 L_Find:
-	emotion 0;
+	gmcommand "@emotion 0";
 	mes "^903535老人の言った通りだ！^000000";
 	mes "^FF0000北^000000^353515に向かった足跡発見！^000000";
 	mes "^353590誰か急いで駆け抜けたようだ。^000000";
@@ -2142,7 +2142,7 @@ OnTouch:
 	if(ayo_Q3 == 5) goto L_Find;
 	close;
 L_Find:
-	emotion 5;
+	gmcommand "@emotion 5";
 	mes "ここにも足跡が……";
 	mes "^FF0000東^000000^353515に向かった足跡発見！^000000";
 	mes "よし、追跡しよう。";
@@ -2155,7 +2155,7 @@ OnTouch:
 	if(ayo_Q3 == 6) goto L_Find;
 	close;
 L_Find:
-	emotion 22;
+	gmcommand "@emotion 22";
 	mes "^FF0000ここから足跡が薄くなってる……^000000";
 	mes "^FF0000疲れているのか？^000000";
 	mes "^FF0000よし、もっと調べてみるか。^000000";
@@ -2169,7 +2169,7 @@ OnTouch:
 	if(ayo_Q3 == 7) goto L_Find;
 	close;
 L_Find:
-	emotion 5;
+	gmcommand "@emotion 5";
 	mes "^353515足跡を追って来たら^000000";
 	mes "^353515村の人が言っていた、神殿の^000000";
 	mes "^FF0000下層部へ続く入口まで来て^000000";
@@ -2184,7 +2184,7 @@ OnTouch:
 	if(ayo_Q3 == 8) goto L_Find;
 	close;
 L_Find:
-	emotion 0;
+	gmcommand "@emotion 0";
 	mes "やはりここにも跡がある。";
 	mes "^FF0000北^000000に行ったのか……";
 	mes "かなり危ない場所みたいなのに、";
@@ -2198,7 +2198,7 @@ OnTouch:
 	if(ayo_Q3 == 9) goto L_Find;
 	close;
 L_Find:
-	emotion 0;
+	gmcommand "@emotion 0";
 	mes "^353515足跡が続いている^000000";
 	mes "お、あっちに何かある！";
 	next;
@@ -2208,11 +2208,11 @@ L_Find:
 		close;
 //ここまで↑
 	L_M1_1:	//調べよう
-		emotion 23;
+		gmcommand "@emotion 23";
 		mes "^FF0000チューチュー!!^000000";
 		mes "^FF0000チューチューチュー!!^000000";
 		next;
-		emotion 0;
+		gmcommand "@emotion 0";
 		mes "^903535うわぁ!!!!^000000";
 		mes "^903535ビックリした……はぁ、はぁ……^000000";
 		mes "^903535うん？これは……^000000";
@@ -2228,7 +2228,7 @@ OnTouch:
 	if(ayo_Q3 == 10) goto L_Find;
 	close;
 L_Find:
-	emotion 0;
+	gmcommand "@emotion 0";
 	mes "かなり奥まで来てしまった……";
 	mes "どこまで続くんだろう……";
 	mes "疲れたなぁ……";
@@ -2241,7 +2241,7 @@ OnTouch:
 	if(ayo_Q3 == 11) goto L_Find;
 	close;
 L_Find:
-	emotion 0;
+	gmcommand "@emotion 0";
 	mes "これは！　血?!";
 	mes "なんでこんな所に血が？";
 	mes "血の跡が^FF0000北^000000に点々と……";
@@ -2258,7 +2258,7 @@ ayo_dun02.gat,92,262,5	script	 #AyoDun2_6	111,{
 OnTouch:
 	if(ayo_Q3 == 12) goto L_Find;
 L_Find:
-	emotion 0;
+	gmcommand "@emotion 0";
 	mes "おや、これは？";
 	mes "微かだけど、血痕がある……";
 	mes "こんな所に血痕？";
@@ -2306,7 +2306,7 @@ Q1X:
 		mes "[男の声]";
 		mes "……ウウウ……ウウゥゥゥ";
 		next;
-		emotion 0;	//自キャラに出る
+		gmcommand "@emotion 0";	//自キャラに出る
 		mes "["+strcharinfo(0)+"]";
 		mes "何だ?!うなり声？";
 		mes "もっと叩いてみよう！";
@@ -2317,7 +2317,7 @@ Q1X:
 		mes "- 現れた！ -";
 		next;
 //アーノン出現
-		emotion 23;	//自キャラに出る
+		gmcommand "@emotion 23";	//自キャラに出る
 		mes "[痩せた青年]";
 		mes "シューリ?! シューリか?!?!?!";
 		mes "痛い痛い痛い痛い痛い痛い痛い痛い!!!!!!";
@@ -2397,7 +2397,7 @@ ayo_dun02.gat,93,262,5 script 痩せた青年 841,{
 		mes "お、お願いです。僕のことは忘れて";
 		mes "ください！誰にも教えないでください！";
 		next;
-		emotion 21;	//自キャラに出る
+		gmcommand "@emotion 21";	//自キャラに出る
 		mes "["+strcharinfo(0)+"]";
 		mes "このまま放っておくのも";
 		mes "なんか悪いし、仕方ないな。";

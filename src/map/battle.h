@@ -164,6 +164,7 @@ extern struct Battle_Config {
 	int natural_healsp_interval;
 	int natural_heal_skill_interval;
 	int natural_heal_weight_rate;
+	int natural_heal_weight_rate_icon;
 	int item_name_override_grffile;
 	int arrow_decrement;
 	int max_aspd;
@@ -350,6 +351,12 @@ extern struct Battle_Config {
 	int twilight_party_check;
 	int alchemist_point_type;
 	int marionette_type;
+	int max_marionette_str;
+	int max_marionette_agi;
+	int max_marionette_vit;
+	int max_marionette_int;
+	int max_marionette_dex;
+	int max_marionette_luk;
 	int baby_status_max;
 	int baby_hp_rate;
 	int baby_sp_rate;
@@ -363,6 +370,7 @@ extern struct Battle_Config {
 	int debug_new_disp_status_icon_system;
 	int allow_me_dance_effect;
 	int allow_me_concert_effect;
+	int allow_me_rokisweil;
 	int pharmacy_get_point_type;
 	int cheat_log;
 	int soulskill_can_be_used_for_myself;
@@ -379,7 +387,6 @@ extern struct Battle_Config {
 	int allow_weaponrearch_to_weaponrefine;
 	int boss_no_knockbacking;
 	int scroll_produce_rate;
-	int allow_create_scroll;
 	int scroll_item_name_input;
 	int pet_leave;
 	int pk_short_damage_rate;
@@ -388,6 +395,14 @@ extern struct Battle_Config {
 	int pk_misc_damage_rate;
 	int cooking_rate;
 	int making_rate;
+	int extended_abracadabra;
+	int changeoption_packet_type;
+	int redemptio_user_noexp;
+	int no_pk_level;
+	int allow_cloneskill_at_autospell;
+	int pk_noshift;
+	int pet_hp_display;
+	int pk_penalty_time;
 
 	int item_rate_details,item_rate_1,item_rate_10,item_rate_100,item_rate_1000;	//ドロップレート詳細
 	int item_rate_1_min,item_rate_10_min,item_rate_100_min,item_rate_1000_min;	//ドロップレート詳細min
@@ -407,6 +422,9 @@ extern struct Battle_Config {
 
 	int mes_send_type;
 
+	int can_attack_pet;	//added by フェルシア
+	int pet_damage_delay_rate;	//added by フェルシア
+	int pet_damage_delay;	//added by フェルシア
 } battle_config;
 
 #define BATTLE_CONF_FILENAME	"conf/battle_athena.conf"

@@ -794,10 +794,10 @@ yuno_fild03.gat,32,139,0	warp	yunowarp0401		1,1,mag_dun01.gat,126,69
 yuno_fild02.gat,18,337,0	warp	yunowarp5005		1,1,yuno_fild03.gat,379,331
 yuno_fild03.gat,383,331,0	warp	yunowarp5006		1,1,yuno_fild02.gat,22,337
 //YunoFild03ÅÃYunoFild04
-yuno_fild03.gat,20,155,0	warp	yunowarp5007		1,1,yuno_fild04.gat,372,150
-yuno_fild04.gat,375,150,0	warp	yunowarp5008		1,1,yuno_fild03.gat,23,155
-yuno_fild03.gat,19,79,0		warp	yunowarp5009		1,1,yuno_fild04.gat,372,84
-yuno_fild04.gat,375,84,0	warp	yunowarp5010		1,1,yuno_fild03.gat,22,79
+yuno_fild03.gat,21,162,0	warp	yunowarp5007		1,1,yuno_fild04.gat,371,147
+yuno_fild04.gat,374,149,0	warp	yunowarp5008		1,1,yuno_fild03.gat,25,162
+yuno_fild03.gat,20,79,0		warp	yunowarp5009		1,1,yuno_fild04.gat,370,81
+yuno_fild04.gat,374,82,0	warp	yunowarp5010		1,1,yuno_fild03.gat,24,79
 
 
 

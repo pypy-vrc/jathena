@@ -77,4 +77,42 @@ void* linkdb_search ( struct linkdb_node** head, void *key);
 void* linkdb_erase  ( struct linkdb_node** head, void *key);
 void  linkdb_final  ( struct linkdb_node** head );
 
+// csvdb -- csv ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İŠÖ”
+
+// Å‘å—ñ”
+#define MAX_CSVCOL 128
+
+struct csvdb_line {
+	int   num;
+	char *buf;
+	char *data_p[MAX_CSVCOL];
+	int   data_v[MAX_CSVCOL];
+};
+
+struct csvdb_data {
+	struct csvdb_line *data;
+	char *file;
+	int  *index;
+	int row_max;
+	int row_count;
+	int row_notempty;
+	int dirty;
+};
+
+struct csvdb_data* csvdb_open(const char* file, int skip_comment);
+int         csvdb_get_rows(struct csvdb_data *csv);
+int         csvdb_get_columns(struct csvdb_data *csv, int row);
+int         csvdb_get_num(struct csvdb_data *csv, int row, int col);
+const char* csvdb_get_str(struct csvdb_data *csv, int row, int col);
+int         csvdb_set_num(struct csvdb_data *csv, int row, int col, int num);
+int         csvdb_set_str(struct csvdb_data *csv, int row, int col, const char* str);
+int         csvdb_find_num(struct csvdb_data *csv, int col, int value);
+int         csvdb_find_str(struct csvdb_data *csv, int col, const char* value);
+int         csvdb_clear_row(struct csvdb_data *csv, int row);
+int         csvdb_sort(struct csvdb_data *csv, int key, int order);
+int         csvdb_delete_row(struct csvdb_data *csv, int row);
+int         csvdb_insert_row(struct csvdb_data *csv, int row);
+void        csvdb_close(struct csvdb_data *csv);
+void        csvdb_dump(struct csvdb_data* csv);
+
 #endif

@@ -1,4 +1,976 @@
 ----------------------------------------
+//1665 by ＡＡＡ
+・PKでの取得経験値関係を修正
+
+----------------------------------------
+//1664 by Rayce
+・スクリプト命令/関数の拡張（script.c）
+　monster及びareamonsterをIDだけでなく名前でも呼べるように拡張
+　getmapmobsを書き換え、ついでにgetareamobs関数追加
+　areamonsterのmap全体ランダム湧き対応
+　　（mob.c mob_once_spawn_area()）
+　map名指定を"this"にすると命令したNPCの居るMAPを参照
+　　→killmonster,killmonsterall,areakillmonster,
+    　getmapusers,getareausers,areawarp の計6種
+・script_ref.txt追記と部分修正
+
+----------------------------------------
+//1663 by ＡＡＡ
+・PKのペナルティ追加
+　時間内に続けて攻撃できなくなるだけです。
+　リログで直るのも、アイテムスキルを使えるのも仕様です。
+・ウォールオブフォグ修正
+　モンスターの索敵範囲が狭くなるように修正
+
+----------------------------------------
+//1662 by yukito
+・モンスターが暗黒状態になった時に索敵範囲が狭くなるように修正
+
+----------------------------------------
+//1661 by ＡＡＡ
+・ウルド仕様の修正
+・PK可能、およびPK対象となるキャラクターは以下のとおりです。
+BaseLv61以上のノービス 
+BaseLv61以上の1次職(テコン)
+特殊1次職（スーパーノービス・忍者・ガンスリンガー）
+2次職 
+全ての転生職 
+・マーダラーボーナス
+※キラーポイントは ranking_get_point(sd,RK_PK)で取得できます
+※全ての能力値（STRなどの6つの能力）が上昇。
+　キラーポイントが100を超えると全ての能力値が+3。
+　キラーポイントが400を超えると全ての能力値が+5。 
+※物理攻撃力（ATK）・魔法攻撃力（MATK）が10%上昇。 
+※NPCにアイテムを販売するとき、10%高く販売可能。 
+※キラーポイントが上昇する条件でPKを行った場合、
+　倒されたプレイヤーの消失する経験値を獲得。
+　※ただし即経験が減る設定のみ
+
+　経験値ドロップ関係はウルド仕様用に計算を変える予定はありません。
+　PKペナルティ(１時間～、２４時間～)もやる気はありません。
+
+----------------------------------------
+//1660 by ＡＡＡ
+・ウォールオブフォグ修正
+
+----------------------------------------
+//1659 by yukito
+・ディテクティングの効果範囲修正
+・スチールクロウの攻撃力増加値修正
+・寒いジョーク、スクリームの効果範囲修正
+・ハンマーフォールはエフェクト終了後にスタンするように修正
+　（スキル使用後、実際にスタンするまでの時間はskill_cast_db.txtのupkeep_timeを使用）
+
+----------------------------------------
+//1658 by ＡＡＡ
+・スキルに禁止地域を追加
+・ターボトラック用フラグ追加
+alde_tt02.gat	mapflag	turbo	dummy
+
+----------------------------------------
+//1657 by yukito
+・敵の状態異常攻撃スキルの属性を修正
+・敵の属性攻撃、状態異常攻撃スキルの射程を修正
+・インベナムがダメージ0の時、毒化できなかったバグ修正
+
+----------------------------------------
+//1656 by ＡＡＡ
+・sc_start3
+・sc_starte
+  Equip Scriptにsc_starteを使用できるようにしました
+  doc参照
+・status_chagen_startのflag&4でstatus_calc_pcを呼ばなくなりました
+・ウォールオブフォグ修正
+　霧の効果対象を修正
+  ※不発情報が違っていたので巻き戻し
+　　無属性耐性も霧効果の勘違いの一部と思うので削除
+・ウォールオブフォグの不発をskill_misfire.txtで定義するように修正
+  もうこれ以上の修正は勘弁…
+
+----------------------------------------
+//1655 by yukito
+・万能薬とローヤルゼリーで錯覚状態が治るように修正
+
+----------------------------------------
+//1654 by ＡＡＡ
+・装備品に装備制限と禁止地域が適用されていなかったのを修正
+
+----------------------------------------
+//1653 by ＡＡＡ
+・@disppethp 	<数値>
+  1: 表示ON
+  0: 表示OFF
+　HPに変化があると表示
+・@pethp
+  ペットのHP/MAXHP表示
+
+----------------------------------------
+//1652 by yukito
+・金剛中にウィンドウォークを使用した場合のチェック漏れ修正
+
+----------------------------------------
+//1651 by End_of_exam
+
+・hideonnpc, hideoffnpc に存在しないNPC を指定すると落ちるバグを修正(script.c)
+・getpetinfo(2), getmapname 命令を使うと落ちるバグを修正(script.c thanks to DonnySasa)
+・その他微修正(script.c)
+・メモリマネージャの最適化、エラーチェックの強化(malloc.c)
+
+----------------------------------------
+//1650 by ＡＡＡ
+・ウォールオブフォグ修正
+　・通常攻撃も不発するように修正
+　・無属性耐性追加
+　・暗闇ペナルティ修正
+　※詳しい方修正お願いします。(伝聞だけじゃ謎過ぎ…)
+・気爆発修正
+　
+
+----------------------------------------
+//1649 by ＡＡＡ
+・イドゥンの林檎の回復をPCが使用した場合はPC
+  MOBが使用した場合はMOBが対象になるように修正
+　※petは除外してます
+
+----------------------------------------
+//1648 by yukito
+・コンセントレーション、バーサークでインデュア効果が出るように修正
+・金剛中は囲まれによるDEF低下が発生しないように修正
+・速度増加・金剛・ウィンドウォークの重複チェック追加
+
+----------------------------------------
+//1647 by Rohypnol
+・GvG関連スクリプト巻き戻し
+----------------------------------------
+//1646 by ＡＡＡ
+・使用制限修正
+・警告修正
+
+----------------------------------------
+//1645 by ＡＡＡ
+・アイコン修正
+・禁止地域追加の判定位置修正
+
+----------------------------------------
+//1644 by ＡＡＡ
+・アイテム拡張
+　upperによるアイテム装備制限(テコン系はupper:0として扱ってます)
+　使用ディレイ追加
+　禁止地域追加
+・bonus bItemNoUse,n; アイテムが使えない
+
+----------------------------------------
+//1643 by End_of_exam
+
+・1638のstatus.c修正抜けを修正(status.c)
+・スクリプトコマンドsc_ison を追加(script.c)
+・status_calc_pcを初回のみUse Scriptを追加実行するように修正(status.c)
+・item_db のuse scriptに{}を使えるように修正(itemdb.c)
+・アンデットMOB にリザレクションが使えないバグを修正(skill.c)
+・battle_check_undead に属性＋Lvの値を渡しても正常に動作するように変更(battle.c)
+
+装備品に状態変化を使う場合、Use Scriptの欄にsc_startを記入するように
+してください。守られていない場合には、sc_ison とsc_startの組み合わせに
+不具合が生じる可能性があります。
+
+----------------------------------------
+//1642 by Rohypnol
+砦名称の修正
+	db/castle_db.txt
+砦陥落時の地域名称の修正
+	script/npc/gvg/ev_agit_*
+スクリプトのタブ文字に全角空白が含まれていたのを除去
+（問題なく動作してるようですが、思わぬ動作不良につながりかねないため）
+	script/npc/gvg/*_cas*
+ちょっとした警告の削除
+	src/map/status.c
+----------------------------------------
+//1641 by 逆毛鰻
+　conf/char_athena.conf
+　src/char/char.c  if(login_fd <= 0)～
+
+　char_loginaccess_autorestart: 0 (0=今まで通り終了しない 1=終了する)
+
+・指定されたログインサーバが発見出来ず､ログインが出来ない場合
+　終了するか(自動再起動スクリプト利用で再起動可能)　しないかの選択が出来るように
+・終了しない場合は従来通りの動作。デフォルトではしない
+
+　ログインサーバ共有等で、ログインサーバのアドレスにDDNSを指定してる場合
+　相手のログインサーバのIPが変更される事があり、Charを再起動しなければ
+　ずっと相手のログインサーバに表示されなくなる。
+　終了させて、自動で再起動がかかれば自動でDDNSから新しいIPを
+　探して正しいログインサーバへ接続してくれます。
+　IPが変わりやすいADSL運営で、出勤等で放置運営が続く場合、1にするといいかも？
+
+----------------------------------------
+//1640 by ＡＡＡ
+・モンスター情報をペットに対応
+　他
+
+----------------------------------------
+//1639 by yukito
+・battle_athena.confのallow_cloneskill_at_autospellがnoの時、
+　オートスペルのカードと同じスキルの最大レベルをクローンしていると
+　発動したスキルのレベルが0になる不具合の修正
+
+----------------------------------------
+//1638 by ＡＡＡ
+・status.cの修正
+
+----------------------------------------
+//1637 by ＡＡＡ
+・status_calc_pcの無限ループ修正
+(status.c)
+	-status_calc_pc_stop_begin()
+	-status_calc_pc_stop_end()
+----------------------------------------
+//1636 by End_of_exam
+
+・Visual C++ .NET 2005 対応 (*.dsp core.c login.c httpd.c status.c)
+・httpd のService Unavailableにbreakが抜けていたバグを修正(httpd.c)
+
+----------------------------------------
+//1635 by yukito
+・スティールした装備品が鑑定済みになっているバグ修正
+・ボウリングバッシュで連鎖HITした敵が2HITになっていなかったバグ修正
+・インティミデイトが発動しないバグ修正
+・剣士の転職試験で穴に落ちても落下しないバグ(スクリプトミス)修正
+
+----------------------------------------
+//1634 by End_of_exam
+
+・attachrid の戻り値が違うバグを修正(script.c thanks to フェルシアさん)
+・status_calc_pc を似非リエントラントに修正(status.c)
+・1631-fix で婚礼衣装バグ対策として、エンチャントポイズンの属性ダメージ
+　増加が消されていたのを元に戻す(status.c)
+
+　status_calc_pc_process, no_status_calc_pc ですが、今回のパッチで変数の
+　使用法を変更しました。status_calc_pc の実行中にさらにstatus_calc_pc が
+　呼ばれた場合、途中まで計算し終わったパラメータを捨てて再計算しないと
+　計算結果が狂ってしまう為です。実質1632のstatus_no_calc_pc_*** の
+　巻き戻しという形になりますが、ご了承ください。
+
+----------------------------------------
+//1633 by ＡＡＡ
+・makefile修正
+
+----------------------------------------
+//1632 by ＡＡＡ
+・ガンスリンガーと忍者を正式に内部実装
+・@viewclassデバッグ用
+(status.c)
+	-status_no_calc_pc_begin()
+	-status_no_calc_pc_end()
+
+----------------------------------------
+//1631 by ＡＡＡ
+・装備品にsc_startを使った場合無限ループに陥る現象を修正
+
+----------------------------------------
+//1630 by End_of_exam
+・1628の多数の穴塞ぎ
+・1628でbattle_config.heal_expの対象にMOB が含まれていた罠を修正
+
+----------------------------------------
+//1629 by ＡＡＡ
+・bonus2 bEternalStatusChange,n,x;
+  ステータス異常nがstatus_change_timerが呼ばれる度にxミリ秒追加し継続する
+　例:装備している間アスムプティオ状態
+  ,{},{ bonus2 bEternalStatusChange,110,1000; sc_start 110,1000,0; }
+
+----------------------------------------
+//1628 by フェルシア
+
+・アルケミストにペット支援攻撃系のスキルが追加されるそうなので、モンスターやＰＣがペットを攻撃できるようにした。
+  (can_pet_attackをyesにするとペットがダメージを受けるようになります)
+・battle_athena_confにcan_pet_attackとpet_damage_dely,pet_damage_dely_rateの追加
+・pet_unlocktargetの外部公開化　及び pet_setdead,pet_setstand,pet_heal,pet_damage,pet_revive関数の追加
+
+----------------------------------------
+//1627 by End_of_exam
+
+・csvdb に行入れ替え作業の追加(db.c db.h)
+・スクリプトにcsvsort, csvinsert, csvdelete, sleep, sleep2 関数の追加
+・メモリリーク修正(script.c db.c)
+・1585の修正漏れを修正(mob.c)
+
+----------------------------------------
+//1626 by n/a
+・mob_skill_db.txt
+・デビルリングのcasttimeとdelayが逆だったのを修正
+
+----------------------------------------
+//1625 by ＡＡＡ
+・ガンスリンガーと忍者の仮内部実装
+　ガンスリンガー: 28 (view_class 24)
+  忍者          : 29 (view_class 25)
+  baseexp スパノビ流用
+  jobexp  １次職を流用
+　判明次第変更予定
+　
+----------------------------------------
+//1624 by yukito
+・クローンした三段掌が発動しないバグを修正
+
+----------------------------------------
+//1623 by ＡＡＡ
+・map.hの修正
+・docにsc_start.txt追加
+  bAutoStatusCalcPcと併用すれば色々と出来そうです
+
+----------------------------------------
+//1622 by yukito
+・const.txtからSC_RaceUnknown(326)～SC_RaceDragon(336) が抜け落ちていたのを修正
+　これの弊害で返魂のお札の効果が出なくなっていました。
+・エンチャントデッドリーポイズンのダメージ増加効果が出なくなっていたのを修正
+
+----------------------------------------
+//1621 by ＡＡＡ
+・MAX_VALID_PC_CLASS修正
+　あれの仕込み
+・skill.hにガンスリンガーと忍者のスキル暫定追加
+　このまま来ると限りませんがexeを解析できる人は番号解析お願いします
+
+----------------------------------------
+//1620 by うんぽこ
+・猛毒修正
+・アスムプティオ修正
+
+----------------------------------------
+//1619 by End_of_exam
+
+・スクリプトのisstr の誤判定を修正(script.c)
+・スクリプトからcsv を読み書き出来る関数を追加(script.c db.*)
+
+----------------------------------------
+//1618 by Sapientia
+・scriptに flagname, getnpcposition 関数追加
+・GvG 関連スクリプト修正.
+・castle_db にアジト名前修正.
+・script_ref.txt に関数説明追加.
+・GvGでガーディアンにギルド情報を表示するように修正.
+・エンチャントデッドリーポイズンがボスには適用されないように修正.
+
+----------------------------------------
+//1617 by ルナ
+・本鯖では武器精錬はスキル名を叫ぶので叫ぶように修正。
+----------------------------------------
+//1616 by 逆毛鰻
+
+・サーバースナップショット
+・version.hの更新
+	(src/common)
+		version.h		- mod version 1616
+---------------------------------------
+//1615 by yukito
+・アイテム鑑定と武器精錬でスキル名を叫ばないように修正(質問スレ３[109]報告分)
+・ディテクティングとスプリングトラップに鷹チェック追加
+・鷹が必要なスキルを鷹なしで使おうとした時にスキル使用失敗が出るように修正
+・組織の団結力を使用した時にギルド経験値(500k～1Mでランダム)が増えるように修正
+・雑談スレ４[116]フェルシア氏のscript_ref.txtに加筆修正をしたものを同梱
+
+----------------------------------------
+//1614 by yukito
+・battle_athena.confのitem_rate_detailsが2の時、
+　mob_db.txtでドロップ率が10000に設定されているアイテムのドロップ率が
+　強制的に0になってしまうバグを修正
+・mob_db.txtのExpPerが使われていなかったので使うように修正
+
+----------------------------------------
+//1613 by yukito
+・グランドクロス・闇グランドクロスの3HIT化処理方法を変更(skill_cast_db.txt upkeep_time)
+・グランドクロス・闇グランドクロス使用後の移動不可時間を修正(900ms)
+・サンクチュアリで不死・悪魔を攻撃した時に回復2回分としてカウントするように修正
+・ファイアーピラーをモンスターが使った時のダメージ修正
+・カプラ空間転送のバグ修正(ルナ氏報告thx!)
+
+----------------------------------------
+//1612 by Rayce
+・scriptにguildgetexp追加（from eA）
+・scriptのhideonnpc,hideoffnpcをNPC名なしでも作動するように拡張
+・金剛が詠唱なかったのを修正
+・doc追記
+
+----------------------------------------
+//1611 by ルナ
+npc_function.txt
+・空間転送のワープ指定がずれていたのを修正？
+※setarray @placename$,となっていたのですが、
+  setarray @placename$[1],と前まではなっていたみたいなのですが、
+  これでもまだずれるのでsetarray @placename$[2],としたら、
+  直ったっぽいです。
+npc_town_ayothaya.txt
+・アユタヤクエストの自分にエモーションが出ずに床やNPCの方に
+エモーションが出ていたのを自キャラに出るように修正。
+----------------------------------------
+//1610 by 名無い
+npc_town_einbroch.txt
+・鯖落ちの原因となっていたmonster位置ランダム指定をareamonsterに変更
+
+----------------------------------------
+//1609 by yukito
+・mapflag noicewallのマップでIWを出すとエフェクトだけ出ていたのを修正
+・上記のときに　スキル使用失敗　と出るように変更
+
+----------------------------------------
+//1608 by ＡＡＡ
+・bonus bAutoStatusCalcPc,n;
+  nの状態異常が終了するたびに強制的にステータスの計算
+　※使い方
+　　例:装備している間アスムプティオ状態
+    ,{},{ bonus bAutoStatusCalcPc,110; sc_start 110,1000,0; }
+　　(メモリ消費より速度を取ることに)
+
+----------------------------------------
+//1607 by yukito
+・馬牌を使うと移動不能になるのを修正
+・返魂のお札の効果時間が30分ではなく3分になっていたのを修正
+・アユタヤパッチ追加時のmap追記
+・攻撃MISSでもカードの状態異常が発動していたのを修正
+・FW、IWが位置によっては斜めに出なかったのを修正(本鯖相違スレ２[25]End_of_exam氏投稿分)
+
+----------------------------------------
+//1606 by yukito
+・プロンテラ大聖堂の修道女が2人いたので削除(プリースト転職)
+・町内限定アナウンスにアインブロック、アインベフ追加
+・転生二次転職共通処理の名前部分を修正
+・イズルードとプロンテラのみペットフードの売価が高かったのを修正
+・ウンバラの属性石クエストで結合キャンセルすると固まるのを修正
+・その他、細かな修正など
+
+----------------------------------------
+//1605 by ＡＡＡ
+・status_change_endで必要のないステータス計算削除
+・bonus bAutoStatusCalcPc,n;
+  status_change_endが呼ばれるたびに強制的にステータスの計算
+　※使い方
+　　例:装備している間アスムプティオ状態
+    ,{},{ bonus bAutoStatusCalcPc,0; sc_start 110,1000,0; }
+    ステータス計算がもともと入る処理はbAutoStatusCalcPcは必要ありません。
+　　スロポ、アスム、特定の魂状態などを維持したい場合使用してください
+　※2.
+　　切れるたびに装備スクリプトを呼び出して永続効果を得ているように見せかけているだけです。
+　　今までに無い効果を簡単に実現するために追加したもので、
+　　専用に用意したものに比べて重く、思ったとおりの動作にならないこともあるかもしれません。
+　　あくまで補助とわりきって使用してください。
+    これを用いて不具合、再現できないものが出てもこちらは関知しません。
+・リバースオーキッシュ、月明かりの中で修正
+・マヤパープルカードの効果がPC,MOB,PETのみ有効になるように修正
+　隠れたNPCは見えなくなりました
+
+----------------------------------------
+//1604 by Rohypnol
+・ピラ前→モロクのポータルの出口がモロク→ピラ前のポータルと重なっていたのを修正
+----------------------------------------
+//1603 by End_of_exam
+
+・1600の穴塞ぎ
+・露天閉じ処理をpc_setpos から unit_remove_map へ移動(unit.c pc.c)
+
+----------------------------------------
+//1602 by yukito
+・フルストリップに詠唱時間があったのを修正
+
+----------------------------------------
+//1601 by ＡＡＡ
+・PCの周囲エフェクト修正
+	opt3 4096 太陽、月、星の温もり
+　　　　　　 8192 カイト
+            16384 (設定なし？)
+	    32768 ～の魂
+・タロットカード修正
+・プロヴィデンス修正
+
+----------------------------------------
+//1600 by exile
+・カード効果の状態異常に関して
+　- ダメージ発生後に発動するよう修正。
+　- miss時も発動するよう修正。
+　- addeff_range_flagの処理を修正
+・カード効果のコーマ・即死をダメージ発生後に発動するよう修正。
+・カード効果の状態異常・コーマ・即死がエンペリウムに発動しないよう修正。
+・フロストノヴァが凍結している敵にはHITしないよう修正。
+・mod1571でフリージングトラップのダメージが発生していなかったのを修正。
+・アイスウォールにnoicewallが機能していなかったのを修正。
+
+(src/map)
+	battle.c	- battle_damage, Damage battle_calc_weapon_attack,
+				  Damage battle_calc_misc_attack,
+				  battle_weapon_attack, battle_skill_attack 修正
+	map.h		- struct unit_dataにlinkdb_node *statuspretimer追加
+				  struct status_pretimer 追加
+	skill.c		- skill_additional_effect, skill_castend_pos2 修正
+	status.c	- status_pretimer, status_clearpretimer, status_change_pretimer追加
+				  do_init_status 修正
+	status.h	- status_change_pretimer 追加
+
+----------------------------------------
+//1599 by yukito
+・skill_unit_db.txt修正
+
+----------------------------------------
+//1598 by ＡＡＡ
+・グランドクロスのHIT数修正(taiさん感謝)
+・map_check_normalmap fix (thx to DonnySasa)
+・霧のHIT関係修正
+・command group修正
+・skill_unit_db.txt修正
+
+----------------------------------------
+//1597 by yukito
+・ladminでbanした時に「アカウントブロック」と出るように
+・ギルドスキルツリーの修正
+・枝からミストレス(MVP)が出ないように
+・バイオプラントの効果時間、Mob定義修正
+・武器修理の詠唱時間、消費SP修正
+・mob_group_db.txtで一部のコメントアウトを外す
+・気奪がダメージで詠唱キャンセルされるように
+・マインドブレーカーの習得条件をソウルバーンLv2に
+・mapの不足分を追加、その他テキスト整形
+
+----------------------------------------
+//1596 by yukito
+・露店を出したままマップ移動した時に露店を閉じるように
+(src/map)
+	pc.c
+		-pc_setpos()
+
+----------------------------------------
+//1595 by ＡＡＡ
+・Gv時の設置系スキル範囲修正
+・PK時にも自分にスキルが当たるフラグ追加
+  inf2 8192
+・魂の周囲エフェクト修正
+　昔のアスムのようにマップ移動時に現れる
+　エフェクトがあれば報告お願いします
+
+----------------------------------------
+//1594 by ＡＡＡ
+・ウォールオブフォグ修正
+(src/map)
+	-int map_check_normalmap(int m);追加
+	通常フィールド(pvp,gvg,pk以外)か調べる
+
+----------------------------------------
+//1593 by End_of_exam
+
+・VC用の鯖落ち情報ファイル作成方法の変更(vc07_make.bat crashdump.pl)
+
+　VCでもシンボル名が正常に得られない場合があるっぽいので、保険として
+　bcc と同じ方法を使えるようにしました。VCでunknown と表示された場合は、
+　crashdump.plを実行して、crashdump_report.txtの内容を報告してください。
+
+　※ crashdump_bcc.pl は、VCに対応した関係上ファイル名を変更しました。
+　　次のSSで削除をお願いします。
+
+・TXT: BCC のみaccreg.txt の読み込みに失敗する可能性のあるバグを修正(inter.c)
+
+　sscanfのBCC 特有の仕様として、%nの箇所にNUL, \n, 行末から続くスペースが
+　ある時の動作が、想定していたのと異なるみたいです。
+
+void main(void) {
+	int tmp, r1 = -1, r2 = -1, r3 = -1, r4 = -1;
+	sscanf("1 "   , "%d %n", &tmp, &r1); // %n : NUL
+	sscanf("1 \n" , "%d %n", &tmp, &r2); // %n : \n
+	sscanf("1  \n", "%d %n", &tmp, &r3); // %n : ' '
+	sscanf("1 _\n", "%d %n", &tmp, &r4); // %n : '_'
+	printf("r1 = %d, r2 = %d r3 = %d r4 = %d\n", r1, r2, r3, r4);
+}
+
+gcc: r1 =  2, r2 =  3 r3 =  4 r4 = 2
+vc : r1 =  2, r2 =  3 r3 =  4 r4 = 2
+bcc: r1 = -1, r2 = -1 r3 = -1 r4 = 2 // r1, r2, r3 に値が代入されてない
+
+----------------------------------------
+//1592 by ＡＡＡ
+・クローンスキルの保存タイミング変更
+・カード効果のアイテムドロップをスキルにも適用
+
+----------------------------------------
+//1591 by ＡＡＡ
+・sql関係修正
+・@go修正
+  アインブロック構造が面倒なので北口追加
+  help修正
+
+----------------------------------------
+//1590 by Blaze
+・アインブロッククエスト4種実装
+・飛行船NPC修正
+・ダンジョンwarp修正
+・map_athena.confをアインブロック対応
+・The Sign追加
+
+
+----------------------------------------
+//1589 by yukito
+・battle_athena.confのdead_branch_activeがyesの時に、古木の枝で召喚した敵の
+　ルート・リンク・詠唱反応・ボス・1ダメージ固定の属性が消失する不具合の修正
+(src/map)
+	mob.c
+		-mob_once_spawn()
+
+----------------------------------------
+//1588 by ＡＡＡ
+・クローンスキルを本鯖仕様に修正
+　クローンスキルのID,LVを保存
+　スキルツリーのクローンスキルを保存しないように変更
+・装備オートスペルの修正
+　遠距離の発動率半減
+　クローンスキル適用の有無
+・カウプ修正
+  一度回避した場合切れるように修正
+　スキル以外の必中攻撃も回避
+
+----------------------------------------
+//1587 by exile
+
+・クローンスキルのサーバー保存に関する修正。
+　　クローンされたスキルとそのレベルを、char鯖を再起動しても保持するよう修正。
+　　char鯖再起動後に、再起動前にクローンしていたスキルがクローンできなくなるのを修正。
+
+　クローンされたスキルのセーブ方法が変更されていますので、
+　以下のようにしてセーブデータ内のクローンされたスキルを消去して下さい。
+
+　[共通]
+　　mmo.hの CLONE_SKILL_FLAG を、skill_db.txtで設定された
+　　最高スキルレベルより大きな値に設定。（通常は13で問題ないはず）
+
+　[TXT]
+　　念のため、セーブデータのバックアップを取っておいて下さい。
+　　1. version.h の ATHENA_MOD_VERSION を 1586以下 にしてchar鯖をmake。
+　　2. char鯖を一旦起動し終了。（既存のクローンされたスキルが消去されます）
+　　3. ATHENA_MOD_VERSION を 1587以上 にしてchar鯖をmake。
+
+　[SQL]
+　　MySQLにログインしてskillテーブルのlv=11に該当するレコードを消去。
+	( DELETE FROM `skill` WHERE `lv`='11'; )
+
+・[SQL] inter.logをSQLに保存するよう修正。
+
+	(src/char)
+		char.c			- mmo_char_tostr, mmo_char_fromstr,
+						  mmo_charstatus* char_sql_load, char_sql_save修正
+		int_guild		- mapif_parse_CreateGuild, mapif_parse_BreakGuild, 
+						  mapif_parse_GuildCastleDataSave修正
+		inter.c			- inter_log修正
+	(src/common)
+		mmo.h			- #define CLONE_SKILL_FLAG追加
+		version.h		- mod version 1587
+	(src/map)
+		skill.c			- skill_clone修正
+
+----------------------------------------
+//1586 by yukito
+・item_mask.txtが正常に読み込まれない不具合の修正(バグ報告スレ6[94] Koara氏報告分)
+・チャットルーム重複チェックのフラグ処理をclif.cからchat.cに移動
+・重複チェックの処理を僅かに改善
+
+(src/map)
+	itemdb.c
+		-itemdb_read_randomitem()
+	chat.c
+		-chat_createchat()
+		-chat_joinchat()
+		-chat_leavechat()
+	clif.c
+		-clif_joinchatok()
+		-clif_leavechat()
+
+----------------------------------------
+//1585 by End_of_exam
+
+・動作にほとんど影響ないメモリリーク２カ所修正(npc.c int_pet.c)
+・unit_remove_map の警告メッセージを削除(unit.c)
+・npc_convertlabel_db のバグを修正(npc.c)
+・メモリマネージャの書き換え(malloc.c)
+
+　以下メモリ使用量削減パッチ(1583より13.4MB程節約)
+
+・mob_dbの先頭1000の領域を確保しないように修正(mob.c mmo.h)
+・block_free_max, BL_LIST_MAX が大きすぎたのを減らす(map.c)
+・MAX_SKILL_LEVELを100から20に変更(map.h skill.c)
+
+----------------------------------------
+//1584 by Rohypnol
+・一次上位職業の魂を、転生後のキャラなら職業を問わず対象にできたのを、一次職に限定するように修正。
+----------------------------------------
+//1583 by ＡＡＡ
+・マヤパープル、組み合わせ、条件付カード効果の修正
+　速度変化ポーション、箱系統、日光の箱、器具の効果
+・making makeid,base_sucess_per;
+	 makeid		 
+	 base_sucess_per 成功率上昇用
+・ランダムアイテム用にtxt追加
+
+----------------------------------------
+//1582 by Stinger
+・@idsearchでアイテム名を表示させた場合、アイテム名が24バイトあるもの（フェイクエンジェルカードなど）
+の後ろに文字化けが一緒に表示されていたのを修正
+
+----------------------------------------
+//1581-fix by Blaze
+・転生スクリプトを本鯖仕様に変更
+・アインブロック、飛行船NPC追加
+・一部ワープ修正
+
+----------------------------------------
+//1580 by ＡＡＡ
+・ランダムアイテムが鑑定済みで出るように修正
+　※箱系統は getitem -1,1,0;のように修正お願いします
+
+----------------------------------------
+//1579 by ＡＡＡ
+・The Sign関係のアイテムを捨てられないように修正
+・The Sign関係のアイテムを倉庫に入れられるように修正
+  -int itemdb_isstorageable(int nameid);追加
+・The Sign関係のアイテムを倉庫からカートに入れられないように修正
+  -int itemdb_iscartable(int nameid);追加
+  ※本鯖では露店販売できるようですが、バグかもしれないので追加しました
+・sc_start用	SC_Soul追加
+　使用者の職にあった魂がかかります
+  sc_end用	SC_SoulClear
+		SC_RaceClear 追加
+・ソウルリンカーの魂修正(breakが不足していた)
+
+----------------------------------------
+//1578 by ＡＡＡ
+・レディムプティオ修正
+　スキル条件のEXPに倍率を適用
+　使用者のペナルティ修正
+  デスペナの発生しない条件場所ではEXP条件無視
+・changeoption_packet_type: 0に変更
+・サインを渡したり捨てられないように修正
+
+----------------------------------------
+//1577 by ＡＡＡ
+・オーラバグ修正
+　clif_changeoption_clear(&sd->bl);
+　これが削除されたのでこっちを追加して初期化ました
+　clif_changeoption(&sd->bl);
+　新パケットが正常なら選択処理は削除します
+
+----------------------------------------
+//1576 by ＡＡＡ
+・武器製造の選択バグを修正
+・clif_changeoptionのパケットを選択できるように修正
+  //clif_changeoptionのパケットを選択
+  //1:0x229(新)
+  //0:0x119(旧)
+　changeoption_packet_type: 0
+・パケットの変更に伴い新パケットでも看破できるように修正
+・allow_create_scroll 削除
+
+----------------------------------------
+//1575 by End_of_exam
+
+・mob がクラスチェンジを行うと落ちるバグを修正(mob.c)
+・extended_abracadabra判定をskill_upperskill(), skill_mobskill() を
+　使うように修正(skill.c)
+
+----------------------------------------
+//1574 by exile
+
+・アブラカダブラに関する修正。
+	発動スキルデータベース読み込みに関して。
+		skill_abra_dbの使われていなかったnameidに発動するスキルのIDを格納。
+		per=0のスキルは読み込まない。
+	アブラカダブラの使用スキル決定に関して。
+		転生スキルが発動できるように修正。
+	battle_athena.confに以下を追加。
+		extended_abracadabra	セージがアブラカダブラで転生スキルを使用できるか
+・item_bonus.txtでbonus4の説明に不備があったのを訂正
+
+	(conf)
+		battle_athena.conf
+	(doc)
+		conf_ref.txt
+		item_bonus.txt
+	(src/map)
+		battle.c	- battle_config_read 修正
+		battle.h	- Battle_Config 修正
+		skill.c		- skill_castend_nodamage_id, skill_abra_dataset, skill_readdb 修正
+
+----------------------------------------
+//1573 by End_of_exam
+
+・1571の修正
+・@option にopt3を変更出来る機能を追加(atcommand.c)
+・mob から経験値が得られないバグを修正(mob.c)
+・mob_skill_db 読み込みでclear を誤判定するバグを修正(mob.c)
+・clif_changeoptionを新パケットに置き換えてみる(clif.c)
+・ペットの移動速度修正(status.c pet.c thanks to 通りすがりの人さん)
+
+----------------------------------------
+//1572 by ＡＡＡ
+・アスムのアイコンとエフェクト同時に出るように修正
+アスムの謎（バグ？）の詳細
+１opt3系列のスキルはアイコンにエフェクトが出る処理が含まれている
+２opt3系列のエフェクトはアイコンで判定されている(自クライアントのみ)
+３アスムアイコンにはエフェクトを消す処理が含まれていた
+４アスムのアイコンを出さないときにはなぜかエフェクトが出ていたのは
+　アスムのみclif_skill_nodamageにエフェクトを出す処理が含まれていたため
+　(３の効果のためエフェクトが打ち消されていた）
+
+----------------------------------------
+//1571 by exile
+・battle_athena.conf に以下を追加。（詳細はconf及びconf_ref.txt参照）
+		natural_heal_weight_rate_icon		重量50%アイコン表示
+		max_marionette_str～max_marionette_luk		マリオネットコントロール上限
+		allow_me_rokisweil		ロキを使用者に適用するか
+・bonus4 bAutoSpell を拡張。（詳細はitem_bonus.txt参照）
+	特に以下の点にご注意下さい。
+		EAS_LONG_ATTACK,EAS_LONG_REVENGE 廃止
+		確率を 万分率 に変更（bonus3の方は百分率です）
+・bonus3 の反撃オートスペルにbattle_athena.confの～attack_autospellが影響するように修正。
+・battle_athena.confで同じカードのオートスペルが不可のとき、
+　1つのカードに定義された条件の異なるオートスペルは許可するように修正。
+・以下の item bonus を追加。（詳細はitem_bonus.txt参照）
+		bonus bGetZenyNum2
+		bonus bAddGetZenyNum2
+		bonus bAtkRangeRate
+		bonus bAtkRange2
+		bonus bAtkRangeRate2
+		bonus2 bAddEffShort
+		bonus2 bAddEffLong
+・mapflag noicewall 追加。
+・mapflag noportal,noabraを@mapflagで変更できるように修正。
+・スクリプト関数 getpkflag 追加。（詳細はscript_ref.txt参照）
+・フリージングトラップがmiscスキルとして処理されるように修正。
+・スピアスタブがシーズモード時に吹き飛ばさないよう修正。
+・item_bonus.txtを整理
+
+	(conf)
+		battle_athena.conf
+	(db)
+		const.txt
+	(doc)
+		conf_ref.txt
+		item_bonus.txt
+		script_ref.txt
+	(src/map)
+		atcommand.c	- atcommand_mapinfo 修正
+					- atcommand_mapflag 修正
+		battle.c	- battle_calc_damage 修正
+					- Damage battle_calc_weapon_attack 修正
+					- Damage battle_calc_magic_attack 修正
+					- Damage battle_calc_misc_attack 修正
+					- battle_weapon_attack 修正
+					- battle_config_read 修正
+		battle.h	- Battle_Config 修正
+		map.h		- EQUIP_AUTOSPELL_FLAG 修正
+					- map_session_data 修正
+					- map_data 修正
+		mob.c		- mob_damage 修正
+		npc.c		- npc_parse_mapflag 修正
+		pc.c		- pc_checkweighticon 修正
+					- pc_bonus 修正
+					- pc_bonus2 修正
+					- pc_bonus3 修正
+					- pc_bonus4 修正
+					- pc_bonus_autospell 修正
+		pc.h		- pc_bonus4 修正
+					- pc_bonus_autospell 修正
+		script.c	- buildin_bonus4 修正
+					- script_function buildin_func[] 修正
+					- buildin_setmapflag 修正
+					- buildin_removemapflag 修正
+					- buildin_getpkflag 追加
+		skill.c		- skill_additional_effect 修正
+					- skill_castend_damage_id 修正
+					- skill_trap_splash 修正
+					- skill_castend_pos2 修正
+					- skill_unit_onplace 修正
+					- skill_use_bonus_autospell 修正
+					- skill_bonus_autospell 修正
+		skill.h		- #define AS_ATTACK 修正
+					- #define AS_REVENGE 修正
+					- skill_use_bonus_autospell 修正
+					- skill_bonus_autospell 修正
+		status.c	- status_calc_pc 修正
+
+----------------------------------------
+//1570 by ＡＡＡ
+・アイコン修正
+　SC_SENDMAXを使わなくなりました
+　1～128までで使っていない数字を使うことが出来ます
+
+----------------------------------------
+//1569 by ID:7QLFJSM
+
+・grf-files.txt を読むか読まないか指定できるように(map_athena.conf)
+　このファイルを読まないように指定すると、map_athena.conf での指定に従って
+　data.grf などを探します。
+・httpd の Digest 認証の nonce を捨てる方法を似非クロックアルゴリズムに変更
+・httpd の認証に使うアカウント情報をコールバックで自由に返せるようにした
+　(開発者向け、httpd.h に簡単な説明あり)
+・ログインサーバーにおける httpd の認証で Athena のアカウント情報を
+　利用できるようにした(httpd.conf)
+
+(doc/)
+conf_ref.txt
+(conf/)
+map_athena.conf
+	read_grf_files_txt, data_grf, sdata_grf, adata_grf 追加
+(src/common)
+grfio.c
+	grfio_init() 修正
+httpd.*
+	httpd_set_auth_func() など追加
+	httpd_check_access_user_digest(), httpd_check_access_user_basic() など修正
+(src/login)
+login.c
+	login_httpd_auth_func() 追加、do_init() 修正
+(src/map)
+map.c
+	map_config_read() 修正
+
+----------------------------------------
+//1568 by End_of_exam
+
+・mob の思考ルーチンの微調整(mob.c)
+・mob_skill_db 読み込み時のエラーチェック強化(mob.c mob.h)
+・mob_skill_db チェックに弾かれる行が２つ出たのでコメントアウト(mob_skill_db.txt)
+　　mob_skill: invalid combination (mystatusoff,0) line 45 // 0 = プロボック
+　　mob_skill: invalid combination (friendstatusoff,30) line 400 // 30 = ラウドボイス
+　　↑現物を再現すると何だか違う気がするので、dbに詳しい方修正お願いします。
+
+・PC以外がファンタスミックアローを使うと落ちるバグを修正(battle.c)
+・ダメージログ、タイマースキルにlinkdbを使うように変更(mob.c skill.c pc.c map.h)
+・MVP 判定が与ダメージ順の大きい順にならないバグを修正(mob.c)
+・ニーベルングの指輪の追加ダメージを修正(150~350 -> 75~175) (status.c)
+・自分勝手なダンスの攻撃が発動しないバグを修正(status.c)
+・gcc のWFIFORESERVE内部の警告を修正(socket.c)
+・1566でMOB がダメージ食らった時に２重にパケット送信してたのを修正(unit.c)
+・charサーバー終了時に落ちるバグを修正(char.c)
+・ファイアーピラーを踏んだ時に落ちるバグを修正(skill.c)
+
+----------------------------------------
+//1567 by 三味線
+・atcommand_athena.confのstatallコマンド更新
+
+----------------------------------------
+//1566 by ICO
+・monster_damage_delay修正
+・カートターミネーションのスタン発動率を修正(vitでの減算が効くように)
+・メルトダウンの継続時間修正
+
+----------------------------------------
+//1565 by 逆毛鰻
+
+・サンプルスクリプト’以前のミス修正
+・アーモンド、宝石箱からアイテムがゼロピしかでなかったので修正
+db/const.txt
+script/sample/npc_original_revive.txt
+
+----------------------------------------
+//1564 by 逆毛鰻
+
+・サーバースナップショット
+・version.hの更新
+	(src/common)
+		version.h		- mod version 1564
+---------------------------------------
 //1563 by yukito
 ・ジャワイ差し替え
 ・アインブロク一部修正

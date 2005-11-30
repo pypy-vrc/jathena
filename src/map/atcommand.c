@@ -44,7 +44,7 @@
 #endif
 
 //JOB TABLE
-extern int max_job_table[3][28];
+extern int max_job_table[3][30];
 
 char msg_table[200][1024];	/* Server message */
 
@@ -187,6 +187,9 @@ ATCOMMAND_FUNC(resetskill);
 ATCOMMAND_FUNC(emotion);
 ATCOMMAND_FUNC(statall);
 ATCOMMAND_FUNC(rankingpoint);
+ATCOMMAND_FUNC(viewclass);
+ATCOMMAND_FUNC(pethp);
+ATCOMMAND_FUNC(disppethp);
 
 /*==========================================
  *AtCommandInfo atcommand_info[]構造体の定義
@@ -343,7 +346,9 @@ static AtCommandInfo atcommand_info[] = {
 	{ AtCommand_emotion,				"@emotion",		0, atcommand_emotion },
 	{ AtCommand_statall,				"@statall",		0, atcommand_statall },
 	{ AtCommand_RankingPoint,			"@rankingpoint",	0, atcommand_rankingpoint	},
-
+	{ AtCommand_ViewClass,				"@viewclass",	0, atcommand_viewclass	},
+	{ AtCommand_PetHp,					"@pethp",	0, atcommand_pethp	},
+	{ AtCommand_DispPetHp,				"@disppethp",	0, atcommand_disppethp	},
 		// add here
 	{ AtCommand_MapMove,				"@mapmove",			0, NULL },
 	{ AtCommand_Broadcast,				"@broadcast",		0, NULL },
@@ -956,17 +961,18 @@ atcommand_option(
 	const int fd, struct map_session_data* sd,
 	const char* command, const char* message)
 {
-	int param1 = 0, param2 = 0, param3 = 0;
+	int param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message)
 		return -1;
 
-	if (sscanf(message, "%d %d %d", &param1, &param2, &param3) < 1)
+	if (sscanf(message, "%d %d %d %d", &param1, &param2, &param3, &param4) < 1)
 		return -1;
 	sd->opt1 = param1;
 	sd->opt2 = param2;
+	sd->opt3 = param4;
 	if (!(sd->status.option & CART_MASK) && param3 & CART_MASK) {
 		clif_cart_itemlist(sd);
 		clif_cart_equiplist(sd);
@@ -1021,6 +1027,8 @@ atcommand_jobchange(
 		if(job >= 24){			//養子のみの対応のための一時対処
 			upper = 2;
 		}
+		if(job==28 || job==29)
+			upper = 0;
 		if(pc_jobchange(sd, job, upper) == 0)
 			clif_displaymessage(fd, msg_table[12]);
 	}
@@ -1733,6 +1741,7 @@ atcommand_pvpoff(
 				}
 			}
 		}
+		map_field_setting();
 		clif_displaymessage(fd, msg_table[31]);
 	}
 
@@ -1766,6 +1775,7 @@ atcommand_pvpon(
 				}
 			}
 		}
+		map_field_setting();
 		clif_displaymessage(fd, msg_table[32]);
 	}
 
@@ -1787,6 +1797,7 @@ atcommand_gvgoff(
 				map[sd->bl.m].flag.gvg = 0;
 		clif_send0199(sd->bl.m, 0);
 		clif_displaymessage(fd, msg_table[33]);
+		map_field_setting();
 		}
 	return 0;
 }
@@ -1806,6 +1817,7 @@ atcommand_gvgon(
 				map[sd->bl.m].flag.gvg = 1;
 		clif_send0199(sd->bl.m, 3);
 		clif_displaymessage(fd, msg_table[34]);
+		map_field_setting();
 			}
 	return 0;
 }
@@ -1877,9 +1889,10 @@ atcommand_go(
 				{	"louyang.gat",	217,  40	},	//	14=洛陽
 				{	"jawaii.gat",	241, 116	},	//	15=ジャワイ
 				{	"ayothaya.gat",	217, 187	},	//	16=アユタヤ
-				{	"einbroch.gat",	 149,  38	},	//	17=アインブログ
-				{	"einbech.gat",	 103, 197	},	//	18=アインベフ
-				{	"lighthalzen.gat",214,  322	},	//	19=リヒタルゼン
+				{	"einbroch.gat",	 149,  38	},	//	17=アインブロック(南口)
+				{	"einbroch.gat",	 158, 317	},	//	18=アインブロック(北口)
+				{	"einbech.gat",	 103, 197	},	//	19=アインベフ
+				{	"lighthalzen.gat",214,  322	},	//	20=リヒタルゼン
 			};
 
 	nullpo_retr(-1, sd);
@@ -2685,6 +2698,8 @@ atcommand_character_job(
 				if(job >= 24){			//養子のみの対応のための一時対処
 					upper = 2;
 				}
+				if(job==28 || job==29)
+					upper = 0;
 				pc_jobchange(pl_sd, job, upper);
 				clif_displaymessage(fd, msg_table[48]);
 			} else {
@@ -3215,7 +3230,7 @@ int atcommand_charquestskill(
 	if (skill_id >= 0 && skill_id < MAX_SKILL_DB) {
 		if(skill_get_inf2(skill_id) & 0x01
 		   && (pl_sd = map_nick2sd(character)) != NULL
-		   && pc_checkskill(pl_sd, skill_id) == 0){
+		   && pc_checkskill2(pl_sd, skill_id) == 0){
 				pc_skill(pl_sd, skill_id, 1, 0);
 				sprintf(output,msg_table[110], pl_sd->status.name);
 				clif_displaymessage(fd, output);
@@ -3245,7 +3260,7 @@ atcommand_lostskill(
 		return -1;
 	skill_id = atoi(message);
 	if (skill_id > 0 && skill_id < MAX_SKILL &&
-		pc_checkskill(sd, skill_id) == 0)
+		pc_checkskill2(sd, skill_id) == 0)
 		return -1;
 	sd->status.skill[skill_id].lv = 0;
 	sd->status.skill[skill_id].flag = 0;
@@ -3275,7 +3290,7 @@ int atcommand_charlostskill(
 	if (skill_id >= 0 && skill_id < MAX_SKILL) {
 		if (skill_get_inf2(skill_id) & 0x01
 			&& (pl_sd = map_nick2sd(character)) != NULL
-			&& pc_checkskill(pl_sd, skill_id) > 0) {
+			&& pc_checkskill2(pl_sd, skill_id) > 0) {
 				pl_sd->status.skill[skill_id].lv = 0;
 				pl_sd->status.skill[skill_id].flag = 0;
 				clif_skillinfoblock(pl_sd);
@@ -3950,6 +3965,9 @@ int atcommand_mapinfo(
 	clif_displaymessage(fd, output);
 	sprintf(output, "No Zeny Penalty: %s",
 		(map[m_id].flag.nozenypenalty) ? "True" : "False");
+	clif_displaymessage(fd, output);
+	sprintf(output, "No IceWall: %s",
+		(map[m_id].flag.noicewall) ? "True" : "False");
 	clif_displaymessage(fd, output);
 
 	switch (list) {
@@ -4731,6 +4749,12 @@ atcommand_mapflag(
 		if(temp>=0)
 			map[m].job_exp_rate=temp;
 	}
+	else if (strcmpi(w3,"noportal")==0) {
+		map[m].flag.noportal=(map[m].flag.noportal)?0:1;
+	}
+	else if (strcmpi(w3,"noicewall")==0) {
+		map[m].flag.noicewall=(map[m].flag.noicewall)?0:1;
+	}
 	else{
 		clif_displaymessage(fd,msg_table[124]);
 		return 0;
@@ -5111,6 +5135,54 @@ atcommand_statall(
 	clif_updatestatus(sd, SP_ULUK);
 	status_calc_pc(sd, 0);
 	clif_displaymessage(fd, msg_table[42]);
+
+	return 0;
+}
+
+
+int
+atcommand_viewclass(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+
+	int view_class=0;
+	nullpo_retr(-1, sd);
+	if (sscanf(message, "%d", &view_class) < 1)
+		return -1;
+	sd->view_class = view_class;
+ 	clif_changelook(&sd->bl,LOOK_BASE,view_class);
+
+	return 0;
+}
+
+int
+atcommand_pethp(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	char pet_hpinfo[64];
+	nullpo_retr(-1, sd);
+	if(sd->pd){
+		sprintf(pet_hpinfo,"%s(%d/%d)",sd->pd->name,sd->pd->hp,sd->pd->max_hp);
+		clif_displaymessage(fd,pet_hpinfo);
+	}
+	return 0;
+}
+
+
+int
+atcommand_disppethp(
+	const int fd, struct map_session_data* sd,
+	const char* command, const char* message)
+{
+	int flag;
+	nullpo_retr(-1, sd);
+	if (sscanf(message, "%d", &flag) < 1)
+		return -1;
+	
+	sd->getpethp = flag;
+	pet_sendhp(sd->pd);
 
 	return 0;
 }

@@ -49,6 +49,7 @@
 #define MIN_CLOTH_COLOR 0
 #define MAX_CLOTH_COLOR 4
 
+#define MOB_ID_MIN 1000
 #define MOB_ID_MAX 2000
 // for produce
 #define MIN_ATTRIBUTE 0
@@ -66,6 +67,8 @@
 #define WEDDING_RING_F 2635
 
 #define GRF_PATH_FILENAME "conf/grf-files.txt"
+
+#define CLONE_SKILL_FLAG 13
 
 struct item {
 	int id;

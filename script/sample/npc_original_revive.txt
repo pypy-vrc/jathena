@@ -103,6 +103,8 @@ L2jobclass:
 	mes "ありがとうございました＾～＾";
 	cutin "ein_soldier",255;
 	close;
+L_CANCEL:
+	close;
 EndEnd:
 	mes "[バグりましたか？]";
 	mes "初期化不能。テコンよりも新しい職業には";

@@ -17,14 +17,14 @@ struct script_state {
 	int start,end;
 	int pos,state;
 	int rid,oid;
-	char *script,*new_script;
-	int new_pos;
+	char *script, *scriptroot;
+	int  sleep;
 };
 
 #define SCRIPT_CONF_NAME	"conf/script_athena.conf"
 
 unsigned char * parse_script(unsigned char *,int);
-int run_script(unsigned char *,int,int,int);
+void run_script(unsigned char *,int,int,int);
 
 struct dbt* script_get_label_db(void);
 struct dbt* script_get_userfunc_db(void);

@@ -1,0 +1,59 @@
+//==============================================================================
+// Ragnarok Online The Sign Script     by Blaze
+//==============================================================================
+geffen.gat,119,56,0	script	#gefeniagate	139,{
+OnInit:
+	disablenpc "gefeniawarp";
+	end;
+On_Start:
+	misceffect 247;
+	initnpctimer;
+	end;
+OnTimer10000:
+	misceffect 247;
+	donpcevent "噴水台::On_Effect";
+	end;
+OnTimer20000:
+	misceffect 247;
+	donpcevent "噴水台::On_Effect";
+	end;
+OnTimer30000:
+	disablenpc "gefeniawarp";
+	mapannounce "geffen.gat","ゲフェニアへの門が閉まります",0;
+	stopnpctimer;
+	end;
+}
+
+geffen.gat,119,56,0	script	gefeniawarp	45,1,1{
+	set @warp,rand(4);
+	if (@warp==0) warp "gefenia01.gat",58,169;
+	if (@warp==1) warp "gefenia02.gat",116,15;
+	if (@warp==2) warp "gefenia03.gat",130,206;
+	if (@warp==3) warp "gefenia04.gat",133,88;
+	end;
+}
+
+geffen.gat,119,48,0	script	噴水台	111,{
+	mes "噴水台がある。";
+	if (countitem(7025)>=1) goto L_1;
+	close;
+L_1:
+	mes "「魔王の嘆き」が反応している…";
+	next;
+	menu "魔王の嘆きをかざす",L_2,"やめておく",-;
+	close;
+L_2:
+	enablenpc "gefeniawarp";
+	donpcevent "#gefeniagate::On_Start";
+	misceffect 247;
+	gmcommand "@misceffect 200";
+	mapannounce "geffen.gat","光と共にゲフェニアへの門が開かれた",0;
+	mes "「魔王の嘆き」が不思議な光を";
+	mes "放ち始めた。噴水台の一部が、";
+	mes "その光に呼応するように";
+	mes "光を放っている。";
+	close;
+On_Effect:
+	misceffect 247;
+	end;
+}

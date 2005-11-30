@@ -1716,3 +1716,28 @@ void do_final_guild(void)
 	if(guild_castleinfoevent_db)
 		numdb_final(guild_castleinfoevent_db,guild_infoevent_db_final);
 }
+
+int guild_getexp(struct map_session_data *sd,int exp)
+{
+	struct guild *g;
+	struct guild_expcache *c;
+	
+	nullpo_retr(0, sd);
+
+	if (sd->status.guild_id == 0 || (g = guild_search(sd->status.guild_id)) == NULL)
+		return 0;
+
+	if ((c = (struct guild_expcache *) numdb_search(guild_expcache_db,sd->status.char_id)) == NULL) {
+		c = (struct guild_expcache *)aCalloc(1,sizeof(struct guild_expcache));
+		c->guild_id = sd->status.guild_id;
+		c->account_id = sd->status.account_id;
+		c->char_id = sd->status.char_id;
+		c->exp = exp;
+		numdb_insert(guild_expcache_db,c->char_id,c);
+	} else {
+		double tmp = c->exp + exp;
+		c->exp = (tmp > 0x7fffffff) ? 0x7fffffff : (int)tmp;
+	}
+	return exp;
+}
+

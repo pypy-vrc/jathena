@@ -22,6 +22,7 @@
 
 
 prt_in.gat,88,101,4	script	プロンテラ騎士団長	56,{
+	if (Upper == 1) goto LUpper1;
 	if (Class == 7) goto Lknight;
 	if (Class == 0) goto Lnovice;
 	if (Class == 1) goto Lswordman;
@@ -92,7 +93,6 @@ Lswordman:
 		mes "それではゆっくり見ていきなさい。";
 		close;
 	Ls_1:
-		if (Upper == 1) goto LUpper1;
 		mes "[騎士団長ヘルマン]";
 		mes "おお、ナイトを目指す青年か！";
 		mes "私達プロンテラ騎士が君の";
@@ -282,8 +282,16 @@ Llowlv:
 	close;
 LUpper1:
 	mes "[騎士団長ヘルマン]";
-	mes "あなたは転生されていますので";
-	mes "ここでは転職案内できません。";
+	mes "なんだ……？";
+	mes "何かただならぬ気配が感じられるな。";
+	mes "君は長い間騎士としてやってきた";
+	mes "私にも助言してあげられることが";
+	mes "無いな。";
+	next;
+	mes "[騎士団長ヘルマン]";
+	mes "どんな試練にも屈しない心を";
+	mes "他の人々にも伝えるように。";
+	mes "君に栄光あれ！";
 	close;
 Lknight:
 	mes "[騎士団長ヘルマン]";

@@ -1,4 +1,4 @@
-// $Id: core.c,v 1.1.1.2 2005/11/10 20:58:56 running_pinata Exp $
+// $Id: core.c,v 1.1.1.3 2005/11/30 00:05:40 running_pinata Exp $
 // original : core.c 2003/02/26 18:03:12 Rev 1.7
 
 #include <time.h>
@@ -22,6 +22,12 @@
 #endif
 
 #include "malloc.h"
+
+// for VC.NET 2005
+#if _MSC_VER >= 1400
+#pragma warning(disable : 4996)
+#pragma comment(lib, "user32.lib")
+#endif
 
 int packet_parse_time = 0;
 

@@ -23,7 +23,7 @@
 #define pc_is50overweight(sd) (sd->weight*2 >= sd->max_weight)
 #define pc_is90overweight(sd) (sd->weight*10 >= sd->max_weight*9)
 
-extern int max_job_table[3][28];
+extern int max_job_table[3][30];
 
 void pc_set_gm_account_fname(char *str);
 int pc_isGM(struct map_session_data *sd);
@@ -41,6 +41,7 @@ int pc_check_noequip(struct map_session_data *sd, int inv_index);
 int pc_equippoint(struct map_session_data *sd,int n);
 
 int pc_checkskill(struct map_session_data *sd,int skill_id);
+int pc_checkskill2(struct map_session_data *sd,int skill_id);
 int pc_checkallowskill(struct map_session_data *sd);
 int pc_checkequip(struct map_session_data *sd,int pos);
 
@@ -81,10 +82,10 @@ int pc_checkweighticon(struct map_session_data *sd);
 int pc_bonus(struct map_session_data*,int,int);
 int pc_bonus2(struct map_session_data *sd,int,int,int);
 int pc_bonus3(struct map_session_data *sd,int,int,int,int);
-int pc_bonus4(struct map_session_data *sd,int,int,int,int,int);
+int pc_bonus4(struct map_session_data *sd,int,int,int,int,long);
 int pc_skill(struct map_session_data*,int,int,int);
 
-int pc_bonus_autospell(struct map_session_data* sd,int skillid,int skilllv,int rate, short flag);
+int pc_bonus_autospell(struct map_session_data* sd,int skillid,int skilllv,int rate, long flag);
 int pc_bonus_add_autospell_rate(struct map_session_data* sd,int skillid,int val);
 int pc_bonus_ban_autospell(struct map_session_data* sd,int skillid);
 

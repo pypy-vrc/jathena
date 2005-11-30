@@ -1,4 +1,4 @@
-// $Id: map.c,v 1.1.1.2 2005/11/10 20:59:14 running_pinata Exp $
+// $Id: map.c,v 1.1.1.3 2005/11/30 00:06:10 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,11 +55,11 @@ static int users;
 static struct block_list *object[MAX_FLOORITEM];
 static int first_free_object_id,last_object_id;
 
-#define block_free_max 1048576
+#define block_free_max (128*1024)
 static void *block_free[block_free_max];
 static int block_free_count=0,block_free_lock=0;
 
-#define BL_LIST_MAX 1048576
+#define BL_LIST_MAX (256*1024)
 static struct block_list *bl_list[BL_LIST_MAX];
 static int bl_list_count = 0;
 
@@ -72,6 +72,8 @@ int map_pk_server_flag = 0;
 int map_pk_nightmaredrop_flag = 0;
 
 extern int packet_parse_time;
+
+static int read_grf_files_txt=1;
 
 // マップキャッシュ利用フラグ(map_athana.conf内のread_map_from_cacheで指定)
 // 0:利用しない 1:非圧縮保存 2:圧縮保存
@@ -1108,14 +1110,6 @@ int map_quit(struct map_session_data *sd)
 		if(unit_isdead(&sd->bl))
 			pc_setrestartvalue(sd,2);
 
-		//クローンスキルで覚えたスキルは消す
-/*		for(i=0;i<MAX_SKILL;i++){
-			if(sd->status.skill[i].flag == 13){
-				sd->status.skill[i].id=0;
-				sd->status.skill[i].lv=0;
-				sd->status.skill[i].flag=0;
-			}
-		}	*/
 		unit_remove_map(&sd->bl,2);
 		chrif_save(sd);
 		storage_storage_save(sd);
@@ -1335,20 +1329,20 @@ int map_calc_dir( struct block_list *src,int x,int y)
 		dir=0;	// 上
 	}else if( dx>=0 && dy>=0 ){	// 方向的に右上
 		dir=7;						// 右上
-		if( dx*2-1<dy ) dir=0;		// 上
-		if( dx>dy*2 ) dir=6;		// 右
+		if( dx*3-1<dy ) dir=0;		// 上
+		if( dx>dy*3 ) dir=6;		// 右
 	}else if( dx>=0 && dy<=0 ){	// 方向的に右下
 		dir=5;						// 右下
-		if( dx*2-1<-dy ) dir=4;		// 下
-		if( dx>-dy*2 ) dir=6;		// 右
+		if( dx*3-1<-dy ) dir=4;		// 下
+		if( dx>-dy*3 ) dir=6;		// 右
 	}else if( dx<=0 && dy<=0 ){ // 方向的に左下
 		dir=3;						// 左下
-		if( dx*2+1>dy ) dir=4;		// 下
-		if( dx<dy*2 ) dir=2;		// 左
+		if( dx*3+1>dy ) dir=4;		// 下
+		if( dx<dy*3 ) dir=2;		// 左
 	}else{						// 方向的に左上
 		dir=1;						// 左上
-		if( -dx*2-1<dy ) dir=0;		// 上
-		if( -dx>dy*2 ) dir=2;		// 左
+		if( -dx*3-1<dy ) dir=0;		// 上
+		if( -dx>dy*3 ) dir=2;		// 左
 	}
 	return dir;
 }
@@ -2094,6 +2088,8 @@ int map_config_read(char *cfgName)
 			npc_addsrcfile(w2);
 		} else if(strcmpi(w1,"delnpc")==0){
 			npc_delsrcfile(w2);
+		} else if(strcmpi(w1,"read_grf_files_txt")==0){
+			read_grf_files_txt = atoi(w2);
 		} else if(strcmpi(w1,"data_grf")==0){
 			grfio_setdatafile(w2);
 		} else if(strcmpi(w1,"sdata_grf")==0){
@@ -2139,7 +2135,36 @@ int map_config_read(char *cfgName)
 	return 0;
 }
 
+/*==========================================
+ * マップが通常マップであるか調べ調査する
+ *------------------------------------------
+ */
+int map_check_normalmap(int m)
+{
+	/*
+	if(map[m].flag.pk || map[m].flag.pvp || map[m].flag.gvg)
+		return 0;//map[m].flag.normalfield = 0;
+	else
+		return 1;//map[m].flag.normalfield = 1;
+*/
+	return map[m].flag.normal;
+}
 
+/*==========================================
+ * マップが通常マップであるか調べ調査する
+ *------------------------------------------
+ */
+int map_field_setting(void)
+{
+	int m=0;
+	for(m=0;m<map_num;m++){
+		if(map[m].flag.pk || map[m].flag.pvp || map[m].flag.gvg)
+			map[m].flag.normal = 0;
+		else
+			map[m].flag.normal = 1;
+	}
+	return 0;
+}
 
 /*==========================================
  * socket コントロールパネルから呼ばれる
@@ -2269,7 +2294,7 @@ int do_init(int argc,char *argv[])
 	nick_db = strdb_init(24);
 	charid_db = numdb_init();
 
-	grfio_init((argc>6)? argv[6]:GRF_PATH_FILENAME);
+	grfio_init( (!read_grf_files_txt)? NULL : (argc>6)? argv[6] : GRF_PATH_FILENAME );
 	map_readallmap();
 
 	add_timer_func_list(map_freeblock_timer,"map_freeblock_timer");
@@ -2295,8 +2320,8 @@ int do_init(int argc,char *argv[])
 	//
 	map_pk_server(map_pk_server_flag);
 	map_pk_nightmaredrop(map_pk_nightmaredrop_flag);
+	map_field_setting();
 	npc_event_do_oninit();	// npcのOnInitイベント実行
-
 	// for httpd support
 	do_init_httpd();
 	do_init_graph();

@@ -2,6 +2,7 @@
 //Ragnarok Online Wizard jobchange script
 //====================================================================
 gef_tower.gat,111,37,4	script	ギルド関係者	70,{
+	if (Upper == 1) goto LUpper1;
 	if (Class == 9) goto L_Misc2;
 	if (Class != 2) goto L_Misc1;
 	if (job_wiz == 1) goto L_Menu2_1;
@@ -20,7 +21,6 @@ gef_tower.gat,111,37,4	script	ギルド関係者	70,{
 		mes "降りてください～。";
 		close;
 L_Menu1_1:
-	if (Upper == 1) goto LUpper1;
 	mes "[魔術師ギルド関係者]";
 	mes "そうね、それ以外の理由で";
 	mes "こんな高いところまで上ってこない";
@@ -313,9 +313,14 @@ L_Misc2:
 	close;
 //==================================
 LUpper1:
-	mes "[魔術師ギルド関係者]";
-	mes "あなたは転生されていますので";
-	mes "ここでは転職案内できません。";
+	mes "[カトリーヌ]";
+	mes "うん？";
+	mes "こんな所まで何かご用かしら？";
+	next;
+	mes "[カトリーヌ]";
+	mes "なんだか普通じゃない気配を";
+	mes "持っているわね。";
+	mes "その調子で頑張ってね。";
 	close;
 }
 

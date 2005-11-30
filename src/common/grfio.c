@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------
  *		special need library : zlib
  *********************************************************************
- *	$Id: grfio.c,v 1.1.1.1 2005/08/29 21:39:31 running_pinata Exp $
+ *	$Id: grfio.c,v 1.1.1.2 2005/11/30 00:05:41 running_pinata Exp $
  *
  *	2002/12/18 ... 原版
  *	2003/01/23 ... コード修正
@@ -914,26 +914,28 @@ void grfio_init(char *fname)
 
 	grfio_load_zlib();
 
-	data_conf = fopen(fname, "r");
-		
-	// grf-files.txt があるなら読み込む
-	if( data_conf!=NULL ) {
-		while(fgets(line,1020,data_conf)) {
-			if(sscanf(line,"%[^:]: %[^\r\n]", w1, w2) == 2) {
-				if(strcmp(w1,"data") == 0)
-					strncpy(data_file, w2, 1024);
-				else if(strcmp(w1,"sdata") == 0)
-					strncpy(sdata_file, w2, 1024);
-				else if(strcmp(w1,"adata") == 0)
-					strncpy(adata_file, w2, 1024);
+	if( fname )
+	{
+		data_conf = fopen(fname, "r");
+			
+		// grf-files.txt があるなら読み込む
+		if( data_conf!=NULL ) {
+			while(fgets(line,1020,data_conf)) {
+				if(sscanf(line,"%[^:]: %[^\r\n]", w1, w2) == 2) {
+					if(strcmp(w1,"data") == 0)
+						strncpy(data_file, w2, 1024);
+					else if(strcmp(w1,"sdata") == 0)
+						strncpy(sdata_file, w2, 1024);
+					else if(strcmp(w1,"adata") == 0)
+						strncpy(adata_file, w2, 1024);
+				}
 			}
-		}
-		fclose(data_conf);
-		printf("read %s done\n",fname);
+			fclose(data_conf);
+			printf("read %s done\n",fname);
+		
+		} // end of reading grf-files.txt
+	}
 	
-	} // end of reading grf-files.txt
-
-
 	hashinit();	// hashテーブル初期化
 
 	filelist = NULL;     filelist_entrys = filelist_maxentry = 0;

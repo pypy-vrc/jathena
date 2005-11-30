@@ -6,13 +6,16 @@
 #include "script.h"
 #include "ranking.h"
 
-#ifdef TKSGSL
-#define MAX_VALID_PC_CLASS 28
+#ifdef TKSGSLGSNJ
+	#define MAX_VALID_PC_CLASS 30
 #else
-#define MAX_VALID_PC_CLASS 24
+ 	#ifdef TKSGSL
+		#define MAX_VALID_PC_CLASS 28
+	#else
+		#define MAX_VALID_PC_CLASS 24
+	#endif
 #endif
 
-//下のが解り難かったので追加
 #define PC_CLASS_NV      0  //ノビ
 #define PC_CLASS_NV2  4001  //転生ノビ
 #define PC_CLASS_NV3  4023  //養子ノビ
@@ -22,9 +25,10 @@
 #define PC_CLASS_SG   4047	//拳聖
 #define PC_CLASS_SG2  4048	//拳聖2
 #define PC_CLASS_SL   4049	//ソウルリンカー
+#define PC_CLASS_GS     28	//ガンスリンガー
+#define PC_CLASS_NJ     29	//忍者
 
-
-#define MAX_PC_CLASS (1+6+6+1+6+1+1+1+1+4)
+#define MAX_PC_CLASS (1+6+6+1+6+1+1+1+1+4+2)
 #define PC_CLASS_BASE 0
 #define PC_CLASS_BASE2 (PC_CLASS_BASE + 4001)
 #define PC_CLASS_BASE3 (PC_CLASS_BASE2 + 22)
@@ -38,10 +42,8 @@
 #define DAMAGELOG_SIZE 30
 #define LOOTITEM_SIZE 10
 #define MAX_SKILL_ID MAX_SKILL
-#define MAX_SKILL_LEVEL 100
+#define MAX_SKILL_LEVEL 20
 #define MAX_STATUSCHANGE 350
-#define MAX_SKILLTIMERSKILL 32
-#define MAX_MOBSKILLTIMERSKILL 10
 #define MAX_MOBSKILL	32
 #define MAX_EVENTQUEUE	2
 #define MAX_EVENTTIMER	32
@@ -51,13 +53,11 @@
 #define MAX_WALKPATH 32
 #define MAX_DROP_PER_MAP 48
 #define MAX_WIS_REFUSAL 14
-#define MAX_MOBGROUP	10
+#define MAX_MOBGROUP	11
 #define MAX_ITEMGROUP	10
 #define MAX_SKILL_DAMAGE_UP	10	//スキルを強化できる数
 #define MAX_SKILL_BLOW  5		//スキルを吹き飛ばし化
 #define MAX_BONUS_AUTOSPELL  16	//オートスペルの容量
-#define	MAX_ADDRATE_AUTOSPELL 5
-#define MAX_BAN_AUTOSPELL	  5
 #define MAX_RANKING 4	//ランキング数
 #define MAX_RANKER  10	//ランキング人数
 
@@ -98,6 +98,7 @@ struct unit_data {
 	short skillid,skilllv;
 	int   skilltarget;
 	int   skilltimer;
+	struct linkdb_node *skilltimerskill;
 	struct linkdb_node *skillunit;
 	struct linkdb_node *skilltickset;
 	int   attacktimer;
@@ -111,6 +112,7 @@ struct unit_data {
 		unsigned skillcastcancel : 1;
 		unsigned attack_continue : 1 ;
 	} state;
+	struct linkdb_node *statuspretimer;
 };
 
 struct script_reg {
@@ -172,25 +174,40 @@ struct skill_timerskill {
 	int flag;
 };
 
+struct status_pretimer {
+	int timer;
+	int target_id;
+	int map;
+	int type;
+	int val1,val2,val3,val4;
+	int tick;
+	int flag;
+};
+
 //拡張オートスペル
 //EQUIP_AUTOSPELL_FLAG
 enum 	{
-		EAS_ATTACK   	= 0x0001,//攻撃用
-		EAS_REVENGE   	= 0x0002,//反撃用
-		EAS_LONG_ATTACK = 0x0004,//攻撃用
-		EAS_LONG_REVENGE= 0x0008,//反撃用
-		EAS_TARGET 		= 0x0010,//自分に使う
-		EAS_SELF   		= 0x0020,//自分に使う
-		EAS_TARGET_RAND = 0x0040,//自分か攻撃対象に使う
-		//EAS_TARGET_ = 0x0080,//自分か攻撃対象に使う
-		EAS_FLUCT  		= 0x0100,//旧AS用 1～3のあれ
-		EAS_RANDOM  	= 0x0200,//1～指定までランダム
-		EAS_USEMAX		= 0x0400,//MAXレベルがあればそれを
-		EAS_USEBETTER	= 0x0800,//指定以上のものがあればそれを(MAXじゃなくても可能)
-		EAS_NOSP 	 	= 0x1000,// SP0
-		EAS_SPCOST1	 	= 0x2000,// SP2/3
-		EAS_SPCOST2	 	= 0x4000,// SP1/2
-		EAS_SPCOST3	 	= 0x8000,// SP1.5倍
+		EAS_SHORT       = 0x00000001,// 近距離物理
+		EAS_LONG        = 0x00000002,// 遠距離物理
+		EAS_WEAPON      = 0x00000003,// 物理
+		EAS_MAGIC       = 0x00000004,// 魔法
+		EAS_MISC        = 0x00000008,// misc（罠・鷹・火炎瓶等）
+		EAS_TARGET      = 0x00000010,// 自分に使う
+		EAS_SELF        = 0x00000020,// 自分に使う
+		EAS_TARGET_RAND = 0x00000040,// 自分か攻撃対象に使う
+		//EAS_TARGET    = 0x00000080,// 自分か攻撃対象に使う
+		EAS_FLUCT       = 0x00000100,// 旧AS用 1～3のあれ
+		EAS_RANDOM      = 0x00000200,// 1～指定までランダム
+		EAS_USEMAX      = 0x00000400,// MAXレベルがあればそれを
+		EAS_USEBETTER   = 0x00000800,// 指定以上のものがあればそれを(MAXじゃなくても可能)
+		EAS_NOSP        = 0x00001000,// SP0
+		EAS_SPCOST1     = 0x00002000,// SP2/3
+		EAS_SPCOST2     = 0x00004000,// SP1/2
+		EAS_SPCOST3     = 0x00008000,// SP1.5倍
+		EAS_ATTACK      = 0x00010000,// 攻撃
+		EAS_REVENGE     = 0x00020000,// 反撃
+		EAS_NORMAL      = 0x00040000,// 通常攻撃
+		EAS_SKILL       = 0x00080000,// スキル
 };
 
 struct npc_data;
@@ -264,7 +281,6 @@ struct map_session_data {
 	short skillitem,skillitemlv;
 	short skillid_old,skilllv_old;
 	short skillid_dance,skilllv_dance;
-	struct skill_timerskill skilltimerskill[MAX_SKILLTIMERSKILL];
 	int cloneskill_id,cloneskill_lv;
 	int potion_hp,potion_sp,potion_per_hp,potion_per_sp;
 
@@ -281,7 +297,7 @@ struct map_session_data {
 	int atk_ele,def_ele,star,overrefine;
 	int castrate,hprate,sprate,dsprate;
 	int addele[10],addrace[12],addsize[3],subele[10],subrace[12];
-	int addeff[10],addeff2[10],reseff[10];
+	int addeff[10],addeff2[10],reseff[10],addeff_range_flag[10];
 	int watk_,watk_2,atkmods_[3],addele_[10],addrace_[12],addsize_[3];	//二刀流のために追加
 	int atk_ele_,star_,overrefine_;				//二刀流のために追加
 	int base_atk,atk_rate;
@@ -294,7 +310,7 @@ struct map_session_data {
 	int matk_rate,ignore_def_ele,ignore_def_race,ignore_def_ele_,ignore_def_race_;
 	int ignore_mdef_ele,ignore_mdef_race;
 	int magic_addele[10],magic_addrace[12],magic_subrace[12];
-	int perfect_hit,get_zeny_num;
+	int perfect_hit,get_zeny_num,get_zeny_num2;
 	int critical_rate,hit_rate,flee_rate,flee2_rate,def_rate,def2_rate,mdef_rate,mdef2_rate;
 	int def_ratio_atk_ele,def_ratio_atk_ele_,def_ratio_atk_race,def_ratio_atk_race_;
 	int add_damage_class_count,add_damage_class_count_,add_magic_damage_class_count;
@@ -306,9 +322,10 @@ struct map_session_data {
 	short monster_drop_item_count;
 	short monster_drop_itemid[10];
 	int monster_drop_race[10],monster_drop_itemrate[10];
-	int double_add_rate,speed_add_rate,aspd_add_rate,perfect_hit_add, get_zeny_add_num;
+	int double_add_rate,speed_add_rate,aspd_add_rate,perfect_hit_add, get_zeny_add_num,get_zeny_add_num2;
 	short splash_range,splash_add_range;
-	short autospell_id,autospell_lv,autospell_rate,autospell_flag;
+	short autospell_id,autospell_lv,autospell_rate;
+	long autospell_flag;
 	short hp_drain_rate,hp_drain_per,sp_drain_rate,sp_drain_per;
 	short hp_drain_rate_,hp_drain_per_,sp_drain_rate_,sp_drain_per_;
 	short hp_drain_value,sp_drain_value,hp_drain_value_,sp_drain_value_;
@@ -379,7 +396,7 @@ struct map_session_data {
 		short lv[MAX_BONUS_AUTOSPELL];
 		short id[MAX_BONUS_AUTOSPELL];
 		short rate[MAX_BONUS_AUTOSPELL];
-		short flag[MAX_BONUS_AUTOSPELL];
+		long flag[MAX_BONUS_AUTOSPELL];
 		short card_id[MAX_BONUS_AUTOSPELL];
 		short count;
 	}autospell;
@@ -455,8 +472,9 @@ struct map_session_data {
 	short tk_doridori_counter_sp;
 
 	int ranking_point[MAX_RANKING];
+	//short ranking_update[MAX_RANKING];
 	short am_pharmacy_success;
-	//short tk_mission_capture_count;//捕獲数
+	short making_base_success_per;
 	int tk_mission_target;//テコン
 	short ranker_weapon_bonus;
 	short ranker_weapon_bonus_;
@@ -466,10 +484,19 @@ struct map_session_data {
 		short y;
 	}dance;
 	short infinite_tigereye;	//マヤパープル効果
+	short stop_status_calc_pc;
+	short call_status_calc_pc_while_stopping;
+	short status_calc_pc_process;
+	char  auto_status_calc_pc[MAX_STATUSCHANGE];
+	short eternal_status_change[MAX_STATUSCHANGE];
+	short item_no_use;
+	short getpethp;
 
 	int pvp_point,pvp_rank,pvp_timer,pvp_lastusers;
 
 	struct map_session_data *repair_target;
+
+	int add_attackrange, add_attackrange_rate;	// bAtkRange2,bAtkRangeRate2 用
 
 	char eventqueue[MAX_EVENTQUEUE][50];
 	int eventtimer[MAX_EVENTTIMER];
@@ -492,6 +519,7 @@ struct npc_data {
 	short speed;
 	char name[24];
 	char exname[24];
+	char position[24];
 	int chat_id;
 	short opt1,opt2,opt3,option;
 	short flag;
@@ -536,14 +564,11 @@ struct mob_data {
 	} state;
 	short speed;
 	int hp;
-	int target_id,attacked_id;
+	int target_id,attacked_id,attacked_players;
 	unsigned int next_walktime;
 	unsigned int last_deadtime,last_spawntime,last_thinktime;
 	short move_fail_count;
-	struct {
-		int id;
-		int dmg;
-	} dmglog[DAMAGELOG_SIZE];
+	struct linkdb_node *dmglog;
 	struct item *lootitem;
 	short lootitem_count;
 
@@ -560,7 +585,6 @@ struct mob_data {
 	unsigned int skilldelay[MAX_MOBSKILL];
 	int def_ele;
 	int master_id,master_dist;
-	struct skill_timerskill skilltimerskill[MAX_MOBSKILLTIMERSKILL];
 	char npc_event[50];
 	short recall_flag;
 	int recallmob_count;
@@ -575,6 +599,7 @@ struct pet_data {
 	char name[24];
 	struct {
 		unsigned skillstate : 8 ;
+		unsigned dead_sit : 1;	//added by フェルシア
 	} state;
 	short equip;
 	int target_id;
@@ -603,6 +628,12 @@ struct pet_data {
 		short delay; //Time (secs) between being able to recast.
 		int timer;
 	} *s_skill;	//[Skotlex]
+
+	int max_hp,hp;
+	struct status_change sc_data[MAX_STATUSCHANGE];
+	short sc_count;
+	short opt1,opt2,opt3,option;
+	int revive_timer;
 };
 
 enum { MS_IDLE,MS_WALK,MS_ATTACK,MS_DEAD,MS_DELAY };
@@ -663,6 +694,9 @@ struct map_data {
 		unsigned pk_noguild : 1;
 		unsigned pk_nightmaredrop :1;
 		unsigned pk_nocalcrank : 1;
+		unsigned noicewall : 1;
+		unsigned normal : 1;
+		unsigned turbo  : 1;
 	} flag;
 	struct point save;
 	struct npc_data *npc[MAX_NPC_PER_MAP];
@@ -732,7 +766,9 @@ enum {
 	SP_HPVANISH,SP_SPVANISH,SP_BONUS_DAMAGE,SP_LOSS_EQUIP_WHEN_DIE,SP_RAISE,//1106-1110
 	SP_CURSE_BY_MURAMASA,SP_LOSS_EQUIP_WHEN_ATTACK,SP_LOSS_EQUIP_WHEN_HIT,SP_BREAK_MYEQUIP_WHEN_ATTACK,SP_BREAK_MYEQUIP_WHEN_HIT, //1111-1115
 	SP_HP_RATE_PENALTY_UNRIG,SP_SP_RATE_PENALTY_UNRIG,SP_MAGIC_DAMAGE_RETURN,SP_ADD_SHORT_WEAPON_DAMAGE,SP_ADD_LONG_WEAPON_DAMAGE, //1116-1120
-	SP_WEAPON_COMA_ELE2,SP_WEAPON_COMA_RACE2, //1121-1122
+	SP_WEAPON_COMA_ELE2,SP_WEAPON_COMA_RACE2,SP_GET_ZENY_NUM2,SP_ADD_GET_ZENY_NUM2,SP_ADDEFFSHORT, //1121-1125
+	SP_ADDEFFLONG,SP_ATTACKRANGE_RATE,SP_ATTACKRANGE2,SP_ATTACKRANGE_RATE2,SP_AUTO_STATUS_CALC_PC,	//1126-1130
+	SP_ETERNAL_STATUS_CHANGE,SP_ITEM_NO_USE,//1131
 
 	SP_RESTART_FULL_RECORVER=2000,SP_NO_CASTCANCEL,SP_NO_SIZEFIX,SP_NO_MAGIC_DAMAGE,SP_NO_WEAPON_DAMAGE,SP_NO_GEMSTONE, // 2000-2005
 	SP_NO_CASTCANCEL2,SP_INFINITE_ENDURE,SP_UNBREAKABLE_WEAPON,SP_UNBREAKABLE_ARMOR, // 2006-2009
@@ -826,7 +862,7 @@ void map_foreachobject(int (*)(struct block_list*,va_list),int,...);
 int map_quit(struct map_session_data *);
 // npc
 int map_addnpc(int,struct npc_data *);
-
+int map_check_normalmap(int m);
 
 // 床アイテム関連
 int map_clearflooritem_timer(int,unsigned int,int,int);
@@ -852,6 +888,7 @@ void map_deliddb(struct block_list *bl);
 int map_foreachiddb(int (*)(void*,void*,va_list),...);
 void map_addnickdb(struct map_session_data *);
 struct map_session_data * map_nick2sd(char*);
+int map_field_setting(void);
 
 
 // その他

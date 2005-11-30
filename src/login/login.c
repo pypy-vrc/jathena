@@ -1,4 +1,4 @@
-// $Id: login.c,v 1.1.1.2 2005/11/10 20:59:04 running_pinata Exp $
+// $Id: login.c,v 1.1.1.3 2005/11/30 00:05:58 running_pinata Exp $
 // original : login2.c 2003/01/28 02:29:17 Rev.1.1.1.1
 #define DUMP_UNKNOWN_PACKET	1
 
@@ -1681,6 +1681,17 @@ void login_socket_ctrl_panel_func(int fd,char* usage,char* user,char* status)
 	}
 }
 
+int login_httpd_auth_func( struct httpd_access* a, struct httpd_session_data* sd, const char *userid, char *passwd )
+{
+	const struct mmo_account *acc = account_load_str( userid );
+
+	if( !acc )
+		return 0;
+
+	strcpy( passwd, acc->pass );
+	return 1;
+}
+
 
 void do_final(void)
 {
@@ -1715,9 +1726,9 @@ int do_init(int argc,char **argv)
 	);
 	login_config_read( (argc>1)?argv[1]:LOGIN_CONF_NAME );
 #ifdef _WIN32
-	srand(time(NULL) ^ (GetCurrentProcessId() << 8) );
+	srand((int)time(NULL) ^ (GetCurrentProcessId() << 8) );
 #else
-	srand(time(NULL) ^ (getpid() << 8));
+	srand((int)time(NULL) ^ (getpid() << 8));
 #endif
 
 	for(i=0;i<AUTH_FIFO_SIZE;i++){
@@ -1743,6 +1754,7 @@ int do_init(int argc,char **argv)
 	graph_add_sensor("Memory Usage(KB)",60*1000,memmgr_usage);
 	httpd_pages("/account",login_httpd_account);
 	httpd_default_page(httpd_send_file);
+	httpd_set_auth_func( 1, login_httpd_auth_func );
 
 	return 0;
 }

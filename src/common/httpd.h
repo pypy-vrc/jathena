@@ -134,6 +134,22 @@ void httpd_send_error(struct httpd_session_data* sd,int status);
 
 int  httpd_parse(int fd);
 
+
+// 認証関数の関数ポインタの typedef
+struct httpd_access;
+typedef int(*HTTPD_AUTH_FUNC)( struct httpd_access* a, struct httpd_session_data* sd, const char *userid, char *passwd );
+// * この関数ポインタの先の関数が行うべきこと *
+// userid に対応するプレーンパスワードを passwd (33バイトまで) に設定して返す
+//  戻り値: 0 でエラー, 1 で成功
+//  sd     = httpd のセッションデータへのポインタ
+//  a      = 認証情報へのポインタ
+//  userid = 認証のユーザーIDへのポインタ
+//  passwd = パスワードを返すためのポインタ（ここに strcpy する）
+
+
+// 認証関数の設定（func_id は httpd.conf の authfunc の番号）
+void httpd_set_auth_func( int func_id, HTTPD_AUTH_FUNC func );
+
 // 初期化処理
 void do_init_httpd(void);
 

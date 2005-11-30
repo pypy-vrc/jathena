@@ -1,4 +1,4 @@
-// $Id: chat.c,v 1.1.1.2 2005/11/10 20:59:08 running_pinata Exp $
+// $Id: chat.c,v 1.1.1.3 2005/11/30 00:06:02 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,9 +28,10 @@ int chat_createchat(struct map_session_data *sd,int limit,int pub,char* pass,cha
 	struct chat_data *cd;
 
 	nullpo_retr(0, sd);
-	chat_leavechat(sd);
+
 	if(sd->joinchat)
-		return 0;
+		if(chat_leavechat(sd))
+			return 0;
 
 	cd = aCalloc(1,sizeof(struct chat_data));
 
@@ -55,10 +56,10 @@ int chat_createchat(struct map_session_data *sd,int limit,int pub,char* pass,cha
 		free(cd);
 		return 0;
 	}
+
 	pc_setchatid(sd,cd->bl.id);
-	
 	sd->joinchat = 1;
-	
+
 	clif_createchat(sd,0);
 	clif_dispchat(cd,0);
 
@@ -87,18 +88,18 @@ int chat_joinchat(struct map_session_data *sd,int chatid,char* pass)
 		clif_joinchatfail(sd,1);
 		return 0;
 	}
-	
+
 	if(sd->joinchat){
 		clif_joinchatfail(sd,0);
 		return 0;
 	}
-	
+
 	cd->usersd[cd->users] = sd;
 	cd->users++;
 
 	pc_setchatid(sd,cd->bl.id);
+	sd->joinchat=1;
 
-	
 	clif_joinchatok(sd,cd);	// 新たに参加した人には全員のリスト
 	clif_addchat(cd,sd);	// 既に中に居た人には追加した人の報告
 	clif_dispchat(cd,0);	// 周囲の人には人数変化報告
@@ -143,6 +144,7 @@ int chat_leavechat(struct map_session_data *sd)
 
 	cd->users--;
 	pc_setchatid(sd,0);
+	sd->joinchat=0;
 
 	if(cd->users == 0 && (*cd->owner)->type==BL_PC){
 			// 全員居なくなった&PCのチャットなので消す

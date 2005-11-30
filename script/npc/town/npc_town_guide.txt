@@ -1,6 +1,203 @@
 //----------------------------------------------------------------------
 //Ragnarok Online   Town Guide Script
 //----------------------------------------------------------------------
+//[案内要員 - プロンテラ]
+prontera.gat,154,187,4	script	案内要員#prontera	105,{
+	cutin "prt_soldier",2;
+	mes "[プロンテラ 案内要員]";
+	mes "ようこそ、ルーンミッドガッツ王国の";
+	mes "美しい首都プロンテラへ";
+	mes "私達はここプロンテラにいらした";
+	mes "旅人達の為に街の道案内をしています。";
+	mes "分からない事があれば、いつでも私達";
+	mes "案内要員に聞いてください。";
+	next;
+	mes "[プロンテラ 案内要員]";
+	mes "私達の道案内を初めて聞く方は";
+	mes "｢告知事項｣メニューを";
+	mes "選んでください。";
+L_START_1:
+	next;
+	menu "街の案内を受ける",L_MENU_1,"ミニMAP上の位置表示を消す",L_MENU_2,"告知事項",L_MENU_3,"やめる",L_MENU_4;
+	L_MENU_1:
+		if (@COMPASS_CHECK != 0) goto L_MENU_1_ROOT;
+		mes "[プロンテラ 案内要員]";
+		mes "それではご案内いたしましょう。";
+		mes "ミニMAPに位置表示を残しますか？";
+		next;
+		menu "はい",-,"いいえ",L_MENU_1_ROOT;
+			set @COMPASS_CHECK,1;
+	L_MENU_1_ROOT:
+		mes "[プロンテラ 案内要員]";
+		mes "案内を受けたい場所を選んでください。";
+	L_SUB_1:
+		next;
+		menu "剣士ギルド",L_MENU_1_1,"^0000FF大聖堂^000000",L_MENU_1_2,"騎士団",L_MENU_1_3,"武器屋",L_MENU_1_4,"道具屋",L_MENU_1_5,"旅館",L_MENU_1_6,"精錬所",L_MENU_1_7,"酒場",L_MENU_1_8,"図書館",L_MENU_1_9,"研究所",L_MENU_1_10,"プロンテラ城",L_MENU_1_11,"事務所",L_MENU_1_12,"取り消し",L_MENU_1_13;
+		L_MENU_1_1:
+			mes "[プロンテラ 案内要員]";
+			mes "剣士転職の業務を扱う";
+			mes "｢剣士ギルド｣は";
+			mes "衛星都市イズルードへ移って";
+			mes "現在のプロンテラには";
+			mes "空家が残っています。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,237,41,1,0x00FF00;
+			goto L_SUB_1;
+		L_MENU_1_2:
+			mes "[プロンテラ 案内要員]";
+			mes "アコライトへの転職業務を扱う";
+			mes "｢大聖堂｣は街の北東";
+			mes "外周街にあります。";
+			mes "時計方向では2時の方向です。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,236,316,2,0xFF0000;
+			goto L_SUB_1;
+		L_MENU_1_3:
+			mes "[プロンテラ 案内要員]";
+			mes "ルーンミッドガッツ王国の";
+			mes "首都プロンテラを守る";
+			mes "｢騎士団｣の本部は街の北西";
+			mes "外周街にあります。";
+			mes "時計方向では10時の方向です。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,46,345,3,0x00FF00;
+			goto L_SUB_1;
+		L_MENU_1_4:
+			mes "[プロンテラ 案内要員]";
+			mes "｢武器屋｣は噴水広場の";
+			mes "北東部にあります。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,175,220,4,0xFF00FF;
+			goto L_SUB_1;
+		L_MENU_1_5:
+			mes "[プロンテラ 案内要員]";
+			mes "｢道具屋｣は噴水広場の";
+			mes "北西部にあります。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,134,221,5,0xFF00FF;
+			goto L_SUB_1;
+		L_MENU_1_6:
+			mes "[プロンテラ 案内要員]";
+			mes "｢旅館｣は噴水広場の";
+			mes "東側と西側にあります。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,204,214,6,0xFF00FF;
+			viewpoint 1,107,192,7,0xFF00FF;
+			goto L_SUB_1;
+		L_MENU_1_7:
+			mes "[プロンテラ 案内要員]";
+			mes "｢精錬所｣は噴水広場の";
+			mes "南東部にあります。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,179,184,8,0x00FF00;
+			goto L_SUB_1;
+		L_MENU_1_8:
+			mes "[プロンテラ 案内要員]";
+			mes "｢酒場｣は噴水広場の";
+			mes "南東部、精錬所の後側にあります。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,208,154,9,0x00FF00;
+			goto L_SUB_1;
+		L_MENU_1_9:
+			mes "[プロンテラ 案内要員]";
+			mes "｢図書館｣は噴水広場から";
+			mes "北へ進む道の東側と西側にあります。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,120,267,10,0x00FF00;
+			viewpoint 1,192,267,11,0x00FF00;
+			goto L_SUB_1;
+		L_MENU_1_10:
+			mes "[プロンテラ 案内要員]";
+			mes "｢研究所｣は噴水広場の";
+			mes "南西部にあります。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,133,183,12,0x00FF00;
+			goto L_SUB_1;
+		L_MENU_1_11:
+			mes "[プロンテラ 案内要員]";
+			mes "｢プロンテラ城｣は街の北";
+			mes "橋を渡ったところにあります。";
+			mes "時計方向では12時の方向です。";
+			mes "城の後門から外へ出ると";
+			mes "北プロンテラ地方へ繋がっています。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,156,360,13,0x00FF00;
+			goto L_SUB_1;
+		L_MENU_1_12:
+			mes "[プロンテラ 案内要員]";
+			mes "｢事務所｣は街の南東";
+			mes "外周街にあります。";
+			mes "時計方向では7時の方向です。";
+			if (@COMPASS_CHECK != 1) goto L_SUB_1;
+			viewpoint 1,75,91,14,0x00FF00;
+			goto L_SUB_1;
+		L_MENU_1_13:
+			mes "[プロンテラ 案内要員]";
+			mes "位置標識を消したい時は";
+			mes "｢ミニMAP上の位置表示を消す｣を";
+			mes "選んでください。";
+			goto L_START_1;
+	L_MENU_2:
+		viewpoint 2,237,41,1,0x00FF00;
+		viewpoint 2,236,316,2,0xFF0000;
+		viewpoint 2,46,345,3,0x00FF00;
+		viewpoint 2,175,220,4,0xFF00FF;
+		viewpoint 2,8,134,5,0xFF00FF;
+		viewpoint 2,204,214,6,0xFF00FF;
+		viewpoint 2,107,192,7,0xFF00FF;
+		viewpoint 2,179,184,8,0x00FF00;
+		viewpoint 2,208,154,9,0x00FF00;
+		viewpoint 2,120,267,10,0x00FF00;
+		viewpoint 2,192,267,11,0x00FF00;
+		viewpoint 2,133,183,12,0x00FF00;
+		viewpoint 2,156,360,13,0x00FF00;
+		viewpoint 2,75,91,14,0x00FF00;
+		set @COMPASS_CHECK,0;
+		goto L_START_1;
+	L_MENU_3:
+		mes "[プロンテラ 案内要員]";
+		mes "既存のアナログ案内方式から";
+		mes "知りたい場所をミニMAPに";
+		mes "表示してくれる、広域案内システムを";
+		mes "利用した最先端デジタル案内方式に";
+		mes "進化しました。";
+		next;
+		mes "[プロンテラ 案内要員]";
+		mes "ルーンミッドガッツ王国の";
+		mes "すばらしい魔法と、科学技術の";
+		mes "組み合わせで作り出した";
+		mes "この広域案内システムの性能を";
+		mes "ぜひご覧ください。";
+		next;
+		mes "[プロンテラ 案内要員]";
+		mes "本案内をご利用いただく前に";
+		mes "まずモニター右上にある";
+		mes "ミニMAPをご覧ください。";
+		next;
+		mes "[プロンテラ 案内要員]";
+		mes "ミニMAPが表示されていない場合は";
+		mes "ショートカットキー「Ctrl + Tab」";
+		mes "または基本情報ウインドウの";
+		mes "「map」ボタンをクリックしてください。";
+		next;
+		mes "[プロンテラ 案内要員]";
+		mes "ミニMAPが表示されたら";
+		mes " - ボタンをクリックして";
+		mes "マップの全体が見えるように";
+		mes "設定してください。";
+		goto L_START_1;
+	L_MENU_4:
+		mes "[プロンテラ 案内要員]";
+		mes "それではよい旅を！";
+		close2;
+		cutin "prt_soldier",255;
+		end;
+}
+prontera.gat,282,208,2	duplicate(案内要員#prontera)	東門-案内要員	105
+prontera.gat,29,200,6	duplicate(案内要員#prontera)	西門-案内要員	105
+prontera.gat,160,29,0	duplicate(案内要員#prontera)	南門-案内要員	105
+prontera.gat,151,330,4	duplicate(案内要員#prontera)	北門-案内要員	105
+//----------------------------------------------------------------------
 //[案内要員 - イズルード]
 
 izlude.gat,123,87,6	script	案内要員	105,{

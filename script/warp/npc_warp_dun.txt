@@ -872,6 +872,10 @@ lou_dun03.gat,165,35,0		warp	louyangwarp1004		1,1,lou_dun02.gat,165,266
 //==============================================================
 ayo_dun01.gat,274,14,0	warp	ayothayawarp0501	1,1,ayo_fild02.gat,279,150
 
+// Ayo_dun02 -> Ayo_dun01
+ayo_dun02.gat,23,22,0	warp	ayothayawarp1001	1,1,ayo_dun01.gat,24,280
+ayo_dun02.gat,275,22,0	warp	ayothayawarp1002	1,1,ayo_dun01.gat,24,280
+
 
 
 
@@ -896,6 +900,36 @@ ein_dun02.gat,286,292,0	warp	einbrochwarp4002	1,1,ein_dun01.gat,261,258
 //鉱山ダンジョン２
 ein_dun02.gat,210,225,0	warp	einbrochwarp4003	1,1,ein_dun02.gat,216,207
 ein_dun02.gat,216,210,0	warp	einbrochwarp4004	1,1,ein_dun02.gat,208,228
+
+
+
+
+//==============================================================
+// ----- Gefenia ゲフェニア -----
+// gefenia01.gat	ゲフェニア
+// gefenia02.gat	ゲフェニア
+// gefenia03.gat	ゲフェニア
+// gefenia04.gat	ゲフェニア
+//==============================================================
+//ゲフェニア01⇔02
+gefenia01.gat,236,259,0	warp	gefeniawarp1001	1,1,gefenia02.gat,242,24
+gefenia02.gat,241,19,0	warp	gefeniawarp1002	1,1,gefenia01.gat,236,251
+gefenia01.gat,199,269,0	warp	gefeniawarp1003	1,1,gefenia02.gat,204,35
+gefenia02.gat,204,29,0	warp	gefeniawarp1004	1,1,gefenia01.gat,199,261
+//ゲフェニア01⇔04
+gefenia01.gat,38,103,0	warp	gefeniawarp1005	1,1,gefenia04.gat,279,93
+gefenia04.gat,287,93,0	warp	gefeniawarp1006	1,1,gefenia01.gat,44,103
+//ゲフェニア02⇔03
+gefenia02.gat,18,239,0	warp	gefeniawarp1007	1,1,gefenia03.gat,263,235
+gefenia03.gat,269,235,0	warp	gefeniawarp1008	1,1,gefenia02.gat,22,236
+gefenia02.gat,17,174,0	warp	gefeniawarp1009	1,1,gefenia03.gat,252,170
+gefenia03.gat,258,170,0	warp	gefeniawarp1010	1,1,gefenia02.gat,24,173
+//ゲフェニア03⇔04
+gefenia03.gat,58,26,0	warp	gefeniawarp1011	1,1,gefenia04.gat,35,266
+gefenia04.gat,35,273,0	warp	gefeniawarp1012	1,1,gefenia03.gat,58,32
+gefenia03.gat,145,28,0	warp	gefeniawarp1013	1,1,gefenia04.gat,130,271
+gefenia04.gat,131,275,0	warp	gefeniawarp1014	1,1,gefenia03.gat,145,34
+
 
 
 

@@ -484,7 +484,7 @@ sub searchaccount(){
 # ƒoƒ“ó‘Ô•ÏX—v‹
 sub changestate {
 	my($userid,$s)= @_;
-	my(%p)=("n"=>0,"u"=>0,"b"=>1);
+	my(%p)=("n"=>0,"u"=>0,"b"=>3);
 	if($s eq ""){
 		print "Please input new state [b] or [n].\n";
 		return 151;

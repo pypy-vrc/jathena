@@ -1,4 +1,4 @@
-// $Id: npc.c,v 1.1.1.2 2005/11/10 20:59:16 running_pinata Exp $
+// $Id: npc.c,v 1.1.1.3 2005/11/30 00:06:13 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -437,8 +437,7 @@ int npc_event(struct map_session_data *sd,const char *eventname)
 		return 0;
 	}
 
-	sd->npc_id=nd->bl.id;
-	sd->npc_pos=run_script(nd->u.scr.script,ev->pos,sd->bl.id,nd->bl.id);
+	run_script(nd->u.scr.script,ev->pos,sd->bl.id,nd->bl.id);
 	return 0;
 }
 
@@ -497,11 +496,11 @@ int npc_touch_areanpc(struct map_session_data *sd,int m,int x,int y)
 		if(sd->sc_data[SC_RUN].timer!=-1 || sd->sc_data[SC_HIGHJUMP].timer!=-1)
 			break;
 		{
-			char *name=(char *)aCalloc(50,sizeof(char));
-
-			memcpy(name,map[m].npc[i]->name,50);
+			char *name;
 			if(sd->areanpc_id==map[m].npc[i]->bl.id)
 				return 1;
+			name = (char *)aCalloc(50,sizeof(char));
+			memcpy(name,map[m].npc[i]->name,50);
 			sd->areanpc_id=map[m].npc[i]->bl.id;
 			if(npc_event(sd,strcat(name,"::OnTouch"))>0)
 				npc_click(sd,map[m].npc[i]->bl.id);
@@ -592,7 +591,7 @@ int npc_click(struct map_session_data *sd,int id)
 		npc_event_dequeue(sd);
 		break;
 	case SCRIPT:
-		sd->npc_pos=run_script(nd->u.scr.script,0,sd->bl.id,id);
+		run_script(nd->u.scr.script,0,sd->bl.id,id);
 		break;
 	}
 
@@ -616,7 +615,7 @@ int npc_scriptcont(struct map_session_data *sd,int id)
 
 	nd=(struct npc_data *)map_id2bl(id);
 
-	sd->npc_pos=run_script(nd->u.scr.script,sd->npc_pos,sd->bl.id,id);
+	run_script(nd->u.scr.script,sd->npc_pos,sd->bl.id,id);
 
 	return 0;
 }
@@ -1026,7 +1025,7 @@ int npc_convertlabel_db(void *key,void *data,va_list ap)
 	struct npc_data *nd;
 	struct npc_label_list *lst;
 	int num;
-	char *p=strchr(lname,':');
+	char *p=lname;
 	char c;
 
 	nullpo_retr(0, ap);
@@ -1040,9 +1039,8 @@ int npc_convertlabel_db(void *key,void *data,va_list ap)
 	}else
 		lst=(struct npc_label_list *)aRealloc(lst,sizeof(struct npc_label_list)*(num+1));
 
-	if(!p) {
-		p = lname + 1;
-		while(isalnum(*p)) { p++; }
+	while(isalnum((unsigned char)*p) || *p == '_' ) {
+		p++;
 	}
 	c = *p;
 	*p='\0';
@@ -1731,6 +1729,12 @@ static int npc_parse_mapflag(char *w1,char *w2,char *w3,char *w4)
 	else if (strcmpi(w3,"pk_nocalcrank")==0) {
 		map[m].flag.pk_nocalcrank=1;
 	}
+	else if (strcmpi(w3,"noicewall")==0) {
+		map[m].flag.noicewall=1;
+	}else if (strcmpi(w3,"turbo")==0) {
+		map[m].flag.turbo=1;
+	}
+	
 	return 0;
 }
 static int ev_db_final(void *key,void *data,va_list ap)

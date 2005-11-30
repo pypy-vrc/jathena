@@ -5,7 +5,8 @@
 
 struct item_data {
 	int nameid;
-	char name[24],jname[24];
+	char name[30];
+	char jname[30];
 	char cardillustname[64];
 	int value_buy;
 	int value_sell;
@@ -32,6 +33,9 @@ struct item_data {
 	} flag;
 	int view_id;
 	int group;
+	int delay;
+	int upper; 	//0:all(7‚É‹­§•ÏŠ·) 1:“]¶‘O 2:“]¶ 4:—{q
+	int zone;	//0:§ŒÀ–³ 1:normal 2:pvp 4:gvg 8:pk 16:turbo
 };
 
 struct random_item_data {
@@ -66,6 +70,8 @@ int itemdb_searchrandomid(int flags);
 int itemdb_isequip(int);
 int itemdb_isequip2(struct item_data *);
 int itemdb_isequip3(int);
+int itemdb_iscartable(int nameid);
+int itemdb_isstorageable(int nameid);
 int itemdb_isdropable(int nameid);
 
 // itemdb_equipƒ}ƒNƒ‚Æitemdb_equippoint‚Æ‚Ìˆá‚¢‚Í

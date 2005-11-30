@@ -29,11 +29,8 @@ struct skill_db {
 	int unit_interval;
 	int unit_target;
 	int unit_flag;
-	int unit_layout_gtype[MAX_SKILL_LEVEL];
-	int unit_grange;
-	int unit_ginterval;
-	int unit_gtarget;
-	int unit_gflag;
+	int misfire;
+	int zone;
 };
 
 #define MAX_SKILL_UNIT_LAYOUT	50
@@ -112,19 +109,19 @@ int skill_get_weapontype(int id);
 int skill_get_inf2(int id);
 int skill_get_maxcount(int id);
 int skill_get_blewcount(int id,int lv);
-int skill_get_unit_id(int id,int flag,int mord);
-int skill_get_unit_layout_type(int id,int lv,int mord);
-int skill_get_unit_interval(int id,int mord);
-int skill_get_unit_range(int id,int mord);
-int skill_get_unit_target(int id,int mord);
-int skill_get_unit_flag(int id,int mord);
+int skill_get_unit_id(int id,int flag);
+int skill_get_unit_layout_type(int id,int lv);
+int skill_get_unit_interval(int id);
+int skill_get_unit_range(int id);
+int skill_get_unit_target(int id);
+int skill_get_unit_flag(int id);
 
 // スキルの使用
 int skill_castend_map( struct map_session_data *sd,int skill_num, const char *map);
 
 int skill_cleartimerskill(struct block_list *src);
 int skill_addtimerskill(struct block_list *src,unsigned int tick,int target,int x,int y,int skill_id,int skill_lv,int type,int flag);
-int skill_addtimerskill_mob_commanddelay(struct mob_data *md,int skill_idx,unsigned int tick);
+
 // 追加効果
 int skill_additional_effect( struct block_list* src, struct block_list *bl,int skillid,int skilllv,int attack_type,unsigned int tick);
 
@@ -136,10 +133,10 @@ int skill_delunit_by_ganbatein(struct block_list *bl, va_list ap );
 int skill_add_blown( struct block_list *src, struct block_list *target,int skillid,int flag);
 
 //カード効果のオートスペル
-#define AS_ATTACK	0x0001
-#define AS_REVENGE	0x0002
-int skill_use_bonus_autospell(struct block_list * src,struct block_list * bl,int skill_id,int skill_lv,int rate,int skill_flag,int tick,int flag);
-int skill_bonus_autospell(struct block_list * src,struct block_list * bl,int mode,int tick,int flag);
+#define AS_ATTACK	0x00050003
+#define AS_REVENGE	0x00060003
+int skill_use_bonus_autospell(struct block_list * src,struct block_list * bl,int skill_id,int skill_lv,int rate,long skill_flag,int tick,int flag);
+int skill_bonus_autospell(struct block_list * src,struct block_list * bl,long mode,int tick,int flag);
 
 // ユニットスキル
 struct skill_unit *skill_initunit(struct skill_unit_group *group,int idx,int x,int y);
@@ -231,7 +228,6 @@ int skill_clone(struct map_session_data* sd,int skillid,int skilllv);
 int skill_weapon_refine(struct map_session_data *sd,int idx);
 int skill_success_weaponrefine(struct map_session_data *sd,int idx);
 int skill_fail_weaponrefine(struct map_session_data *sd,int idx);
-int skill_fail_by_fogwall(int skillid);
 
 // スキル攻撃一括処理
 int skill_blown( struct block_list *src, struct block_list *target,int count);
@@ -251,7 +247,7 @@ enum {
 enum {	// struct map_session_data の status_changeの番号テーブル
 // SC_SENDMAX未満はクライアントへの通知あり。
 // 2-2次職の値はなんかめちゃくちゃっぽいので暫定。たぶん変更されます。
-	SC_SENDMAX				=128,
+	//SC_SENDMAX				=128,
 
 	SC_PROVOKE				= 0,	/* プロボック */
 	SC_ENDURE				= 1,	/* インデュア */
@@ -285,6 +281,8 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_TRICKDEAD			=29,	/* 死んだふり */
 	SC_LOUD					=30,	/* ラウドボイス */
 	SC_ENERGYCOAT			=31,	/* エナジーコート */
+	SC_PK_PENALTY			=32,	//PKのペナルティ
+	SC_REVERSEORCISH		=33,    //リバースオーキッシュ
 	SC_HALLUCINATION		=34,	/* ハルネーションウォーク？ */
 	SC_WEIGHT50				=35,	/* 重量50％オーバー */
 	SC_WEIGHT90				=36,	/* 重量90％オーバー */
@@ -292,6 +290,15 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_SPEEDPOTION1			=38,	/* スピードアップポーション？ */
 	SC_SPEEDPOTION2			=39,	/* ハイスピードポーション？ */
 	SC_SPEEDPOTION3			=40,	/* バーサークポーション */
+	SC_ITEM_DELAY			=41,
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	SC_STRIPWEAPON			=50,	/* ストリップウェポン */
 	SC_STRIPSHIELD			=51,	/* ストリップシールド */
 	SC_STRIPARMOR			=52,	/* ストリップアーマー */
@@ -305,21 +312,58 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_DEVOTION				=60,	/* ディボーション */
 	SC_PROVIDENCE			=61,	/* プロヴィデンス */
 	SC_DEFENDER				=62,	/* ディフェンダー */
+	//
+	//
 	SC_AUTOSPELL			=65,	/* オートスペル */
+	//
+	//
 	SC_SPEARSQUICKEN		=68,	/* スピアクイッケン */
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	SC_EXPLOSIONSPIRITS		=86,	/* 爆裂波動 */
 	SC_STEELBODY			=87,	/* 金剛 */
+	//
 	SC_COMBO				=89,
 	SC_FLAMELAUNCHER		=90,	/* フレイムランチャー */
 	SC_FROSTWEAPON			=91,	/* フロストウェポン */
 	SC_LIGHTNINGLOADER		=92,	/* ライトニングローダー */
 	SC_SEISMICWEAPON		=93,	/* サイズミックウェポン */
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	SC_AURABLADE			=103,	/* オーラブレード */
 	SC_PARRYING				=104,	/* パリイング */
 	SC_CONCENTRATION		=105,	/* コンセントレーション */
 	SC_TENSIONRELAX			=106,	/* テンションリラックス */
 	SC_BERSERK				=107,	/* バーサーク */
+	//
+	//
+	//
 	SC_ASSUMPTIO			=110,	/* アスムプティオ */
+	//
+	//
 	SC_MAGICPOWER			=113,	/* 魔法力増幅 */
 	SC_EDP					=114,	/* エフェクトが判明したら移動 */
 	SC_TRUESIGHT			=115,	/* トゥルーサイト */
@@ -330,9 +374,11 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_REJECTSWORD			=120,	/* リジェクトソード */
 	SC_MARIONETTE			=121,	/* マリオネットコントロール */ //自分用
 	SC_MARIONETTE2			=122,	/* マリオネットコントロール */ //ターゲット用
+	//
 	SC_HEADCRUSH			=124,	/* ヘッドクラッシュ */
 	SC_JOINTBEAT			=125,	/* ジョイントビート */
-
+	//
+	//
 	SC_STONE				=128,	/* 状態異常：石化 */
 	SC_FREEZE				=129,	/* 状態異常：氷結 */
 	SC_STAN					=130,	/* 状態異常：スタン */
@@ -344,15 +390,17 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_BLIND				=136,	/* 状態異常：暗闇 */
 	SC_BLEED				=137,	/* 状態異常：出血 */
 	SC_DIVINA				= SC_SILENCE,	/* 状態異常：沈黙 */
-
+	//138
+	//139
 	SC_SAFETYWALL			=140,	/* セーフティーウォール */
 	SC_PNEUMA				=141,	/* ニューマ */
-
+	//
 	SC_ANKLE				=143,	/* アンクルスネア */
 	SC_DANCING				=144,	/*  */
 	SC_KEEPING				=145,	/*  */
 	SC_BARRIER				=146,	/*  */
-
+	//
+	//
 	SC_MAGICROD				=149,	/*  */
 	SC_SIGHT				=150,	/*  */
 	SC_RUWACH				=151,	/*  */
@@ -364,7 +412,6 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_BLADESTOP			=157,	/*  */
 	SC_EXTREMITYFIST		=158,	/*  */
 	SC_GRAFFITI				=159,	/*  */
-
 	SC_LULLABY				=160,	/*  */
 	SC_RICHMANKIM			=161,	/*  */
 	SC_ETERNALCHAOS			=162,	/*  */
@@ -388,7 +435,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_SPIDERWEB			=180,	/* スパイダーウェッブ */
 	SC_MEMORIZE				=181,	/* メモライズ */
 	SC_DPOISON				=182,	/* 猛毒 */
-
+	//
 	SC_SACRIFICE			=184,	/* サクリファイス */
 	SC_INCATK				=185,	//item 682用
 	SC_INCMATK				=186,	//item 683用
@@ -417,8 +464,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_DONTFORGETME_		=210,
 	SC_FORTUNE_				=211,
 	SC_SERVICE4U_			=212,
-	//ギルドスキル
-	SC_BATTLEORDER			=213,
+	SC_BATTLEORDER			=213,//ギルドスキル
 	SC_REGENERATION			=214,
 	SC_BATTLEORDER_DELAY	=215,
 	SC_REGENERATION_DELAY	=216,
@@ -429,14 +475,12 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_STRENGTH				=221,
 	SC_THE_DEVIL			=222,
 	SC_THE_SUN				=223,
-	//食事用
-	SC_MEAL_INCSTR			=224,
+	SC_MEAL_INCSTR			=224,//食事用
 	SC_MEAL_INCAGI			=225,
 	SC_MEAL_INCVIT			=226,
 	SC_MEAL_INCINT			=227,
 	SC_MEAL_INCDEX			=228,
 	SC_MEAL_INCLUK			=229,
-	//
 	SC_RUN 					= 230,
 	SC_SPURT 				= 231,
 	SC_TKCOMBO 				= 232,	//テコンのコンボ用
@@ -451,8 +495,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_MOON_COMFORT			= 241,
 	SC_STAR_COMFORT			= 242,
 	SC_FUSION				= 243,
-	//魂
-	SC_ALCHEMIST			= 244,
+	SC_ALCHEMIST			= 244,//魂
 	SC_MONK					= 245,
 	SC_STAR					= 246,
 	SC_SAGE					= 247,
@@ -505,7 +548,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_CLOSECONFINE			= 292,//#クローズコンファイン#
 	SC_SIGHTBLASTER			= 293,//#サイトブラスター#
 	SC_ELEMENTWATER			= 294,//#エルレメンタルチェンジ水#
-	//食事用
+	//食事用2
 	SC_MEAL_INCHIT			= 295,
 	SC_MEAL_INCFLEE			= 296,
 	SC_MEAL_INCFLEE2		= 297,
@@ -562,6 +605,8 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	//startでは使えないresistをアイテム側で全てクリアするための物
 	SC_RESISTCLEAR			= 1001,
 	SC_RACECLEAR			= 1002,
+	SC_SOUL					= 1003,
+	SC_SOULCLEAR			= 1004,
 };
 
 enum {
@@ -588,7 +633,6 @@ enum {
 	MG_FIREBOLT,
 	MG_LIGHTNINGBOLT,
 	MG_THUNDERSTORM,
-
 	AL_DP,
 	AL_DEMONBANE,
 	AL_RUWACH,
@@ -1086,7 +1130,53 @@ enum {
 	AM_TWILIGHT2	= 497,
 	AM_TWILIGHT3	= 498,
 	HT_POWER 		= 499,
-	ITM_COOKING		= 500,//料理用に未使用領域を使用
+
+	GS_GLITTERING   = 500,//#GS_GLITTERING#
+	GS_FLING,//#GS_FLING#
+	GS_TRIPLEACTION,//#GS_TRIPLEACTION#
+	GS_BULLSEYE,//#GS_BULLSEYE#
+	GS_MADNESSCANCEL,//#GS_MADNESSCANCEL#
+	GS_ADJUSTMENT,//#GS_ADJUSTMENT#
+	GS_INCREASING,//#GS_INCREASING#
+	GS_MAGICALBULLET,//#GS_MAGICALBULLET#
+	GS_CRACKER,//#GS_CRACKER#
+	GS_SINGLEACTION,//#GS_SINGLEACTION#
+	GS_SNAKEEYE,//#GS_SNAKEEYE#	
+	GS_CHAINACTION,//#GS_CHAINACTION#
+	GS_TRACKING,//#GS_TRACKING#
+	GS_DISARM,//#GS_DISARM#
+	GS_PIERCINGSHOT,//#GS_PIERCINGSHOT#
+	GS_RAPIDSHOWER,//#GS_RAPIDSHOWER#
+	GS_DESPERADO,//#GS_DESPERADO#
+	GS_GATLINGFEVER,//#GS_GATLINGFEVER#
+	GS_DUST,//#GS_DUST#
+	GS_FULLBUSTER,//#GS_FULLBUSTER#
+	GS_SPREADATTACK,//#GS_SPREADATTACK#
+	GS_GROUNDDRIFT,//#GS_GROUNDDRIFT#
+
+	NJ_TOBIDOUGU,//#NJ_TOBIDOUGU#
+	NJ_SYURIKEN,//#NJ_SYURIKEN#
+	NJ_KUNAI,//#NJ_KUNAI#
+	NJ_HUUMA,//#NJ_HUUMA#
+	NJ_ZENYNAGE,//#NJ_ZENYNAGE#
+	NJ_TATAMIGAESHI,//#NJ_TATAMIGAESHI#
+	NJ_KASUMIKIRI,//#NJ_KASUMIKIRI#
+	NJ_SHADOWJUMP,//#NJ_SHADOWJUMP#
+	NJ_KIRIKAGE,//#NJ_KIRIKAGE#
+	NJ_UTSUSEMI,//#NJ_UTSUSEMI#
+	NJ_BUNSINJYUTSU,//#NJ_BUNSINJYUTSU#
+	NJ_NINPOU,//#NJ_NINPOU#
+	NJ_KOUENKA,//#NJ_KOUENKA#
+	NJ_KAENSIN,//#NJ_KAENSIN#
+	NJ_BAKUENRYU,//#NJ_BAKUENRYU#
+	NJ_HYOUSENSOU,//#NJ_HYOUSENSOU#
+	NJ_SUITON,//#NJ_SUITON#
+	NJ_HYOUSYOURAKU,//#NJ_HYOUSYOURAKU#
+	NJ_HUUJIN,//#NJ_HUUJIN#
+	NJ_RAIGEKISAI,//#NJ_RAIGEKISAI#
+	NJ_KAMAITACHI,//#NJ_KAMAITACHI#
+	NJ_NEN,//#NJ_NEN#
+	NJ_ISSEN,//#NJ_ISSEN#
 	
 	KN_CHARGEATK	=	1001,//#チャージアタック#
 	CR_SHRINK		=	1002,//#シュリンク#
@@ -1258,7 +1348,7 @@ enum {
 	SI_SIGHTBLASTER			=198,	//#サイトブラスター#
 	SI_CLOSECONFINE			=200,	//#クローズコンファイン#
 	SI_CLOSECONFINE2		=201,	//#クローズコンファイン#
-	SI_INVISIBLE				= SI_CLOAKING,
+	SI_INVISIBLE			= SI_CLOAKING,
 };
 
 

@@ -19,6 +19,7 @@
 //プロンテラ大聖堂(prt_church)
 //==================================
 prt_church.gat,16,41,4	script	司教	60,{
+	if (Upper == 1) goto LUpper1;
 	if (Class == 0) goto L_Misc2_1;
 	if (Class == 8) goto L_Pri1_1;
 	if (Class != 4) goto L_Misc1_1;
@@ -60,7 +61,6 @@ L_Menu1_1:
 	mes "今、申し込みをされますか？";
 	next;
 	menu "はい、申し込みます",-,"もう少し考えてみます",L_Menu1_3;
-		if (Upper == 1) goto LUpper1;
 		if (JobLevel < 40) goto L_Menu1_4;
 		set change_priest,1;
 		mes "[トーマス司教]";
@@ -565,8 +565,16 @@ L_Pri1_1:
 		close;
 LUpper1:
 	mes "[トーマス司教]";
-	mes "あなたは転生されていますので";
-	mes "ここでは転職案内できません。";
+	mes "生まれ変わり、新たな人生を";
+	mes "歩む方ですね？";
+	mes "プロンテラ大聖堂も";
+	mes "貴方の活躍を見守っています。";
+	next;
+	mes "[トーマス司教]";
+	mes "世に満ち溢れる試練を恐れずに。";
+	mes "貴方にはそれに打ち克つ勇気と";
+	mes "力があります。";
+	mes "貴方に神のご加護あらんことを……";
 	close;
 }
 
