@@ -9465,15 +9465,10 @@ void clif_parse_GMReqNoChat(int fd,struct map_session_data *sd, int cmd)
 
 	if(type == 0)
 		limit = 0 - limit;
-//GMによるチャット禁止時間付与
-//ＧＭレベルによる赤エモ制限が可能。Lv50以上でなければ使えない
-//pc_isGM(sd)>50の50の部分を変更すれば好みに合わせる事が出来ます。
-	if(bl->type == BL_PC && (dstsd =(struct map_session_data *)bl)){
-		if( (tid == bl->id && type == 2 && !pc_isGM(sd)) || (pc_isGM(sd) > pc_isGM(dstsd) && pc_isGM(sd)>50) ) {
 
-//GMレベル1の人でも赤エモ使えるようにする場合は上の行を消して下の2行のコメントアウトをはずして下さい。
-//if(bl->type == BL_PC && (dstsd =(struct map_session_data *)bl)){
-//if((tid == bl->id && type == 2 && !pc_isGM(sd)) || (pc_isGM(sd) > pc_isGM(dstsd)) ){
+	if(bl->type == BL_PC && (dstsd =(struct map_session_data *)bl)){
+		if( (tid == bl->id && type == 2 && !pc_isGM(sd))
+		 || (pc_isGM(sd) > pc_isGM(dstsd) && pc_isGM(sd) >= battle_config.gm_nomanner_lv) ) {
 
 			dstfd = dstsd->fd;
 			WFIFOW(dstfd,0)=0x14b;

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.3 2005/11/21 23:41:48 running_pinata Exp $
+# $Id: Makefile,v 1.4 2005/12/09 22:59:40 running_pinata Exp $
 
 CC = gcc -pipe
 PACKETDEF = -DPACKETVER=6 -DNEW_006b
@@ -54,8 +54,12 @@ CFLAGS += -O3
 # disable httpd
 #CFLAGS += -DNO_HTTPD
 
+# disable csvdb
+#CFLAGS += -DNO_CSVDB
+
 # usable TKSGSL
 #CFLAGS += -DTKSGSL
+#CFLAGS += -DTKSGSLGSNJ
 
 #-----------------CPU MARCH-------------------
 #GCC 3.2.x~

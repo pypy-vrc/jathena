@@ -2200,6 +2200,8 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 	switch(type){
 	case SP_ADD_MONSTER_DROP_ITEM:
 		if(sd->state.lr_flag != 2) {
+			if(battle_config.dropitem_itemrate_fix)
+				val = mob_droprate_fix(type2,val);
 			for(i=0;i<sd->monster_drop_item_count;i++) {
 				if(sd->monster_drop_itemid[i] == type2) {
 					sd->monster_drop_race[i] |= 1<<type3;
@@ -2986,7 +2988,7 @@ int pc_putitemtocart(struct map_session_data *sd,int idx,int amount)
 
 	if(itemdb_isdropable(sd->status.inventory[idx].nameid) == 0)
 		return 1;
-	if(pc_candrop(sd,sd->status.inventory[idx].nameid)==1)
+	if(pc_candrop(sd,sd->status.inventory[idx].nameid))
 		return 1;
 
 	if( item_data->nameid==0 || item_data->amount<amount || sd->vender_id )

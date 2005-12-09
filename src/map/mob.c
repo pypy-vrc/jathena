@@ -3018,10 +3018,10 @@ static int mob_readdb(void)
 			if(class<=1000 || class>MOB_ID_MAX)
 				continue;
 			if(n==1 && mob_db[class].view_class == class)
-				cov=1;	// item_db2による、すでに登録のあるIDの上書きかどうか
+				cov=1;	// mob_db2による、すでに登録のあるIDの上書きかどうか
 
 			mob_db[class].view_class=class;
-			// ここから先は、item_db2では記述のある部分のみ反映
+			// ここから先は、mob_db2では記述のある部分のみ反映
 			if(!cov || strlen(str[1])>0)
 				memcpy(mob_db[class].name,str[1],24);
 			if(!cov || strlen(str[2])>0)
@@ -3062,47 +3062,7 @@ static int mob_readdb(void)
 				if(cov && strlen(str[30+i*2])==0)
 					continue;
 				itemdrop = atoi(str[30+i*2]);
-
-				if (battle_config.item_rate_details==1) {	//ドロップレート詳細項目が1の時 レート=x/100倍
-					if (itemdrop < 10)
-						*per = itemdrop*battle_config.item_rate_1/100;
-					else if (itemdrop < 100)
-						*per = itemdrop*battle_config.item_rate_10/100;
-					else if (itemdrop < 1000)
-						*per = itemdrop*battle_config.item_rate_100/100;
-					else
-						*per = itemdrop*battle_config.item_rate_1000/100;
-				}
-				else if (battle_config.item_rate_details==2) {	//ドロップレート詳細項目が2の時　レート=x/100倍 min max 指定
-					#define SETRATE2( min1, max1, num )	\
-						if (itemdrop >= min1 && itemdrop < max1 ) {	\
-							if (itemdrop*battle_config.item_rate_##num/100 < battle_config.item_rate_##num##_min)	\
-								*per = battle_config.item_rate_##num##_min;	\
-							else if (itemdrop*battle_config.item_rate_##num/100 > battle_config.item_rate_##num##_max)	\
-								*per = battle_config.item_rate_##num##_max;	\
-							else	\
-								*per = itemdrop*battle_config.item_rate_##num/100;	\
-						} // end of SETRATE2
-
-					SETRATE2(    1,   10,   1 );
-					SETRATE2(   10,  100,  10 );
-					SETRATE2(  100, 1000, 100 );
-					SETRATE2( 1000,10001,1000 );
-					#undef SETRATE2
-				}
-				else if (battle_config.item_rate_details==0)	//ドロップレート詳細項目が0の時
-					*per = itemdrop*battle_config.item_rate/100;
-
-				// カードや装備などアイテムの種類によるレート変化
-				if (nameid >= 4001 && nameid<= 4331 ){
-					*per = *per * battle_config.card_drop_rate/100;
-				}
-				else if ((nameid >= 1101 && nameid<= 2670 ) || (nameid >= 5001 && nameid<= 5150 )|| (nameid >= 13000 && nameid<= 13010 )){
-					*per = *per * battle_config.equip_drop_rate/100;
-				}
-				else if (nameid == 756 || nameid == 757 || nameid == 984 || nameid == 985){
-					*per = *per * battle_config.refine_drop_rate/100;
-				}
+				*per = mob_droprate_fix(nameid,itemdrop);
 			}
 			DB_ADD(mob_db[class].mexp,49);
 			DB_ADD(mob_db[class].mexpper,50);
@@ -3272,10 +3232,6 @@ static int mob_read_randommonster(void)
 	}
 	return 0;
 }
-/*==========================================
- * db/mob_skill_db.txt読み込み
- *------------------------------------------
- */
 
 /*==========================================
  * db/mob_skill_db.txt読み込み
@@ -3333,42 +3289,42 @@ static int mob_readskilldb(void)
 		{	"sight",		SC_SIGHT		},
 		{	"lexaeterna",	SC_AETERNA		},
 	}, state[] = {
-		{	"any",		MSS_ANY		},
-		{	"idle",		MSS_IDLE	},
-		{	"walk",		MSS_WALK	},
-		{	"attack",	MSS_ATTACK	},
-		{	"dead",		MSS_DEAD	},
-		{	"loot",		MSS_LOOT	},
-		{	"chase",	MSS_CHASE	},
-		{   "command",  MSS_COMMANDONLY}
+		{	"any",		MSS_ANY			},
+		{	"idle",		MSS_IDLE		},
+		{	"walk",		MSS_WALK		},
+		{	"attack",	MSS_ATTACK		},
+		{	"dead",		MSS_DEAD		},
+		{	"loot",		MSS_LOOT		},
+		{	"chase",	MSS_CHASE		},
+		{	"command",	MSS_COMMANDONLY	}
 	}, target[] = {
-		{	"target",	MST_TARGET	},
-		{	"self",		MST_SELF	},
-		{	"friend",	MST_FRIEND	},
-		{	"master",	MST_MASTER	},
-		{	"slave",	MST_SLAVE	},
-		{	"command",	MST_COMMAND },
-		{	"modechange",MST_MODECHANGE	},
-		{	"targetchange", MST_TARGETCHANGE},
-		{	"around5",	MST_AROUND5	},
-		{	"around6",	MST_AROUND6	},
-		{	"around7",	MST_AROUND7	},
-		{	"around8",	MST_AROUND8	},
-		{	"around1",	MST_AROUND1	},
-		{	"around2",	MST_AROUND2	},
-		{	"around3",	MST_AROUND3	},
-		{	"around4",	MST_AROUND4	},
-		{	"around",	MST_AROUND	},
+		{	"target",		MST_TARGET			},
+		{	"self",			MST_SELF			},
+		{	"friend",		MST_FRIEND			},
+		{	"master",		MST_MASTER			},
+		{	"slave",		MST_SLAVE			},
+		{	"command",		MST_COMMAND 		},
+		{	"modechange",	MST_MODECHANGE		},
+		{	"targetchange",	MST_TARGETCHANGE	},
+		{	"around5",		MST_AROUND5			},
+		{	"around6",		MST_AROUND6			},
+		{	"around7",		MST_AROUND7			},
+		{	"around8",		MST_AROUND8			},
+		{	"around1",		MST_AROUND1			},
+		{	"around2",		MST_AROUND2			},
+		{	"around3",		MST_AROUND3			},
+		{	"around4",		MST_AROUND4			},
+		{	"around",		MST_AROUND			},
 	}, command_target[] = {
-		{ "target", 	MCT_TARGET 	},
-		{ "self", 		MCT_SELF 	},
-		{ "commander",	MCT_COMMANDER},
-		{ "slave", 		MCT_SLAVE 	},
-		{ "slaves", 	MCT_SLAVES	},
-		{ "group", 		MCT_GROUP	},
-		{ "friend",		MCT_FRIEND  },
-		{ "friends",  	MCT_FRIENDS },
-		{ "master",		MCT_MASTER	},
+		{	"target",	MCT_TARGET		},
+		{	"self",		MCT_SELF		},
+		{	"commander",MCT_COMMANDER	},
+		{	"slave",	MCT_SLAVE		},
+		{	"slaves",	MCT_SLAVES		},
+		{	"group", 	MCT_GROUP		},
+		{	"friend",	MCT_FRIEND		},
+		{	"friends",	MCT_FRIENDS		},
+		{	"master",	MCT_MASTER		},
 	};
 
 	int x, lineno;
@@ -3554,6 +3510,69 @@ void mob_reload(void)
 	mob_readdb_mobavail();
 	mob_read_randommonster();
 	mob_readskilldb();
+}
+
+/*==========================================
+ * ドロップ率に倍率を適用
+ *------------------------------------------
+ */
+int mob_droprate_fix(int item,int drop)
+{
+	int drop_fix;
+	if(drop < 1) return 0;
+	if(drop > 10000) return 10000;
+	if(battle_config.item_rate_details==0)
+		drop_fix = drop * battle_config.item_rate / 100;
+	else if(battle_config.item_rate_details==1){
+		if(drop < 10)
+			drop_fix = drop * battle_config.item_rate_1 / 100;
+		else if(drop < 100)
+			drop_fix = drop * battle_config.item_rate_10 / 100;
+		else if(drop < 1000)
+			drop_fix = drop * battle_config.item_rate_100 / 100;
+		else
+			drop_fix = drop * battle_config.item_rate_1000 / 100;
+	}
+	else if(battle_config.item_rate_details==2){
+		if(drop < 10){
+			drop_fix = drop * battle_config.item_rate_1 / 100;
+			if(drop_fix < battle_config.item_rate_1_min)
+				drop_fix = battle_config.item_rate_1_min;
+			else if(drop_fix > battle_config.item_rate_1_max)
+				drop_fix = battle_config.item_rate_1_max;
+		}
+		else if(drop < 100){
+			drop_fix = drop * battle_config.item_rate_10 / 100;
+			if(drop_fix < battle_config.item_rate_10_min)
+				drop_fix = battle_config.item_rate_10_min;
+			else if(drop_fix > battle_config.item_rate_10_max)
+				drop_fix = battle_config.item_rate_10_max;
+		}
+		else if(drop < 1000){
+			drop_fix = drop * battle_config.item_rate_100 / 100;
+			if(drop_fix < battle_config.item_rate_100_min)
+				drop_fix = battle_config.item_rate_100_min;
+			else if(drop_fix > battle_config.item_rate_100_max)
+				drop_fix = battle_config.item_rate_100_max;
+		}
+		else{
+			drop_fix = drop * battle_config.item_rate_1000 / 100;
+			if(drop_fix < battle_config.item_rate_1000_min)
+				drop_fix = battle_config.item_rate_1000_min;
+			else if(drop_fix > battle_config.item_rate_1000_max)
+				drop_fix = battle_config.item_rate_1000_max;
+		}
+	}
+	if(item >= 4001 && item <= 4999)
+		drop_fix = drop_fix * battle_config.card_drop_rate / 100;
+	else if((item >= 1101 && item <= 2699)
+		 || (item >= 5001 && item <= 5199)
+		 || (item >= 13000 && item <= 13019))
+		drop_fix = drop_fix * battle_config.equip_drop_rate / 100;
+	else if(item == 756 || item == 757 || item == 984 || item == 985)
+		drop_fix = drop_fix * battle_config.refine_drop_rate / 100;
+	if(drop_fix > 10000) drop_fix = 10000;
+	return drop_fix;
 }
 
 /*==========================================

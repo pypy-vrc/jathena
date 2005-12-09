@@ -1,5 +1,5 @@
-
 // ステータス計算、状態異常処理
+
 #include <time.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -3972,7 +3972,6 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			if(!(flag&2)) {
 				int sc_def = status_get_lv(bl)/10 + status_get_int(bl)/15;
 				tick = 30000 - sc_def;
-				if(md) md->target_id = 0;
 			}
 			break;
 		case SC_CURSE:

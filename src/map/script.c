@@ -122,8 +122,10 @@ extern struct script_function {
 unsigned char* parse_subexpr(unsigned char *,int);
 void push_val(struct script_stack *stack,int type,int val);
 int run_func(struct script_state *st);
+#ifndef NO_CSVDB
 int script_csvinit( void );
 int script_csvfinal( void );
+#endif
 
 int mapreg_setreg(int num,int val);
 int mapreg_setregstr(int num,const char *str);
@@ -2671,7 +2673,9 @@ int do_final_script()
 	if(userfunc_db)
 		strdb_final(userfunc_db,userfunc_db_final);
 
+#ifndef NO_CSVDB
 	script_csvfinal();
+#endif
 	return 0;
 }
 /*==========================================
@@ -2694,7 +2698,9 @@ int do_init_script()
 	}
 	scriptlabel_db=strdb_init(50);
 
+#ifndef NO_CSVDB
 	script_csvinit();
+#endif
 	return 0;
 }
 
@@ -2893,6 +2899,7 @@ int buildin_getpkflag(struct script_state *st);
 int buildin_guildgetexp(struct script_state *st);
 int buildin_flagname(struct script_state *st);
 int buildin_getnpcposition(struct script_state *st);
+#ifndef NO_CSVDB
 int buildin_csvgetrows(struct script_state *st);
 int buildin_csvgetcols(struct script_state *st);
 int buildin_csvread(struct script_state *st);
@@ -2904,6 +2911,7 @@ int buildin_csvreload(struct script_state *st);
 int buildin_csvinsert(struct script_state *st);
 int buildin_csvdelete(struct script_state *st);
 int buildin_csvsort(struct script_state *st);
+#endif
 int buildin_sleep(struct script_state *st);
 int buildin_sleep2(struct script_state *st);
 
@@ -3099,6 +3107,7 @@ struct script_function buildin_func[] = {
 	{buildin_guildgetexp,"guildgetexp","i"},
 	{buildin_flagname,"flagname","s"},
 	{buildin_getnpcposition,"getnpcposition","s"},
+#ifndef NO_CSVDB
 	{buildin_csvgetrows,"csvgetrows","s"},
 	{buildin_csvgetcols,"csvgetcols","si"},
 	{buildin_csvread,"csvread","sii"},
@@ -3110,6 +3119,7 @@ struct script_function buildin_func[] = {
 	{buildin_csvinsert,"csvinsert","si"},
 	{buildin_csvdelete,"csvdelete","si"},
 	{buildin_csvsort,"csvsort","sii"},
+#endif
 	{buildin_sleep,"sleep","i"},
 	{buildin_sleep2,"sleep2","i"},
 	{NULL,NULL,NULL}
@@ -7961,6 +7971,7 @@ int buildin_getnpcposition(struct script_state *st)
 	return 0;
 }
 
+#ifndef NO_CSVDB
 static struct dbt* script_csvdb;
 
 int script_csvinit( void ) {
@@ -8260,6 +8271,7 @@ int buildin_csvsort(struct script_state *st) {
 	}
 	return 0;
 }
+#endif
 
 // sleep <mili sec>
 int buildin_sleep(struct script_state *st) {
@@ -8298,4 +8310,3 @@ int buildin_sleep2(struct script_state *st) {
 	}
 	return 0;
 }
-

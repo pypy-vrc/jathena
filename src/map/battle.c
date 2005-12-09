@@ -4491,6 +4491,8 @@ int battle_config_read(const char *cfgName)
 		battle_config.allow_cloneskill_at_autospell = 0;
 		battle_config.pk_noshift = 0;
 		battle_config.pk_penalty_time = 60000;
+		battle_config.dropitem_itemrate_fix = 0;
+		battle_config.gm_nomanner_lv = 50;
 	}
 
 	fp=fopen(cfgName,"r");
@@ -4849,6 +4851,8 @@ int battle_config_read(const char *cfgName)
 			{ "allow_cloneskill_at_autospell",		&battle_config.allow_cloneskill_at_autospell		},
 			{ "pk_noshift",							&battle_config.pk_noshift							},
 			{ "pk_penalty_time",					&battle_config.pk_penalty_time						},
+			{ "dropitem_itemrate_fix",				&battle_config.dropitem_itemrate_fix				},
+			{ "gm_nomanner_lv",						&battle_config.gm_nomanner_lv						},
 		};
 
 		if(line[0] == '/' && line[1] == '/')
