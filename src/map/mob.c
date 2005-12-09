@@ -174,6 +174,11 @@ int mob_once_spawn(struct map_session_data *sd,char *mapname,
 		md->state.noexp=0;
 		md->state.nomvp=0;
 
+#ifdef DYNAMIC_SC_DATA
+		//ダミー挿入
+		md->sc_data = dummy_sc_data;
+#endif
+
 		memcpy(md->npc_event,event,sizeof(md->npc_event));
 
 		md->bl.type=BL_MOB;
@@ -402,13 +407,16 @@ int mob_spawn(int id)
 	if(md->lootitem)
 		memset(md->lootitem,0,sizeof(md->lootitem));
 	md->lootitem_count = 0;
-
-	if(md->sc_data){
-		for(i=0;i<MAX_STATUSCHANGE;i++) {
-			md->sc_data[i].timer=-1;
-			md->sc_data[i].val1 = md->sc_data[i].val2 = md->sc_data[i].val3 = md->sc_data[i].val4 =0;
-		}
+#ifdef DYNAMIC_SC_DATA
+	//ダミー挿入
+	if(md->sc_data==0)
+		md->sc_data = dummy_sc_data;
+#else
+	for(i=0;i<MAX_STATUSCHANGE;i++) {
+		md->sc_data[i].timer=-1;
+		md->sc_data[i].val1 = md->sc_data[i].val2 = md->sc_data[i].val3 = md->sc_data[i].val4 =0;
 	}
+#endif
 	md->sc_count=0;
 	md->opt1=md->opt2=md->opt3=md->option=0;
 
@@ -2169,7 +2177,10 @@ int mob_summonslave(struct mob_data *md2,int *value,int amount,int flag)
 			md->spawndelay1=-1;	// 一度のみフラグ
 			md->spawndelay2=-1;	// 一度のみフラグ
 
-
+#ifdef DYNAMIC_SC_DATA
+			//ダミー挿入
+			md->sc_data = dummy_sc_data;
+#endif
 			memset(md->npc_event,0,sizeof(md->npc_event));
 			md->bl.type=BL_MOB;
 			map_addiddb(&md->bl);
@@ -3640,3 +3651,4 @@ int do_init_mob(void)
 
 	return 0;
 }
+

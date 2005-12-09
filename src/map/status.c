@@ -23,7 +23,6 @@
 #include "unit.h"
 #include "db.h"
 #include "malloc.h"
-
 static int max_weight_base[MAX_PC_CLASS];
 static int hp_coefficient[MAX_PC_CLASS];
 static int hp_coefficient2[MAX_PC_CLASS];
@@ -37,6 +36,7 @@ static char job_bonus[3][MAX_PC_CLASS][MAX_LEVEL];
 int current_equip_item_index;//ステータス計算用
 int current_equip_card_id;
 static char race_name[10][5] = {{"無形"},{"不死"},{"動物"},{"植物"},{"昆虫"},{"魚貝"},{"悪魔"},{"人間"},{"天使"},{"竜"}};
+struct status_change dummy_sc_data[MAX_STATUSCHANGE];
 /*==========================================
  * 精錬ボーナス
  *------------------------------------------
@@ -996,7 +996,7 @@ L_RECALC:
 	//	if(sd->view_class==PC_CLASS_SG)
 	//		sd->view_class = sd->view_class+1;
 	}
-	
+
 	if( (skill=pc_checkskill(sd,AC_VULTURE))>0){	// ワシの目
 		sd->hit += skill;
 		if(sd->status.weapon == 11)
@@ -3265,7 +3265,7 @@ int status_check_no_magic_damage(struct block_list *bl)
 int status_calloc_sc_data(struct block_list *bl)
 {
 	nullpo_retr(0, bl);
-	if(status_get_sc_data(bl) != NULL)
+	if(status_check_dummy_sc_data(bl) == 0)
 		return 0;
 	if(bl->type == BL_MOB)
 	{
@@ -3283,16 +3283,26 @@ int status_calloc_sc_data(struct block_list *bl)
 int status_free_sc_data(struct block_list *bl)
 {
 	nullpo_retr(0, bl);
-	if(bl->type == BL_MOB && status_get_sc_data(bl) != NULL)
+	if(bl->type == BL_MOB && status_check_dummy_sc_data(bl)==0)
 	{
 		struct mob_data *md = (struct mob_data *)bl;
 		aFree(md->sc_data);
-		md->sc_data = NULL;
+		md->sc_data = dummy_sc_data;
 		md->sc_count = 0;
 	}
 	return 0;
 }
 #endif
+int status_check_dummy_sc_data(struct block_list *bl)
+{
+	nullpo_retr(0, bl);
+	if(bl->type == BL_MOB)
+	{
+		if(((struct mob_data *)bl)->sc_data == dummy_sc_data)
+			return 1;
+	}
+	return 0;
+}
 /*==========================================
  * ステータス異常開始
  *------------------------------------------
@@ -4518,10 +4528,9 @@ int status_change_clear(struct block_list *bl,int type)
 	int i;
 
 	nullpo_retr(0, bl);
-	sc_data=status_get_sc_data(bl);
-	if(sc_data==NULL && bl->type==BL_MOB)
+	if(status_check_dummy_sc_data(bl))
 		return 0;
-	nullpo_retr(0, sc_data);
+	nullpo_retr(0, sc_data=status_get_sc_data(bl));
 	nullpo_retr(0, sc_count=status_get_sc_count(bl));
 	nullpo_retr(0, option=status_get_option(bl));
 	nullpo_retr(0, opt1=status_get_opt1(bl));
@@ -6403,6 +6412,11 @@ int status_readdb(void) {
 	fclose(fp);
 	printf("read db/size_fix.txt done\n");
 
+	for(i=0;i<MAX_STATUSCHANGE;i++) {
+		dummy_sc_data[i].timer=-1;
+		dummy_sc_data[i].val1 = dummy_sc_data[i].val2 = dummy_sc_data[i].val3 = dummy_sc_data[i].val4 =0;
+	}
+	
 	return 0;
 }
 

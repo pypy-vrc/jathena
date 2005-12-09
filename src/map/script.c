@@ -5971,6 +5971,9 @@ int buildin_changebase(struct script_state *st)
 	if(vclass==22)
 		pc_unequipitem(sd,sd->equip_index[9],1);	// ‘•”õŠO‚µ
 
+	if(vclass==26)
+		pc_unequipitem(sd,sd->equip_index[9],1);	// ‘•”õŠO‚µ
+		
 	sd->view_class = vclass;
 
 	return 0;
