@@ -2211,8 +2211,10 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 	switch(type){
 	case SP_ADD_MONSTER_DROP_ITEM:
 		if(sd->state.lr_flag != 2) {
-			if(battle_config.dropitem_itemrate_fix)
+			if(battle_config.dropitem_itemrate_fix==1)
 				val = mob_droprate_fix(type2,val);
+			else if(battle_config.dropitem_itemrate_fix>1)
+				val = val * battle_config.dropitem_itemrate_fix / 100;
 			for(i=0;i<sd->monster_drop_item_count;i++) {
 				if(sd->monster_drop_itemid[i] == type2) {
 					sd->monster_drop_race[i] |= 1<<type3;
