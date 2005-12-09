@@ -402,6 +402,7 @@ extern struct Battle_Config {
 	int allow_cloneskill_at_autospell;
 	int pk_noshift;
 	int pk_penalty_time;
+	int clif_fixpos_type;
 
 	int item_rate_details,item_rate_1,item_rate_10,item_rate_100,item_rate_1000;	//ドロップレート詳細
 	int item_rate_1_min,item_rate_10_min,item_rate_100_min,item_rate_1000_min;	//ドロップレート詳細min

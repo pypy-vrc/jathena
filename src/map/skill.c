@@ -322,6 +322,15 @@ int SkillStatusChangeTable[]={	/* skill.hのenumのSC_***とあわせること */
 
 /* (スキル番号 - GD_SKILLBASE)＝＞ステータス異常番号変換テーブル */
 /* */
+int HomSkillStatusChangeTable[]={	/* skill.hのenumのSC_***とあわせること */
+/* 0- */
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+/* 10- */
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+};
+
+/* (スキル番号 - GD_SKILLBASE)＝＞ステータス異常番号変換テーブル */
+/* */
 int GuildSkillStatusChangeTable[]={	/* skill.hのenumのSC_***とあわせること */
 /* 0- */
 	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -411,7 +420,7 @@ static const int dirx[8]={0,-1,-1,-1, 0, 1,1,1};
 static const int diry[8]={1, 1, 0,-1,-1,-1,0,1};
 
 /* スキルデータベース */
-struct skill_db skill_db[MAX_SKILL_DB+MAX_GUILDSKILL_DB];
+struct skill_db skill_db[MAX_SKILL_DB+MAX_HOMSKILL_DB+MAX_GUILDSKILL_DB];
 
 /* アイテム作成データベース */
 struct skill_produce_db skill_produce_db[MAX_SKILL_PRODUCE_DB];
@@ -475,49 +484,55 @@ struct skill_unit_layout *skill_get_unit_layout(int skillid,int skilllv,struct b
 /**/
 /*
 */
+int skill_get_skilldb_id(int id)
+{
+	if(id>=GD_SKILLBASE)
+		id = id -GD_SKILLBASE + MAX_HOMSKILL_DB + MAX_SKILL_DB;
+	if(id >= HM_SKILLBASE)
+		id = id -HM_SKILLBASE + MAX_SKILL_DB;
+	return id;
+}
+
 int GetSkillStatusChangeTable(int id)
 {
-	if(id < GD_SKILLBASE)
+	if(id < HM_SKILLBASE)
 		return SkillStatusChangeTable[id];
 
+	if(id < GD_SKILLBASE)
+		return HomSkillStatusChangeTable[id - HM_SKILLBASE];
+		
 	return 	GuildSkillStatusChangeTable[id - GD_SKILLBASE];
 }
 int skill_get_hit(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].hit;
 }
 int skill_get_inf(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].inf;
 }
 int skill_get_pl(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].pl;
 }
 int skill_get_nk(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].nk;
 }
 int skill_get_max(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].max;
 }
 int skill_get_range(int id,int lv)
 {
 	if(lv<=0)
 		return 0;
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].range[lv-1];
 }
@@ -526,8 +541,7 @@ int skill_get_hp(int id,int lv)
 	if(lv<=0)
 		return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].hp[lv-1];
 }
@@ -536,8 +550,7 @@ int skill_get_sp(int id,int lv)
 	if(lv<=0)
 		return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].sp[lv-1];
 }
@@ -546,8 +559,7 @@ int skill_get_zeny(int id,int lv)
 	if(lv<=0)
 		return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].zeny[lv-1];
 }
@@ -556,8 +568,7 @@ int skill_get_num(int id,int lv)
 	if(lv<=0)
 		return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].num[lv-1];
 }
@@ -565,8 +576,7 @@ int skill_get_cast(int id,int lv)
 {
 	if(lv<=0) return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].cast[lv-1];
 }
@@ -575,8 +585,7 @@ int skill_get_fixedcast(int id ,int lv)
 	if(lv<=0)
 		return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].fixedcast[lv-1];
 }
@@ -585,8 +594,7 @@ int skill_get_delay(int id,int lv)
 	if(lv<=0)
 		return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].delay[lv-1];
 }
@@ -594,8 +602,7 @@ int skill_get_time(int id ,int lv)
 {
 	if(lv<=0) return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].upkeep_time[lv-1];
 }
@@ -603,89 +610,70 @@ int skill_get_time2(int id,int lv)
 {
 	if(lv<=0) return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].upkeep_time2[lv-1];
 }
 int skill_get_castdef(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].cast_def_rate;
 }
 int skill_get_weapontype(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].weapon;
 }
 int skill_get_inf2(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].inf2;
 }
 int skill_get_maxcount(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].maxcount;
 }
 int skill_get_blewcount(int id,int lv)
 {
 	if(lv<=0) return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].blewcount[lv-1];
 }
 int skill_get_unit_id(int id,int flag)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].unit_id[flag];
 }
 int skill_get_unit_layout_type(int id,int lv)
 {
 	if(lv<=0) return 0;
 
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	if(lv > MAX_SKILL_LEVEL) lv = MAX_SKILL_LEVEL;
 	return skill_db[id].unit_layout_type[lv-1];
 }
 int skill_get_unit_interval(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].unit_interval;
 }
 int skill_get_unit_range(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].unit_range;
 }
 int skill_get_unit_target(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].unit_target;
 }
 int skill_get_unit_flag(int id)
 {
-	if(id >= GD_SKILLBASE)
-		id = id -GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 	return skill_db[id].unit_flag;
-}
-int skill_get_skilldb_id(int id)
-{
-	if(id>=GD_SKILLBASE)
-		return id - GD_SKILLBASE + MAX_SKILL_DB;
-
-	return id;
 }
 /*==========================================
  * スキル追加効果
@@ -10953,11 +10941,10 @@ int skill_readdb(void)
 		i=atoi(split[0]);
 		//if(i<0 || i>MAX_SKILL_DB) continue;
 
-		if(! ( (0<=i && i<=MAX_SKILL_DB) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ) )
+		if(! ( (0<=i && i<=MAX_SKILL_DB) ||  (HM_SKILLBASE <= i && i<= (HM_SKILLBASE+MAX_HOMSKILL_DB)) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
 			continue;
 
-		if(i>=GD_SKILLBASE)
-			i = i-GD_SKILLBASE + MAX_SKILL_DB;
+		i = skill_get_skilldb_id(i);
 
 /*		printf("skill id=%d\n",i); */
 		skill_split_atoi(split[1],skill_db[i].range);
@@ -11006,12 +10993,10 @@ int skill_readdb(void)
 			continue;
 
 		i=atoi(split[0]);
-		//if(i<0 || i>MAX_SKILL_DB) continue;
-		if(! ( (0<=i && i<=MAX_SKILL_DB) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ) )
+		if(! ( (0<=i && i<=MAX_SKILL_DB) ||  (HM_SKILLBASE <= i && i<= (HM_SKILLBASE+MAX_HOMSKILL_DB)) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
 			continue;
 
-		if(i>=GD_SKILLBASE)
-			i = i-GD_SKILLBASE + MAX_SKILL_DB;
+		i = skill_get_skilldb_id(i);
 
 		skill_split_atoi(split[1],skill_db[i].hp);
 		skill_split_atoi(split[2],skill_db[i].sp);
@@ -11090,11 +11075,10 @@ int skill_readdb(void)
 			continue;
 
 		i=atoi(split[0]);
-		if(! ( (0<=i && i<=MAX_SKILL_DB) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
+		if(! ( (0<=i && i<=MAX_SKILL_DB) ||  (HM_SKILLBASE <= i && i<= (HM_SKILLBASE+MAX_HOMSKILL_DB)) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
 			continue;
 
-		if(i>=GD_SKILLBASE)
-			i = i-GD_SKILLBASE + MAX_SKILL_DB;
+		i = skill_get_skilldb_id(i);
 
 		skill_split_atoi(split[1],skill_db[i].cast);
 		skill_split_atoi(split[2],skill_db[i].fixedcast);
@@ -11123,12 +11107,10 @@ int skill_readdb(void)
 
 		i=atoi(split[0]);
 
-		//if(i<0 || i>MAX_SKILL_DB)	continue;
-		if(! ( (0<=i && i<=MAX_SKILL_DB) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
+		if(! ( (0<=i && i<=MAX_SKILL_DB) ||  (HM_SKILLBASE <= i && i<= (HM_SKILLBASE+MAX_HOMSKILL_DB)) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
 			continue;
 
-		if(i>=GD_SKILLBASE)
-			i = i-GD_SKILLBASE + MAX_SKILL_DB;
+		i = skill_get_skilldb_id(i);
 
 		skill_db[i].unit_id[0] = strtol(split[1],NULL,16);
 		skill_db[i].unit_id[1] = strtol(split[2],NULL,16);
@@ -11163,11 +11145,10 @@ int skill_readdb(void)
 
 		i=atoi(split[0]);
 
-		if(! ( (0<=i && i<=MAX_SKILL_DB) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
+		if(! ( (0<=i && i<=MAX_SKILL_DB) ||  (HM_SKILLBASE <= i && i<= (HM_SKILLBASE+MAX_HOMSKILL_DB)) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
 			continue;
 
-		if(i>=GD_SKILLBASE)
-			i = i-GD_SKILLBASE + MAX_SKILL_DB;
+		i = skill_get_skilldb_id(i);
 
 		skill_db[i].zone = atoi(split[1]);
 		k++;
@@ -11192,11 +11173,10 @@ int skill_readdb(void)
 
 		i=atoi(split[0]);
 
-		if(! ( (0<=i && i<=MAX_SKILL_DB) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
+		if(! ( (0<=i && i<=MAX_SKILL_DB) ||  (HM_SKILLBASE <= i && i<= (HM_SKILLBASE+MAX_HOMSKILL_DB)) || (GD_SKILLBASE <= i && i<= (GD_SKILLBASE+MAX_GUILDSKILL_DB)) ))
 			continue;
 
-		if(i>=GD_SKILLBASE)
-			i = i-GD_SKILLBASE + MAX_SKILL_DB;
+		i = skill_get_skilldb_id(i);
 
 		skill_db[i].misfire = 1;
 		k++;

@@ -68,7 +68,7 @@
 
 #define MAP_CONF_NAME	"conf/map_athena.conf"
 
-enum { BL_NUL, BL_PC, BL_NPC, BL_MOB, BL_ITEM, BL_CHAT, BL_SKILL , BL_PET };
+enum { BL_NUL, BL_PC, BL_NPC, BL_MOB, BL_ITEM, BL_CHAT, BL_SKILL , BL_PET ,BL_HOM};
 enum { WARP, SHOP, SCRIPT, MONS };
 struct block_list {
 	struct block_list *next,*prev;

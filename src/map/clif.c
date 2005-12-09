@@ -1589,10 +1589,12 @@ int clif_changemapserver(struct map_session_data *sd,char *mapname,int x,int y,i
  */
 
 int clif_fixpos(struct block_list *bl) {
-	int x[4], y[4];
 
 	nullpo_retr(0, bl);
 
+if(battle_config.clif_fixpos_type)
+{	
+	int x[4], y[4];
 	// clif_fixpos2 用のデータを作成
 	x[0] = bl->x - AREA_SIZE;
 	x[1] = bl->x + AREA_SIZE;
@@ -1603,6 +1605,14 @@ int clif_fixpos(struct block_list *bl) {
 	y[2] = bl->y - AREA_SIZE;
 	y[3] = bl->y + AREA_SIZE;
 	clif_fixpos2(bl, x, y);
+}else{
+	char buf[256];
+	WBUFW(buf,0)=0x88;
+	WBUFL(buf,2)=bl->id;
+	WBUFW(buf,6)=bl->x;
+	WBUFW(buf,8)=bl->y;
+	clif_send(buf,packet_db[0x88].len,bl,AREA);
+}
 	return 0;
 }
 
@@ -1624,7 +1634,8 @@ int clif_fixpos2(struct block_list *bl, int x[4], int y[4])
 	char buf[256];
 
 	nullpo_retr(0, bl);
-
+if(battle_config.clif_fixpos_type)
+{
 	if( bl->type == BL_PC ) {
 		// self position is changed
 		// 自キャラの吹き飛ばしパケ送信（協力者募集）
@@ -1670,6 +1681,14 @@ int clif_fixpos2(struct block_list *bl, int x[4], int y[4])
 	}
 	map_foreachcommonarea(clif_fixpos2_sub, bl->m, x, y, BL_PC, bl, len, buf);
 
+}else{
+
+	WBUFW(buf,0)=0x88;
+	WBUFL(buf,2)=bl->id;
+	WBUFW(buf,6)=bl->x;
+	WBUFW(buf,8)=bl->y;
+	clif_send(buf,packet_db[0x88].len,bl,AREA);
+}
 	return 0;
 }
 
@@ -4237,7 +4256,8 @@ int clif_skillup(struct map_session_data *sd,int skill_num)
 	int range,fd;
 
 	nullpo_retr(0, sd);
-
+	if(skill_num>8000)
+		skill_num = skill_num-7100;
 	fd=sd->fd;
 	WFIFOW(fd,0) = 0x10e;
 	WFIFOW(fd,2) = skill_num;

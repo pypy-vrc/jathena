@@ -604,7 +604,7 @@ int pc_isequip(struct map_session_data *sd,int n)
 		if(item->equip & 0x0200)
 			return 1;
 		//頭下段
-		if(item->equip & 0x0002)
+		if(item->equip & 0x0001)
 			return 1;
 	}
 
@@ -1085,15 +1085,25 @@ int pc_calc_skilltree(struct map_session_data *sd)
 		//結婚スキルとトマホーク除外
 		for(i=304;i<330;i++)
 				sd->status.skill[i].id=i;
-		if(battle_config.enable_upper_class){ //confで無効でなければ読み込む
-			//養子スキル除外
-			for(i=355;i<408;i++)
-				sd->status.skill[i].id=i;
-			for(i=411;i<500;i++)
-				sd->status.skill[i].id=i;
-		}
-			for(i=1001;i<1020;i++)
-				sd->status.skill[i].id=i;
+		//養子スキル除外
+		for(i=355;i<408;i++)
+			sd->status.skill[i].id=i;
+#ifdef TKSGSLGSNJ
+		for(i=411;i<545;i++)
+			sd->status.skill[i].id=i;
+		for(i=1001;i<1020;i++)
+			sd->status.skill[i].id=i;
+#else
+ 	#ifdef TKSGSL
+		for(i=411;i<500;i++)
+			sd->status.skill[i].id=i;
+		for(i=1001;i<1020;i++)
+			sd->status.skill[i].id=i;
+	#else
+		for(i=475;i<492;i++)
+			sd->status.skill[i].id=i;
+	#endif
+#endif
 	}else{
 		// 通常の計算
 		do{
@@ -1125,7 +1135,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 		sd->status.skill[WE_CALLBABY].lv=1;
 		sd->status.skill[WE_CALLBABY].flag=1;
 	}
-	
+
 	//養子 親が居ないと覚えない
 	if(sd->status.parent_id[0]>0 || sd->status.parent_id[1]>0)
 	{
@@ -1136,7 +1146,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 		sd->status.skill[WE_CALLPARENT].lv=1;
 		sd->status.skill[WE_CALLPARENT].flag=1;
 	}
-
+#if MAX_VALID_PC_CLASS>=28
 	//埋め込み
 	//アルケミストの魂
 	if(sd->sc_data && sd->sc_data[SC_ALCHEMIST].timer!=-1)
@@ -1289,6 +1299,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 			}
 		}
 	}
+#endif
 //	if(battle_config.etc_log)
 //		printf("calc skill_tree\n");
 	return 0;

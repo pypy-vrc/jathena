@@ -4493,6 +4493,7 @@ int battle_config_read(const char *cfgName)
 		battle_config.pk_penalty_time = 60000;
 		battle_config.dropitem_itemrate_fix = 0;
 		battle_config.gm_nomanner_lv = 50;
+		battle_config.clif_fixpos_type = 1;
 	}
 
 	fp=fopen(cfgName,"r");
@@ -4853,8 +4854,9 @@ int battle_config_read(const char *cfgName)
 			{ "pk_penalty_time",					&battle_config.pk_penalty_time						},
 			{ "dropitem_itemrate_fix",				&battle_config.dropitem_itemrate_fix				},
 			{ "gm_nomanner_lv",						&battle_config.gm_nomanner_lv						},
+			{ "clif_fixpos_type",					&battle_config.clif_fixpos_type						},
 		};
-
+		
 		if(line[0] == '/' && line[1] == '/')
 			continue;
 		i=sscanf(line,"%[^:]:%s",w1,w2);
