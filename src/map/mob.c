@@ -3525,7 +3525,7 @@ void mob_reload(void)
  */
 int mob_droprate_fix(int item,int drop)
 {
-	int drop_fix;
+	int drop_fix = drop;
 	if(drop < 1) return 0;
 	if(drop > 10000) return 10000;
 	if(battle_config.item_rate_details==0)
