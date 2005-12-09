@@ -2573,8 +2573,12 @@ struct Damage battle_calc_magic_attack(
 				const int drate[]={100,90,70};
 				if(flag>2)
 					matk1=matk2=0;
-				else
-					MATK_FIX( (95+skill_lv*5)*drate[flag] ,10000 );
+				else{
+					MATK_FIX( (95+skill_lv*5) ,100);
+					if(flag>0){
+						MATK_FIX(drate[flag],100);
+					}
+				}
 			}
 			break;
 		case MG_FIREWALL:	// ファイヤーウォール

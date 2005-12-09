@@ -1,4 +1,4 @@
-// $Id: map.c,v 1.5 2005/12/09 23:55:25 running_pinata Exp $
+// $Id: map.c,v 1.6 2005/12/09 23:59:05 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -114,9 +114,6 @@ int map_getusers(void)
 int map_freeblock( void *bl )
 {
 	if(block_free_lock==0){
-#ifdef	DYNAMIC_SC_DATA
-		status_free_sc_data(bl);
-#endif
 		free(bl);
 		bl = NULL;
 	}
@@ -154,9 +151,6 @@ int map_freeblock_unlock(void)
 //				printf("map_freeblock_unlock: free %d object\n",block_free_count);
 //		}
 		for(i=0;i<block_free_count;i++){
-#ifdef	DYNAMIC_SC_DATA
-			status_free_sc_data(block_free[i]);
-#endif
 			free(block_free[i]);
 			block_free[i] = NULL;
 		}
