@@ -3265,7 +3265,7 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	struct mob_data *md = NULL;
 	struct status_change* sc_data;
 	short *sc_count, *option, *opt1, *opt2, *opt3;
-	int opt_flag = 0, calc_flag = 0, updateflag = 0, race, mode, elem, undead_flag;
+	int opt_flag = 0, calc_flag = 0, updateflag = 0, race, mode, elem;
 	int scdef=0,soul_through = 0;
 
 	nullpo_retr(0, bl);
@@ -3282,7 +3282,6 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	race=status_get_race(bl);
 	mode=status_get_mode(bl);
 	elem=status_get_elem_type(bl);
-	undead_flag=(elem == 9 || race == 1)?1:0;
 
 
 	if(type == SC_AETERNA && (sc_data[SC_STONE].timer != -1 || sc_data[SC_FREEZE].timer != -1) )
@@ -3368,27 +3367,27 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		return 0;
 	}
 
-	if(type==SC_FREEZE && undead_flag && !(flag&1))
-		return 0;
-
-	//石化無効
-	if(type==SC_STONE && undead_flag && !(flag&1))
+	//アンデッドは凍結・石化無効
+	if((race==1 || elem==9) && !(flag&1) && (type==SC_STONE || type==SC_FREEZE))
 		return 0;
 		
 	if((type == SC_ADRENALINE || type==SC_ADRENALINE2 || type == SC_WEAPONPERFECTION || type == SC_OVERTHRUST) &&
 		sc_data[type].timer != -1 && sc_data[type].val2 && !val2)
 		return 0;
 
-	if(mode & 0x20 && (type==SC_STONE || type==SC_FREEZE || type == SC_FOGWALLPENALTY ||
-		type==SC_STAN || type==SC_SLEEP || type==SC_SILENCE || type==SC_QUAGMIRE || type == SC_DECREASEAGI || type == SC_PROVOKE ||
-		(type == SC_BLESSING && (undead_flag || race == 6))) && !(flag&1)){
-		/* ボスには効かない(ただしカードによる効果は適用される) */
+	if(mode&0x20 && !(flag&1) &&
+	(type==SC_STONE || type==SC_FREEZE || type==SC_STAN || type==SC_SLEEP ||
+	type==SC_POISON || type==SC_CURSE || type==SC_SILENCE || type==SC_CONFUSION ||
+	type==SC_BLIND || type==SC_BLEED || type==SC_DPOISON || type==SC_PROVOKE ||
+	type==SC_QUAGMIRE || type==SC_DECREASEAGI || type==SC_FOGWALLPENALTY ||
+	(type==SC_BLESSING && (battle_check_undead(race,elem) || race==6))))
+	/* ボスには効かない(ただしカードによる効果は適用される) */
 		return 0;
-	}
+
 	if(type==SC_FREEZE || type==SC_STAN || type==SC_SLEEP)
 		unit_stop_walking(bl,1);
 
-	if (type==SC_BLESSING && (bl->type==BL_PC || (!undead_flag && race!=6))) {
+	if (type==SC_BLESSING && (bl->type==BL_PC || (!battle_check_undead(race,elem) && race!=6))) {
 		if (sc_data[SC_CURSE].timer!=-1)
 			status_change_end(bl,SC_CURSE,-1);
 		if (sc_data[SC_STONE].timer!=-1 && sc_data[SC_STONE].val2==0)

@@ -552,7 +552,7 @@ int unit_stop_walking(struct block_list *bl,int type)
 
 	delete_timer(ud->walktimer, unit_walktoxy_timer);
 	ud->walktimer         = -1;
-	if(md) { md->state.skillstate = MSS_IDLE; }
+//	if(md) { md->state.skillstate = MSS_IDLE; }
 	if(type&0x01) { // 位置補正送信が必要
 		clif_fixwalkpos(bl);
 	}
@@ -1193,8 +1193,8 @@ int unit_attack_timer_sub(int tid,unsigned int tick,int id,int data)
 			if( tsc_data[SC_HIGHJUMP].timer  != -1) return 0;
 			if( tsc_data[SC_WINKCHARM].timer != -1) return 0;
 		}
-		if(!(mode&0x20) && target_sd && race!=4 && race!=6 ) {
-			if ( pc_ishiding(target_sd)            ) return 0;
+		if(!(mode&0x20) && target_sd) {
+			if ( pc_ishiding(target_sd) && race!=4 && race!=6 ) return 0;
 			if ( target_sd->state.gangsterparadise ) return 0;
 		}
 	}

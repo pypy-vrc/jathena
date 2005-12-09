@@ -1161,7 +1161,7 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 
 	//殴ってmob変化
 	if(sd && dstmd && mob_db[dstmd->class].race != 7
-		&& !(mob_db[dstmd->class].mode&32) && attack_type&BF_WEAPON && dstmd->class != 1288)
+		&& !(mob_db[dstmd->class].mode&0x20) && attack_type&BF_WEAPON && dstmd->class != 1288)
 	{
 		if(atn_rand()%10000 < sd->mob_class_change_rate)
 		{
@@ -8412,19 +8412,24 @@ static int skill_gangster_in(struct block_list *bl,va_list ap)
 static int skill_gangster_out(struct block_list *bl,va_list ap)
 {
 	struct map_session_data *sd;
+	int c=0;
 
 	nullpo_retr(0, bl);
 	nullpo_retr(0, ap);
 
 	sd=(struct map_session_data*)bl;
-	if(sd && sd->state.gangsterparadise)
-		sd->state.gangsterparadise=0;
+	if(sd && sd->state.gangsterparadise){
+		map_foreachinarea(skill_gangster_count,bl->m,
+			bl->x-1,bl->y-1,
+			bl->x+1,bl->y+1,BL_PC,&c);
+		if(c < 2)
+			sd->state.gangsterparadise=0;
+	}
 	return 0;
 }
 
 int skill_gangsterparadise(struct map_session_data *sd ,int type)
 {
-	int range=1;
 	int c=0;
 
 	nullpo_retr(0, sd);
@@ -8434,25 +8439,21 @@ int skill_gangsterparadise(struct map_session_data *sd ,int type)
 
 	if(type==1) {/* 座った時の処理 */
 		map_foreachinarea(skill_gangster_count,sd->bl.m,
-			sd->bl.x-range,sd->bl.y-range,
-			sd->bl.x+range,sd->bl.y+range,BL_PC,&c);
+			sd->bl.x-1,sd->bl.y-1,
+			sd->bl.x+1,sd->bl.y+1,BL_PC,&c);
 		if(c > 1) {/*ギャングスター成功したら自分にもギャングスター属性付与*/
 			map_foreachinarea(skill_gangster_in,sd->bl.m,
-				sd->bl.x-range,sd->bl.y-range,
-				sd->bl.x+range,sd->bl.y+range,BL_PC);
+				sd->bl.x-1,sd->bl.y-1,
+				sd->bl.x+1,sd->bl.y+1,BL_PC);
 			sd->state.gangsterparadise = 1;
 		}
 		return 0;
 	}
 	else if(type==0) {/* 立ち上がったときの処理 */
-		map_foreachinarea(skill_gangster_count,sd->bl.m,
-			sd->bl.x-range,sd->bl.y-range,
-			sd->bl.x+range,sd->bl.y+range,BL_PC,&c);
-		if(c < 2)
-			map_foreachinarea(skill_gangster_out,sd->bl.m,
-				sd->bl.x-range,sd->bl.y-range,
-				sd->bl.x+range,sd->bl.y+range,BL_PC);
 		sd->state.gangsterparadise = 0;
+		map_foreachinarea(skill_gangster_out,sd->bl.m,
+			sd->bl.x-1,sd->bl.y-1,
+			sd->bl.x+1,sd->bl.y+1,BL_PC);
 		return 0;
 	}
 	return 0;

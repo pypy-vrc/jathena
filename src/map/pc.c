@@ -2255,42 +2255,42 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 	case SP_AUTOSPELL:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_TARGET|EAS_FLUCT|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_FLUCT|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_NOSP);
 		break;
 	case SP_AUTOSPELL2:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_USEMAX|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_USEMAX|EAS_NOSP);
 		break;
 	case SP_AUTOSELFSPELL:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_NOSP);
 		break;
 	case SP_AUTOSELFSPELL2:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_USEMAX|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_USEMAX|EAS_NOSP);
 		break;
 	case SP_REVAUTOSPELL://反撃用オートスペル
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_NOSP);
 		break;
 	case SP_REVAUTOSPELL2:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_USEMAX|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_USEMAX|EAS_NOSP);
 		break;
 	case SP_REVAUTOSELFSPELL:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_NOSP);
 		break;
 	case SP_REVAUTOSELFSPELL2:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_USEMAX|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_USEMAX|EAS_NOSP);
 		break;
 	case SP_RAISE:
 		sd->autoraise.hp_per = type3;

@@ -7954,20 +7954,20 @@ void clif_parse_ActionRequest(int fd,struct map_session_data *sd, int cmd)
 		break;
 	case 0x02:	// sitdown
 		if(battle_config.basic_skill_check == 0 || pc_checkskill(sd,NV_BASIC) >= 3) {
-			skill_gangsterparadise(sd,1);/* ギャングスターパラダイス設定 */
 			pc_setsit(sd);
 			clif_sitting(sd);
+			skill_gangsterparadise(sd,1);/* ギャングスターパラダイス設定 */
 		}
 		else
 			clif_skill_fail(sd,1,0,2);
 		break;
 	case 0x03:	// standup
-		skill_gangsterparadise(sd,0);/* ギャングスターパラダイス解除 */
 		pc_setstand(sd);
 		WFIFOW(fd,0)=0x8a;
 		WFIFOL(fd,2)=sd->bl.id;
 		WFIFOB(fd,26)=3;
 		clif_send(WFIFOP(fd,0),packet_db[0x8a].len,&sd->bl,AREA);
+		skill_gangsterparadise(sd,0);/* ギャングスターパラダイス解除 */
 		break;
 	}
 }

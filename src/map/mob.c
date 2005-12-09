@@ -536,7 +536,7 @@ int mob_target(struct mob_data *md,struct block_list *bl,int dist)
 			nullpo_retr(0, sd = (struct map_session_data *)bl);
 			if(sd->invincible_timer != -1 || pc_isinvisible(sd))
 				return 0;
-			if(!(mode&0x20) && race!=4 && race!=6 && sd->state.gangsterparadise)
+			if(!(mode&0x20) && sd->state.gangsterparadise)
 				return 0;
 		}
 
@@ -588,7 +588,7 @@ static int mob_ai_sub_hard_search(struct block_list *bl,va_list ap)
 	mode = status_get_mode( &smd->bl );
 	race = status_get_race( &smd->bl );
 	dist = unit_distance(smd->bl.x,smd->bl.y,bl->x,bl->y);
-	range = (smd->sc_data[SC_BLIND].timer != -1 || smd->sc_data[SC_FOGWALLPENALTY].timer!=-1)?1:10;
+	range = (smd->sc_data[SC_BLIND].timer != -1 || smd->sc_data[SC_FOGWALLPENALTY].timer != -1)?1:10;
 
 	// アクティブ
 	if( (flag & 1) && dist<=range && battle_check_target(&smd->bl,bl,BCT_ENEMY)>=1) {
@@ -596,14 +596,13 @@ static int mob_ai_sub_hard_search(struct block_list *bl,va_list ap)
 		// ターゲット射程内にいるなら、ロックする
 		if(tsd && !unit_isdead(&tsd->bl) && tsd->invincible_timer == -1 && !pc_isinvisible(tsd) ) {
 			// 妨害がないか判定
-			if(mode&0x20) { active_flag = 1; }
-			if( tsd->sc_data[SC_TRICKDEAD].timer == -1 && tsd->sc_data[SC_HIGHJUMP].timer==-1 &&
-				smd->sc_data[SC_WINKCHARM].timer == -1
-			) {
-				if((!pc_ishiding(tsd) && !tsd->state.gangsterparadise) || race==4 || race==6) {
-					active_flag = 1;
-				}
-			}
+			if(mode&0x20 || (
+			tsd->sc_data[SC_TRICKDEAD].timer == -1 &&
+			tsd->sc_data[SC_HIGHJUMP].timer == -1 &&
+			smd->sc_data[SC_WINKCHARM].timer == -1 &&
+			!tsd->state.gangsterparadise &&
+			(!(pc_ishiding(tsd) && race != 4 && race != 6))) )
+				active_flag = 1;
 		} else if(tmd && dist<=range) {
 			active_flag = 1;
 		}
@@ -741,10 +740,13 @@ static int mob_ai_sub_hard_slavemob(struct mob_data *md,unsigned int tick)
 		if(sd!=NULL && !unit_isdead(&sd->bl) && sd->invincible_timer == -1 && !pc_isinvisible(sd)){
 
 			race=mob_db[md->class].race;
-			if(mode&0x20 ||
-				(sd->sc_data[SC_TRICKDEAD].timer == -1 && sd->sc_data[SC_HIGHJUMP].timer == -1 && mmd->sc_data[SC_WINKCHARM].timer == -1 &&
-				( (!pc_ishiding(sd) && !sd->state.gangsterparadise) || race==4 || race==6) ) ){	// 妨害がないか判定
-
+			// 妨害がないか判定
+			if(mode&0x20 || (
+			sd->sc_data[SC_TRICKDEAD].timer == -1 &&
+			sd->sc_data[SC_HIGHJUMP].timer == -1 &&
+			mmd->sc_data[SC_WINKCHARM].timer == -1 &&
+			!sd->state.gangsterparadise &&
+			(!(pc_ishiding(sd) && race != 4 && race != 6))) ){
 				md->target_id=sd->bl.id;
 				md->min_chase=5+unit_distance(md->bl.x,md->bl.y,sd->bl.x,sd->bl.y);
 				md->state.master_check = 1;
@@ -964,9 +966,14 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 			tsd=(struct map_session_data *)tbl;
 		else if(tbl->type==BL_MOB)
 			tmd=(struct mob_data *)tbl;
-		if( tsd && !(mode&0x20) && (tsd->sc_data[SC_TRICKDEAD].timer != -1 || tsd->sc_data[SC_HIGHJUMP].timer!=-1 
-			 || md->sc_data[SC_WINKCHARM].timer != -1 || ((pc_ishiding(tsd) || tsd->state.gangsterparadise) && race!=4 && race!=6)) )
-			mob_unlocktarget(md,tick);	// スキルなどによる策敵妨害
+		// スキルなどによる策敵妨害判定
+		if( tsd && !(mode&0x20) && (
+		tsd->sc_data[SC_TRICKDEAD].timer != -1 ||
+		tsd->sc_data[SC_HIGHJUMP].timer!=-1 ||
+		md->sc_data[SC_WINKCHARM].timer != -1 ||
+		tsd->state.gangsterparadise ||
+		(pc_ishiding(tsd) && race != 4 && race != 6)) )
+			mob_unlocktarget(md,tick);
 		else if(!battle_check_range(&md->bl,tbl,mob_db[md->class].range)){
 			// 攻撃範囲外なので移動
 			if(!(mode&1)){	// 移動しないモード
