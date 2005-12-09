@@ -1098,8 +1098,9 @@ struct Damage battle_calc_weapon_attack(
 		{
 			if(sc_data[SC_TRIPLEATTACK_RATE_UP].timer!=-1)
 			{
-				int rate_up[3] = {20,50,100};
-				da = (atn_rand()%100 < (30 - skill + rate_up[sc_data[SC_TRIPLEATTACK_RATE_UP].val1 - 1])) ? 2:0;
+				int rate_up[3] = {200,250,300};
+				int triple_rate = (30 - skill)*rate_up[sc_data[SC_TRIPLEATTACK_RATE_UP].val1 - 1]/100;
+				da = (atn_rand()%100 < triple_rate) ? 2:0;
 				status_change_end(src,SC_TRIPLEATTACK_RATE_UP,-1);
 			}else
 				da = (atn_rand()%100 < (30 - skill)) ? 2:0;
@@ -1109,8 +1110,8 @@ struct Damage battle_calc_weapon_attack(
 		{
 			if(sc_data[SC_COUNTER_RATE_UP].timer!=-1 && (skill = pc_checkskill(src_sd,SG_FRIEND)) > 0)
 			{
-				int rate_up[3] = {20,50,100};
-				da = (atn_rand()%100 < (20 + rate_up[skill - 1])) ? 6:0;
+				int counter_rate[3] = {40,50,60};//{200,250,300};
+				da = (atn_rand()%100 <  counter_rate[skill - 1]) ? 6:0;
 				status_change_end(src,SC_COUNTER_RATE_UP,-1);
 			}else
 				da = (atn_rand()%100 < 20) ? 6:0;
@@ -3666,15 +3667,28 @@ int battle_skill_attack(int attack_type,struct block_list* src,struct block_list
 			}
 		}
 		//ƒJƒCƒg
-		if(sc_data && sc_data[SC_KAITE].timer!=-1)
+		if(damage > 0 && sc_data && sc_data[SC_KAITE].timer!=-1)
 		{
 			if(src->type == BL_PC || status_get_lv(src) < 80)
 			{
-				rdamage = damage;
 				sc_data[SC_KAITE].val2--;
 				if(sc_data[SC_KAITE].val2==0)
 					status_change_end(bl,SC_KAITE,-1);
 				
+				if(src->type==BL_PC && ssc_data && ssc_data[SC_WIZARD].timer!=-1)
+				{
+					struct map_session_data* ssd = (struct map_session_data* )src;
+					int idx = pc_search_inventory(ssd,7321);
+					if(idx!=-1 && ssd->status.inventory[idx].amount > 0)
+					{
+						pc_delitem(ssd,idx,1,0);
+					}else{
+						rdamage += damage;
+					}
+				}
+				else{
+					rdamage += damage;
+				}
 			}
 		}
 		if(rdamage > 0){

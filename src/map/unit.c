@@ -585,10 +585,9 @@ int unit_stop_walking(struct block_list *bl,int type)
 
 int unit_skilluse_id(struct block_list *src, int target_id, int skill_num, int skill_lv) {
 	int id = skill_num;
-	if(id >= GD_SKILLBASE)
-		id = id - GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 
-	if( id < 0 || id >= MAX_SKILL_DB+MAX_GUILDSKILL_DB) {
+	if( id < 0 || id >= MAX_SKILL_DB+MAX_HOMSKILL_DB+MAX_GUILDSKILL_DB) {
 		return 0;
 	} else {
 		return unit_skilluse_id2(
@@ -759,6 +758,10 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 			target_id = tbl->id;
 		}
 		break;
+	case CR_SHIELDBOOMERANG:
+		if(sc_data && sc_data[SC_CRUSADER].timer!=-1)
+			delay = delay/2;
+		break;
 	case AS_SONICBLOW:
 		if(sc_data && sc_data[SC_ASSASIN].timer!=-1 && map[src->m].flag.gvg==0)
 			delay = delay/2;
@@ -882,10 +885,9 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 
 int unit_skilluse_pos(struct block_list *src, int skill_x, int skill_y, int skill_num, int skill_lv) {
 	int id = skill_num;
-	if(id >= GD_SKILLBASE)
-		id = id - GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 
-	if( id < 0 || id >= MAX_SKILL_DB+MAX_GUILDSKILL_DB) {
+	if( id < 0 || id >= MAX_SKILL_DB+MAX_HOMSKILL_DB+MAX_GUILDSKILL_DB) {
 		return 0;
 	} else {
 		return unit_skilluse_pos2(

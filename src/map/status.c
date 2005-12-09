@@ -740,10 +740,10 @@ L_RECALC:
 		if(sd->sc_data[SC_MEAL_INCLUK].timer!=-1)
 			sd->paramb[5]+= sd->sc_data[SC_MEAL_INCLUK].val1;
 			
-		//駆け足のSTR +10
+		//駆け足のATK +10*LV
 		if(sd->sc_data[SC_SPURT].timer!=-1)
-			sd->paramb[0] += 10;
-		
+			sd->base_atk += 10*sd->sc_data[SC_SPURT].val1;
+
 		//ギルドスキル 臨戦態勢
 		if(sd->sc_data[SC_BATTLEORDER].timer!=-1){
 			sd->paramb[0]+= 5*sd->sc_data[SC_BATTLEORDER].val1;
@@ -980,7 +980,7 @@ L_RECALC:
 	}
 	
 	//太陽と月と星の悪魔
-	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0)
+	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0 && sd->status.job_level>=50)
 	{
 		aspd_rate -= skill*3;
 		if(sd->sc_data[SC_DEVIL].timer!=-1 || sd->sc_data[SC_DEVIL].val1<skill)
@@ -1203,7 +1203,7 @@ L_RECALC:
 	if(sd->sc_count){
 		//太陽の安楽 DEF増加
 		if(sd->sc_data[SC_SUN_COMFORT].timer!=-1 && sd->bl.m == sd->feel_map[0].m)
-			sd->def += (sd->status.base_level + sd->status.dex + sd->status.luk)/10;
+			sd->def2 += (sd->status.base_level + sd->status.dex + sd->status.luk)/2;
 			//sd->def += (sd->status.base_level + sd->status.dex + sd->status.luk + sd->paramb[4] + sd->paramb[5])/10;
 			
 		//月の安楽
@@ -1596,6 +1596,12 @@ L_RECALC:
 		if(sd->sc_data[SC_DELUGE].timer!=-1)	// エンチャントポイズン(属性はbattle.cで)
 			sd->addeff[0]+=sd->sc_data[SC_DELUGE].val2;//% of granting
 		*/
+	}
+	//テコンランカーボーナス
+	if(sd->status.class==PC_CLASS_TK && sd->status.base_level>=90 && ranking_get_pc_rank(sd,RK_TAEKWON)>0)
+	{
+		sd->status.max_hp*=3;
+		sd->status.max_sp*=3;
 	}
 
 	if(sd->speed_rate != 100)
