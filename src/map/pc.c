@@ -4515,7 +4515,7 @@ int pc_damage(struct block_list *src,struct map_session_data *sd,int damage)
 	}
 
 	// •à ‚¢‚Ä‚¢‚½‚ç‘«‚ðŽ~‚ß‚é
-	if(sd->sc_data[SC_ENDURE].timer == -1 && !sd->special_state.infinite_endure)
+	if(sd->sc_data[SC_ENDURE].timer == -1 && sd->sc_data[SC_BERSERK].timer == -1 && !sd->special_state.infinite_endure)
 		unit_stop_walking(&sd->bl,battle_config.pc_hit_stop_type);
 
 	// ‰‰‘t/ƒ_ƒ“ƒX‚Ì’†’f

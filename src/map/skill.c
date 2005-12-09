@@ -2533,41 +2533,43 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 						pc_gainexp(sd,exp,jexp);
 				}
 
-				if(dstsd->sc_data[SC_REDEMPTIO].timer!=-1 && battle_config.death_penalty_type&1 &&
-									!map[dstsd->bl.m].flag.nopenalty && !map[dstsd->bl.m].flag.gvg)
-			{
-				int base_exp=0,job_exp=0;
-				int per = dstsd->sc_data[SC_REDEMPTIO].val1;
-				if(per > 100)
-					per = 100;
-				if(battle_config.death_penalty_type&1 && battle_config.death_penalty_base > 0)
-					base_exp = (int)((atn_bignumber)pc_nextbaseexp(sd) * battle_config.death_penalty_base/10000);
-				else if(battle_config.death_penalty_base > 0) {
-					if(pc_nextbaseexp(sd) > 0)
-					base_exp = (int)((atn_bignumber)sd->status.base_exp * battle_config.death_penalty_base/10000);
-				}
+				if( dstsd->sc_data[SC_REDEMPTIO].timer!=-1
+				 && battle_config.death_penalty_type&1
+				 && !map[dstsd->bl.m].flag.nopenalty
+				 && !map[dstsd->bl.m].flag.gvg)
+				{
+					int base_exp=0,job_exp=0;
+					int per = dstsd->sc_data[SC_REDEMPTIO].val1;
+					if(per > 100)
+						per = 100;
+					if(battle_config.death_penalty_type&1 && battle_config.death_penalty_base > 0)
+						base_exp = (int)((atn_bignumber)pc_nextbaseexp(sd) * battle_config.death_penalty_base/10000);
+					else if(battle_config.death_penalty_base > 0) {
+						if(pc_nextbaseexp(sd) > 0)
+						base_exp = (int)((atn_bignumber)sd->status.base_exp * battle_config.death_penalty_base/10000);
+					}
 
-				if(battle_config.death_penalty_type&1 && battle_config.death_penalty_job > 0)
-					job_exp = (int)((atn_bignumber)pc_nextjobexp(sd) * battle_config.death_penalty_job/10000);
-				else if(battle_config.death_penalty_job > 0) {
-					if(pc_nextjobexp(sd) > 0)
-					job_exp = (int)((atn_bignumber)sd->status.job_exp * battle_config.death_penalty_job/10000);
-				}
+					if(battle_config.death_penalty_type&1 && battle_config.death_penalty_job > 0)
+						job_exp = (int)((atn_bignumber)pc_nextjobexp(sd) * battle_config.death_penalty_job/10000);
+					else if(battle_config.death_penalty_job > 0) {
+						if(pc_nextjobexp(sd) > 0)
+						job_exp = (int)((atn_bignumber)sd->status.job_exp * battle_config.death_penalty_job/10000);
+					}
 
-				if(per!=100){
-					base_exp = base_exp * per/100;
-					job_exp =  job_exp * per/100;
-				}
-				if(dstsd->status.base_exp && base_exp){
-					sd->status.base_exp += base_exp;
-					clif_updatestatus(sd,SP_BASEEXP);
-				}
+					if(per!=100){
+						base_exp = base_exp * per/100;
+						job_exp =  job_exp * per/100;
+					}
+					if(dstsd->status.base_exp && base_exp){
+						sd->status.base_exp += base_exp;
+						clif_updatestatus(sd,SP_BASEEXP);
+					}
 
-				if(dstsd->status.job_exp && base_exp){
-					sd->status.job_exp += job_exp;
-					clif_updatestatus(sd,SP_JOBEXP);
+					if(dstsd->status.job_exp && base_exp){
+						sd->status.job_exp += job_exp;
+						clif_updatestatus(sd,SP_JOBEXP);
+					}
 				}
-			}
 				if(dstsd->sc_data[SC_REDEMPTIO].timer!=-1)
 					status_change_end(bl,SC_REDEMPTIO,0);
 			}
@@ -2924,8 +2926,6 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case LK_BERSERK:		/* バーサーク */
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		status_change_start(bl,SkillStatusChangeTable[skillid],skilllv,0,0,0,skill_get_time(skillid,skilllv),0 );
-		if(sd) sd->skillstatictimer[SM_ENDURE] = tick;
-		status_change_start(bl,SkillStatusChangeTable[SM_ENDURE],1,0,0,0,skill_get_time(skillid,skilllv),0 );
 		sd->status.hp = sd->status.max_hp;
 		clif_updatestatus(sd,SP_HP);
 		break;

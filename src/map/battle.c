@@ -372,8 +372,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 				status_change_end(bl, SC_KYRIE, -1);
 		}
 		/* インデュア */
-		if(sc_data[SC_ENDURE].timer!=-1 && damage > 0 && flag&BF_WEAPON 
-		&& sc_data[SC_CONCENTRATION].timer==-1 && sc_data[SC_BERSERK].timer==-1){
+		if(sc_data[SC_ENDURE].timer != -1 && damage > 0 && flag&BF_WEAPON && src->type != BL_PC){
 			if((--sc_data[SC_ENDURE].val2)<=0)
 				status_change_end(bl, SC_ENDURE, -1);
 		}
@@ -2554,6 +2553,7 @@ struct Damage battle_calc_magic_attack(
 			normalmagic_flag=0;
 			break;
 
+//		case HW_NAPALMVULCAN:	// ナパームバルカン
 		case MG_NAPALMBEAT:	// ナパームビート（分散計算込み）
 			MATK_FIX(70+ skill_lv*10,100);
 			if(flag>0){
