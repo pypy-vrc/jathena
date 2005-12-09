@@ -2926,8 +2926,10 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 	case LK_BERSERK:		/* バーサーク */
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		status_change_start(bl,SkillStatusChangeTable[skillid],skilllv,0,0,0,skill_get_time(skillid,skilllv),0 );
-		sd->status.hp = sd->status.max_hp;
-		clif_updatestatus(sd,SP_HP);
+		if(sd){
+			sd->status.hp = sd->status.max_hp;
+			clif_updatestatus(sd,SP_HP);
+		}
 		break;
 	case SM_ENDURE:			/* インデュア */
 		if(sd) sd->skillstatictimer[SM_ENDURE] = tick + 10000;
@@ -2944,8 +2946,10 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		break;
 	case LK_TENSIONRELAX:	/* テンションリラックス */
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
-		pc_setsit(sd);
-		clif_sitting(sd);
+		if(sd){
+			pc_setsit(sd);
+			clif_sitting(sd);
+		}
 		status_change_start(bl,SkillStatusChangeTable[skillid],skilllv,0,0,0,skill_get_time(skillid,skilllv),0 );
 		break;
 	case MC_CHANGECART:
@@ -5962,7 +5966,7 @@ int skill_unit_onplace_timer(struct skill_unit *src,struct block_list *bl,unsign
 		if (bl->type==BL_PC && ((struct map_session_data *)bl)->special_state.no_magic_damage)
 			break;
 		if (atn_rand()%100 < 50+sg->skill_lv*5) {
-			if (battle_check_target(&src->bl,bl,BCT_ENEMY)>0) {		// 敵対象
+			if (battle_check_target(&src->bl,bl,BCT_ENEMY)>0) {	// 敵対象
 				switch(atn_rand()%8) {
 				case 0:		// ランダムダメージ(1000～9999？)
 					battle_skill_attack(BF_MAGIC,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
@@ -5994,7 +5998,7 @@ int skill_unit_onplace_timer(struct skill_unit *src,struct block_list *bl,unsign
 					break;
 				}
 			}
-			if (battle_check_target(&src->bl,bl,BCT_PARTY)>0) {	// 味方(PT)対象
+			else if (battle_check_target(&src->bl,bl,BCT_PARTY)>0) {	// 味方(PT)対象
 				switch(atn_rand()%10) {
 				case 0:		// HPを回復(1000～9999？)
 					battle_heal(NULL,bl,1000+atn_rand()%9000,0,0);
