@@ -5966,39 +5966,7 @@ int skill_unit_onplace_timer(struct skill_unit *src,struct block_list *bl,unsign
 		if (bl->type==BL_PC && ((struct map_session_data *)bl)->special_state.no_magic_damage)
 			break;
 		if (atn_rand()%100 < 50+sg->skill_lv*5) {
-			if (battle_check_target(&src->bl,bl,BCT_ENEMY)>0) {	// “G‘ÎÛ
-				switch(atn_rand()%8) {
-				case 0:		// ƒ‰ƒ“ƒ_ƒ€ƒ_ƒ[ƒW(1000`9999H)
-					battle_skill_attack(BF_MAGIC,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
-					break;
-				case 1:		// ô‚¢Œø‰Ê•t—^
-					status_change_start(bl,SC_CURSE,sg->skill_lv,0,0,0,
-						skill_get_time2(sg->skill_id,sg->skill_lv),0);
-					break;
-				case 2:		// ˆÃ•Œø‰Ê•t—^
-					status_change_start(bl,SC_BLIND,sg->skill_lv,0,0,0,
-						skill_get_time2(sg->skill_id,sg->skill_lv),0);
-					break;
-				case 3:		// “ÅŒø‰Ê•t—^
-					status_change_start(bl,SC_POISON,sg->skill_lv,0,0,0,
-						skill_get_time2(sg->skill_id,sg->skill_lv),0);
-					break;
-				case 4:		// ƒvƒƒ{ƒbƒNLv10Œø‰Ê•t—^
-					status_change_start(bl,SC_PROVOKE,10,0,0,0,
-						skill_get_time(SM_PROVOKE,10),0);
-					break;
-				case 5:		// ATK‚ª0‚ÉŒ¸­(‘±ŠÔ20•b)
-					status_change_start(bl,SC_INCATK2,-100,0,0,0,20000,0);
-					break;
-				case 6:		// FLEE‚ª0‚ÉŒ¸­(‘±ŠÔ20•b)
-					status_change_start(bl,SC_INCFLEE2,-100,0,0,0,20000,0);
-					break;
-				case 7:		// HIT‚ª0‚ÉŒ¸­(‘±ŠÔ50•b)
-					status_change_start(bl,SC_INCHIT2,-100,0,0,0,50000,0);
-					break;
-				}
-			}
-			else if (battle_check_target(&src->bl,bl,BCT_PARTY)>0) {	// –¡•û(PT)‘ÎÛ
+			if (battle_check_target(&src->bl,bl,BCT_PARTY)>0) {	// –¡•û(PT)‘ÎÛ
 				switch(atn_rand()%10) {
 				case 0:		// HP‚ğ‰ñ•œ(1000`9999H)
 					battle_heal(NULL,bl,1000+atn_rand()%9000,0,0);
@@ -6033,6 +6001,38 @@ int skill_unit_onplace_timer(struct skill_unit *src,struct block_list *bl,unsign
 				case 9:		// HIT, FLEE‚ª+50(‘±ŠÔ90•b)
 					status_change_start(bl,SC_INCHIT,50,0,0,0,90000,0);
 					status_change_start(bl,SC_INCFLEE,50,0,0,0,90000,0);
+					break;
+				}
+			}
+			else if (battle_check_target(&src->bl,bl,BCT_ENEMY)>0) {	// “G‘ÎÛ
+				switch(atn_rand()%8) {
+				case 0:		// ƒ‰ƒ“ƒ_ƒ€ƒ_ƒ[ƒW(1000`9999H)
+					battle_skill_attack(BF_MAGIC,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
+					break;
+				case 1:		// ô‚¢Œø‰Ê•t—^
+					status_change_start(bl,SC_CURSE,sg->skill_lv,0,0,0,
+						skill_get_time2(sg->skill_id,sg->skill_lv),0);
+					break;
+				case 2:		// ˆÃ•Œø‰Ê•t—^
+					status_change_start(bl,SC_BLIND,sg->skill_lv,0,0,0,
+						skill_get_time2(sg->skill_id,sg->skill_lv),0);
+					break;
+				case 3:		// “ÅŒø‰Ê•t—^
+					status_change_start(bl,SC_POISON,sg->skill_lv,0,0,0,
+						skill_get_time2(sg->skill_id,sg->skill_lv),0);
+					break;
+				case 4:		// ƒvƒƒ{ƒbƒNLv10Œø‰Ê•t—^
+					status_change_start(bl,SC_PROVOKE,10,0,0,0,
+						skill_get_time(SM_PROVOKE,10),0);
+					break;
+				case 5:		// ATK‚ª0‚ÉŒ¸­(‘±ŠÔ20•b)
+					status_change_start(bl,SC_INCATK2,-100,0,0,0,20000,0);
+					break;
+				case 6:		// FLEE‚ª0‚ÉŒ¸­(‘±ŠÔ20•b)
+					status_change_start(bl,SC_INCFLEE2,-100,0,0,0,20000,0);
+					break;
+				case 7:		// HIT‚ª0‚ÉŒ¸­(‘±ŠÔ50•b)
+					status_change_start(bl,SC_INCHIT2,-100,0,0,0,50000,0);
 					break;
 				}
 			}
