@@ -280,7 +280,8 @@ int mob_can_move(struct mob_data *md)
 	if(md->ud.canmove_tick > gettick() || (md->opt1 > 0 && md->opt1 != 6) || md->option&2)
 		return 0;
 	// アンクル中で動けないとか
-	if( md->sc_data[SC_ANKLE].timer != -1 || //アンクルスネア
+	if( md->sc_data && (
+		md->sc_data[SC_ANKLE].timer != -1 || //アンクルスネア
 		md->sc_data[SC_AUTOCOUNTER].timer != -1 || //オートカウンター
 		md->sc_data[SC_BLADESTOP].timer != -1 || //白刃取り
 		md->sc_data[SC_CLOSECONFINE].timer!=-1 ||//
@@ -291,7 +292,7 @@ int mob_can_move(struct mob_data *md)
 		md->sc_data[SC_GRAVITATION_USER].timer != -1 ||	//グラビテーションフィールド使用者
 		(battle_config.hermode_no_walking && md->sc_data[SC_DANCING].timer !=-1 && md->sc_data[SC_DANCING].val1 == CG_HERMODE) ||
 		(md->sc_data[SC_DANCING].timer !=-1 && md->sc_data[SC_DANCING].val1>=BD_LULLABY && md->sc_data[SC_DANCING].val1<=BD_SIEGFRIED) ||
-		(md->sc_data[SC_DANCING].timer !=-1 && md->sc_data[SC_DANCING].val1 == CG_MOONLIT)
+		(md->sc_data[SC_DANCING].timer !=-1 && md->sc_data[SC_DANCING].val1 == CG_MOONLIT))
 	)
 		return 0;
 
@@ -402,9 +403,11 @@ int mob_spawn(int id)
 		memset(md->lootitem,0,sizeof(md->lootitem));
 	md->lootitem_count = 0;
 
-	for(i=0;i<MAX_STATUSCHANGE;i++) {
-		md->sc_data[i].timer=-1;
-		md->sc_data[i].val1 = md->sc_data[i].val2 = md->sc_data[i].val3 = md->sc_data[i].val4 =0;
+	if(md->sc_data){
+		for(i=0;i<MAX_STATUSCHANGE;i++) {
+			md->sc_data[i].timer=-1;
+			md->sc_data[i].val1 = md->sc_data[i].val2 = md->sc_data[i].val3 = md->sc_data[i].val4 =0;
+		}
 	}
 	md->sc_count=0;
 	md->opt1=md->opt2=md->opt3=md->option=0;
@@ -530,7 +533,7 @@ int mob_target(struct mob_data *md,struct block_list *bl,int dist)
 		return 0;
 
 	if(mode&0x20 ||	// MVPMOBなら強制
-		(sc_data && sc_data[SC_TRICKDEAD].timer == -1 && sc_data[SC_HIGHJUMP].timer == -1 && md->sc_data[SC_WINKCHARM].timer == -1 &&
+		(sc_data && sc_data[SC_TRICKDEAD].timer == -1 && sc_data[SC_HIGHJUMP].timer == -1 && (md->sc_data==NULL || md->sc_data[SC_WINKCHARM].timer == -1) &&
 		 ( (option && !(*option&0x06) ) || race==4 || race==6) ) ){
 		if(bl->type == BL_PC) {
 			nullpo_retr(0, sd = (struct map_session_data *)bl);
@@ -588,8 +591,11 @@ static int mob_ai_sub_hard_search(struct block_list *bl,va_list ap)
 	mode = status_get_mode( &smd->bl );
 	race = status_get_race( &smd->bl );
 	dist = unit_distance(smd->bl.x,smd->bl.y,bl->x,bl->y);
-	range = (smd->sc_data[SC_BLIND].timer != -1 || smd->sc_data[SC_FOGWALLPENALTY].timer != -1)?1:10;
-
+	if(smd->sc_data)
+		range = (smd->sc_data[SC_BLIND].timer != -1 || smd->sc_data[SC_FOGWALLPENALTY].timer != -1)?1:10;
+	else
+		range = 10;
+	
 	// アクティブ
 	if( (flag & 1) && dist<=range && battle_check_target(&smd->bl,bl,BCT_ENEMY)>=1) {
 		int active_flag = 0;
@@ -599,7 +605,7 @@ static int mob_ai_sub_hard_search(struct block_list *bl,va_list ap)
 			if(mode&0x20 || (
 			tsd->sc_data[SC_TRICKDEAD].timer == -1 &&
 			tsd->sc_data[SC_HIGHJUMP].timer == -1 &&
-			smd->sc_data[SC_WINKCHARM].timer == -1 &&
+			(smd->sc_data==NULL || smd->sc_data[SC_WINKCHARM].timer == -1) &&
 			!tsd->state.gangsterparadise &&
 			(!(pc_ishiding(tsd) && race != 4 && race != 6))) )
 				active_flag = 1;
@@ -744,7 +750,7 @@ static int mob_ai_sub_hard_slavemob(struct mob_data *md,unsigned int tick)
 			if(mode&0x20 || (
 			sd->sc_data[SC_TRICKDEAD].timer == -1 &&
 			sd->sc_data[SC_HIGHJUMP].timer == -1 &&
-			mmd->sc_data[SC_WINKCHARM].timer == -1 &&
+			(mmd->sc_data==NULL || mmd->sc_data[SC_WINKCHARM].timer == -1) &&
 			!sd->state.gangsterparadise &&
 			(!(pc_ishiding(sd) && race != 4 && race != 6))) ){
 				md->target_id=sd->bl.id;
@@ -876,10 +882,10 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 	race = status_get_race( &md->bl );
 
 	// 異常
-	if((md->opt1 > 0 && md->opt1 != 6) || md->sc_data[SC_BLADESTOP].timer != -1)
+	if((md->opt1 > 0 && md->opt1 != 6) || (md->sc_data && md->sc_data[SC_BLADESTOP].timer != -1))
 		return 0;
 
-	if(md->target_id > 0 && (!(mode&0x80) || md->sc_data[SC_BLIND].timer != -1 || md->sc_data[SC_FOGWALLPENALTY].timer!=-1) )
+	if(md->target_id > 0 && (!(mode&0x80) || (md->sc_data && (md->sc_data[SC_BLIND].timer!=-1 || md->sc_data[SC_FOGWALLPENALTY].timer!=-1))))
 		md->target_id = 0;
 
 	if( md->target_id == 0 )
@@ -970,7 +976,7 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 		if( tsd && !(mode&0x20) && (
 		tsd->sc_data[SC_TRICKDEAD].timer != -1 ||
 		tsd->sc_data[SC_HIGHJUMP].timer!=-1 ||
-		md->sc_data[SC_WINKCHARM].timer != -1 ||
+		(md->sc_data && md->sc_data[SC_WINKCHARM].timer != -1 )||
 		tsd->state.gangsterparadise ||
 		(pc_ishiding(tsd) && race != 4 && race != 6)) )
 			mob_unlocktarget(md,tick);
@@ -1368,7 +1374,7 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 		return 0;
 	}
 
-	if(md->sc_data[SC_ENDURE].timer == -1 && md->sc_data[SC_BERSERK].timer == -1)
+	if(md->sc_data==NULL || (md->sc_data[SC_ENDURE].timer == -1 && md->sc_data[SC_BERSERK].timer == -1))
 		unit_stop_walking(&md->bl,3);
 	if(damage > max_hp>>2)
 		skill_stop_dancing(&md->bl,0);
@@ -1440,7 +1446,6 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 	}
 
 	// ----- ここから死亡処理 -----
-
 	map_freeblock_lock();
 	mobskill_use(md,tick,-1);	// 死亡時スキル
 
@@ -2546,11 +2551,19 @@ int mob_getfriendstatus_sub(struct block_list *bl,va_list ap)
 	fr=va_arg(ap,struct mob_data **);
 	if( cond2==-1 ){
 		int j;
-		for(j=SC_STONE;j<=SC_BLIND && !flag;j++){
-			flag=(md->sc_data[j].timer!=-1 );
+		if(md->sc_data){
+			for(j=SC_STONE;j<=SC_BLIND && !flag;j++){
+				flag=(md->sc_data[j].timer!=-1 );
+			}
 		}
-	}else
-		flag=( md->sc_data[cond2].timer!=-1 );
+		else
+			flag = 0;
+	}else{
+		if(md->sc_data)
+			flag=( md->sc_data[cond2].timer!=-1 );
+		else
+			flag = 0;
+	}
 	if( flag^( cond1==MSC_FRIENDSTATUSOFF ) )
 		(*fr)=md;
 
@@ -2580,7 +2593,6 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 //	struct block_list *target=NULL;
 	struct mob_data* master_md=NULL;
 	int i,max_hp;
-
 	nullpo_retr(0, md);
 	nullpo_retr(0, ms = mob_db[md->class].skill);
 
@@ -2592,7 +2604,7 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 	if(md->state.special_mob_ai)
 		return 0;
 
-	if(md->sc_data[SC_SELFDESTRUCTION].timer!=-1)	//自爆中はスキルを使わない
+	if(md->sc_data && md->sc_data[SC_SELFDESTRUCTION].timer!=-1)	//自爆中はスキルを使わない
 		return 0;
 
 	if(md->hp <= 0) {
@@ -2635,11 +2647,19 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 			case MSC_MYSTATUSOFF:		// status[num] off
 				if( ms[i].cond2==-1 ){
 					int j;
-					for(j=SC_STONE;j<=SC_BLIND && !flag;j++){
-						flag=(md->sc_data[j].timer!=-1 );
+					if(md->sc_data){
+						for(j=SC_STONE;j<=SC_BLIND && !flag;j++){
+							flag=(md->sc_data[j].timer!=-1 );
+						}
 					}
-				}else
-					flag=( md->sc_data[ms[i].cond2].timer!=-1 );
+					else
+						flag=0;
+				}else{
+					if(md->sc_data)
+						flag=( md->sc_data[ms[i].cond2].timer!=-1 );
+					else
+						flag=0;
+				}
 				flag^=( ms[i].cond1==MSC_MYSTATUSOFF ); break;
 			case MSC_FRIENDHPLTMAXRATE:	// friend HP < maxhp%
 				flag=(( fmd=mob_getfriendhpltmaxrate(md,ms[i].cond2) )!=NULL ); break;
@@ -2681,13 +2701,21 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 				if(tsd){
 					if( ms[i].cond2==-1 ){
 						int j = 0;
-						if(md->sc_data[SC_STONE].timer!=-1)
-							flag= md->sc_data[SC_STONE].val2==0;
-						for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
-							flag=(md->sc_data[j].timer!=-1 );
+						if(md->sc_data){
+							if(md->sc_data[SC_STONE].timer!=-1)
+								flag= md->sc_data[SC_STONE].val2==0;
+							for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
+								flag=(md->sc_data[j].timer!=-1 );
+							}
 						}
-					}else
-						flag=( md->sc_data[ms[i].cond2].timer!=-1 );
+						else
+							flag=0;
+					}else{
+						if(md->sc_data)
+							flag=( md->sc_data[ms[i].cond2].timer!=-1 );
+						else
+							flag=0;
+					}
 					flag^=( ms[i].cond1==MSC_MYSTATUSOFF );
 				}
 				break;
@@ -2704,13 +2732,21 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 				if(master_md){
 					if( ms[i].cond2==-1 ){
 						int j = 0;
-						if(master_md->sc_data[SC_STONE].timer!=-1)
-							flag= master_md->sc_data[SC_STONE].val2==0;
-						for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
-							flag=(master_md->sc_data[j].timer!=-1 );
+						if(master_md->sc_data){
+							if(master_md->sc_data[SC_STONE].timer!=-1)
+								flag= master_md->sc_data[SC_STONE].val2==0;
+							for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
+								flag=(master_md->sc_data[j].timer!=-1 );
+							}
 						}
-					}else
-						flag=( master_md->sc_data[ms[i].cond2].timer!=-1 );
+						else
+							flag=0;
+					}else{
+						if(master_md->sc_data)
+							flag=( master_md->sc_data[ms[i].cond2].timer!=-1 );
+						else
+							flag=0;
+					}
 					flag^=( ms[i].cond1==MSC_MYSTATUSOFF );
 				}
 				break;

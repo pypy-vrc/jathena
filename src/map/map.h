@@ -571,7 +571,11 @@ struct mob_data {
 	struct item *lootitem;
 	short lootitem_count;
 
+#ifdef	DYNAMIC_SC_DATA
+	struct status_change *sc_data;//[MAX_STATUSCHANGE];
+#else
 	struct status_change sc_data[MAX_STATUSCHANGE];
+#endif
 	short sc_count;
 	short opt1,opt2,opt3,option;
 	short min_chase;

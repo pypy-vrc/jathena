@@ -5929,7 +5929,7 @@ int clif_party_move(struct party *p,struct map_session_data *sd,int online)
 int clif_movetoattack(struct map_session_data *sd,struct block_list *bl)
 {
 	int fd;
-
+	
 	nullpo_retr(0, sd);
 	nullpo_retr(0, bl);
 
@@ -7918,7 +7918,6 @@ void clif_parse_ActionRequest(int fd,struct map_session_data *sd, int cmd)
 {
 	unsigned int tick;
 	int action_type,target_id;
-
 	nullpo_retv(sd);
 
 	if(unit_isdead(&sd->bl)) {

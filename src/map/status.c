@@ -3261,6 +3261,38 @@ int status_check_no_magic_damage(struct block_list *bl)
 	}
 	return 0;
 }
+#ifdef DYNAMIC_SC_DATA
+int status_calloc_sc_data(struct block_list *bl)
+{
+	nullpo_retr(0, bl);
+	if(status_get_sc_data(bl) != NULL)
+		return 0;
+	if(bl->type == BL_MOB)
+	{
+		int i;
+		struct mob_data* md = (struct mob_data*)bl;
+		md->sc_data = (struct status_change *)aCalloc(MAX_STATUSCHANGE,sizeof(struct status_change));
+		for(i=0;i<MAX_STATUSCHANGE;i++) {
+			md->sc_data[i].timer=-1;
+			md->sc_data[i].val1 = md->sc_data[i].val2 = md->sc_data[i].val3 = md->sc_data[i].val4 =0;
+		}
+		md->sc_count = 0;
+	}
+	return 0;
+}
+int status_free_sc_data(struct block_list *bl)
+{
+	nullpo_retr(0, bl);
+	if(bl->type == BL_MOB && status_get_sc_data(bl) != NULL)
+	{
+		struct mob_data *md = (struct mob_data *)bl;
+		aFree(md->sc_data);
+		md->sc_data = NULL;
+		md->sc_count = 0;
+	}
+	return 0;
+}
+#endif
 /*==========================================
  * ステータス異常開始
  *------------------------------------------
@@ -3277,6 +3309,9 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	nullpo_retr(0, bl);
 	if(bl->type == BL_SKILL)
 		return 0;
+#ifdef DYNAMIC_SC_DATA
+	status_calloc_sc_data(bl);
+#endif
 	nullpo_retr(0, sc_data=status_get_sc_data(bl));
 	nullpo_retr(0, sc_count=status_get_sc_count(bl));
 	nullpo_retr(0, option=status_get_option(bl));
@@ -4483,7 +4518,10 @@ int status_change_clear(struct block_list *bl,int type)
 	int i;
 
 	nullpo_retr(0, bl);
-	nullpo_retr(0, sc_data=status_get_sc_data(bl));
+	sc_data=status_get_sc_data(bl);
+	if(sc_data==NULL && bl->type==BL_MOB)
+		return 0;
+	nullpo_retr(0, sc_data);
 	nullpo_retr(0, sc_count=status_get_sc_count(bl));
 	nullpo_retr(0, option=status_get_option(bl));
 	nullpo_retr(0, opt1=status_get_opt1(bl));
@@ -4536,7 +4574,8 @@ int status_change_end_by_jumpkick( struct block_list* bl)
 	//モンスターは使わないだろうから無視
 	if(bl->type!=BL_PC)
 		return 0;
-	
+	if(bl->type==BL_MOB && status_get_sc_data(bl)==NULL)
+		return 0;
 	if(bl->type!=BL_PC && bl->type!=BL_MOB) {
 		if(battle_config.error_log)
 			printf("status_change_end: neither MOB nor PC !\n");
@@ -5892,7 +5931,8 @@ int status_change_timer_sub(struct block_list *bl, va_list ap )
 			status_change_end( bl, SC_CLOAKING, -1);
 			if(battle_check_target( src,bl, BCT_ENEMY ) > 0) {
 				struct status_change *sc_data = status_get_sc_data(bl);
-				battle_skill_attack(BF_MAGIC,src,src,bl,AL_RUWACH,sc_data[type].val1,tick,0);
+				if(sc_data)
+					battle_skill_attack(BF_MAGIC,src,src,bl,AL_RUWACH,sc_data[type].val1,tick,0);
 			}
 		}
 		break;

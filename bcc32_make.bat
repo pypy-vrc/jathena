@@ -39,6 +39,9 @@ set __base__=-DTXT_ONLY
 :set __EXCLASS__=-DTKSGSL
 :set __EXCLASS__=-DTKSGSLGSNJ
 
+@rem 動的にMOBのsc_dataを確保したい人はコメントアウトをはずす
+:set __DYNAMIC_STATUS_CHANGE__=-DDYNAMIC_SC_DATA
+
 @rem CPU最適化スイッチ 以下の例を参考にCPU名を記入してください。
 set _model_=Pentium4
 
@@ -80,7 +83,7 @@ if "%_model_%"=="Pentium4C" set __cpu__=-5 -Ov -Oi
 if "%_model_%"=="AMD32" set __cpu__=-5 -Oc -Ov -f -ff
 if "%_model_%"=="AMD64" set __cpu__=-6 -Oc -Ov -f -ff -tWM
 
-set __define__=%__cpu__% -DPACKETVER=6 -DNEW_006b -DFD_SETSIZE=4096 %__base__% %__NO_HTTPD__% %__NO_CSVDB__% %__ZLIB__% %__SKIP__% %__EXCLASS__%
+set __define__=%__cpu__% -DPACKETVER=6 -DNEW_006b -DFD_SETSIZE=4096 %__base__% %__NO_HTTPD__% %__NO_CSVDB__% %__ZLIB__% %__SKIP__% %__EXCLASS__% %__DYNAMIC_STATUS_CHANGE__%
 set __include__=-I../common/
 
 @echo ■コンパイルオプション表示■

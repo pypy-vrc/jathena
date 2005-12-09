@@ -1028,7 +1028,7 @@ struct Damage battle_calc_weapon_attack(
 			s_atkmax_ = (s_watk_   * src_sd->atkmods_[ t_size ]) / 100;
 			s_atkmin_ = (s_atkmin_ * src_sd->atkmods_[ t_size ]) / 100;
 		}
-		if( sc_data[SC_WEAPONPERFECTION].timer!=-1) {
+		if( sc_data && sc_data[SC_WEAPONPERFECTION].timer!=-1) {
 			// ウェポンパーフェクション || ドレイクカード
 			s_atkmax = s_watk;
 			s_atkmax_ = s_watk_;
@@ -1065,7 +1065,7 @@ struct Damage battle_calc_weapon_attack(
 		}else if(target_md)//対象が敵
 			tclass = target_md->class;
 
-		if(sc_data[SC_MIRACLE].timer!=-1)//太陽と月と星の奇跡
+		if(sc_data && sc_data[SC_MIRACLE].timer!=-1)//太陽と月と星の奇跡
 		{
 			//全ての敵が月
 			atk_rate = (src_sd->status.base_level + s_dex + s_luk + s_str)/(12-3*pc_checkskill(src_sd,SG_STAR_ANGER));
@@ -1096,7 +1096,7 @@ struct Damage battle_calc_weapon_attack(
 		//三段掌
 		if( skill_num == 0 && skill_lv >= 0 && da == 0 && (skill = pc_checkskill(src_sd,MO_TRIPLEATTACK)) > 0 && src_sd->status.weapon <= 16 && !src_sd->state.arrow_atk)
 		{
-			if(sc_data[SC_TRIPLEATTACK_RATE_UP].timer!=-1)
+			if(sc_data && sc_data[SC_TRIPLEATTACK_RATE_UP].timer!=-1)
 			{
 				int rate_up[3] = {200,250,300};
 				int triple_rate = (30 - skill)*rate_up[sc_data[SC_TRIPLEATTACK_RATE_UP].val1 - 1]/100;
@@ -3212,7 +3212,7 @@ int battle_weapon_attack( struct block_list *src,struct block_list *target,
 		
 		//クローンスキル
 		if(wd.damage> 0 && target->type==BL_PC
-			&& pc_checkskill((struct map_session_data *)target,RG_PLAGIARISM) && sc_data[SC_PRESERVE].timer == -1){
+			&& pc_checkskill((struct map_session_data *)target,RG_PLAGIARISM) && sc_data && sc_data[SC_PRESERVE].timer == -1){
 			skill_clone((struct map_session_data *)target,MO_TRIPLEATTACK,pc_checkskill(sd, MO_TRIPLEATTACK));
 		}
 	}else if (wd.div_ >= 251 && wd.div_<=254 && sd)	{ //旋風
@@ -3610,7 +3610,7 @@ int battle_skill_attack(int attack_type,struct block_list* src,struct block_list
 					ssc_data[SC_TKCOMBO].val4 |= 0x08;
 			}
 			
-			if(tk_flag)
+			if(tk_flag && ssc_data)
 			{
 				if(sd->status.class != PC_CLASS_TK || ssc_data[SC_TKCOMBO].val4&~0x0F){
 					//4つとも出したので終了
@@ -3740,7 +3740,7 @@ int battle_skill_attack(int attack_type,struct block_list* src,struct block_list
 
 	//クローンスキル
 	if(damage > 0 && dmg.flag&BF_SKILL && bl->type==BL_PC
-		&& pc_checkskill((struct map_session_data *)bl,RG_PLAGIARISM) && sc_data[SC_PRESERVE].timer == -1){
+		&& pc_checkskill((struct map_session_data *)bl,RG_PLAGIARISM) && sc_data && sc_data[SC_PRESERVE].timer == -1){
 		skill_clone((struct map_session_data *)bl,skillid,skilllv);
 	}
 

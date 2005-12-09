@@ -38,10 +38,13 @@ rem set __NO_CSVDB__=/D "NO_CSVDB"
 rem set __EXCLASS__=/D "TKSGSL"
 rem set __EXCLASS__=/D "TKSGSLGSNJ"
 
+rem 動的にMOBのsc_dataを確保したい人はコメントアウトをはずす
+rem set __DYNAMIC_STATUS_CHANGE__=/D "DYNAMIC_SC_DATA"
+
 rem ---------------------------
 rem コンパイルオプション設定
 
-set __opt1__=/c /W3 /O2 /Op /GA /TC /Zi /I "../common/zlib/" /I "../common/" /D "PACKETVER=6" /D "NEW_006b" /D "FD_SETSIZE=4096"  /D "LOCALZLIB" /D "NDEBUG" /D "_CONSOLE" /D "WIN32" /D "_WIN32" /D "_WIN32_WINDOWS" %__TXT_MODE__% %__CMP_AFL2__% %__CMP_AFIP__% %__NO_HTTPD__% %__NO_CSVDB__% %__EXCLASS__%
+set __opt1__=/c /W3 /O2 /Op /GA /TC /Zi /I "../common/zlib/" /I "../common/" /D "PACKETVER=6" /D "NEW_006b" /D "FD_SETSIZE=4096"  /D "LOCALZLIB" /D "NDEBUG" /D "_CONSOLE" /D "WIN32" /D "_WIN32" /D "_WIN32_WINDOWS" %__TXT_MODE__% %__CMP_AFL2__% %__CMP_AFIP__% %__NO_HTTPD__% %__NO_CSVDB__% %__EXCLASS__% %__DYNAMIC_STATUS_CHANGE__%
 set __opt2__=/DEBUG /MAP /nologo user32.lib ../common/zlib/*.obj ../common/*.obj *.obj
 
 rem ---------------------------

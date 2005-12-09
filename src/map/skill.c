@@ -853,7 +853,7 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 			rate = (skilllv*5+33)*sc_def_mdef/100-(status_get_int(bl)+status_get_luk(bl))/15;
 			if (rate <= 5)
 				rate = 5;
-			if(sc_data && sc_data[SC_FREEZE].timer == -1 && atn_rand()%100 < rate)
+			if((!sc_data || (sc_data && sc_data[SC_FREEZE].timer == -1)) && atn_rand()%100 < rate)
 				status_change_start(bl,SC_FREEZE,skilllv,0,0,0,skill_get_time2(skillid,skilllv)*(1-sc_def_mdef/100),0);
 		}
 		break;
@@ -1794,7 +1794,7 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 		{
 			struct status_change *sc_data = status_get_sc_data(src);
 			battle_skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
-			if(sc_data[SC_BLADESTOP].timer != -1)
+			if(sc_data && sc_data[SC_BLADESTOP].timer != -1)
 				status_change_end(src,SC_BLADESTOP,-1);
 		}
 		break;
@@ -4818,20 +4818,22 @@ int skill_castend_id( int tid, unsigned int tick, int id,int data )
 
 		//沈黙や状態異常など
 		if(src_md) {
-			if(!(mob_db[src_md->class].mode & 0x20) && src_md->sc_data[SC_ROKISWEIL].timer != -1)
-				return 0;
+			if(src_md->sc_data){
+				if(!(mob_db[src_md->class].mode & 0x20) && src_md->sc_data[SC_ROKISWEIL].timer != -1)
+					return 0;
 
-			if(!(mob_db[src_md->class].mode & 0x20) && src_md->sc_data[SC_HERMODE].timer != -1)
-				return 0;
+				if(!(mob_db[src_md->class].mode & 0x20) && src_md->sc_data[SC_HERMODE].timer != -1)
+					return 0;
 
-			if(src_md->opt1>0 || src_md->sc_data[SC_DIVINA].timer != -1 || src_md->sc_data[SC_STEELBODY].timer != -1)
-				return 0;
-			if(src_md->sc_data[SC_AUTOCOUNTER].timer != -1 && src_md->ud.skillid != KN_AUTOCOUNTER) //オートカウンター
-				return 0;
-			if(src_md->sc_data[SC_BLADESTOP].timer != -1) //白刃取り
-				return 0;
-			if(src_md->sc_data[SC_BERSERK].timer != -1) //バーサーク
-				return 0;
+				if(src_md->opt1>0 || src_md->sc_data[SC_DIVINA].timer != -1 || src_md->sc_data[SC_STEELBODY].timer != -1)
+					return 0;
+				if(src_md->sc_data[SC_AUTOCOUNTER].timer != -1 && src_md->ud.skillid != KN_AUTOCOUNTER) //オートカウンター
+					return 0;
+				if(src_md->sc_data[SC_BLADESTOP].timer != -1) //白刃取り
+					return 0;
+				if(src_md->sc_data[SC_BERSERK].timer != -1) //バーサーク
+					return 0;
+			}
 			if(src_md->ud.skillid != NPC_EMOTION)
 				src_md->last_thinktime=tick + status_get_adelay(src);
 			if( src_md->skillidx >= 0)
@@ -5560,7 +5562,7 @@ int skill_unit_onplace(struct skill_unit *src,struct block_list *bl,unsigned int
 	case 0x7e:	/* セイフティウォール */
 		type = SkillStatusChangeTable[sg->skill_id];
 		sc_data = status_get_sc_data(bl);
-		if (sc_data[type].timer==-1)
+		if(sc_data && sc_data[type].timer==-1)
 			status_change_start(bl,type,sg->skill_lv,(int)src,0,0,0,0);
 		break;
 
@@ -5591,7 +5593,7 @@ int skill_unit_onplace(struct skill_unit *src,struct block_list *bl,unsigned int
 		type = SkillStatusChangeTable[sg->skill_id];
 		if (bl->type==BL_PC && ((struct map_session_data *)bl)->special_state.no_magic_damage)
 			break;
-		if (sc_data[type].timer!=-1)
+		if (sc_data && sc_data[type].timer!=-1)
 			break;
 		status_change_start(bl,type,sg->skill_lv,(int)src,0,0,
 				skill_get_time2(sg->skill_id,sg->skill_lv),0);
@@ -5601,7 +5603,7 @@ int skill_unit_onplace(struct skill_unit *src,struct block_list *bl,unsigned int
 	case 0x9c:	/* バイオレントゲイル */
 		type = SkillStatusChangeTable[sg->skill_id];
 		sc_data = status_get_sc_data(bl);
-		if (sc_data[type].timer!=-1) {
+		if (sc_data && sc_data[type].timer!=-1) {
 			unit2 = (struct skill_unit *)sc_data[type].val2;
 			if (unit2==src || DIFF_TICK(sg->tick,unit2->group->tick)<=0)
 				break;
@@ -5630,7 +5632,7 @@ int skill_unit_onplace(struct skill_unit *src,struct block_list *bl,unsigned int
 			battle_config.allow_me_concert_effect==1 && battle_config.allow_me_rokisweil==1)
 			break;
 
-		if (sc_data[type].timer!=-1) {
+		if (sc_data && sc_data[type].timer!=-1) {
 			unit2 = (struct skill_unit *)sc_data[type].val4;
 			if (unit2==src || DIFF_TICK(sg->tick,unit2->group->tick)<=0)
 				break;
@@ -5649,10 +5651,10 @@ int skill_unit_onplace(struct skill_unit *src,struct block_list *bl,unsigned int
 		type = SkillStatusChangeTable[sg->skill_id];
 		sc_data = status_get_sc_data(bl);
 		//ダンス効果を自分にかける？
-		if(sg->src_id==bl->id && sc_data[SC_BARDDANCER].timer==-1
+		if(sg->src_id==bl->id && (!sc_data || sc_data[SC_BARDDANCER].timer==-1)
 							&& battle_config.allow_me_dance_effect==0)
 			break;
-		if(sc_data[type].timer!=-1) {
+		if(sc_data && sc_data[type].timer!=-1) {
 			unit2 = (struct skill_unit *)sc_data[type].val4;
 			if (unit2==src || DIFF_TICK(sg->tick,unit2->group->tick)<=0)
 				break;
@@ -5717,7 +5719,7 @@ int skill_unit_onplace(struct skill_unit *src,struct block_list *bl,unsigned int
 				status_support_magic_skill_end(bl);
 		}
 
-		if(sc_data[type].timer!=-1 && same_flag==0) {
+		if(sc_data && sc_data[type].timer!=-1 && same_flag==0) {
 			unit2 = (struct skill_unit *)sc_data[type].val4;
 			if (unit2==src || DIFF_TICK(sg->tick,unit2->group->tick)<=0)
 				break;
@@ -5901,7 +5903,7 @@ int skill_unit_onplace_timer(struct skill_unit *src,struct block_list *bl,unsign
 
 	case 0x91:	/* アンクルスネア */
 		sc_data=status_get_sc_data(bl);
-		if (sg->val2==0 && sc_data[SC_ANKLE].timer==-1) {
+		if (sg->val2==0 && (!sc_data || sc_data[SC_ANKLE].timer==-1)) {
 			int sec=(int)(skill_get_time2(sg->skill_id,sg->skill_lv) - (double)status_get_agi(bl)*0.1);
 			if(status_get_mode(bl)&0x20)
 				sec = sec/5;
@@ -5917,7 +5919,7 @@ int skill_unit_onplace_timer(struct skill_unit *src,struct block_list *bl,unsign
 	case 0x92:	/* ベノムダスト */
 		type = SkillStatusChangeTable[sg->skill_id];
 		sc_data = status_get_sc_data(bl);
-		if (sc_data[type].timer!=-1)
+		if (sc_data && sc_data[type].timer!=-1)
 			break;
 		status_change_start(bl,type,sg->skill_lv,(int)src,0,0,
 				skill_get_time2(sg->skill_id,sg->skill_lv),0);
@@ -6114,7 +6116,7 @@ int skill_unit_onout(struct skill_unit *src,struct block_list *bl,unsigned int t
 		type = SkillStatusChangeTable[sg->skill_id];
 		if (type==SC_QUAGMIRE && bl->type==BL_MOB)
 			break;
-		if (sc_data[type].timer!=-1 && sc_data[type].val2==(int)src) {
+		if (sc_data && sc_data[type].timer!=-1 && sc_data[type].val2==(int)src) {
 			status_change_end(bl,type,-1);
 		}
 		break;
@@ -6148,16 +6150,16 @@ int skill_unit_onout(struct skill_unit *src,struct block_list *bl,unsigned int t
 	case 0xb4:	/* バジリカ */
 		sc_data = status_get_sc_data(bl);
 		type = SkillStatusChangeTable[sg->skill_id];
-		if (sc_data[type].timer!=-1 && sc_data[type].val4==(int)src) {
+		if (sc_data && sc_data[type].timer!=-1 && sc_data[type].val4==(int)src) {
 			status_change_end(bl,type,-1);
 		}
 		break;
 	case 0xb6:	/* フォグウォール */
 		sc_data = status_get_sc_data(bl);
-		if(sc_data[SC_FOGWALL].timer!=-1)
+		if(sc_data && sc_data[SC_FOGWALL].timer!=-1)
 			status_change_end(bl,SC_FOGWALL,-1);
 		//PCなら効果消える
-		if(bl->type==BL_PC && sc_data[SC_FOGWALLPENALTY].timer!=-1)
+		if(bl->type==BL_PC && sc_data && sc_data[SC_FOGWALLPENALTY].timer!=-1)
 			status_change_end(bl,SC_FOGWALLPENALTY,-1);
 		break;
 	case 0x89: //月明りの下で
@@ -6173,12 +6175,12 @@ int skill_unit_onout(struct skill_unit *src,struct block_list *bl,unsigned int t
 
 	case 0xb8://グラビテーションフィールド
 		sc_data = status_get_sc_data(bl);
-		if (sc_data[SC_GRAVITATION].timer!=-1)
+		if (sc_data && sc_data[SC_GRAVITATION].timer!=-1)
 			status_change_end(bl,SC_GRAVITATION,-1);
 		break;
 	case 0xb9://ヘルモードの杖
 		sc_data = status_get_sc_data(bl);
-		if (sc_data[SC_HERMODE].timer!=-1)
+		if (sc_data && sc_data[SC_HERMODE].timer!=-1)
 			status_change_end(bl,SC_HERMODE,-1);
 		break;
 /*	default:
@@ -6328,7 +6330,7 @@ int skill_castend_pos( int tid, unsigned int tick, int id,int data )
 	src_ud->skilltimer=-1;
 	do {
 		if(unit_isdead(src)) break;
-		if(src_md){
+		if(src_md && src_md->sc_data){
 			if(!(mob_db[src_md->class].mode & 0x20) && src_md->sc_data[SC_ROKISWEIL].timer != -1)
 				break;
 			if(!(mob_db[src_md->class].mode & 0x20) && src_md->sc_data[SC_HERMODE].timer != -1)
@@ -6832,7 +6834,7 @@ int skill_check_condition2(struct block_list *bl, struct skill_condition *sc, in
 			if(! sd) return 0;
 			if(!battle_config.twilight_party_check)
 				f=1;
-			if(sd->status.party_id>0 && sc_data[SC_ALCHEMIST].timer!=-1)
+			if(sd->status.party_id>0 && sc_data && sc_data[SC_ALCHEMIST].timer!=-1)
 			{
 				struct party *pt = party_search(sd->status.party_id);
 				if(pt!=NULL)
@@ -6863,7 +6865,7 @@ int skill_check_condition2(struct block_list *bl, struct skill_condition *sc, in
 			if( ! sd) return 0;
 			if(!battle_config.twilight_party_check)
 				f=1;
-			if(sd->status.party_id && sc_data[SC_ALCHEMIST].timer!=-1)
+			if(sd->status.party_id && sc_data && sc_data[SC_ALCHEMIST].timer!=-1)
 			{
 				struct party *pt = party_search(sd->status.party_id);
 				if(pt!=NULL)
@@ -6936,7 +6938,7 @@ int skill_check_condition2(struct block_list *bl, struct skill_condition *sc, in
 
 
 			// 既に自分が接続していた相手なら止める
-			if(sc_data[SC_MARIONETTE].timer!=-1 && sc_data[SC_MARIONETTE].val2 == target_sd->bl.id)
+			if(sc_data && sc_data[SC_MARIONETTE].timer!=-1 && sc_data[SC_MARIONETTE].val2 == target_sd->bl.id)
 			{
 				if(target_sd->sc_data[SC_MARIONETTE2].timer!=-1)
 				{
@@ -7954,14 +7956,18 @@ static int skill_check_condition2_mob(struct mob_data *md, struct skill_conditio
 		return 0;
 	if(md->option&2 && sc->id!=TF_HIDING && sc->id!=AS_GRIMTOOTH && sc->id!=RG_BACKSTAP && sc->id!=RG_RAID)
 		return 0;
-	if(!(status_get_mode(&md->bl) & 0x20) && md->sc_data[SC_ROKISWEIL].timer != -1)
+	if(md->opt1>0) 
 		return 0;
-	if(md->opt1>0 || md->sc_data[SC_DIVINA].timer != -1 || md->sc_data[SC_STEELBODY].timer != -1)
-		return 0;
-	if(md->sc_data[SC_AUTOCOUNTER].timer != -1 && sc->id != KN_AUTOCOUNTER) //オートカウンター
-		return 0;
-	if(md->sc_data[SC_BLADESTOP].timer != -1) //白刃取り
-		return 0;
+	if(md->sc_data){
+		if(md->sc_data[SC_DIVINA].timer != -1 || md->sc_data[SC_STEELBODY].timer != -1)
+			return 0;
+		if(!(status_get_mode(&md->bl) & 0x20) && md->sc_data[SC_ROKISWEIL].timer != -1)
+			return 0;
+		if(md->sc_data[SC_AUTOCOUNTER].timer != -1 && sc->id != KN_AUTOCOUNTER) //オートカウンター
+			return 0;
+		if(md->sc_data[SC_BLADESTOP].timer != -1) //白刃取り
+			return 0;
+	}
 
 	return 1;
 }
@@ -8921,6 +8927,8 @@ void skill_stop_dancing(struct block_list *src, int flag)
 	nullpo_retv(src);
 
 	sc_data=status_get_sc_data(src);
+	if(sc_data==NULL && src->type==BL_MOB)
+		return;
 	if(sc_data && sc_data[SC_DANCING].timer==-1)
 		return;
 	group=(struct skill_unit_group *)sc_data[SC_DANCING].val2; //ダンスのスキルユニットIDはval2に入ってる
@@ -8969,6 +8977,8 @@ void skill_stop_gravitation(struct block_list *src)
 	nullpo_retv(src);
 
 	sc_data=status_get_sc_data(src);
+	if(sc_data==NULL && src->type==BL_MOB)
+		return ;
 	if(sc_data && sc_data[SC_GRAVITATION_USER].timer==-1)
 		return ;
 
@@ -9295,9 +9305,9 @@ int skill_unit_timer_sub( struct block_list *bl, va_list ap )
 int skill_hermode_wp_check(struct block_list *bl,int range)
 {
 	int wp_flag=0;
-	struct status_change* sc_data;
+	//struct status_change* sc_data;
 	nullpo_retr(0, bl);
-	sc_data=status_get_sc_data(bl);
+	//sc_data=status_get_sc_data(bl);
 	map_foreachinarea(skill_hermode_wp_check_sub,bl->m,bl->x-range,bl->y-range,bl->x+range,bl->y+range,BL_NPC,&wp_flag);
 	return wp_flag;
 }
