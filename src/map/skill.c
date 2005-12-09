@@ -853,7 +853,7 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 			rate = (skilllv*5+33)*sc_def_mdef/100-(status_get_int(bl)+status_get_luk(bl))/15;
 			if (rate <= 5)
 				rate = 5;
-			if((!sc_data || (sc_data && sc_data[SC_FREEZE].timer == -1)) && atn_rand()%100 < rate)
+			if(sc_data && sc_data[SC_FREEZE].timer == -1 && atn_rand()%100 < rate)
 				status_change_start(bl,SC_FREEZE,skilllv,0,0,0,skill_get_time2(skillid,skilllv)*(1-sc_def_mdef/100),0);
 		}
 		break;
@@ -5651,7 +5651,7 @@ int skill_unit_onplace(struct skill_unit *src,struct block_list *bl,unsigned int
 		type = SkillStatusChangeTable[sg->skill_id];
 		sc_data = status_get_sc_data(bl);
 		//ダンス効果を自分にかける？
-		if(sg->src_id==bl->id && (!sc_data || sc_data[SC_BARDDANCER].timer==-1)
+		if(sg->src_id==bl->id && (sc_data && sc_data[SC_BARDDANCER].timer==-1)
 							&& battle_config.allow_me_dance_effect==0)
 			break;
 		if(sc_data && sc_data[type].timer!=-1) {
@@ -6156,11 +6156,13 @@ int skill_unit_onout(struct skill_unit *src,struct block_list *bl,unsigned int t
 		break;
 	case 0xb6:	/* フォグウォール */
 		sc_data = status_get_sc_data(bl);
-		if(sc_data && sc_data[SC_FOGWALL].timer!=-1)
-			status_change_end(bl,SC_FOGWALL,-1);
-		//PCなら効果消える
-		if(bl->type==BL_PC && sc_data && sc_data[SC_FOGWALLPENALTY].timer!=-1)
-			status_change_end(bl,SC_FOGWALLPENALTY,-1);
+		if(sc_data){
+			if(sc_data[SC_FOGWALL].timer!=-1)
+				status_change_end(bl,SC_FOGWALL,-1);
+			//PCなら効果消える
+			if(bl->type==BL_PC && sc_data[SC_FOGWALLPENALTY].timer!=-1)
+				status_change_end(bl,SC_FOGWALLPENALTY,-1);
+		}
 		break;
 	case 0x89: //月明りの下で
 		break;

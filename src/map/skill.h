@@ -313,7 +313,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_DEVOTION				=60,	/* ディボーション */
 	SC_PROVIDENCE			=61,	/* プロヴィデンス */
 	SC_DEFENDER				=62,	/* ディフェンダー */
-	//
+	SC_SANTA				=63,	//サンタ
 	//
 	SC_AUTOSPELL			=65,	/* オートスペル */
 	//

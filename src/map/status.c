@@ -996,6 +996,10 @@ L_RECALC:
 	//	if(sd->view_class==PC_CLASS_SG)
 	//		sd->view_class = sd->view_class+1;
 	}
+	if(sd && sd->sc_data[SC_SANTA].timer!=-1)
+	{
+		sd->view_class = 26;
+	}
 
 	if( (skill=pc_checkskill(sd,AC_VULTURE))>0){	// ワシの目
 		sd->hit += skill;
@@ -3292,7 +3296,6 @@ int status_free_sc_data(struct block_list *bl)
 	}
 	return 0;
 }
-#endif
 int status_check_dummy_sc_data(struct block_list *bl)
 {
 	nullpo_retr(0, bl);
@@ -3303,6 +3306,7 @@ int status_check_dummy_sc_data(struct block_list *bl)
 	}
 	return 0;
 }
+#endif
 /*==========================================
  * ステータス異常開始
  *------------------------------------------
@@ -3914,6 +3918,9 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_INCMATK:	//item 683用
 			calc_flag = 1;
 			tick = 1000 * tick;
+			break;
+		case SC_SANTA:
+			calc_flag = 1;
 			break;
 		case SC_WEDDING:	//結婚用(結婚衣裳になって歩くのが遅いとか)
 			{
@@ -4528,8 +4535,10 @@ int status_change_clear(struct block_list *bl,int type)
 	int i;
 
 	nullpo_retr(0, bl);
+#ifdef DYNAMIC_SC_DATA
 	if(status_check_dummy_sc_data(bl))
 		return 0;
+#endif
 	nullpo_retr(0, sc_data=status_get_sc_data(bl));
 	nullpo_retr(0, sc_count=status_get_sc_count(bl));
 	nullpo_retr(0, option=status_get_option(bl));
@@ -4914,6 +4923,7 @@ int status_change_end( struct block_list* bl , int type,int tid)
 			case SC_INCATK:		//item 682用
 			case SC_INCMATK:	//item 683用
 			case SC_WEDDING:	//結婚用(結婚衣裳になって歩くのが遅いとか)
+			case SC_SANTA:
 			case SC_INCALLSTATUS:
 			case SC_INCHIT:
 			case SC_INCFLEE:
