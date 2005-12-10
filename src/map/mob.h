@@ -159,5 +159,6 @@ int mob_gvmobcheck(struct map_session_data *sd, struct block_list *bl);
 void mob_reload(void);
 int mob_delayspawn(int tid,unsigned int tick,int m,int n);
 int mob_unlocktarget(struct mob_data *md,int tick);
+int mob_droprate_fix(int item,int drop);
 
 #endif

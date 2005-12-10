@@ -1,4 +1,4 @@
-// $Id: chat.c,v 1.1.1.3 2005/11/30 00:06:02 running_pinata Exp $
+// $Id: chat.c,v 1.1.1.4 2005/12/10 00:59:58 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,6 +49,9 @@ int chat_createchat(struct map_session_data *sd,int limit,int pub,char* pass,cha
 	cd->bl.x = sd->bl.x;
 	cd->bl.y = sd->bl.y;
 	cd->bl.type = BL_CHAT;
+	cd->zeny = 0;
+	cd->lowlv = 0;
+	cd->highlv = 255;
 
 	cd->bl.id = map_addobject(&cd->bl);	
 	if(cd->bl.id==0){
@@ -80,17 +83,28 @@ int chat_joinchat(struct map_session_data *sd,int chatid,char* pass)
 	if(cd==NULL)
 		return 1;
 
-	if(cd->bl.m != sd->bl.m ||  sd->vender_id || cd->limit <= cd->users){
-		clif_joinchatfail(sd,0);
+	if(cd->bl.m != sd->bl.m || sd->vender_id || sd->joinchat){
+		clif_joinchatfail(sd,3);	//何も表示しない
+		return 0;
+	}
+	if(cd->limit <= cd->users) {
+		clif_joinchatfail(sd,0);	//人数超過メッセージ
 		return 0;
 	}
 	if(cd->pub==0 && strncmp(pass,cd->pass,8)){
-		clif_joinchatfail(sd,1);
+		clif_joinchatfail(sd,1);	//パスワードエラーメッセージ
 		return 0;
 	}
-
-	if(sd->joinchat){
-		clif_joinchatfail(sd,0);
+	if(cd->zeny > sd->status.zeny){
+		clif_joinchatfail(sd,4);	//お金不足メッセージ
+		return 0;
+	}
+	if(cd->lowlv > sd->status.base_level){
+		clif_joinchatfail(sd,5);	//Lv不足メッセージ
+		return 0;
+	}
+	if(cd->highlv < sd->status.base_level){
+		clif_joinchatfail(sd,6);	//Lv超過メッセージ
 		return 0;
 	}
 
@@ -269,7 +283,9 @@ int chat_kickchat(struct map_session_data *sd,char *kickusername)
  * npcチャットルーム作成
  *------------------------------------------
  */
-int chat_createnpcchat(struct npc_data *nd,int limit,int pub,int trigger,char* title,int titlelen,const char *ev)
+int chat_createnpcchat(
+	struct npc_data *nd,int limit,int pub,int trigger,char* title,int titlelen,const char *ev,
+	int zeny,int lowlv,int highlv)
 {
 	struct chat_data *cd;
 
@@ -293,6 +309,9 @@ int chat_createnpcchat(struct npc_data *nd,int limit,int pub,int trigger,char* t
 	cd->bl.type = BL_CHAT;
 	cd->owner_ = (struct block_list *)nd;
 	cd->owner = &cd->owner_;
+	cd->zeny = zeny;
+	cd->lowlv = lowlv;
+	cd->highlv = highlv;
 	memcpy(cd->npc_event,ev,sizeof(cd->npc_event));
 
 	cd->bl.id = map_addobject(&cd->bl);	

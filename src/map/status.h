@@ -80,7 +80,11 @@ int status_clearpretimer(struct block_list *bl);
 int status_check_tigereye(struct block_list *bl);
 int status_check_attackable_by_tigereye(struct block_list *bl);
 int status_check_no_magic_damage(struct block_list *bl);
-
+#ifdef DYNAMIC_SC_DATA
+int status_calloc_sc_data(struct block_list *bl);
+int status_free_sc_data(struct block_list *bl);
+int status_check_dummy_sc_data(struct block_list *bl);
+#endif
 // ステータス計算
 int status_calc_pc_stop_begin(struct block_list *bl);
 int status_calc_pc_stop_end(struct block_list *bl);
@@ -91,6 +95,8 @@ int status_percentrefinery(struct map_session_data *sd,struct item *item);
 int status_percentrefinery_weaponrefine(struct map_session_data *sd,struct item *item);
 extern int current_equip_item_index;
 extern int current_equip_card_id;
+
+extern struct status_change dummy_sc_data[MAX_STATUSCHANGE];
 //DB再読込用
 int status_readdb(void);
 

@@ -5,6 +5,7 @@
 #include "mmo.h"
 
 #define MAX_SKILL_DB			MAX_SKILL
+#define MAX_HOMSKILL_DB			MAX_HOMSKILL
 #define MAX_GUILDSKILL_DB		MAX_GUILDSKILL
 #define MAX_SKILL_PRODUCE_DB	300
 #define MAX_PRODUCE_RESOURCE	10
@@ -52,7 +53,7 @@ enum {
 	UF_ENSEMBLE			= 0x0200,	// 合奏スキル
 };
 
-extern struct skill_db skill_db[MAX_SKILL_DB+MAX_GUILDSKILL_DB];
+extern struct skill_db skill_db[MAX_SKILL_DB+MAX_HOMSKILL_DB+MAX_GUILDSKILL_DB];
 
 // アイテム作成データベース
 struct skill_produce_db {
@@ -312,7 +313,7 @@ enum {	// struct map_session_data の status_changeの番号テーブル
 	SC_DEVOTION				=60,	/* ディボーション */
 	SC_PROVIDENCE			=61,	/* プロヴィデンス */
 	SC_DEFENDER				=62,	/* ディフェンダー */
-	//
+	SC_SANTA				=63,	//サンタ
 	//
 	SC_AUTOSPELL			=65,	/* オートスペル */
 	//
@@ -1197,6 +1198,24 @@ enum {
 	SA_ELEMENTGROUND=	1017,
 	SA_ELEMENTFIRE	=	1018,
 	SA_ELEMENTWIND	=	1019,
+
+	HM_SKILLBASE	=8001,
+	HLIF_HEAL		=8001,//#治癒の手助け(ヒール)#
+	HLIF_AVOID		=8002,//#緊急回避#
+	HLIF_BRAIN		=8003,//=//#脳手術#
+	HLIF_CHANGE		=8004,//#メンタルチェンジ#
+	HAMI_CASTLE		=8005,//#キャストリング#
+	HAMI_DEFENCE	=8006,//#ディフェンス#
+	HAMI_SKIN		=8007,//#アダマンティウムスキン#
+	HAMI_BLOODLUST	=8008,//#ブラッドラスト#
+	HFLI_MOON		=8009,//#ムーンライト#
+	HFLI_FLEET		=8010,//#フリートムーブ#
+	HFLI_SPEED		=8011,//#オーバードスピード#
+	HFLI_SBR44		=8012,//#S.B.R.44#
+	HVAN_CAPRICE	=8013,//#カプリス#
+	HVAN_CHAOTIC	=8014,//#カオティックベネディクション#
+	HVAN_INSTRUCT	=8015,//#チェンジインストラクション#
+	HVAN_EXPLOSION	=8016,//#バイオエクスプロージョン#
 
 //	move to common/mmo.h
 //	GD_APPROVAL=10000,

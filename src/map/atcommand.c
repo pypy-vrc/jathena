@@ -188,8 +188,6 @@ ATCOMMAND_FUNC(emotion);
 ATCOMMAND_FUNC(statall);
 ATCOMMAND_FUNC(rankingpoint);
 ATCOMMAND_FUNC(viewclass);
-ATCOMMAND_FUNC(pethp);
-ATCOMMAND_FUNC(disppethp);
 
 /*==========================================
  *AtCommandInfo atcommand_info[]\‘¢‘Ì‚Ì’è‹`
@@ -347,8 +345,6 @@ static AtCommandInfo atcommand_info[] = {
 	{ AtCommand_statall,				"@statall",		0, atcommand_statall },
 	{ AtCommand_RankingPoint,			"@rankingpoint",	0, atcommand_rankingpoint	},
 	{ AtCommand_ViewClass,				"@viewclass",	0, atcommand_viewclass	},
-	{ AtCommand_PetHp,					"@pethp",	0, atcommand_pethp	},
-	{ AtCommand_DispPetHp,				"@disppethp",	0, atcommand_disppethp	},
 		// add here
 	{ AtCommand_MapMove,				"@mapmove",			0, NULL },
 	{ AtCommand_Broadcast,				"@broadcast",		0, NULL },
@@ -5152,37 +5148,6 @@ atcommand_viewclass(
 		return -1;
 	sd->view_class = view_class;
  	clif_changelook(&sd->bl,LOOK_BASE,view_class);
-
-	return 0;
-}
-
-int
-atcommand_pethp(
-	const int fd, struct map_session_data* sd,
-	const char* command, const char* message)
-{
-	char pet_hpinfo[64];
-	nullpo_retr(-1, sd);
-	if(sd->pd){
-		sprintf(pet_hpinfo,"%s(%d/%d)",sd->pd->name,sd->pd->hp,sd->pd->max_hp);
-		clif_displaymessage(fd,pet_hpinfo);
-	}
-	return 0;
-}
-
-
-int
-atcommand_disppethp(
-	const int fd, struct map_session_data* sd,
-	const char* command, const char* message)
-{
-	int flag;
-	nullpo_retr(-1, sd);
-	if (sscanf(message, "%d", &flag) < 1)
-		return -1;
-	
-	sd->getpethp = flag;
-	pet_sendhp(sd->pd);
 
 	return 0;
 }

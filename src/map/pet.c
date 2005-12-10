@@ -116,24 +116,25 @@ static int pet_calc_pos(struct pet_data *pd,int tx,int ty,int dir)
 	return 0;
 }
 
-int pet_target_check(struct map_session_data *sd,struct block_list *src,int type)
+int pet_target_check(struct map_session_data *sd,struct block_list *bl,int type)
 {
 	struct pet_data *pd;
-	struct mob_data *smd;
-	struct map_session_data *ssd;
+	struct mob_data *md;
 	int rate,mode,race;
 
 	nullpo_retr(0, sd);
-	pd = sd->pd;
-	BL_CAST(BL_PC,src,ssd);
-	BL_CAST(BL_MOB,src,smd);
 
-	if(src && pd && pd->class != status_get_class(src) && pd->ud.skilltimer == -1 && pd->ud.attacktimer == -1) {
-		race = status_get_race(&pd->bl);
-		mode = status_get_mode(&pd->bl);
-		if(pd->bl.m != src->m || src->prev == NULL || unit_distance(pd->bl.x,pd->bl.y,src->x,src->y) > 13)
+	pd = sd->pd;
+
+	if(bl && pd && bl->type == BL_MOB && sd->pet.intimate > 900 && sd->pet.hungry > 0 && pd->class != status_get_class(bl)
+		&& pd->ud.skilltimer == -1 && pd->ud.attacktimer == -1) {
+		mode=mob_db[pd->class].mode;
+		race=mob_db[pd->class].race;
+		md=(struct mob_data *)bl;
+		if(md->bl.type != BL_MOB || pd->bl.m != md->bl.m || md->bl.prev == NULL ||
+			unit_distance(pd->bl.x,pd->bl.y,md->bl.x,md->bl.y) > 13)
 			return 0;
-		if(smd && mob_db[pd->class].mexp <= 0 && !(mode&0x20) && (smd->option & 0x06 && race!=4 && race!=6) )
+		if(mob_db[pd->class].mexp <= 0 && !(mode&0x20) && (md->option & 0x06 && race!=4 && race!=6) )
 			return 0;
 		if(!type) {
 			rate = sd->petDB->attack_rate;
@@ -153,7 +154,7 @@ int pet_target_check(struct map_session_data *sd,struct block_list *src,int type
 		}
 		if( atn_rand()%10000 < rate ) {
 			if(pd->target_id == 0 || atn_rand()%10000 < sd->petDB->change_target_rate){
-				pet_locktarget(pd,src->id);
+				pd->target_id = bl->id;
 			}
 		}
 	}
@@ -387,19 +388,6 @@ int pet_data_init(struct map_session_data *sd)
 	pd->lootitem_count = 0;
 	pd->lootitem_weight = 0;
 	pd->lootitem_timer = gettick();
-
-	pd->hp = status_get_max_hp(&pd->bl);
-	pd->max_hp = status_get_max_hp(&pd->bl);
-	for(i=0;i<MAX_STATUSCHANGE;i++) {
-		pd->sc_data[i].timer=-1;
-		pd->sc_data[i].val1 = pd->sc_data[i].val2 = pd->sc_data[i].val3 = pd->sc_data[i].val4 =0;
-	}
-	pd->sc_count=0;
-	pd->opt1=pd->opt2=pd->opt3=pd->option=0;
-	pd->state.dead_sit = 0;
-	pd->revive_timer = -1;
-	clif_pet_hp(sd);
-	pet_sendhp(pd);
 	return 0;
 }
 
@@ -720,8 +708,6 @@ int pet_food(struct map_session_data *sd)
 	if(sd->pet.hungry > 100)
 		sd->pet.hungry = 100;
 
-	sd->pd->hp = status_get_max_hp(&sd->pd->bl);	//added by フェルシア
-
 	clif_send_petdata(sd,2,sd->pet.hungry);
 	clif_send_petdata(sd,1,sd->pet.intimate);
 	clif_pet_food(sd,sd->petDB->FoodID,1);
@@ -773,7 +759,7 @@ static int pet_randomwalk(struct pet_data *pd,int tick)
 	return 0;
 }
 
-int pet_unlocktarget(struct pet_data *pd)
+static int pet_unlocktarget(struct pet_data *pd)
 {
 	nullpo_retr(0, pd);
 
@@ -797,8 +783,6 @@ static int pet_ai_sub_hard(struct pet_data *pd,unsigned int tick)
 	if(pd->bl.prev == NULL || sd == NULL || sd->bl.prev == NULL)
 		return 0;
 
-	if(is_petdead(pd) == 1)
-		return 0;
 	if(DIFF_TICK(tick,pd->last_thinktime) < MIN_PETTHINKTIME)
 		return 0;
 	if(pd->ud.attacktimer != -1 || pd->ud.skilltimer != -1 || pd->bl.m != sd->bl.m)
@@ -829,7 +813,8 @@ static int pet_ai_sub_hard(struct pet_data *pd,unsigned int tick)
 			pet_calc_pos(pd,sd->bl.x,sd->bl.y,sd->dir);
 			if(unit_walktoxy(&pd->bl,pd->ud.to_x,pd->ud.to_y))
 				pet_randomwalk(pd,tick);
-		}else if(pd->target_id  > MAX_FLOORITEM) {
+		}
+		else if(pd->target_id  > MAX_FLOORITEM) {
 			mode=mob_db[pd->class].mode;
 			race=mob_db[pd->class].race;
 			md=(struct mob_data *)map_id2bl(pd->target_id);
@@ -871,7 +856,8 @@ static int pet_ai_sub_hard(struct pet_data *pd,unsigned int tick)
 						unit_walktoxy(&pd->bl,pd->bl.x+dx,pd->bl.y+dy);
 					}
 				}
-			}else {
+			}
+			else {
 				if(pd->ud.walktimer != -1)
 					unit_stop_walking(&pd->bl,1);
 				if(pd->ud.attacktimer != -1)
@@ -892,7 +878,8 @@ static int pet_ai_sub_hard(struct pet_data *pd,unsigned int tick)
 					unit_attack( &pd->bl, pd->target_id, 0);
 				}
 			}
-		}else if(pd->target_id > 0){	// ルート処理
+		}
+		else if(pd->target_id > 0){	// ルート処理
 			struct block_list *bl_item;
 			struct flooritem_data *fitem;
 
@@ -912,7 +899,8 @@ static int pet_ai_sub_hard(struct pet_data *pd,unsigned int tick)
 				pd->speed = sd->petDB->speed;
 
 				ret=unit_walktoxy(&pd->bl,pd->bl.x+dx,pd->bl.y+dy);
-			}else{	// アイテムまでたどり着いた
+			}
+			else{	// アイテムまでたどり着いた
 				fitem = (struct flooritem_data *)bl_item;
 				if(pd->ud.attacktimer != -1)
 					return 0; // 攻撃中
@@ -944,7 +932,8 @@ static int pet_ai_sub_hard(struct pet_data *pd,unsigned int tick)
 				map_clearflooritem(bl_item->id);
 				pet_unlocktarget(pd);
 			}
-		}else {
+		}
+		else {
 			// 飼い主が座ったら、周辺を適当に歩き回る
 		//	if(pc_issit(sd) && atn_rand()%1000<5){
 		//		pet_randomwalk(pd,tick);
@@ -957,7 +946,8 @@ static int pet_ai_sub_hard(struct pet_data *pd,unsigned int tick)
 			if(unit_walktoxy(&pd->bl,pd->ud.to_x,pd->ud.to_y))
 				pet_randomwalk(pd,tick);
 		}
-	}else {
+	}
+	else {
 		if(battle_config.pet_leave){	// 新密度0で即刻消えるか
 			unit_remove_map(&sd->pd->bl,0);
 			sd->status.pet_id = 0;
@@ -1024,7 +1014,7 @@ int pet_ai_sub_hard_lootsearch(struct block_list *bl,va_list ap)
 		if(bl->m == pd->bl.m && (dist=unit_distance(pd->bl.x,pd->bl.y,bl->x,bl->y))<range){
 			if( unit_can_reach(&pd->bl,bl->x,bl->y)		// 到達可能性判定
 				 && rand()%1000<1000/(++(*itc)) ){	// 範囲内PCで等確率にする
-				pet_locktarget(pd,bl->id);
+				pd->target_id=bl->id;
 			}
 		}
 	}
@@ -1079,90 +1069,6 @@ int pet_delay_item_drop2(int tid,unsigned int tick,int id,int data)
 	return 0;
 }
 
-int pet_revive_timer(int tid,unsigned int tick,int id,int data)
-{
-	struct pet_data *pd = (struct pet_data *)data;
-	pd->revive_timer = -1;
-	pd->hp = 1;
-	pet_setstand(pd);
-	clif_resurrection(&pd->bl,1);	//分かり難いのでリザレクションのエフェクトを表示する
-	return 0;
-}
-
-int pet_damage(struct block_list *attaker,struct pet_data *pd,int damage)
-{
-	int max_hp = status_get_max_hp(&pd->bl);
-
-	nullpo_retr(0, pd);
-
-	if(pd->sc_data[SC_ENDURE].timer == -1)
-		unit_stop_walking(&pd->bl,3);
-	if(damage > max_hp >> 1)
-		skill_stop_dancing(&pd->bl,0);
-
-	pd->hp -= damage;
-	pet_target_check(pd->msd,attaker,2);
-	if(pd->hp <= 0){
-		pd->hp = 0;
-		pet_setdead(pd);
-		unit_stop_walking(&pd->bl,1);
-		unit_stopattack(&pd->bl);
-		unit_skillcastcancel(&pd->bl,0);
-		if(pd->revive_timer != -1) 
-			delete_timer(pd->revive_timer, pet_revive_timer);
-		pd->revive_timer = add_timer(gettick()+60000,pet_revive_timer,0,(int)pd);
-		clif_emotion(&pd->bl,16);	//クライアント側で実装されるまでの暫定処置
-		if(attaker && (attaker->type == BL_MOB || attaker->type == BL_PC || attaker->type == BL_PET))
-			pet_unlocktarget((struct pet_data *)attaker);
-	}else if (pd->hp < max_hp >> 2){
-			clif_emotion(&pd->bl,19);	//クライアント側で実装されるまでの暫定処置
-	}else if (pd->hp < max_hp >> 1){
-		clif_emotion(&pd->bl,4);	//クライアント側で実装されるまでの暫定処置
-	}
-	clif_pet_hp(pd->msd);
-	pet_sendhp(pd);
-	return 0;
-}
-
-//added by フェルシア
-int pet_heal(struct pet_data *pd,int heal)
-{
-	int max_hp = status_get_max_hp(&pd->bl);
-
-	nullpo_retr(0, pd);
-
-	pd->hp += heal;
-	if( pd->hp > max_hp )
-		pd->hp = max_hp;
-	
-	clif_pet_hp(pd->msd);
-	pet_sendhp(pd);
-	return 0;
-}
-
-int is_petdead(struct pet_data *pd)
-{
-	return pd->state.dead_sit;
-}
-
-int pet_setdead(struct pet_data *pd)
-{
-	pd->state.dead_sit = 1;
-	return 0;
-}
-
-int pet_setstand(struct pet_data *pd)
-{
-	pd->state.dead_sit = 0;
-	return 0;
-}
-
-int pet_locktarget(struct pet_data *pd,int id)
-{
-	pd->target_id=id;
-	return 0;
-}
-
 /*==========================================
  * pet support skills [Skotlex]
  *------------------------------------------
@@ -1209,20 +1115,6 @@ int pet_skill_support_timer(int tid,unsigned int tick,int id,int data)
 	return 0;
 }
 
-int pet_sendhp(struct pet_data *pd)
-{
-	if(pd==NULL || pd->msd == NULL)
-		return 0;
-	
-	if(pd->msd->getpethp)
-	{
-		char pet_hpinfo[64];
-		sprintf(pet_hpinfo,"%s(%d/%d)",pd->name,pd->hp,pd->max_hp);
-		clif_displaymessage(pd->msd->fd,pet_hpinfo);
-	}
-		
-	return 0;
-}
 /*==========================================
  *ペットデータ読み込み
  *------------------------------------------
@@ -1311,7 +1203,6 @@ int do_init_pet(void)
 
 	add_timer_func_list(pet_hungry,"pet_hungry");
 	add_timer_func_list(pet_ai_hard,"pet_ai_hard");
-	add_timer_func_list(pet_revive_timer, "pet_revive_timer");
 	add_timer_interval(gettick()+MIN_PETTHINKTIME,pet_ai_hard,0,0,MIN_PETTHINKTIME);
 
 	return 0;

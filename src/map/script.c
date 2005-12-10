@@ -122,8 +122,10 @@ extern struct script_function {
 unsigned char* parse_subexpr(unsigned char *,int);
 void push_val(struct script_stack *stack,int type,int val);
 int run_func(struct script_state *st);
+#ifndef NO_CSVDB
 int script_csvinit( void );
 int script_csvfinal( void );
+#endif
 
 int mapreg_setreg(int num,int val);
 int mapreg_setregstr(int num,const char *str);
@@ -2671,7 +2673,9 @@ int do_final_script()
 	if(userfunc_db)
 		strdb_final(userfunc_db,userfunc_db_final);
 
+#ifndef NO_CSVDB
 	script_csvfinal();
+#endif
 	return 0;
 }
 /*==========================================
@@ -2694,7 +2698,9 @@ int do_init_script()
 	}
 	scriptlabel_db=strdb_init(50);
 
+#ifndef NO_CSVDB
 	script_csvinit();
+#endif
 	return 0;
 }
 
@@ -2893,6 +2899,7 @@ int buildin_getpkflag(struct script_state *st);
 int buildin_guildgetexp(struct script_state *st);
 int buildin_flagname(struct script_state *st);
 int buildin_getnpcposition(struct script_state *st);
+#ifndef NO_CSVDB
 int buildin_csvgetrows(struct script_state *st);
 int buildin_csvgetcols(struct script_state *st);
 int buildin_csvread(struct script_state *st);
@@ -2904,6 +2911,7 @@ int buildin_csvreload(struct script_state *st);
 int buildin_csvinsert(struct script_state *st);
 int buildin_csvdelete(struct script_state *st);
 int buildin_csvsort(struct script_state *st);
+#endif
 int buildin_sleep(struct script_state *st);
 int buildin_sleep2(struct script_state *st);
 
@@ -3002,9 +3010,9 @@ struct script_function buildin_func[] = {
 	{buildin_startnpctimer,"startnpctimer","*"},
 	{buildin_setnpctimer,"setnpctimer","*"},
 	{buildin_getnpctimer,"getnpctimer","i*"},
-	{buildin_announce,"announce","si"},
-	{buildin_mapannounce,"mapannounce","ssi"},
-	{buildin_areaannounce,"areaannounce","siiiisi"},
+	{buildin_announce,"announce","si*"},
+	{buildin_mapannounce,"mapannounce","ssi*"},
+	{buildin_areaannounce,"areaannounce","siiiisi*"},
 	{buildin_getusers,"getusers","i"},
 	{buildin_getmapusers,"getmapusers","s"},
 	{buildin_getareausers,"getareausers","siiii"},
@@ -3099,6 +3107,7 @@ struct script_function buildin_func[] = {
 	{buildin_guildgetexp,"guildgetexp","i"},
 	{buildin_flagname,"flagname","s"},
 	{buildin_getnpcposition,"getnpcposition","s"},
+#ifndef NO_CSVDB
 	{buildin_csvgetrows,"csvgetrows","s"},
 	{buildin_csvgetcols,"csvgetcols","si"},
 	{buildin_csvread,"csvread","sii"},
@@ -3110,6 +3119,7 @@ struct script_function buildin_func[] = {
 	{buildin_csvinsert,"csvinsert","si"},
 	{buildin_csvdelete,"csvdelete","si"},
 	{buildin_csvsort,"csvsort","sii"},
+#endif
 	{buildin_sleep,"sleep","i"},
 	{buildin_sleep2,"sleep2","i"},
 	{NULL,NULL,NULL}
@@ -3415,8 +3425,8 @@ int buildin_areawarp(struct script_state *st)
 	y=conv_num(st,& (st->stack->stack_data[st->start+9]));
 
 	if(strcmp(mapname,"this")==0){
-		struct npc_data *nd;
-		if(nd=(struct npc_data *)map_id2bl(st->oid))
+		struct npc_data *nd=(struct npc_data *)map_id2bl(st->oid);
+		if(nd)
 			m=nd->bl.m;
 		else return 0;
 	}
@@ -5213,8 +5223,8 @@ int buildin_killmonster(struct script_state *st)
 	mapname=conv_str(st,& (st->stack->stack_data[st->start+2]));
 	event=conv_str(st,& (st->stack->stack_data[st->start+3]));
 	if(strcmp(mapname,"this")==0){
-		struct npc_data *nd;
-		if(nd=(struct npc_data *)map_id2bl(st->oid))
+		struct npc_data *nd=(struct npc_data *)map_id2bl(st->oid);
+		if(nd)
 			m=nd->bl.m;
 		else return 0;
 	}
@@ -5240,8 +5250,8 @@ int buildin_killmonsterall(struct script_state *st)
 	mapname=conv_str(st,& (st->stack->stack_data[st->start+2]));
 
 	if(strcmp(mapname,"this")==0){
-		struct npc_data *nd;
-		if(nd=(struct npc_data *)map_id2bl(st->oid))
+		struct npc_data *nd=(struct npc_data *)map_id2bl(st->oid);
+		if(nd)
 			m=nd->bl.m;
 		else return 0;
 	}
@@ -5261,8 +5271,8 @@ int buildin_areakillmonster(struct script_state *st)
 	x1=conv_num(st,& (st->stack->stack_data[st->start+5]));
 	y1=conv_num(st,& (st->stack->stack_data[st->start+6]));
 	if(strcmp(mapname,"this")==0){
-		struct npc_data *nd;
-		if(nd=(struct npc_data *)map_id2bl(st->oid))
+		struct npc_data *nd=(struct npc_data *)map_id2bl(st->oid);
+		if(nd)
 			m=nd->bl.m;
 		else return 0;
 	}
@@ -5424,17 +5434,27 @@ int buildin_setnpctimer(struct script_state *st)
  */
 int buildin_announce(struct script_state *st)
 {
-	char *str;
+	char *str,*color=NULL;
 	int flag;
 	str=conv_str(st,& (st->stack->stack_data[st->start+2]));
 	flag=conv_num(st,& (st->stack->stack_data[st->start+3]));
+	if (st->end>st->start+4)
+		color=conv_str(st,& (st->stack->stack_data[st->start+4]));
 
 	if(flag&0x0f){
 		struct block_list *bl=(flag&0x08)? map_id2bl(st->oid) :
 			(struct block_list *)script_rid2sd(st);
-		clif_GMmessage(bl,str,strlen(str)+1,flag);
-	}else
-		intif_GMmessage(str,strlen(str)+1,flag);
+		if(color)
+			clif_announce(bl,str,strlen(str)+1,strtol(color,(char **)NULL,0),flag);
+		else
+			clif_GMmessage(bl,str,strlen(str)+1,flag);
+	} else {
+		if(color)
+			//0x00フラグは未完成
+			intif_announce(str,strlen(str)+1,strtol(color,(char **)NULL,0),flag);
+		else
+			intif_GMmessage(str,strlen(str)+1,flag);
+	}
 	return 0;
 }
 /*==========================================
@@ -5443,27 +5463,34 @@ int buildin_announce(struct script_state *st)
  */
 int buildin_mapannounce_sub(struct block_list *bl,va_list ap)
 {
-	char *str;
+	char *str,*color;
 	int len,flag;
 	str=va_arg(ap,char *);
 	len=va_arg(ap,int);
 	flag=va_arg(ap,int);
-	clif_GMmessage(bl,str,len,flag|3);
+	color=va_arg(ap,char *);
+
+	if(color)
+		clif_announce(bl,str,len,strtol(color,(char **)NULL,0),flag|3);
+	else
+		clif_GMmessage(bl,str,len,flag|3);
 	return 0;
 }
 int buildin_mapannounce(struct script_state *st)
 {
-	char *mapname,*str;
+	char *mapname,*str,*color=NULL;
 	int flag,m;
 
 	mapname=conv_str(st,& (st->stack->stack_data[st->start+2]));
 	str=conv_str(st,& (st->stack->stack_data[st->start+3]));
 	flag=conv_num(st,& (st->stack->stack_data[st->start+4]));
+	if (st->end>st->start+5)
+		color=conv_str(st,& (st->stack->stack_data[st->start+5]));
 
 	if( (m=map_mapname2mapid(mapname))<0 )
 		return 0;
 	map_foreachinarea(buildin_mapannounce_sub,
-		m,0,0,map[m].xs,map[m].ys,BL_PC, str,strlen(str)+1,flag&0x10);
+		m,0,0,map[m].xs,map[m].ys,BL_PC, str,strlen(str)+1,flag&0x10,color);
 	return 0;
 }
 /*==========================================
@@ -5472,7 +5499,7 @@ int buildin_mapannounce(struct script_state *st)
  */
 int buildin_areaannounce(struct script_state *st)
 {
-	char *map,*str;
+	char *map,*str,*color=NULL;
 	int flag,m;
 	int x0,y0,x1,y1;
 
@@ -5483,12 +5510,15 @@ int buildin_areaannounce(struct script_state *st)
 	y1=conv_num(st,& (st->stack->stack_data[st->start+6]));
 	str=conv_str(st,& (st->stack->stack_data[st->start+7]));
 	flag=conv_num(st,& (st->stack->stack_data[st->start+8]));
+	if (st->end>st->start+9)
+		color=conv_str(st,& (st->stack->stack_data[st->start+9]));
 
 	if( (m=map_mapname2mapid(map))<0 )
 		return 0;
 
 	map_foreachinarea(buildin_mapannounce_sub,
-		m,x0,y0,x1,y1,BL_PC, str,strlen(str)+1,flag&0x10 );
+		m,x0,y0,x1,y1,BL_PC, str,strlen(str)+1,flag&0x10,color);
+	return 0;
 	return 0;
 }
 /*==========================================
@@ -5537,8 +5567,8 @@ int buildin_getmapusers(struct script_state *st)
 	str=conv_str(st,& (st->stack->stack_data[st->start+2]));
 
 	if(strcmp(str,"this")==0){
-		struct npc_data *nd;
-		if(nd=(struct npc_data *)map_id2bl(st->oid))
+		struct npc_data *nd=(struct npc_data *)map_id2bl(st->oid);
+		if(nd)
 			m=nd->bl.m;
 		else {
 			push_val(st->stack,C_INT,-1);
@@ -5572,8 +5602,8 @@ int buildin_getareausers(struct script_state *st)
 	x1=conv_num(st,& (st->stack->stack_data[st->start+5]));
 	y1=conv_num(st,& (st->stack->stack_data[st->start+6]));
 	if(strcmp(str,"this")==0){
-		struct npc_data *nd;
-		if(nd=(struct npc_data *)map_id2bl(st->oid))
+		struct npc_data *nd=(struct npc_data *)map_id2bl(st->oid);
+		if(nd)
 			m=nd->bl.m;
 		else {
 			push_val(st->stack,C_INT,-1);
@@ -5961,6 +5991,9 @@ int buildin_changebase(struct script_state *st)
 	if(vclass==22)
 		pc_unequipitem(sd,sd->equip_index[9],1);	// 装備外し
 
+	if(vclass==26)
+		pc_unequipitem(sd,sd->equip_index[9],1);	// 装備外し
+		
 	sd->view_class = vclass;
 
 	return 0;
@@ -6004,6 +6037,7 @@ int buildin_waitingroom(struct script_state *st)
 {
 	char *name,*ev="";
 	int limit, trigger = 0,pub=1;
+	int zeny=0,lowlv=0,highlv=255;
 	name=conv_str(st,& (st->stack->stack_data[st->start+2]));
 	limit= conv_num(st,& (st->stack->stack_data[st->start+3]));
 	if(limit==0)
@@ -6026,8 +6060,14 @@ int buildin_waitingroom(struct script_state *st)
 		if( st->end > st->start+4 )
 			ev=conv_str(st,& (st->stack->stack_data[st->start+4]));
 	}
+
+	if(st->end>st->start+8) {
+		zeny 	= conv_num(st,& (st->stack->stack_data[st->start+6]));
+		lowlv 	= conv_num(st,& (st->stack->stack_data[st->start+7]));
+		highlv 	= conv_num(st,& (st->stack->stack_data[st->start+8]));
+	}
 	chat_createnpcchat( (struct npc_data *)map_id2bl(st->oid),
-		limit,pub,trigger,name,strlen(name)+1,ev);
+		limit,pub,trigger,name,strlen(name)+1,ev,zeny,lowlv,highlv);
 	return 0;
 }
 
@@ -6136,7 +6176,7 @@ int buildin_getwaitingroomstate(struct script_state *st)
 {
 	struct npc_data *nd;
 	struct chat_data *cd;
-	int val=0,type;
+	int val=-1,type;
 	type=conv_num(st,& (st->stack->stack_data[st->start+2]));
 	if( st->end > st->start+3 )
 		nd=npc_name2id(conv_str(st,& (st->stack->stack_data[st->start+3])));
@@ -6153,6 +6193,9 @@ int buildin_getwaitingroomstate(struct script_state *st)
 	case 1: val=cd->limit; break;
 	case 2: val=cd->trigger&0x7f; break;
 	case 3: val=((cd->trigger&0x80)>0); break;
+	case 6: val=cd->zeny; break;
+	case 7: val=cd->lowlv; break;
+	case 8: val=cd->highlv; break;
 	case 32: val=(cd->users >= cd->limit); break;
 	case 33: val=(cd->users >= cd->trigger); break;
 
@@ -7961,6 +8004,7 @@ int buildin_getnpcposition(struct script_state *st)
 	return 0;
 }
 
+#ifndef NO_CSVDB
 static struct dbt* script_csvdb;
 
 int script_csvinit( void ) {
@@ -8260,6 +8304,7 @@ int buildin_csvsort(struct script_state *st) {
 	}
 	return 0;
 }
+#endif
 
 // sleep <mili sec>
 int buildin_sleep(struct script_state *st) {
@@ -8298,4 +8343,3 @@ int buildin_sleep2(struct script_state *st) {
 	}
 	return 0;
 }
-

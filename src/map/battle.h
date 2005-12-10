@@ -401,12 +401,13 @@ extern struct Battle_Config {
 	int no_pk_level;
 	int allow_cloneskill_at_autospell;
 	int pk_noshift;
-	int pet_hp_display;
 	int pk_penalty_time;
+	int clif_fixpos_type;
 
 	int item_rate_details,item_rate_1,item_rate_10,item_rate_100,item_rate_1000;	//ドロップレート詳細
 	int item_rate_1_min,item_rate_10_min,item_rate_100_min,item_rate_1000_min;	//ドロップレート詳細min
 	int item_rate_1_max,item_rate_10_max,item_rate_100_max,item_rate_1000_max;	//ドロップレート詳細max
+	int dropitem_itemrate_fix;
 
 	int monster_damage_delay;
 
@@ -416,15 +417,13 @@ extern struct Battle_Config {
 
 	int gm_hide_attack_lv;
 	int hide_attack;
+	int gm_nomanner_lv;
 
 	int serverside_friendlist;
 	int pet0078_hair_id;
 
 	int mes_send_type;
 
-	int can_attack_pet;	//added by フェルシア
-	int pet_damage_delay_rate;	//added by フェルシア
-	int pet_damage_delay;	//added by フェルシア
 } battle_config;
 
 #define BATTLE_CONF_FILENAME	"conf/battle_athena.conf"

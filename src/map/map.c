@@ -1,4 +1,4 @@
-// $Id: map.c,v 1.1.1.3 2005/11/30 00:06:10 running_pinata Exp $
+// $Id: map.c,v 1.1.1.4 2005/12/10 01:00:04 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -245,7 +245,9 @@ int map_delblock(struct block_list *bl)
 {
 	int b;
 	nullpo_retr(0, bl);
-
+#ifdef	DYNAMIC_SC_DATA
+	status_free_sc_data(bl);
+#endif
 	// Šù‚Éblocklist‚©‚ç”²‚¯‚Ä‚¢‚é
 	if(bl->prev==NULL){
 		if(bl->next!=NULL){
@@ -430,10 +432,12 @@ void map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int 
 			c2  = map[m].block_mob_count[bx+by*map[m].bxs];	// number of mobs in the mob block
 			if( (c1==0) && (c2==0) ) continue;				// skip if nothing in the block
 
-			if(type==0 || type!=BL_MOB) {
+			if(type==0 || type&~BL_MOB) {
+				int t_type = (type&~BL_MOB)&0x000000FF;
 				bl = map[m].block[bx+by*map[m].bxs];		// a block with the elements
 				for(i=0;i<c1 && bl;i++,bl=bl->next){		// go through all elements
-					if( bl && ( !type || bl->type==type ) && bl_list_count<BL_LIST_MAX )
+					//if( bl && ( !type || bl->type==type ) && bl_list_count<BL_LIST_MAX )
+					if( bl && (bl->type&t_type ) && bl_list_count<BL_LIST_MAX )
 					{
 						// check if block xy is on the line
 						if( (bl->x-x0)*(y1-y0) == (bl->y-y0)*(x1-x0) )
@@ -444,8 +448,9 @@ void map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int 
 					}
 				}//end for elements
 			}
-
-			if(type==0 || type==BL_MOB) {
+			
+			//if(type==0 || type==BL_MOB) {
+			if(type==0 || type&BL_MOB) {
 				bl = map[m].block_mob[bx+by*map[m].bxs];	// and the mob block
 				for(i=0;i<c2 && bl;i++,bl=bl->next){
 					if(bl && bl_list_count<BL_LIST_MAX) {

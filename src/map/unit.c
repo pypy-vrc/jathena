@@ -250,11 +250,7 @@ static int unit_walktoxy_timer(int tid,unsigned int tick,int id,int data)
 				skill_check_cloaking(bl);
 		}
 
-		if(pd)
-			clif_pet_hp(pd->msd);
-		
 		if(sd) {
-			clif_pet_hp(sd);
 			if(sd->status.party_id>0){	// パーティのＨＰ情報通知検査
 				struct party *p=party_search(sd->status.party_id);
 				if(p!=NULL){
@@ -485,11 +481,6 @@ int unit_movepos(struct block_list *bl,int dst_x,int dst_y)
 				sd->party_hp=-1;
 		}
 	}
-	if(sd)
-		clif_pet_hp(sd);
-		
-	if(pd)
-		clif_pet_hp(pd->msd);
 
 	if(sd && !(sd->status.option&0x4000) && sd->status.option&4)	// クローキングの消滅検査
 	{
@@ -561,17 +552,17 @@ int unit_stop_walking(struct block_list *bl,int type)
 
 	delete_timer(ud->walktimer, unit_walktoxy_timer);
 	ud->walktimer         = -1;
-	if(md) { md->state.skillstate = MSS_IDLE; }
+//	if(md) { md->state.skillstate = MSS_IDLE; }
 	if(type&0x01) { // 位置補正送信が必要
 		clif_fixwalkpos(bl);
 	}
 	if(type&0x02) { // ダメージ食らう
 		unsigned int tick = gettick();
 		int delay = status_get_dmotion(bl);
-		if( (sd &&battle_config.pc_damage_delay) || (md && battle_config.monster_damage_delay) ||(pd && battle_config.pet_damage_delay)) {	//changed by フェルシア
+		if( (sd &&battle_config.pc_damage_delay) || (md && battle_config.monster_damage_delay) ) {
 			ud->canmove_tick = tick + delay;
 		}
-		else if( (sd &&battle_config.pc_damage_delay) || (md && battle_config.monster_damage_delay==0) ||(pd && battle_config.pet_damage_delay==0)) {	//changed by フェルシア
+		else if( (sd &&battle_config.pc_damage_delay) || (md && battle_config.monster_damage_delay==0) ) {
 			ud->canmove_tick = (tick)/2 + (delay)/5;
 		}
 	}
@@ -594,10 +585,9 @@ int unit_stop_walking(struct block_list *bl,int type)
 
 int unit_skilluse_id(struct block_list *src, int target_id, int skill_num, int skill_lv) {
 	int id = skill_num;
-	if(id >= GD_SKILLBASE)
-		id = id - GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 
-	if( id < 0 || id >= MAX_SKILL_DB+MAX_GUILDSKILL_DB) {
+	if( id < 0 || id >= MAX_SKILL_DB+MAX_HOMSKILL_DB+MAX_GUILDSKILL_DB) {
 		return 0;
 	} else {
 		return unit_skilluse_id2(
@@ -618,7 +608,6 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 	struct block_list      * target;
 	struct map_session_data* target_sd = NULL;
 	struct mob_data         *target_md = NULL;
-	struct pet_data         *target_pd = NULL;
 	struct unit_data        *target_ud = NULL;
 	int forcecast  = 0,zone = 0;
 	struct status_change *sc_data;
@@ -672,8 +661,6 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 		target_ud = &target_sd->ud;
 	} else if( BL_CAST( BL_MOB, target, target_md ) ) {
 		target_ud = &target_md->ud;
-	} else if( BL_CAST( BL_PET, target, target_pd ) ) {	//added by フェルシア
-		target_ud = &target_pd->ud;
 	}
 
 	if(unit_isdead(src))			return 0; // 死んでいないか
@@ -770,6 +757,10 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 				return 0;
 			target_id = tbl->id;
 		}
+		break;
+	case CR_SHIELDBOOMERANG:
+		if(sc_data && sc_data[SC_CRUSADER].timer!=-1)
+			delay = delay/2;
 		break;
 	case AS_SONICBLOW:
 		if(sc_data && sc_data[SC_ASSASIN].timer!=-1 && map[src->m].flag.gvg==0)
@@ -869,7 +860,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 		(src_sd && !(battle_config.pc_cloak_check_type&2) ) ||
 		(src_md && !(battle_config.monster_cloak_check_type&2) )
 	) {
-	 	if( sc_data[SC_CLOAKING].timer != -1 && skill_num != AS_CLOAKING)
+	 	if( sc_data && sc_data[SC_CLOAKING].timer != -1 && skill_num != AS_CLOAKING)
 			status_change_end(src,SC_CLOAKING,-1);
 	}
 
@@ -894,10 +885,9 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 
 int unit_skilluse_pos(struct block_list *src, int skill_x, int skill_y, int skill_num, int skill_lv) {
 	int id = skill_num;
-	if(id >= GD_SKILLBASE)
-		id = id - GD_SKILLBASE + MAX_SKILL_DB;
+	id = skill_get_skilldb_id(id);
 
-	if( id < 0 || id >= MAX_SKILL_DB+MAX_GUILDSKILL_DB) {
+	if( id < 0 || id >= MAX_SKILL_DB+MAX_HOMSKILL_DB+MAX_GUILDSKILL_DB) {
 		return 0;
 	} else {
 		return unit_skilluse_pos2(
@@ -1038,9 +1028,9 @@ int unit_skilluse_pos2( struct block_list *src, int skill_x, int skill_y, int sk
 	src_ud->skilly       = skill_y;
 	src_ud->skilltarget  = 0;
 
-	if(src_sd && !(battle_config.pc_cloak_check_type&2) && sc_data[SC_CLOAKING].timer != -1)
+	if(src_sd && !(battle_config.pc_cloak_check_type&2) && sc_data && sc_data[SC_CLOAKING].timer != -1)
 		status_change_end(src,SC_CLOAKING,-1);
-	if(src_md && !(battle_config.monster_cloak_check_type&2) && sc_data[SC_CLOAKING].timer != -1)
+	if(src_md && !(battle_config.monster_cloak_check_type&2) && sc_data && sc_data[SC_CLOAKING].timer != -1)
 		status_change_end(src,SC_CLOAKING,-1);
 
 	if(casttime > 0) {
@@ -1068,7 +1058,7 @@ int unit_stopattack(struct block_list *bl)
 {
 	struct unit_data *ud = unit_bl2ud(bl);
 	nullpo_retr(0, bl);
-
+	
 	if(!ud || ud->attacktimer == -1) {
 		return 0;
 	}
@@ -1100,7 +1090,7 @@ int unit_attack(struct block_list *src,int target_id,int type)
 	int d;
 
 	nullpo_retr(0, src_ud = unit_bl2ud(src));
-
+	
 	target=map_id2bl(target_id);
 	if(target==NULL) {
 		unit_unattackable(src);
@@ -1164,7 +1154,6 @@ int unit_attack_timer_sub(int tid,unsigned int tick,int id,int data)
 	BL_CAST( BL_PC , src, src_sd);
 	BL_CAST( BL_PET, src, src_pd);
 	BL_CAST( BL_MOB, src, src_md);
-
 	if(src_ud->attacktimer != tid){
 		if(battle_config.error_log)
 			printf("unit_attack_timer %d != %d\n",src_ud->attacktimer,tid);
@@ -1184,14 +1173,14 @@ int unit_attack_timer_sub(int tid,unsigned int tick,int id,int data)
 	if(src->m != target->m || unit_isdead(src)) return 0;
 	sc_data  = status_get_sc_data( src    );
 	tsc_data = status_get_sc_data( target );
-
 	if( src_md ) {
 		int mode, race;
 		if(src_md->opt1>0 || src_md->option&2)          return 0;
-		if(src_md->sc_data[SC_AUTOCOUNTER].timer != -1) return 0;
-		if(src_md->sc_data[SC_BLADESTOP].timer != -1)   return 0;
-		if(src_md->sc_data[SC_WINKCHARM].timer != -1)   return 0;
-
+		if(src_md->sc_data){
+			if(src_md->sc_data[SC_AUTOCOUNTER].timer != -1) return 0;
+			if(src_md->sc_data[SC_BLADESTOP].timer != -1)   return 0;
+			if(src_md->sc_data[SC_WINKCHARM].timer != -1)   return 0;
+		}
 		if(!src_md->mode)
 			mode=mob_db[src_md->class].mode;
 		else
@@ -1199,14 +1188,13 @@ int unit_attack_timer_sub(int tid,unsigned int tick,int id,int data)
 
 		race=mob_db[src_md->class].race;
 		if(!(mode&0x80)) return 0;
-
 		if(!(mode&0x20) && tsc_data) {
 			if( tsc_data[SC_TRICKDEAD].timer != -1) return 0;
 			if( tsc_data[SC_HIGHJUMP].timer  != -1) return 0;
 			if( tsc_data[SC_WINKCHARM].timer != -1) return 0;
 		}
-		if(!(mode&0x20) && target_sd && race!=4 && race!=6 ) {
-			if ( pc_ishiding(target_sd)            ) return 0;
+		if(!(mode&0x20) && target_sd) {
+			if ( pc_ishiding(target_sd) && race!=4 && race!=6 ) return 0;
 			if ( target_sd->state.gangsterparadise ) return 0;
 		}
 	}
@@ -1257,7 +1245,6 @@ int unit_attack_timer_sub(int tid,unsigned int tick,int id,int data)
         if(src_sd) clif_movetoattack(src_sd,target);
 		return 1;
 	}
-
 	if(dist <= range && !battle_check_range(src,target,range) ) {
 		if(unit_can_reach(src,target->x,target->y) && (sc_data && sc_data[SC_ANKLE].timer == -1)) 
 			unit_walktoxy(src,target->x,target->y);
@@ -1272,23 +1259,21 @@ int unit_attack_timer_sub(int tid,unsigned int tick,int id,int data)
 			src_pd->dir = dir;
 		if(src_md && battle_config.monster_attack_direction_change)
 			src_md->dir = dir;
-
 		if(src_ud->walktimer != -1)
 			unit_stop_walking(src,1);
 
 		if( src_md && mobskill_use(src_md,tick,-2) ) {	// スキル使用
 			return 1;
 		}
-
 		if(!sc_data || (sc_data[SC_COMBO].timer == -1 && sc_data[SC_TKCOMBO].timer == -1)) {
 			map_freeblock_lock();
 			unit_stop_walking(src,1);
 
 			src_ud->attacktarget_lv = battle_weapon_attack(src,target,tick,0);
 
-			if(src_md && !(battle_config.monster_cloak_check_type&2) && sc_data[SC_CLOAKING].timer != -1)
+			if(src_md && !(battle_config.monster_cloak_check_type&2) && sc_data && sc_data[SC_CLOAKING].timer != -1)
 				status_change_end(src,SC_CLOAKING,-1);
-			if(src_sd && !(battle_config.pc_cloak_check_type&2) && sc_data[SC_CLOAKING].timer != -1)
+			if(src_sd && !(battle_config.pc_cloak_check_type&2) && sc_data && sc_data[SC_CLOAKING].timer != -1)
 				status_change_end(src,SC_CLOAKING,-1);
 			if(src_sd && src_sd->status.pet_id > 0 && src_sd->pd && src_sd->petDB)
 				pet_target_check(src_sd,target,0);
@@ -1479,9 +1464,8 @@ int unit_isdead(struct block_list *bl) {
 	} else if(bl->type == BL_MOB) {
 		struct mob_data *md = (struct mob_data *)bl;
 		return md->hp<=0;
-	} else if(bl->type == BL_PET) {	//added by フェルシア
-		struct pet_data *pd = (struct pet_data *)bl;
-		return is_petdead(pd);
+	} else if(bl->type == BL_PET) {
+		return 0;
 	} else {
 		return 0;
 	}
@@ -1585,7 +1569,7 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 		linkdb_final( &md->dmglog );
 //		mobskill_deltimer(md);
 		// バシリカ削除
-		if (md->sc_data[SC_BASILICA].timer!=-1) {
+		if (md->sc_data && md->sc_data[SC_BASILICA].timer!=-1) {
 			skill_basilica_cancel( &md->bl );
 			status_change_end(&md->bl,SC_BASILICA,-1);
 		}
@@ -1612,7 +1596,10 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 			mob_deleteslave(md);
 
 		map_delblock(&md->bl);
-
+#ifdef DYNAMIC_SC_DATA
+		if(md->sc_data!=NULL)
+			status_free_sc_data(&md->bl);
+#endif
 		// 復活しないMOBの処理
 		if(md->spawndelay1==-1 && md->spawndelay2==-1 && md->n==0){
 			map_deliddb(&md->bl);
@@ -1644,10 +1631,6 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 		nullpo_retr(0, sd);
 		if(sd->pet_hungry_timer != -1)
 			pet_hungry_timer_delete(sd);
-		if(pd->revive_timer != -1)
-			delete_timer(pd->revive_timer, pet_revive_timer);
-		pd->revive_timer = -1;
-		status_change_clear(&pd->bl,2);	// ステータス異常を解除する
 		clif_clearchar_area(&pd->bl,0);
 		if (pd->a_skill)
 		{

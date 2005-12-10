@@ -174,6 +174,11 @@ int mob_once_spawn(struct map_session_data *sd,char *mapname,
 		md->state.noexp=0;
 		md->state.nomvp=0;
 
+#ifdef DYNAMIC_SC_DATA
+		//ダミー挿入
+		md->sc_data = dummy_sc_data;
+#endif
+
 		memcpy(md->npc_event,event,sizeof(md->npc_event));
 
 		md->bl.type=BL_MOB;
@@ -280,7 +285,7 @@ int mob_can_move(struct mob_data *md)
 	if(md->ud.canmove_tick > gettick() || (md->opt1 > 0 && md->opt1 != 6) || md->option&2)
 		return 0;
 	// アンクル中で動けないとか
-	if( md->sc_data[SC_ANKLE].timer != -1 || //アンクルスネア
+	if(	md->sc_data[SC_ANKLE].timer != -1 || //アンクルスネア
 		md->sc_data[SC_AUTOCOUNTER].timer != -1 || //オートカウンター
 		md->sc_data[SC_BLADESTOP].timer != -1 || //白刃取り
 		md->sc_data[SC_CLOSECONFINE].timer!=-1 ||//
@@ -401,11 +406,16 @@ int mob_spawn(int id)
 	if(md->lootitem)
 		memset(md->lootitem,0,sizeof(md->lootitem));
 	md->lootitem_count = 0;
-
+#ifdef DYNAMIC_SC_DATA
+	//ダミー挿入
+	if(md->sc_data==NULL)
+		md->sc_data = dummy_sc_data;
+#else
 	for(i=0;i<MAX_STATUSCHANGE;i++) {
 		md->sc_data[i].timer=-1;
 		md->sc_data[i].val1 = md->sc_data[i].val2 = md->sc_data[i].val3 = md->sc_data[i].val4 =0;
 	}
+#endif
 	md->sc_count=0;
 	md->opt1=md->opt2=md->opt3=md->option=0;
 
@@ -536,7 +546,7 @@ int mob_target(struct mob_data *md,struct block_list *bl,int dist)
 			nullpo_retr(0, sd = (struct map_session_data *)bl);
 			if(sd->invincible_timer != -1 || pc_isinvisible(sd))
 				return 0;
-			if(!(mode&0x20) && race!=4 && race!=6 && sd->state.gangsterparadise)
+			if(!(mode&0x20) && sd->state.gangsterparadise)
 				return 0;
 		}
 
@@ -588,25 +598,21 @@ static int mob_ai_sub_hard_search(struct block_list *bl,va_list ap)
 	mode = status_get_mode( &smd->bl );
 	race = status_get_race( &smd->bl );
 	dist = unit_distance(smd->bl.x,smd->bl.y,bl->x,bl->y);
-	range = (smd->sc_data[SC_BLIND].timer != -1 || smd->sc_data[SC_FOGWALLPENALTY].timer!=-1)?1:10;
-
+	range = (smd->sc_data[SC_BLIND].timer != -1 || smd->sc_data[SC_FOGWALLPENALTY].timer != -1)?1:10;
+	
 	// アクティブ
 	if( (flag & 1) && dist<=range && battle_check_target(&smd->bl,bl,BCT_ENEMY)>=1) {
 		int active_flag = 0;
 		// ターゲット射程内にいるなら、ロックする
 		if(tsd && !unit_isdead(&tsd->bl) && tsd->invincible_timer == -1 && !pc_isinvisible(tsd) ) {
 			// 妨害がないか判定
-			if(mode&0x20) { active_flag = 1; }
-			if( tsd->sc_data[SC_TRICKDEAD].timer == -1 && tsd->sc_data[SC_HIGHJUMP].timer==-1 &&
-				smd->sc_data[SC_WINKCHARM].timer == -1
-			) {
-				if((!pc_ishiding(tsd) && !tsd->state.gangsterparadise) || race==4 || race==6) {
-					active_flag = 1;
-				}
-			}
-		// battle_check_target() で弾かれる相手を含めるとAI性能が落ちる
-		// } else if(bl->type == BL_PET){
-		// 	active_flag = 1;
+			if(mode&0x20 || (
+			tsd->sc_data[SC_TRICKDEAD].timer == -1 &&
+			tsd->sc_data[SC_HIGHJUMP].timer == -1 &&
+			smd->sc_data[SC_WINKCHARM].timer == -1 &&
+			!tsd->state.gangsterparadise &&
+			(!(pc_ishiding(tsd) && race != 4 && race != 6))) )
+				active_flag = 1;
 		} else if(tmd && dist<=range) {
 			active_flag = 1;
 		}
@@ -744,10 +750,13 @@ static int mob_ai_sub_hard_slavemob(struct mob_data *md,unsigned int tick)
 		if(sd!=NULL && !unit_isdead(&sd->bl) && sd->invincible_timer == -1 && !pc_isinvisible(sd)){
 
 			race=mob_db[md->class].race;
-			if(mode&0x20 ||
-				(sd->sc_data[SC_TRICKDEAD].timer == -1 && sd->sc_data[SC_HIGHJUMP].timer == -1 && mmd->sc_data[SC_WINKCHARM].timer == -1 &&
-				( (!pc_ishiding(sd) && !sd->state.gangsterparadise) || race==4 || race==6) ) ){	// 妨害がないか判定
-
+			// 妨害がないか判定
+			if(mode&0x20 || (
+			sd->sc_data[SC_TRICKDEAD].timer == -1 &&
+			sd->sc_data[SC_HIGHJUMP].timer == -1 &&
+			mmd->sc_data[SC_WINKCHARM].timer == -1 &&
+			!sd->state.gangsterparadise &&
+			(!(pc_ishiding(sd) && race != 4 && race != 6))) ){
 				md->target_id=sd->bl.id;
 				md->min_chase=5+unit_distance(md->bl.x,md->bl.y,sd->bl.x,sd->bl.y);
 				md->state.master_check = 1;
@@ -844,7 +853,6 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 {
 	struct mob_data *md,*tmd=NULL;
 	struct map_session_data *tsd=NULL;
-	struct pet_data *tpd=NULL;	//added by フェルシア
 	struct block_list *tbl=NULL;
 	struct flooritem_data *fitem;
 	unsigned int tick;
@@ -881,7 +889,7 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 	if((md->opt1 > 0 && md->opt1 != 6) || md->sc_data[SC_BLADESTOP].timer != -1)
 		return 0;
 
-	if(md->target_id > 0 && (!(mode&0x80) || md->sc_data[SC_BLIND].timer != -1 || md->sc_data[SC_FOGWALLPENALTY].timer!=-1) )
+	if(md->target_id > 0 && (!(mode&0x80) || md->sc_data[SC_BLIND].timer!=-1 || md->sc_data[SC_FOGWALLPENALTY].timer!=-1))
 		md->target_id = 0;
 
 	if( md->target_id == 0 )
@@ -962,17 +970,20 @@ static int mob_ai_sub_hard(struct block_list *bl,va_list ap)
 				unit_stop_walking(&md->bl,5);	// 歩行中なら停止
 			return 0;
 		}
-	} else if(tbl->type==BL_PC || tbl->type==BL_MOB|| tbl->type==BL_PET) {	//changed by フェルシア
-		// 対象がPC、MOB、PET
+	} else if(tbl->type==BL_PC || tbl->type==BL_MOB) {
+		// 対象がPCもしくはMOB
 		if(tbl->type==BL_PC)
 			tsd=(struct map_session_data *)tbl;
 		else if(tbl->type==BL_MOB)
 			tmd=(struct mob_data *)tbl;
-		else if(tbl->type==BL_PET)	//changed by フェルシア
-			tpd=(struct pet_data *)tbl;
-		if( tsd && !(mode&0x20) && (tsd->sc_data[SC_TRICKDEAD].timer != -1 || tsd->sc_data[SC_HIGHJUMP].timer!=-1 
-			 || md->sc_data[SC_WINKCHARM].timer != -1 || ((pc_ishiding(tsd) || tsd->state.gangsterparadise) && race!=4 && race!=6)) )
-			mob_unlocktarget(md,tick);	// スキルなどによる策敵妨害
+		// スキルなどによる策敵妨害判定
+		if( tsd && !(mode&0x20) && (
+		tsd->sc_data[SC_TRICKDEAD].timer != -1 ||
+		tsd->sc_data[SC_HIGHJUMP].timer!=-1 ||
+		md->sc_data[SC_WINKCHARM].timer != -1 ||
+		tsd->state.gangsterparadise ||
+		(pc_ishiding(tsd) && race != 4 && race != 6)) )
+			mob_unlocktarget(md,tick);
 		else if(!battle_check_range(&md->bl,tbl,mob_db[md->class].range)){
 			// 攻撃範囲外なので移動
 			if(!(mode&1)){	// 移動しないモード
@@ -1367,7 +1378,7 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 		return 0;
 	}
 
-	if(md->sc_data[SC_ENDURE].timer == -1)
+	if(md->sc_data[SC_ENDURE].timer == -1 && md->sc_data[SC_BERSERK].timer == -1)
 		unit_stop_walking(&md->bl,3);
 	if(damage > max_hp>>2)
 		skill_stop_dancing(&md->bl,0);
@@ -1439,7 +1450,6 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 	}
 
 	// ----- ここから死亡処理 -----
-
 	map_freeblock_lock();
 	mobskill_use(md,tick,-1);	// 死亡時スキル
 
@@ -2163,7 +2173,10 @@ int mob_summonslave(struct mob_data *md2,int *value,int amount,int flag)
 			md->spawndelay1=-1;	// 一度のみフラグ
 			md->spawndelay2=-1;	// 一度のみフラグ
 
-
+#ifdef DYNAMIC_SC_DATA
+			//ダミー挿入
+			md->sc_data = dummy_sc_data;
+#endif
 			memset(md->npc_event,0,sizeof(md->npc_event));
 			md->bl.type=BL_MOB;
 			map_addiddb(&md->bl);
@@ -2252,8 +2265,6 @@ int mobskill_command_use_id_sub(struct block_list *bl, va_list ap )
 	if(*flag==1)
 		return 0;
 	if(src->type!=BL_MOB)
-		return 0;
-	if(bl->type!=BL_PC && bl->type!=BL_MOB)// && bl->type!=BL_PET)
 		return 0;
 	
 	md = (struct mob_data*)src;
@@ -2398,7 +2409,7 @@ int mobskill_command(struct block_list *bl, va_list ap )
 			break;
 		case MCT_TARGET:
 			map_foreachinarea(mobskill_command_use_id_sub,bl->m,bl->x-range,bl->y-range,bl->x+range,bl->y+range,
-				0,commander_id,bl,target_type,skill_idx,&once_flag);
+				BL_PC|BL_MOB,commander_id,bl,target_type,skill_idx,&once_flag);
 			*flag = 1;
 			return *flag;
 			break;
@@ -2550,8 +2561,9 @@ int mob_getfriendstatus_sub(struct block_list *bl,va_list ap)
 		for(j=SC_STONE;j<=SC_BLIND && !flag;j++){
 			flag=(md->sc_data[j].timer!=-1 );
 		}
-	}else
+	}else{
 		flag=( md->sc_data[cond2].timer!=-1 );
+	}
 	if( flag^( cond1==MSC_FRIENDSTATUSOFF ) )
 		(*fr)=md;
 
@@ -2581,7 +2593,6 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 //	struct block_list *target=NULL;
 	struct mob_data* master_md=NULL;
 	int i,max_hp;
-
 	nullpo_retr(0, md);
 	nullpo_retr(0, ms = mob_db[md->class].skill);
 
@@ -2639,8 +2650,9 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 					for(j=SC_STONE;j<=SC_BLIND && !flag;j++){
 						flag=(md->sc_data[j].timer!=-1 );
 					}
-				}else
+				}else{
 					flag=( md->sc_data[ms[i].cond2].timer!=-1 );
+				}
 				flag^=( ms[i].cond1==MSC_MYSTATUSOFF ); break;
 			case MSC_FRIENDHPLTMAXRATE:	// friend HP < maxhp%
 				flag=(( fmd=mob_getfriendhpltmaxrate(md,ms[i].cond2) )!=NULL ); break;
@@ -2687,8 +2699,9 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 						for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
 							flag=(md->sc_data[j].timer!=-1 );
 						}
-					}else
+					}else{
 						flag=( md->sc_data[ms[i].cond2].timer!=-1 );
+					}
 					flag^=( ms[i].cond1==MSC_MYSTATUSOFF );
 				}
 				break;
@@ -2705,13 +2718,21 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 				if(master_md){
 					if( ms[i].cond2==-1 ){
 						int j = 0;
-						if(master_md->sc_data[SC_STONE].timer!=-1)
-							flag= master_md->sc_data[SC_STONE].val2==0;
-						for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
-							flag=(master_md->sc_data[j].timer!=-1 );
+						if(master_md->sc_data){
+							if(master_md->sc_data[SC_STONE].timer!=-1)
+								flag= master_md->sc_data[SC_STONE].val2==0;
+							for(j=SC_STONE+1;j<=SC_BLIND && !flag;j++){
+								flag=(master_md->sc_data[j].timer!=-1 );
+							}
 						}
-					}else
-						flag=( master_md->sc_data[ms[i].cond2].timer!=-1 );
+						else
+							flag=0;
+					}else{
+						if(master_md->sc_data)
+							flag=( master_md->sc_data[ms[i].cond2].timer!=-1 );
+						else
+							flag=0;
+					}
 					flag^=( ms[i].cond1==MSC_MYSTATUSOFF );
 				}
 				break;
@@ -3026,10 +3047,10 @@ static int mob_readdb(void)
 			if(class<=1000 || class>MOB_ID_MAX)
 				continue;
 			if(n==1 && mob_db[class].view_class == class)
-				cov=1;	// item_db2による、すでに登録のあるIDの上書きかどうか
+				cov=1;	// mob_db2による、すでに登録のあるIDの上書きかどうか
 
 			mob_db[class].view_class=class;
-			// ここから先は、item_db2では記述のある部分のみ反映
+			// ここから先は、mob_db2では記述のある部分のみ反映
 			if(!cov || strlen(str[1])>0)
 				memcpy(mob_db[class].name,str[1],24);
 			if(!cov || strlen(str[2])>0)
@@ -3070,47 +3091,7 @@ static int mob_readdb(void)
 				if(cov && strlen(str[30+i*2])==0)
 					continue;
 				itemdrop = atoi(str[30+i*2]);
-
-				if (battle_config.item_rate_details==1) {	//ドロップレート詳細項目が1の時 レート=x/100倍
-					if (itemdrop < 10)
-						*per = itemdrop*battle_config.item_rate_1/100;
-					else if (itemdrop < 100)
-						*per = itemdrop*battle_config.item_rate_10/100;
-					else if (itemdrop < 1000)
-						*per = itemdrop*battle_config.item_rate_100/100;
-					else
-						*per = itemdrop*battle_config.item_rate_1000/100;
-				}
-				else if (battle_config.item_rate_details==2) {	//ドロップレート詳細項目が2の時　レート=x/100倍 min max 指定
-					#define SETRATE2( min1, max1, num )	\
-						if (itemdrop >= min1 && itemdrop < max1 ) {	\
-							if (itemdrop*battle_config.item_rate_##num/100 < battle_config.item_rate_##num##_min)	\
-								*per = battle_config.item_rate_##num##_min;	\
-							else if (itemdrop*battle_config.item_rate_##num/100 > battle_config.item_rate_##num##_max)	\
-								*per = battle_config.item_rate_##num##_max;	\
-							else	\
-								*per = itemdrop*battle_config.item_rate_##num/100;	\
-						} // end of SETRATE2
-
-					SETRATE2(    1,   10,   1 );
-					SETRATE2(   10,  100,  10 );
-					SETRATE2(  100, 1000, 100 );
-					SETRATE2( 1000,10001,1000 );
-					#undef SETRATE2
-				}
-				else if (battle_config.item_rate_details==0)	//ドロップレート詳細項目が0の時
-					*per = itemdrop*battle_config.item_rate/100;
-
-				// カードや装備などアイテムの種類によるレート変化
-				if (nameid >= 4001 && nameid<= 4331 ){
-					*per = *per * battle_config.card_drop_rate/100;
-				}
-				else if ((nameid >= 1101 && nameid<= 2670 ) || (nameid >= 5001 && nameid<= 5150 )|| (nameid >= 13000 && nameid<= 13010 )){
-					*per = *per * battle_config.equip_drop_rate/100;
-				}
-				else if (nameid == 756 || nameid == 757 || nameid == 984 || nameid == 985){
-					*per = *per * battle_config.refine_drop_rate/100;
-				}
+				*per = mob_droprate_fix(nameid,itemdrop);
 			}
 			DB_ADD(mob_db[class].mexp,49);
 			DB_ADD(mob_db[class].mexpper,50);
@@ -3280,10 +3261,6 @@ static int mob_read_randommonster(void)
 	}
 	return 0;
 }
-/*==========================================
- * db/mob_skill_db.txt読み込み
- *------------------------------------------
- */
 
 /*==========================================
  * db/mob_skill_db.txt読み込み
@@ -3341,42 +3318,42 @@ static int mob_readskilldb(void)
 		{	"sight",		SC_SIGHT		},
 		{	"lexaeterna",	SC_AETERNA		},
 	}, state[] = {
-		{	"any",		MSS_ANY		},
-		{	"idle",		MSS_IDLE	},
-		{	"walk",		MSS_WALK	},
-		{	"attack",	MSS_ATTACK	},
-		{	"dead",		MSS_DEAD	},
-		{	"loot",		MSS_LOOT	},
-		{	"chase",	MSS_CHASE	},
-		{   "command",  MSS_COMMANDONLY}
+		{	"any",		MSS_ANY			},
+		{	"idle",		MSS_IDLE		},
+		{	"walk",		MSS_WALK		},
+		{	"attack",	MSS_ATTACK		},
+		{	"dead",		MSS_DEAD		},
+		{	"loot",		MSS_LOOT		},
+		{	"chase",	MSS_CHASE		},
+		{	"command",	MSS_COMMANDONLY	}
 	}, target[] = {
-		{	"target",	MST_TARGET	},
-		{	"self",		MST_SELF	},
-		{	"friend",	MST_FRIEND	},
-		{	"master",	MST_MASTER	},
-		{	"slave",	MST_SLAVE	},
-		{	"command",	MST_COMMAND },
-		{	"modechange",MST_MODECHANGE	},
-		{	"targetchange", MST_TARGETCHANGE},
-		{	"around5",	MST_AROUND5	},
-		{	"around6",	MST_AROUND6	},
-		{	"around7",	MST_AROUND7	},
-		{	"around8",	MST_AROUND8	},
-		{	"around1",	MST_AROUND1	},
-		{	"around2",	MST_AROUND2	},
-		{	"around3",	MST_AROUND3	},
-		{	"around4",	MST_AROUND4	},
-		{	"around",	MST_AROUND	},
+		{	"target",		MST_TARGET			},
+		{	"self",			MST_SELF			},
+		{	"friend",		MST_FRIEND			},
+		{	"master",		MST_MASTER			},
+		{	"slave",		MST_SLAVE			},
+		{	"command",		MST_COMMAND 		},
+		{	"modechange",	MST_MODECHANGE		},
+		{	"targetchange",	MST_TARGETCHANGE	},
+		{	"around5",		MST_AROUND5			},
+		{	"around6",		MST_AROUND6			},
+		{	"around7",		MST_AROUND7			},
+		{	"around8",		MST_AROUND8			},
+		{	"around1",		MST_AROUND1			},
+		{	"around2",		MST_AROUND2			},
+		{	"around3",		MST_AROUND3			},
+		{	"around4",		MST_AROUND4			},
+		{	"around",		MST_AROUND			},
 	}, command_target[] = {
-		{ "target", 	MCT_TARGET 	},
-		{ "self", 		MCT_SELF 	},
-		{ "commander",	MCT_COMMANDER},
-		{ "slave", 		MCT_SLAVE 	},
-		{ "slaves", 	MCT_SLAVES	},
-		{ "group", 		MCT_GROUP	},
-		{ "friend",		MCT_FRIEND  },
-		{ "friends",  	MCT_FRIENDS },
-		{ "master",		MCT_MASTER	},
+		{	"target",	MCT_TARGET		},
+		{	"self",		MCT_SELF		},
+		{	"commander",MCT_COMMANDER	},
+		{	"slave",	MCT_SLAVE		},
+		{	"slaves",	MCT_SLAVES		},
+		{	"group", 	MCT_GROUP		},
+		{	"friend",	MCT_FRIEND		},
+		{	"friends",	MCT_FRIENDS		},
+		{	"master",	MCT_MASTER		},
 	};
 
 	int x, lineno;
@@ -3565,6 +3542,69 @@ void mob_reload(void)
 }
 
 /*==========================================
+ * ドロップ率に倍率を適用
+ *------------------------------------------
+ */
+int mob_droprate_fix(int item,int drop)
+{
+	int drop_fix = drop;
+	if(drop < 1) return 0;
+	if(drop > 10000) return 10000;
+	if(battle_config.item_rate_details==0)
+		drop_fix = drop * battle_config.item_rate / 100;
+	else if(battle_config.item_rate_details==1){
+		if(drop < 10)
+			drop_fix = drop * battle_config.item_rate_1 / 100;
+		else if(drop < 100)
+			drop_fix = drop * battle_config.item_rate_10 / 100;
+		else if(drop < 1000)
+			drop_fix = drop * battle_config.item_rate_100 / 100;
+		else
+			drop_fix = drop * battle_config.item_rate_1000 / 100;
+	}
+	else if(battle_config.item_rate_details==2){
+		if(drop < 10){
+			drop_fix = drop * battle_config.item_rate_1 / 100;
+			if(drop_fix < battle_config.item_rate_1_min)
+				drop_fix = battle_config.item_rate_1_min;
+			else if(drop_fix > battle_config.item_rate_1_max)
+				drop_fix = battle_config.item_rate_1_max;
+		}
+		else if(drop < 100){
+			drop_fix = drop * battle_config.item_rate_10 / 100;
+			if(drop_fix < battle_config.item_rate_10_min)
+				drop_fix = battle_config.item_rate_10_min;
+			else if(drop_fix > battle_config.item_rate_10_max)
+				drop_fix = battle_config.item_rate_10_max;
+		}
+		else if(drop < 1000){
+			drop_fix = drop * battle_config.item_rate_100 / 100;
+			if(drop_fix < battle_config.item_rate_100_min)
+				drop_fix = battle_config.item_rate_100_min;
+			else if(drop_fix > battle_config.item_rate_100_max)
+				drop_fix = battle_config.item_rate_100_max;
+		}
+		else{
+			drop_fix = drop * battle_config.item_rate_1000 / 100;
+			if(drop_fix < battle_config.item_rate_1000_min)
+				drop_fix = battle_config.item_rate_1000_min;
+			else if(drop_fix > battle_config.item_rate_1000_max)
+				drop_fix = battle_config.item_rate_1000_max;
+		}
+	}
+	if(item >= 4001 && item <= 4999)
+		drop_fix = drop_fix * battle_config.card_drop_rate / 100;
+	else if((item >= 1101 && item <= 2699)
+		 || (item >= 5001 && item <= 5199)
+		 || (item >= 13000 && item <= 13019))
+		drop_fix = drop_fix * battle_config.equip_drop_rate / 100;
+	else if(item == 756 || item == 757 || item == 984 || item == 985)
+		drop_fix = drop_fix * battle_config.refine_drop_rate / 100;
+	if(drop_fix > 10000) drop_fix = 10000;
+	return drop_fix;
+}
+
+/*==========================================
  * mob周り初期化
  *------------------------------------------
  */
@@ -3586,3 +3626,4 @@ int do_init_mob(void)
 
 	return 0;
 }
+

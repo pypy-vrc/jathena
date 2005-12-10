@@ -49,22 +49,10 @@ int pet_lootitem_drop(struct pet_data *pd,struct map_session_data *sd);
 int pet_delay_item_drop2(int tid,unsigned int tick,int id,int data);
 int pet_ai_sub_hard_lootsearch(struct block_list *bl,va_list ap);
 int pet_skill_support_timer(int tid,unsigned int tick,int id,int data);
-int pet_revive_timer(int tid,unsigned int tick,int id,int data);
 int do_init_pet(void);
 int do_final_pet(void);
 
 int read_petdb(void);
-
-int pet_sendhp(struct pet_data *pd);
-//added by フェルシア
-int pet_damage(struct block_list *src,struct pet_data *pd,int damage);
-int pet_heal(struct pet_data *pd,int heal);
-int pet_setrevive(struct pet_data *pd);
-int is_petdead(struct pet_data *pd);
-int pet_setdead(struct pet_data *pd);
-int pet_setstand(struct pet_data *pd);
-int pet_locktarget(struct pet_data *pd,int id);
-int pet_unlocktarget(struct pet_data *pd);
 
 #endif
 

@@ -309,11 +309,12 @@ SC_Confusion	135
 SC_Blind	136
 SC_Bleed	137
 SC_DPoison	182
-SC_Hallucination	34
+SC_Hallucination 34
 SC_SpeedPot0	37
 SC_SpeedPot1	38
 SC_SpeedPot2	39
 SC_ItemDelay	41
+SC_Santa	63
 SC_INCATK	185
 SC_INCMATK	186
 SC_WEDDING	187

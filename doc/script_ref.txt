@@ -736,17 +736,18 @@ AthenaNPCScript
 			x,y,mobid,num	数値
 			event		文字列、省略可
 
-			<gatname>の座標<x>,<y>に<mobname>を持つ<mobid>に指定されたIDを持つモンスターを<num>体出現させます。
+			<gatname>の座標<x>,<y>に<mobname>を持つ<mobid>に指定されたID、もしくは名前を持つモンスターを<num>体出現させます。
 			<gatname>がthisの場合スクリプトを実行したプレイヤーがいるMAP、
 			<x><y>が-1の場合、スクリプトを実行したプレイヤーの座標、
 			<mobname>が--en--の場合英語名、--ja--の場合日本語名、<mobid>が-1の場合ランダム。
 			そのモンスターを倒したとき<event>を開始します。
 
 		announce命令
-			announce <string>,<flag>;
+			announce <string>,<flag>[,<color>];
 
 			string		文字列
 			flag		数値
+			color		数値
 
 			<string>をＧＭアナウンスで表示します。
 			<flag>は以下に示す通りです。
@@ -764,6 +765,11 @@ AthenaNPCScript
 			0x08 イベント用
 
 			エリアフラグと色フラグと特殊フラグの合計を指定してください。
+			<color>を指定した場合、その色でＧＭアナウンスします。
+			このとき色フラグは無視されます。
+
+　			※現在エリアフラグの0x00は未完成です。
+　　			　よってMAP鯖を分割してる場合は別鯖のMAPにマルチカラーアナウンスすることはできません。
 
 		killmonster命令
 			killmonster <gatname>[,<event>];
@@ -882,22 +888,28 @@ AthenaNPCScript
 			<npcname>を省略すると、命令を実行したNPCが対象になります。
 
 		mapannounce命令
-			mapannounce <gatname>,<string>,<flag>;
+			mapannounce <gatname>,<string>,<flag>[,<color>];
 
 			gatname,string	文字列
 			flag		数値
+			color		数値
 
 			<gatname>全体に<string>をＧＭアナウンスで表示します。
 			flag:0,黄色文字、16,青文字
+			<color>指定時はその色でＧＭアナウンスします。
+			このとき<flag>の値は無視されます。
 
 		areaannounce命令
-			areannounce <gatname>,<x0>,<y0>,<x1>,<y1>,<string>,<flag>;
+			areannounce <gatname>,<x0>,<y0>,<x1>,<y1>,<string>,<flag>[,<color>];
 
 			gatname,string		文字列
 			x0,y0,x1,y1,flag	数値
+			color			数値
 
 			<gatname>の<x0>,<y0>から<x1>,<y1>の範囲内に対し<string>をＧＭアナウンスで表示します。
 			flag:0,黄色文字、16,青文字
+			<color>指定時はその色でＧＭアナウンスします。
+			このとき<flag>の値は無視されます。
 
 		areawarp命令
 			areawarp <gatname>,<x0>,<y0>,<x1>,<y1>,<gatname2>,<x>,<y>;
@@ -915,8 +927,8 @@ AthenaNPCScript
 			x0,y0,x1,y1,mobid,num	数値
 			event			文字列、省略可
 
-			<gatname>の<x0>,<y0>から<x1>,<y1>の範囲内に<mobname>を持つ<mobid>に指定されたIDを持つモンスターを<num>体出現させます。
-			<gatname>がthisの場合スクリプト実行MAP、<x><y>が-1の場合ランダム座標、
+			<gatname>の<x0>,<y0>から<x1>,<y1>の範囲内に<mobname>を持つ<mobid>に指定されたID、もしくは名前を持つモンスターを<num>体出現させます。
+			<gatname>がthisの場合スクリプト実行MAP、<x0><y0>が共に0以下の場合ランダム座標、
 			<mobname>が--en--の場合英語名、--ja--の場合日本語名、<mobid>が-1の場合ランダム。
 			そのモンスターを倒したとき<event>を開始します。
 
@@ -972,16 +984,22 @@ AthenaNPCScript
 			<skilllv>を0にするとこでそのスキルを忘れさせることも可能です。
 			
 		waitingroom命令
-			waitingroom <title>,<limit>[,<event>[,<trigger>]];
+			waitingroom <title>,<limit>[,<event>[,<trigger>[,<zeny>,<lowlv>,<highlv>]]];
 
 			title		文字列
 			limit		数値
 			event		文字列、省略可
 			trigger		数値、省略可
+			zeny		数値、省略可 ┓
+			lowlv		数値、省略可 ┃ 制限条件、これを使う場合にはいずれも省略不可
+			highlv		数値、省略可 ┛
 
 			<title>をタイトルとしてチャットルームを表示させます。
 			<trigger>を満たしたとき、<event>を動作させることが可能です。
 			<trigger>を省略すると<limit>の数値が使用されます。
+			所持金が<zeny>未満の場合はチャットルームに入場できません。
+			またBaseLvが<lowlv>より低い、あるいは<highlv>より高い場合もチャットルームに入場できません。
+			制限条件省略時には、<zeny>=0, <lowlv>=0, <highlv>=255が適用されます。
 
 		delwaitingroom命令
 			delewaitingroom [<name>]
@@ -1708,6 +1726,9 @@ AthenaNPCScript
 			num=3	チャットルームのイベントが有効かどうか（数値）
 			num=4	チャットルームのタイトル（文字列）
 			num=5	チャットルームのパスワード（文字列）
+			num=6	チャットルームの必要Zeny（数値）
+			num=7	チャットルームの下限BaseLv（数値）
+			num=8	チャットルームの上限BaseLv（数値）
 			num=16	チャットルームのイベント名（文字列）
 			num=32	チャットルームが満員かどうか（数値）
 			num=33	チャットルームでイベントが起こる人数かどうか（数値）

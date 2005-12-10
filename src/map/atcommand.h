@@ -158,8 +158,6 @@ enum AtCommandType {
 	AtCommand_statall,
 	AtCommand_RankingPoint,
 	AtCommand_ViewClass,
-	AtCommand_PetHp,
-	AtCommand_DispPetHp,
 	AtCommand_Unknown,
 	AtCommand_MAX,
 };

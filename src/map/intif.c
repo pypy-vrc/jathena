@@ -123,6 +123,26 @@ int intif_GMmessage(char* mes,int len,int flag)
 	return 0;
 }
 
+// GMメッセージ（マルチカラー）を送信
+// ※現在未完成、eAのUpdate待ち？
+int intif_announce(char* mes,int len,unsigned long color,int flag)
+{
+	// Send to the local players
+	clif_announce(NULL, mes, len, color, flag);
+	
+	/* 0x3000使うと文字おかしいんだけど…
+	if (CheckForCharServer())
+		return 0;
+	WFIFOW(inter_fd,0) = 0x3000;
+	WFIFOW(inter_fd,2) = 8+len;
+	WFIFOL(inter_fd,4) = color;
+	memcpy(WFIFOP(inter_fd,8), mes, len);
+	WFIFOSET(inter_fd, WFIFOW(inter_fd,2));
+	*/
+
+	return 0;
+}
+
 // Wisの送信
 int intif_wis_message(struct map_session_data *sd,char *nick,char *mes,int mes_len)
 {

@@ -1,4 +1,4 @@
-// $Id: db.c,v 1.1.1.3 2005/11/30 00:05:40 running_pinata Exp $
+// $Id: db.c,v 1.1.1.4 2005/12/10 00:59:46 running_pinata Exp $
 #define MALLOC_DBN
 #include <stdio.h>
 #include <stdlib.h>
@@ -665,6 +665,7 @@ void  linkdb_final( struct linkdb_node** head ) {
 	*head = NULL;
 }
 
+#ifndef NO_CSVDB
 // csvdb -- csv のデータ読み込み関数
 
 // csv の読み込み。skip_comment が真のときは、行頭に//がある行を読み飛ばす。
@@ -1003,4 +1004,4 @@ void csvdb_dump(struct csvdb_data* csv) {
 		printf("\n");
 	}
 }
-
+#endif

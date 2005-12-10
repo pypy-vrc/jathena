@@ -1,4 +1,4 @@
-// $Id: char.c,v 1.1.1.3 2005/11/30 00:05:38 running_pinata Exp $
+// $Id: char.c,v 1.1.1.4 2005/12/10 00:59:44 running_pinata Exp $
 // original : char2.c 2003/03/14 11:58:35 Rev.1.5
 #define DUMP_UNKNOWN_PACKET	1
 
@@ -1912,6 +1912,7 @@ int parse_tologin(int fd)
 								st.skill[j].lv = 0;
 							}
 						}
+						char_save(&st);	//キャラデータ変更のセーブ
 					}
 				}
 				WBUFW(buf,0)=0x2b0d;

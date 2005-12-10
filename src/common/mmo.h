@@ -24,6 +24,7 @@
 #define MAX_ZENY 1000000000	// 1G zeny
 #define MAX_CART 100
 #define MAX_SKILL 1020
+#define MAX_HOMSKILL 16
 #define GLOBAL_REG_NUM 96
 #define ACCOUNT_REG_NUM 16
 #define ACCOUNT_REG2_NUM 16

@@ -68,7 +68,7 @@
 
 #define MAP_CONF_NAME	"conf/map_athena.conf"
 
-enum { BL_NUL, BL_PC, BL_NPC, BL_MOB, BL_ITEM, BL_CHAT, BL_SKILL , BL_PET };
+enum { BL_NUL, BL_PC, BL_NPC, BL_MOB, BL_ITEM, BL_CHAT, BL_SKILL , BL_PET ,BL_HOM};
 enum { WARP, SHOP, SCRIPT, MONS };
 struct block_list {
 	struct block_list *next,*prev;
@@ -490,7 +490,6 @@ struct map_session_data {
 	char  auto_status_calc_pc[MAX_STATUSCHANGE];
 	short eternal_status_change[MAX_STATUSCHANGE];
 	short item_no_use;
-	short getpethp;
 
 	int pvp_point,pvp_rank,pvp_timer,pvp_lastusers;
 
@@ -572,7 +571,11 @@ struct mob_data {
 	struct item *lootitem;
 	short lootitem_count;
 
+#ifdef	DYNAMIC_SC_DATA
+	struct status_change *sc_data;//[MAX_STATUSCHANGE];
+#else
 	struct status_change sc_data[MAX_STATUSCHANGE];
+#endif
 	short sc_count;
 	short opt1,opt2,opt3,option;
 	short min_chase;
@@ -599,7 +602,6 @@ struct pet_data {
 	char name[24];
 	struct {
 		unsigned skillstate : 8 ;
-		unsigned dead_sit : 1;	//added by フェルシア
 	} state;
 	short equip;
 	int target_id;
@@ -628,12 +630,6 @@ struct pet_data {
 		short delay; //Time (secs) between being able to recast.
 		int timer;
 	} *s_skill;	//[Skotlex]
-
-	int max_hp,hp;
-	struct status_change sc_data[MAX_STATUSCHANGE];
-	short sc_count;
-	short opt1,opt2,opt3,option;
-	int revive_timer;
 };
 
 enum { MS_IDLE,MS_WALK,MS_ATTACK,MS_DEAD,MS_DELAY };
@@ -814,6 +810,9 @@ struct chat_data {
 	unsigned char trigger;
 	unsigned char users;     /* current users */
 	unsigned char pub;       /* room attribute */
+	unsigned zeny;
+	unsigned lowlv;
+	unsigned highlv;
 	struct map_session_data *usersd[20];
 	struct block_list *owner_;
 	struct block_list **owner;

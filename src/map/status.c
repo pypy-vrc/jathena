@@ -1,5 +1,5 @@
-
 // ステータス計算、状態異常処理
+
 #include <time.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -23,7 +23,6 @@
 #include "unit.h"
 #include "db.h"
 #include "malloc.h"
-
 static int max_weight_base[MAX_PC_CLASS];
 static int hp_coefficient[MAX_PC_CLASS];
 static int hp_coefficient2[MAX_PC_CLASS];
@@ -37,6 +36,7 @@ static char job_bonus[3][MAX_PC_CLASS][MAX_LEVEL];
 int current_equip_item_index;//ステータス計算用
 int current_equip_card_id;
 static char race_name[10][5] = {{"無形"},{"不死"},{"動物"},{"植物"},{"昆虫"},{"魚貝"},{"悪魔"},{"人間"},{"天使"},{"竜"}};
+struct status_change dummy_sc_data[MAX_STATUSCHANGE];
 /*==========================================
  * 精錬ボーナス
  *------------------------------------------
@@ -740,10 +740,10 @@ L_RECALC:
 		if(sd->sc_data[SC_MEAL_INCLUK].timer!=-1)
 			sd->paramb[5]+= sd->sc_data[SC_MEAL_INCLUK].val1;
 			
-		//駆け足のSTR +10
+		//駆け足のATK +10*LV
 		if(sd->sc_data[SC_SPURT].timer!=-1)
-			sd->paramb[0] += 10;
-		
+			sd->base_atk += 10*sd->sc_data[SC_SPURT].val1;
+
 		//ギルドスキル 臨戦態勢
 		if(sd->sc_data[SC_BATTLEORDER].timer!=-1){
 			sd->paramb[0]+= 5*sd->sc_data[SC_BATTLEORDER].val1;
@@ -980,7 +980,7 @@ L_RECALC:
 	}
 	
 	//太陽と月と星の悪魔
-	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0)
+	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0 && sd->status.job_level>=50)
 	{
 		aspd_rate -= skill*3;
 		if(sd->sc_data[SC_DEVIL].timer!=-1 || sd->sc_data[SC_DEVIL].val1<skill)
@@ -996,7 +996,11 @@ L_RECALC:
 	//	if(sd->view_class==PC_CLASS_SG)
 	//		sd->view_class = sd->view_class+1;
 	}
-	
+	if(sd && sd->sc_data[SC_SANTA].timer!=-1)
+	{
+		sd->view_class = 26;
+	}
+
 	if( (skill=pc_checkskill(sd,AC_VULTURE))>0){	// ワシの目
 		sd->hit += skill;
 		if(sd->status.weapon == 11)
@@ -1203,7 +1207,7 @@ L_RECALC:
 	if(sd->sc_count){
 		//太陽の安楽 DEF増加
 		if(sd->sc_data[SC_SUN_COMFORT].timer!=-1 && sd->bl.m == sd->feel_map[0].m)
-			sd->def += (sd->status.base_level + sd->status.dex + sd->status.luk)/10;
+			sd->def2 += (sd->status.base_level + sd->status.dex + sd->status.luk)/2;
 			//sd->def += (sd->status.base_level + sd->status.dex + sd->status.luk + sd->paramb[4] + sd->paramb[5])/10;
 			
 		//月の安楽
@@ -1597,6 +1601,12 @@ L_RECALC:
 			sd->addeff[0]+=sd->sc_data[SC_DELUGE].val2;//% of granting
 		*/
 	}
+	//テコンランカーボーナス
+	if(sd->status.class==PC_CLASS_TK && sd->status.base_level>=90 && ranking_get_pc_rank(sd,RK_TAEKWON)>0)
+	{
+		sd->status.max_hp*=3;
+		sd->status.max_sp*=3;
+	}
 
 	if(sd->speed_rate != 100)
 		sd->speed = sd->speed*sd->speed_rate/100;
@@ -1833,8 +1843,6 @@ int status_get_hp(struct block_list *bl)
 		return ((struct mob_data *)bl)->hp;
 	else if(bl->type==BL_PC && (struct map_session_data *)bl)
 		return ((struct map_session_data *)bl)->status.hp;
-	else if(bl->type==BL_PC && (struct pet_data *)bl)	//changed by フェルシア
-		return ((struct pet_data *)bl)->hp;
 	else
 		return 1;
 }
@@ -2918,11 +2926,9 @@ int status_get_dmotion(struct block_list *bl)
 		if(battle_config.pc_damage_delay_rate != 100)
 			ret = ret*battle_config.pc_damage_delay_rate/100;
 	}
-	else if(bl->type==BL_PET && (struct pet_data *)bl){
+	else if(bl->type==BL_PET && (struct pet_data *)bl)
 		ret=mob_db[((struct pet_data *)bl)->class].dmotion;
-		if(battle_config.pet_damage_delay_rate != 100)	//added by フェルシア
-			ret = ret*battle_config.pet_damage_delay_rate/100;
-	}else
+	else
 		return 2000;
 
 	if((sc_data && sc_data[SC_ENDURE].timer!=-1 &&
@@ -3163,8 +3169,6 @@ struct status_change *status_get_sc_data(struct block_list *bl)
 		return ((struct mob_data*)bl)->sc_data;
 	else if(bl->type==BL_PC && (struct map_session_data *)bl)
 		return ((struct map_session_data*)bl)->sc_data;
-	else if(bl->type==BL_PET && (struct pet_data *)bl)	//changed by フェルシア
-		return ((struct pet_data *)bl)->sc_data;
 	return NULL;
 }
 short *status_get_sc_count(struct block_list *bl)
@@ -3174,8 +3178,6 @@ short *status_get_sc_count(struct block_list *bl)
 		return &((struct mob_data*)bl)->sc_count;
 	else if(bl->type==BL_PC && (struct map_session_data *)bl)
 		return &((struct map_session_data*)bl)->sc_count;
-	else if(bl->type==BL_PET && (struct pet_data *)bl)	//changed by フェルシア
-		return &((struct pet_data *)bl)->sc_count;
 	return NULL;
 }
 short *status_get_opt1(struct block_list *bl)
@@ -3187,8 +3189,6 @@ short *status_get_opt1(struct block_list *bl)
 		return &((struct map_session_data*)bl)->opt1;
 	else if(bl->type==BL_NPC && (struct npc_data *)bl)
 		return &((struct npc_data*)bl)->opt1;
-	else if(bl->type==BL_PET && (struct pet_data *)bl)	//changed by フェルシア
-		return &((struct pet_data *)bl)->opt1;
 	return 0;
 }
 short *status_get_opt2(struct block_list *bl)
@@ -3200,8 +3200,6 @@ short *status_get_opt2(struct block_list *bl)
 		return &((struct map_session_data*)bl)->opt2;
 	else if(bl->type==BL_NPC && (struct npc_data *)bl)
 		return &((struct npc_data*)bl)->opt2;
-	else if(bl->type==BL_PET && (struct pet_data *)bl)	//changed by フェルシア
-		return &((struct pet_data *)bl)->opt2;
 	return 0;
 }
 short *status_get_opt3(struct block_list *bl)
@@ -3213,8 +3211,6 @@ short *status_get_opt3(struct block_list *bl)
 		return &((struct map_session_data*)bl)->opt3;
 	else if(bl->type==BL_NPC && (struct npc_data *)bl)
 		return &((struct npc_data*)bl)->opt3;
-	else if(bl->type==BL_PET && (struct pet_data *)bl)	//changed by フェルシア
-		return &((struct pet_data *)bl)->opt3;
 	return 0;
 }
 short *status_get_option(struct block_list *bl)
@@ -3226,8 +3222,6 @@ short *status_get_option(struct block_list *bl)
 		return &((struct map_session_data*)bl)->status.option;
 	else if(bl->type==BL_NPC && (struct npc_data *)bl)
 		return &((struct npc_data*)bl)->option;
-	else if(bl->type==BL_PET && (struct pet_data *)bl)	//changed by フェルシア
-		return &((struct pet_data *)bl)->option;
 	return 0;
 }
 
@@ -3271,6 +3265,48 @@ int status_check_no_magic_damage(struct block_list *bl)
 	}
 	return 0;
 }
+#ifdef DYNAMIC_SC_DATA
+int status_calloc_sc_data(struct block_list *bl)
+{
+	nullpo_retr(0, bl);
+	if(status_check_dummy_sc_data(bl) == 0)
+		return 0;
+	if(bl->type == BL_MOB)
+	{
+		int i;
+		struct mob_data* md = (struct mob_data*)bl;
+		md->sc_data = (struct status_change *)aCalloc(MAX_STATUSCHANGE,sizeof(struct status_change));
+		for(i=0;i<MAX_STATUSCHANGE;i++) {
+			md->sc_data[i].timer=-1;
+			md->sc_data[i].val1 = md->sc_data[i].val2 = md->sc_data[i].val3 = md->sc_data[i].val4 =0;
+		}
+		md->sc_count = 0;
+	}
+	return 0;
+}
+int status_free_sc_data(struct block_list *bl)
+{
+	nullpo_retr(0, bl);
+	if(bl->type == BL_MOB && status_check_dummy_sc_data(bl)==0)
+	{
+		struct mob_data *md = (struct mob_data *)bl;
+		aFree(md->sc_data);
+		md->sc_data = dummy_sc_data;
+		md->sc_count = 0;
+	}
+	return 0;
+}
+int status_check_dummy_sc_data(struct block_list *bl)
+{
+	nullpo_retr(0, bl);
+	if(bl->type == BL_MOB)
+	{
+		if(((struct mob_data *)bl)->sc_data == dummy_sc_data)
+			return 1;
+	}
+	return 0;
+}
+#endif
 /*==========================================
  * ステータス異常開始
  *------------------------------------------
@@ -3281,12 +3317,15 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	struct mob_data *md = NULL;
 	struct status_change* sc_data;
 	short *sc_count, *option, *opt1, *opt2, *opt3;
-	int opt_flag = 0, calc_flag = 0, updateflag = 0, race, mode, elem, undead_flag;
+	int opt_flag = 0, calc_flag = 0, updateflag = 0, race, mode, elem;
 	int scdef=0,soul_through = 0;
 
 	nullpo_retr(0, bl);
 	if(bl->type == BL_SKILL)
 		return 0;
+#ifdef DYNAMIC_SC_DATA
+	status_calloc_sc_data(bl);
+#endif
 	nullpo_retr(0, sc_data=status_get_sc_data(bl));
 	nullpo_retr(0, sc_count=status_get_sc_count(bl));
 	nullpo_retr(0, option=status_get_option(bl));
@@ -3298,7 +3337,6 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	race=status_get_race(bl);
 	mode=status_get_mode(bl);
 	elem=status_get_elem_type(bl);
-	undead_flag=(elem == 9 || race == 1)?1:0;
 
 
 	if(type == SC_AETERNA && (sc_data[SC_STONE].timer != -1 || sc_data[SC_FREEZE].timer != -1) )
@@ -3378,35 +3416,33 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 	else if(bl->type == BL_MOB){
 		md=(struct mob_data *)bl;
 	}
-	else if(bl->type == BL_PET) {	//added by フェルシア
-	}
 	else {
 		if(battle_config.error_log)
 			printf("status_change_start: neither MOB nor PC !\n");
 		return 0;
 	}
 
-	if(type==SC_FREEZE && undead_flag && !(flag&1))
-		return 0;
-
-	//石化無効
-	if(type==SC_STONE && undead_flag && !(flag&1))
+	//アンデッドは凍結・石化無効
+	if((race==1 || elem==9) && !(flag&1) && (type==SC_STONE || type==SC_FREEZE))
 		return 0;
 		
 	if((type == SC_ADRENALINE || type==SC_ADRENALINE2 || type == SC_WEAPONPERFECTION || type == SC_OVERTHRUST) &&
 		sc_data[type].timer != -1 && sc_data[type].val2 && !val2)
 		return 0;
 
-	if(mode & 0x20 && (type==SC_STONE || type==SC_FREEZE || type == SC_FOGWALLPENALTY ||
-		type==SC_STAN || type==SC_SLEEP || type==SC_SILENCE || type==SC_QUAGMIRE || type == SC_DECREASEAGI || type == SC_PROVOKE ||
-		(type == SC_BLESSING && (undead_flag || race == 6))) && !(flag&1)){
-		/* ボスには効かない(ただしカードによる効果は適用される) */
+	if(mode&0x20 && !(flag&1) &&
+	(type==SC_STONE || type==SC_FREEZE || type==SC_STAN || type==SC_SLEEP ||
+	type==SC_POISON || type==SC_CURSE || type==SC_SILENCE || type==SC_CONFUSION ||
+	type==SC_BLIND || type==SC_BLEED || type==SC_DPOISON || type==SC_PROVOKE ||
+	type==SC_QUAGMIRE || type==SC_DECREASEAGI || type==SC_FOGWALLPENALTY ||
+	(type==SC_BLESSING && (battle_check_undead(race,elem) || race==6))))
+	/* ボスには効かない(ただしカードによる効果は適用される) */
 		return 0;
-	}
+
 	if(type==SC_FREEZE || type==SC_STAN || type==SC_SLEEP)
 		unit_stop_walking(bl,1);
 
-	if (type==SC_BLESSING && (bl->type==BL_PC || (!undead_flag && race!=6))) {
+	if (type==SC_BLESSING && (bl->type==BL_PC || (!battle_check_undead(race,elem) && race!=6))) {
 		if (sc_data[SC_CURSE].timer!=-1)
 			status_change_end(bl,SC_CURSE,-1);
 		if (sc_data[SC_STONE].timer!=-1 && sc_data[SC_STONE].val2==0)
@@ -3883,6 +3919,9 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			calc_flag = 1;
 			tick = 1000 * tick;
 			break;
+		case SC_SANTA:
+			calc_flag = 1;
+			break;
 		case SC_WEDDING:	//結婚用(結婚衣裳になって歩くのが遅いとか)
 			{
 				time_t timer;
@@ -3990,7 +4029,6 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			if(!(flag&2)) {
 				int sc_def = status_get_lv(bl)/10 + status_get_int(bl)/15;
 				tick = 30000 - sc_def;
-				if(md) md->target_id = 0;
 			}
 			break;
 		case SC_CURSE:
@@ -4497,6 +4535,10 @@ int status_change_clear(struct block_list *bl,int type)
 	int i;
 
 	nullpo_retr(0, bl);
+#ifdef DYNAMIC_SC_DATA
+	if(status_check_dummy_sc_data(bl))
+		return 0;
+#endif
 	nullpo_retr(0, sc_data=status_get_sc_data(bl));
 	nullpo_retr(0, sc_count=status_get_sc_count(bl));
 	nullpo_retr(0, option=status_get_option(bl));
@@ -4550,8 +4592,9 @@ int status_change_end_by_jumpkick( struct block_list* bl)
 	//モンスターは使わないだろうから無視
 	if(bl->type!=BL_PC)
 		return 0;
-	
-	if(bl->type!=BL_PC && bl->type!=BL_MOB && bl->type!=BL_PET) {	//added by フェルシア
+	if(bl->type==BL_MOB && status_get_sc_data(bl)==NULL)
+		return 0;
+	if(bl->type!=BL_PC && bl->type!=BL_MOB) {
 		if(battle_config.error_log)
 			printf("status_change_end: neither MOB nor PC !\n");
 		return 0;
@@ -4789,7 +4832,7 @@ int status_change_end( struct block_list* bl , int type,int tid)
 	short *sc_count, *option, *opt1, *opt2, *opt3;
 
 	nullpo_retr(0, bl);
-	if(bl->type!=BL_PC && bl->type!=BL_MOB && bl->type!=BL_PET) {	//added by フェルシア
+	if(bl->type!=BL_PC && bl->type!=BL_MOB) {
 		if(battle_config.error_log)
 			printf("status_change_end: neither MOB nor PC !\n");
 		return 0;
@@ -4880,6 +4923,7 @@ int status_change_end( struct block_list* bl , int type,int tid)
 			case SC_INCATK:		//item 682用
 			case SC_INCMATK:	//item 683用
 			case SC_WEDDING:	//結婚用(結婚衣裳になって歩くのが遅いとか)
+			case SC_SANTA:
 			case SC_INCALLSTATUS:
 			case SC_INCHIT:
 			case SC_INCFLEE:
@@ -5906,7 +5950,8 @@ int status_change_timer_sub(struct block_list *bl, va_list ap )
 			status_change_end( bl, SC_CLOAKING, -1);
 			if(battle_check_target( src,bl, BCT_ENEMY ) > 0) {
 				struct status_change *sc_data = status_get_sc_data(bl);
-				battle_skill_attack(BF_MAGIC,src,src,bl,AL_RUWACH,sc_data[type].val1,tick,0);
+				if(sc_data)
+					battle_skill_attack(BF_MAGIC,src,src,bl,AL_RUWACH,sc_data[type].val1,tick,0);
 			}
 		}
 		break;
@@ -6377,6 +6422,11 @@ int status_readdb(void) {
 	fclose(fp);
 	printf("read db/size_fix.txt done\n");
 
+	for(i=0;i<MAX_STATUSCHANGE;i++) {
+		dummy_sc_data[i].timer=-1;
+		dummy_sc_data[i].val1 = dummy_sc_data[i].val2 = dummy_sc_data[i].val3 = dummy_sc_data[i].val4 =0;
+	}
+	
 	return 0;
 }
 

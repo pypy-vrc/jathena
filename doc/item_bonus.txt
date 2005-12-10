@@ -173,14 +173,14 @@ bAutoSpell,bAutoSelfSpell,bRevAutoSpell,bRevAutoSelfSpell‚Í16ŒÂ‚Ü‚Å—LŒø‚Å‚·B16‚
 
 
 EƒI[ƒgƒXƒyƒ‹
-	bonus3 bAutoSpell,n,x,y:			ƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦‚ÅŽg—pB
-	bonus3 bAutoSpell2,n,x,y:			ƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦‚ÅŽg—pB‚ƒŒƒxƒ‹‚ðŽæ“¾‚µ‚Ä‚¢‚é‚È‚ç‚Î‚»‚¿‚ç‚ð—Dæ
-	bonus3 bAutoSelfSpell,n,x,y:		ƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦‚ÅŽ©•ª‚ÉŽg—pB
-	bonus3 bAutoSelfSpell2,n,x,y:		ƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦‚ÅŽ©•ª‚ÉŽg—pB‚ƒŒƒxƒ‹‚ðŽæ“¾‚µ‚Ä‚¢‚é‚È‚ç‚Î‚»‚¿‚ç‚ð—Dæ
-	bonus3 bRevAutoSpell,n,x,y:			•¨—ƒ_ƒ[ƒW‚ðŽó‚¯‚½ŽžAƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦‚ÅŽg—pB
-	bonus3 bRevAutoSpell2,n,x,y:		•¨—ƒ_ƒ[ƒW‚ðŽó‚¯‚½ŽžAƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦‚ÅŽg—pB‚ƒŒƒxƒ‹‚ðŽæ“¾‚µ‚Ä‚¢‚é‚È‚ç‚Î‚»‚¿‚ç‚ð—Dæ
-	bonus3 bRevAutoSelfSpell,n,x,y:		•¨—ƒ_ƒ[ƒW‚ðŽó‚¯‚½ŽžAƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦‚ÅŽ©•ª‚ÉŽg—pB
-	bonus3 bRevAutoSelfSpell2,n,x,y:	•¨—ƒ_ƒ[ƒW‚ðŽó‚¯‚½ŽžAƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦‚ÅŽ©•ª‚ÉŽg—pB‚ƒŒƒxƒ‹‚ðŽæ“¾‚µ‚Ä‚¢‚é‚È‚ç‚Î‚»‚¿‚ç‚ð—Dæ
+	bonus3 bAutoSpell,n,x,y:			ƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦(–œ•ª—¦)‚ÅŽg—pB
+	bonus3 bAutoSpell2,n,x,y:			ƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦(–œ•ª—¦)‚ÅŽg—pB‚ƒŒƒxƒ‹‚ðŽæ“¾‚µ‚Ä‚¢‚é‚È‚ç‚Î‚»‚¿‚ç‚ð—Dæ
+	bonus3 bAutoSelfSpell,n,x,y:		ƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦(–œ•ª—¦)‚ÅŽ©•ª‚ÉŽg—pB
+	bonus3 bAutoSelfSpell2,n,x,y:		ƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦(–œ•ª—¦)‚ÅŽ©•ª‚ÉŽg—pB‚ƒŒƒxƒ‹‚ðŽæ“¾‚µ‚Ä‚¢‚é‚È‚ç‚Î‚»‚¿‚ç‚ð—Dæ
+	bonus3 bRevAutoSpell,n,x,y:			•¨—ƒ_ƒ[ƒW‚ðŽó‚¯‚½ŽžAƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦(–œ•ª—¦)‚ÅŽg—pB
+	bonus3 bRevAutoSpell2,n,x,y:		•¨—ƒ_ƒ[ƒW‚ðŽó‚¯‚½ŽžAƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦(–œ•ª—¦)‚ÅŽg—pB‚ƒŒƒxƒ‹‚ðŽæ“¾‚µ‚Ä‚¢‚é‚È‚ç‚Î‚»‚¿‚ç‚ð—Dæ
+	bonus3 bRevAutoSelfSpell,n,x,y:		•¨—ƒ_ƒ[ƒW‚ðŽó‚¯‚½ŽžAƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦(–œ•ª—¦)‚ÅŽ©•ª‚ÉŽg—pB
+	bonus3 bRevAutoSelfSpell2,n,x,y:	•¨—ƒ_ƒ[ƒW‚ðŽó‚¯‚½ŽžAƒI[ƒgƒXƒyƒ‹‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚Åy%Šm—¦(–œ•ª—¦)‚ÅŽ©•ª‚ÉŽg—pB‚ƒŒƒxƒ‹‚ðŽæ“¾‚µ‚Ä‚¢‚é‚È‚ç‚Î‚»‚¿‚ç‚ð—Dæ
 	bonus4 bAutoSpell,n,x,y,z;			z‚ÌðŒ‚ÅƒXƒLƒ‹n‚ðxƒŒƒxƒ‹‚ÅŠm—¦y‚ÅŽg—pB(y‚Í–œ•ª—¦)
 					ðŒ‚ð‰½‚àŽw’è‚µ‚È‚­‚Ä‚à‚Æ‚è‚ ‚¦‚¸“®ì‚µ‚Ü‚·‚ªA‚¨Š©‚ß‚µ‚Ü‚¹‚ñB
 					”­“®ðŒF•¡”‰Â
@@ -277,7 +277,6 @@ bAutoSpell,bAutoSelfSpell,bRevAutoSpell,bRevAutoSelfSpell‚Í16ŒÂ‚Ü‚Å—LŒø‚Å‚·B16‚
 
 
 E‚»‚Ì‘¼
-	bonus bItemNoUse,n;				ƒAƒCƒeƒ€‚ðŽg—p‚·‚é‚±‚Æ‚ªo—ˆ‚È‚¢
 	bonus bNoSizeFix,n;					ƒ‚ƒ“ƒXƒ^[‚ÌƒTƒCƒY‚É‚æ‚éUŒ‚•â³‚ðŽó‚¯‚È‚¢(n‚Í–³ˆÓ–¡)
 	bonus bMobClassChange,n;			UŒ‚Žžn%‚ÅMOB‚ð•Ê‚ÌMOB‚É•Ï‚¦‚é(n‚Í–œ•ª—¦)
 	bonus bInfiniteEndure,n;			–³ŒÀƒCƒ“ƒfƒ…ƒA(n‚Í–³ˆÓ–¡)

@@ -87,7 +87,7 @@ int battle_damage(struct block_list *bl,struct block_list *target,int damage,int
 
 	nullpo_retr(0, target); //blはNULLで呼ばれることがあるので他でチェック
 
-	if(damage==0)	//changed by フェルシア
+	if(damage==0 || target->type == BL_PET)
 		return 0;
 
 	if(target->prev == NULL)
@@ -147,25 +147,8 @@ int battle_damage(struct block_list *bl,struct block_list *target,int damage,int
 			}
 		}
 		return 0;
-	}else if(target->type==BL_PET){	// added by フェルシア
-		struct pet_data *pd=(struct pet_data *)target;
-		if(pd && pd->ud.skilltimer!=-1 && pd->ud.state.skillcastcancel)	// 詠唱妨害
-			unit_skillcastcancel(target,0);
-		pet_damage(bl,pd,damage);
-
-		// カード効果のコーマ・即死
-		if(sd && pd && flag&(BF_WEAPON|BF_NORMAL)){
-			if(atn_rand()%10000 < sd->weapon_coma_ele2[ele] ||
-				atn_rand()%10000 < sd->weapon_coma_race2[race] ||
-				atn_rand()%10000 < sd->weapon_coma_race2[11])
-				pet_damage(bl,pd,status_get_hp(target)-1);
-
-			if(atn_rand()%10000 < sd->weapon_coma_ele[ele] ||
-				atn_rand()%10000 < sd->weapon_coma_race[race] ||
-				atn_rand()%10000 < sd->weapon_coma_race[11])
-				pet_damage(bl,pd,status_get_hp(target));
-		}
-	}else if(target->type==BL_PC){	// PC
+	}
+	else if(target->type==BL_PC){	// PC
 		struct map_session_data *tsd=(struct map_session_data *)target;
 
 		if(tsd && tsd->sc_data && tsd->sc_data[SC_DEVOTION].val1){	// ディボーションをかけられている
@@ -229,6 +212,8 @@ int battle_heal(struct block_list *bl,struct block_list *target,int hp,int sp,in
 {
 	nullpo_retr(0, target); //blはNULLで呼ばれることがあるので他でチェック
 
+	if(target->type == BL_PET)
+		return 0;
 	if( unit_isdead(target) )
 		return 0;
 	if(hp==0 && sp==0)
@@ -241,8 +226,6 @@ int battle_heal(struct block_list *bl,struct block_list *target,int hp,int sp,in
 		return mob_heal((struct mob_data *)target,hp);
 	else if(target->type==BL_PC)
 		return pc_heal((struct map_session_data *)target,hp,sp);
-	else if(target->type == BL_PET)	//added by フェルシア
-		return pet_heal((struct pet_data *)target,hp);
 	return 0;
 }
 
@@ -278,7 +261,6 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 {
 	struct map_session_data *sd=NULL;
 	struct mob_data *md=NULL;
-	struct pet_data *pd=NULL;	//added by フェルシア
 	struct status_change *sc_data,*sc;
 	short *sc_count;
 	int class;
@@ -290,8 +272,6 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 
 	if(bl->type==BL_MOB)
 		md=(struct mob_data *)bl;
-	else if(bl->type==BL_PET)	//added by フェルシア
-		pd=(struct pet_data *)bl;
 	else
 		sd=(struct map_session_data *)bl;
 
@@ -392,8 +372,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 				status_change_end(bl, SC_KYRIE, -1);
 		}
 		/* インデュア */
-		if(sc_data[SC_ENDURE].timer!=-1 && damage > 0 && flag&BF_WEAPON 
-		&& sc_data[SC_CONCENTRATION].timer==-1 && sc_data[SC_BERSERK].timer==-1){
+		if(sc_data[SC_ENDURE].timer != -1 && damage > 0 && flag&BF_WEAPON && src->type != BL_PC){
 			if((--sc_data[SC_ENDURE].val2)<=0)
 				status_change_end(bl, SC_ENDURE, -1);
 		}
@@ -1049,7 +1028,7 @@ struct Damage battle_calc_weapon_attack(
 			s_atkmax_ = (s_watk_   * src_sd->atkmods_[ t_size ]) / 100;
 			s_atkmin_ = (s_atkmin_ * src_sd->atkmods_[ t_size ]) / 100;
 		}
-		if( sc_data[SC_WEAPONPERFECTION].timer!=-1) {
+		if( sc_data && sc_data[SC_WEAPONPERFECTION].timer!=-1) {
 			// ウェポンパーフェクション || ドレイクカード
 			s_atkmax = s_watk;
 			s_atkmax_ = s_watk_;
@@ -1086,7 +1065,7 @@ struct Damage battle_calc_weapon_attack(
 		}else if(target_md)//対象が敵
 			tclass = target_md->class;
 
-		if(sc_data[SC_MIRACLE].timer!=-1)//太陽と月と星の奇跡
+		if(sc_data && sc_data[SC_MIRACLE].timer!=-1)//太陽と月と星の奇跡
 		{
 			//全ての敵が月
 			atk_rate = (src_sd->status.base_level + s_dex + s_luk + s_str)/(12-3*pc_checkskill(src_sd,SG_STAR_ANGER));
@@ -1117,10 +1096,11 @@ struct Damage battle_calc_weapon_attack(
 		//三段掌
 		if( skill_num == 0 && skill_lv >= 0 && da == 0 && (skill = pc_checkskill(src_sd,MO_TRIPLEATTACK)) > 0 && src_sd->status.weapon <= 16 && !src_sd->state.arrow_atk)
 		{
-			if(sc_data[SC_TRIPLEATTACK_RATE_UP].timer!=-1)
+			if(sc_data && sc_data[SC_TRIPLEATTACK_RATE_UP].timer!=-1)
 			{
-				int rate_up[3] = {20,50,100};
-				da = (atn_rand()%100 < (30 - skill + rate_up[sc_data[SC_TRIPLEATTACK_RATE_UP].val1 - 1])) ? 2:0;
+				int rate_up[3] = {200,250,300};
+				int triple_rate = (30 - skill)*rate_up[sc_data[SC_TRIPLEATTACK_RATE_UP].val1 - 1]/100;
+				da = (atn_rand()%100 < triple_rate) ? 2:0;
 				status_change_end(src,SC_TRIPLEATTACK_RATE_UP,-1);
 			}else
 				da = (atn_rand()%100 < (30 - skill)) ? 2:0;
@@ -1130,8 +1110,8 @@ struct Damage battle_calc_weapon_attack(
 		{
 			if(sc_data[SC_COUNTER_RATE_UP].timer!=-1 && (skill = pc_checkskill(src_sd,SG_FRIEND)) > 0)
 			{
-				int rate_up[3] = {20,50,100};
-				da = (atn_rand()%100 < (20 + rate_up[skill - 1])) ? 6:0;
+				int counter_rate[3] = {40,50,60};//{200,250,300};
+				da = (atn_rand()%100 <  counter_rate[skill - 1]) ? 6:0;
 				status_change_end(src,SC_COUNTER_RATE_UP,-1);
 			}else
 				da = (atn_rand()%100 < 20) ? 6:0;
@@ -2574,6 +2554,7 @@ struct Damage battle_calc_magic_attack(
 			normalmagic_flag=0;
 			break;
 
+//		case HW_NAPALMVULCAN:	// ナパームバルカン
 		case MG_NAPALMBEAT:	// ナパームビート（分散計算込み）
 			MATK_FIX(70+ skill_lv*10,100);
 			if(flag>0){
@@ -2584,16 +2565,16 @@ struct Damage battle_calc_magic_attack(
 			}
 			break;
 		case MG_SOULSTRIKE:			/* ソウルストライク （対アンデッドダメージ補正）*/
-			if(target->type != BL_PC && battle_check_undead(t_race,t_ele))
+			if(battle_check_undead(t_race,t_ele))
 				MATK_FIX( 20+skill_lv,20 );//MATKに補正じゃ駄目ですかね？
 			break;
 		case MG_FIREBALL:	// ファイヤーボール
-			{
-				const int drate[]={100,90,70};
-				if(flag>2)
-					matk1=matk2=0;
-				else
-					MATK_FIX( (95+skill_lv*5)*drate[flag] ,10000 );
+			if(flag>2)
+				matk1=matk2=0;
+			else{
+				MATK_FIX((70+skill_lv*10),100);
+				if(flag==2)
+					MATK_FIX(3,4);
 			}
 			break;
 		case MG_FIREWALL:	// ファイヤーウォール
@@ -3231,7 +3212,7 @@ int battle_weapon_attack( struct block_list *src,struct block_list *target,
 		
 		//クローンスキル
 		if(wd.damage> 0 && target->type==BL_PC
-			&& pc_checkskill((struct map_session_data *)target,RG_PLAGIARISM) && sc_data[SC_PRESERVE].timer == -1){
+			&& pc_checkskill((struct map_session_data *)target,RG_PLAGIARISM) && sc_data && sc_data[SC_PRESERVE].timer == -1){
 			skill_clone((struct map_session_data *)target,MO_TRIPLEATTACK,pc_checkskill(sd, MO_TRIPLEATTACK));
 		}
 	}else if (wd.div_ >= 251 && wd.div_<=254 && sd)	{ //旋風
@@ -3629,7 +3610,7 @@ int battle_skill_attack(int attack_type,struct block_list* src,struct block_list
 					ssc_data[SC_TKCOMBO].val4 |= 0x08;
 			}
 			
-			if(tk_flag)
+			if(tk_flag && ssc_data)
 			{
 				if(sd->status.class != PC_CLASS_TK || ssc_data[SC_TKCOMBO].val4&~0x0F){
 					//4つとも出したので終了
@@ -3686,15 +3667,28 @@ int battle_skill_attack(int attack_type,struct block_list* src,struct block_list
 			}
 		}
 		//カイト
-		if(sc_data && sc_data[SC_KAITE].timer!=-1)
+		if(damage > 0 && sc_data && sc_data[SC_KAITE].timer!=-1)
 		{
 			if(src->type == BL_PC || status_get_lv(src) < 80)
 			{
-				rdamage = damage;
 				sc_data[SC_KAITE].val2--;
 				if(sc_data[SC_KAITE].val2==0)
 					status_change_end(bl,SC_KAITE,-1);
 				
+				if(src->type==BL_PC && ssc_data && ssc_data[SC_WIZARD].timer!=-1)
+				{
+					struct map_session_data* ssd = (struct map_session_data* )src;
+					int idx = pc_search_inventory(ssd,7321);
+					if(idx!=-1 && ssd->status.inventory[idx].amount > 0)
+					{
+						pc_delitem(ssd,idx,1,0);
+					}else{
+						rdamage += damage;
+					}
+				}
+				else{
+					rdamage += damage;
+				}
 			}
 		}
 		if(rdamage > 0){
@@ -3746,7 +3740,7 @@ int battle_skill_attack(int attack_type,struct block_list* src,struct block_list
 
 	//クローンスキル
 	if(damage > 0 && dmg.flag&BF_SKILL && bl->type==BL_PC
-		&& pc_checkskill((struct map_session_data *)bl,RG_PLAGIARISM) && sc_data[SC_PRESERVE].timer == -1){
+		&& pc_checkskill((struct map_session_data *)bl,RG_PLAGIARISM) && sc_data && sc_data[SC_PRESERVE].timer == -1){
 		skill_clone((struct map_session_data *)bl,skillid,skilllv);
 	}
 
@@ -3926,8 +3920,6 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 	if( flag&0x20000 ){
 		if( target->type==BL_MOB || target->type==BL_PC )
 			return 1;
-		else if( battle_config.can_attack_pet && target->type == BL_PET )
-			return 1;
 		else
 			return -1;
 	}
@@ -3948,7 +3940,7 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 		}
 	}
 
-	if(battle_config.can_attack_pet == 0 && target->type == BL_PET)
+	if(target->type == BL_PET)
 		return -1;
 
 	// スキルユニットの場合、親を求める
@@ -3995,15 +3987,6 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 			if((ss=map_id2bl(md->master_id))==NULL)
 				return -1;
 		}
-	}
-
-	if(ss->type == BL_MOB && target->type==BL_PET) // MOB からペットへの攻撃不可
-		return 0;
-
-	if((map[ss->m].flag.pk || map[ss->m].flag.pvp || map[ss->m].flag.gvg) && (ss->type == BL_PC && target->type==BL_PET)){
-		struct map_session_data* ssd = (struct map_session_data*)ss;
-		struct pet_data *pd = (struct pet_data*)target;
-		if(ssd->char_id == pd->msd->pet.char_id) return 0; //ペット飼い主なら攻撃不可
 	}
 
 	if( src==target || ss==target )	// 同じなら肯定
@@ -4521,11 +4504,10 @@ int battle_config_read(const char *cfgName)
 		battle_config.no_pk_level		   = 60;
 		battle_config.allow_cloneskill_at_autospell = 0;
 		battle_config.pk_noshift = 0;
-		battle_config.can_attack_pet = 0;	//added by フェルシア
-		battle_config.pet_damage_delay_rate = 100;	//added by フェルシア
-		battle_config.pet_damage_delay = 0;	//added by フェルシア
-		battle_config.pet_hp_display = 0;
 		battle_config.pk_penalty_time = 60000;
+		battle_config.dropitem_itemrate_fix = 0;
+		battle_config.gm_nomanner_lv = 50;
+		battle_config.clif_fixpos_type = 1;
 	}
 
 	fp=fopen(cfgName,"r");
@@ -4881,15 +4863,14 @@ int battle_config_read(const char *cfgName)
 			{ "changeoption_packet_type",			&battle_config.changeoption_packet_type				},
 			{ "redemptio_user_noexp",				&battle_config.redemptio_user_noexp					},
 			{ "no_pk_level",						&battle_config.no_pk_level							},
-			{ "pk_noshift",							&battle_config.pk_noshift							},
 			{ "allow_cloneskill_at_autospell",		&battle_config.allow_cloneskill_at_autospell		},
-			{ "can_attack_pet",						&battle_config.can_attack_pet},	//added by フェルシア
-			{ "pet_damage_delay_rate",				&battle_config.pet_damage_delay_rate},	//added by フェルシア
-			{ "pet_damage_delay",					&battle_config.pet_damage_delay},	//added by フェルシア
-			{ "pet_hp_display",						&battle_config.pet_hp_display},
+			{ "pk_noshift",							&battle_config.pk_noshift							},
 			{ "pk_penalty_time",					&battle_config.pk_penalty_time						},
+			{ "dropitem_itemrate_fix",				&battle_config.dropitem_itemrate_fix				},
+			{ "gm_nomanner_lv",						&battle_config.gm_nomanner_lv						},
+			{ "clif_fixpos_type",					&battle_config.clif_fixpos_type						},
 		};
-
+		
 		if(line[0] == '/' && line[1] == '/')
 			continue;
 		i=sscanf(line,"%[^:]:%s",w1,w2);

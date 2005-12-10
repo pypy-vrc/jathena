@@ -429,7 +429,6 @@ int pc_setnewpc(struct map_session_data *sd,int account_id,int char_id,int login
 	sd->mob_view_class = 0;
 	sd->status_calc_pc_process = 0;
 	sd->state.waitingdisconnect=0;
-	sd->getpethp = 0;
 	for(i=0; i<MAX_SKILL_DB; i++)
 		sd->skillstatictimer[i] = tick;
 
@@ -605,7 +604,7 @@ int pc_isequip(struct map_session_data *sd,int n)
 		if(item->equip & 0x0200)
 			return 1;
 		//頭下段
-		if(item->equip & 0x0002)
+		if(item->equip & 0x0001)
 			return 1;
 	}
 
@@ -1086,15 +1085,25 @@ int pc_calc_skilltree(struct map_session_data *sd)
 		//結婚スキルとトマホーク除外
 		for(i=304;i<330;i++)
 				sd->status.skill[i].id=i;
-		if(battle_config.enable_upper_class){ //confで無効でなければ読み込む
-			//養子スキル除外
-			for(i=355;i<408;i++)
-				sd->status.skill[i].id=i;
-			for(i=411;i<500;i++)
-				sd->status.skill[i].id=i;
-		}
-			for(i=1001;i<1020;i++)
-				sd->status.skill[i].id=i;
+		//養子スキル除外
+		for(i=355;i<408;i++)
+			sd->status.skill[i].id=i;
+#ifdef TKSGSLGSNJ
+		for(i=411;i<545;i++)
+			sd->status.skill[i].id=i;
+		for(i=1001;i<1020;i++)
+			sd->status.skill[i].id=i;
+#else
+ 	#ifdef TKSGSL
+		for(i=411;i<500;i++)
+			sd->status.skill[i].id=i;
+		for(i=1001;i<1020;i++)
+			sd->status.skill[i].id=i;
+	#else
+		for(i=475;i<492;i++)
+			sd->status.skill[i].id=i;
+	#endif
+#endif
 	}else{
 		// 通常の計算
 		do{
@@ -1126,7 +1135,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 		sd->status.skill[WE_CALLBABY].lv=1;
 		sd->status.skill[WE_CALLBABY].flag=1;
 	}
-	
+
 	//養子 親が居ないと覚えない
 	if(sd->status.parent_id[0]>0 || sd->status.parent_id[1]>0)
 	{
@@ -1137,7 +1146,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 		sd->status.skill[WE_CALLPARENT].lv=1;
 		sd->status.skill[WE_CALLPARENT].flag=1;
 	}
-
+#if MAX_VALID_PC_CLASS>=28
 	//埋め込み
 	//アルケミストの魂
 	if(sd->sc_data && sd->sc_data[SC_ALCHEMIST].timer!=-1)
@@ -1290,6 +1299,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 			}
 		}
 	}
+#endif
 //	if(battle_config.etc_log)
 //		printf("calc skill_tree\n");
 	return 0;
@@ -2201,6 +2211,10 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 	switch(type){
 	case SP_ADD_MONSTER_DROP_ITEM:
 		if(sd->state.lr_flag != 2) {
+			if(battle_config.dropitem_itemrate_fix==1)
+				val = mob_droprate_fix(type2,val);
+			else if(battle_config.dropitem_itemrate_fix>1)
+				val = val * battle_config.dropitem_itemrate_fix / 100;
 			for(i=0;i<sd->monster_drop_item_count;i++) {
 				if(sd->monster_drop_itemid[i] == type2) {
 					sd->monster_drop_race[i] |= 1<<type3;
@@ -2254,42 +2268,42 @@ int pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 	case SP_AUTOSPELL:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_TARGET|EAS_FLUCT|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_FLUCT|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_NOSP);
 		break;
 	case SP_AUTOSPELL2:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_USEMAX|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_USEMAX|EAS_NOSP);
 		break;
 	case SP_AUTOSELFSPELL:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_NOSP);
 		break;
 	case SP_AUTOSELFSPELL2:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_USEMAX|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_ATTACK|EAS_USEMAX|EAS_NOSP);
 		break;
 	case SP_REVAUTOSPELL://反撃用オートスペル
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_NOSP);
 		break;
 	case SP_REVAUTOSPELL2:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_USEMAX|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_TARGET|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_USEMAX|EAS_NOSP);
 		break;
 	case SP_REVAUTOSELFSPELL:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_NOSP);
 		break;
 	case SP_REVAUTOSELFSPELL2:
 		if(sd->state.lr_flag == 2)
 			break;
-		pc_bonus_autospell(sd,type2,type3,val*100,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_USEMAX|EAS_NOSP);
+		pc_bonus_autospell(sd,type2,type3,val,EAS_SELF|EAS_SHORT|EAS_LONG|EAS_REVENGE|EAS_USEMAX|EAS_NOSP);
 		break;
 	case SP_RAISE:
 		sd->autoraise.hp_per = type3;
@@ -2987,7 +3001,7 @@ int pc_putitemtocart(struct map_session_data *sd,int idx,int amount)
 
 	if(itemdb_isdropable(sd->status.inventory[idx].nameid) == 0)
 		return 1;
-	if(pc_candrop(sd,sd->status.inventory[idx].nameid)==1)
+	if(pc_candrop(sd,sd->status.inventory[idx].nameid))
 		return 1;
 
 	if( item_data->nameid==0 || item_data->amount<amount || sd->vender_id )
@@ -4514,7 +4528,7 @@ int pc_damage(struct block_list *src,struct map_session_data *sd,int damage)
 	}
 
 	// 歩 いていたら足を止める
-	if(sd->sc_data[SC_ENDURE].timer == -1 && !sd->special_state.infinite_endure)
+	if(sd->sc_data[SC_ENDURE].timer == -1 && sd->sc_data[SC_BERSERK].timer == -1 && !sd->special_state.infinite_endure)
 		unit_stop_walking(&sd->bl,battle_config.pc_hit_stop_type);
 
 	// 演奏/ダンスの中断

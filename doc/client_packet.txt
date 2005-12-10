@@ -343,6 +343,14 @@ S 00d9 <chat ID>.l <passwd>.8B
 	チャット参加要請
 R 00da <fail>.B
 	チャット参加失敗
+	fail=00 人数超過でチャットルームに入ることができません
+	fail=01 パスワードが違います
+	fail=02 強制退場させられたチャットです
+	fail=03 （メッセージなし）
+	fail=04 お金が足りません
+	fail=05 レベルが足りません
+	fail=06 レベルが高すぎます
+	fail=07 適正職業ではありません
 R 00db <len>.w <chat ID>.l {<index>.l <nick>.24B}.28B*
 	チャット参加者リスト
 R 00dc <users>.w <nick>.24B
@@ -982,6 +990,8 @@ S 01bd <CharName>.24B
 	GMコマンド/summonにて発行。char_name呼び出しコマンド(@recall)
 S 01c0
 	GMコマンド/ｿ莖ﾝにて発行。何かの要求パケ
+R 01c3 <len>.w <color>.l <font?>.w <size?>.w <?>.l <message>.?B
+	GMからの天の声（R 009aのマルチカラー版）
 R 01c4 <index>.w <amount>.l <itemID>.w <item data>.12B
 	カプラ倉庫アイテム 
 R 01c5 <index>.w <amount>.l <itemID>.w <item data>.12B

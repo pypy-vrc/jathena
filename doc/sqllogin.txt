@@ -38,11 +38,15 @@ mysql>
 create database `wwwnarok` default character set sjis;
 と入力後Enter押します。するとデータベースのフォルダと中身がちょこっと作成されます。
 Athenaでログインさせ、セーブさせたりする為にログインユーザーを作成します。
+
 GRANT SELECT,INSERT,UPDATE,DELETE ON `wwwnarok`.* TO 'wwwwwdb'@'localhost' IDENTIFIED BY 'wwwwww';
 こいつはコンバータがデータをコンバートする時や、データの参照をする時に必要。
 ゲーム鯖として稼動させる場合も必要。
-データベース名がwwwnaroks
-アカウント名がwwwwwdb パスワードはwwwwww
+
+データベース名が　wwwnaroks
+アカウント名が　wwwwwdb 
+パスワードが　wwwwww
+
 localhostでのアクセスでしか許可されていないので、外部からの進入は不能のはずですが
 Hookのようなソフトは相手側のChar,mapIPがループバックなのを騙してログインしているので、
 出来るかもしれません。(内部公開しかしていない場合でもポートさえ開いてればログイン可能)
@@ -69,7 +73,6 @@ sql-filesフォルダもDataフォルダのなかにいれておいてください。
 終了！ 後はテキストデータをSQLに流すだけです。
 
 古すぎるデータだと失敗する場合があります。
-
 
 
 ・コンバーター
@@ -107,4 +110,29 @@ vc07_make.batを以下のように編集する
 http://www.usamimi.info/%7Esakage/datah/kouchiku.html
 を参考にして下さい。
 
+
+【情報】
+○main.sql実行時、まれに数箇所のテーブルにてプライマリーキーが設定されないことが
+あり、作成したデータが削除できない場合があります。その際は「sql-files」フォルダ内に
+ある　drop_table.sql　を実行した後、再度main.sqlを実行してください。
+
+
+○Windows環境下やリモートでデータベースを弄る場合下記のソフトが使い勝手がいいです。
+Common SQL Environment（CSE）
+http://www.hi-ho.ne.jp/tsumiki/
+なお、上記サイトでAthena関係の質問はやめてください。全く関係がないですので。
+
+
+
+
 【わかりにくい表現などがあれば修正お願いします】
+
+
+
+
+【変更履歴】（敬称略）
+2005年10月7日　逆毛鰻＆リカルド
+初版
+
+2005年12月2日　よらん
+DropTabelSprict追加による説明文追加

@@ -1589,10 +1589,12 @@ int clif_changemapserver(struct map_session_data *sd,char *mapname,int x,int y,i
  */
 
 int clif_fixpos(struct block_list *bl) {
-	int x[4], y[4];
 
 	nullpo_retr(0, bl);
 
+if(battle_config.clif_fixpos_type)
+{	
+	int x[4], y[4];
 	// clif_fixpos2 用のデータを作成
 	x[0] = bl->x - AREA_SIZE;
 	x[1] = bl->x + AREA_SIZE;
@@ -1603,6 +1605,14 @@ int clif_fixpos(struct block_list *bl) {
 	y[2] = bl->y - AREA_SIZE;
 	y[3] = bl->y + AREA_SIZE;
 	clif_fixpos2(bl, x, y);
+}else{
+	char buf[256];
+	WBUFW(buf,0)=0x88;
+	WBUFL(buf,2)=bl->id;
+	WBUFW(buf,6)=bl->x;
+	WBUFW(buf,8)=bl->y;
+	clif_send(buf,packet_db[0x88].len,bl,AREA);
+}
 	return 0;
 }
 
@@ -1624,7 +1634,8 @@ int clif_fixpos2(struct block_list *bl, int x[4], int y[4])
 	char buf[256];
 
 	nullpo_retr(0, bl);
-
+if(battle_config.clif_fixpos_type)
+{
 	if( bl->type == BL_PC ) {
 		// self position is changed
 		// 自キャラの吹き飛ばしパケ送信（協力者募集）
@@ -1670,6 +1681,14 @@ int clif_fixpos2(struct block_list *bl, int x[4], int y[4])
 	}
 	map_foreachcommonarea(clif_fixpos2_sub, bl->m, x, y, BL_PC, bl, len, buf);
 
+}else{
+
+	WBUFW(buf,0)=0x88;
+	WBUFL(buf,2)=bl->id;
+	WBUFW(buf,6)=bl->x;
+	WBUFW(buf,8)=bl->y;
+	clif_send(buf,packet_db[0x88].len,bl,AREA);
+}
 	return 0;
 }
 
@@ -3746,7 +3765,7 @@ int clif_damage(struct block_list *src,struct block_list *dst,unsigned int tick,
 	if(type != 4 && dst->type == BL_PC && ((struct map_session_data *)dst)->special_state.infinite_endure)
 		type = 9;
 	if(sc_data) {
-		if(type != 4 && sc_data[SC_ENDURE].timer != -1 &&
+		if(type != 4 && (sc_data[SC_ENDURE].timer != -1 || sc_data[SC_BERSERK].timer != -1) &&
 			(dst->type == BL_PC && !map[((struct map_session_data *)dst)->bl.m].flag.gvg))
 			type = 9;
 		if(sc_data[SC_HALLUCINATION].timer != -1) {
@@ -4237,7 +4256,8 @@ int clif_skillup(struct map_session_data *sd,int skill_num)
 	int range,fd;
 
 	nullpo_retr(0, sd);
-
+	if(skill_num>8000)
+		skill_num = skill_num-7100;
 	fd=sd->fd;
 	WFIFOW(fd,0) = 0x10e;
 	WFIFOW(fd,2) = skill_num;
@@ -4333,7 +4353,7 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,
 	if(type != 5 && dst->type == BL_PC && ((struct map_session_data *)dst)->special_state.infinite_endure)
 		type = 9;
 	if(sc_data) {
-		if(type != 5 && sc_data[SC_ENDURE].timer != -1)
+		if(type != 5 && (sc_data[SC_ENDURE].timer != -1 || sc_data[SC_BERSERK].timer != -1))
 			type = 9;
 		if(sc_data[SC_HALLUCINATION].timer != -1 && damage > 0)
 			damage = damage*(5+sc_data[SC_HALLUCINATION].val1) + rand()%100;
@@ -4386,7 +4406,7 @@ int clif_skill_damage2(struct block_list *src,struct block_list *dst,
 	if(type != 5 && dst->type == BL_PC && ((struct map_session_data *)dst)->special_state.infinite_endure)
 		type = 9;
 	if(sc_data) {
-		if(type != 5 && sc_data[SC_ENDURE].timer != -1)
+		if(type != 5 && (sc_data[SC_ENDURE].timer != -1 || sc_data[SC_BERSERK].timer != -1))
 			type = 9;
 		if(sc_data[SC_HALLUCINATION].timer != -1 && damage > 0)
 			damage = damage*(5+sc_data[SC_HALLUCINATION].val1) + rand()%100;
@@ -4617,28 +4637,6 @@ int clif_skill_estimation(struct map_session_data *sd,struct block_list *dst)
 			memcpy(WFIFOP(sd->fd,0),buf,packet_db[0x18c].len);
 			WFIFOSET(sd->fd,packet_db[0x18c].len);
 		}
-	}else if(dst->type==BL_PET)
-	{
-		struct pet_data* pd;
-		if((pd=(struct pet_data *)dst) == NULL)
-			return 0;
-		//自分のペットではない
-		//if(sd->pd != pd)
-		//	return  0;
-		WBUFW(buf, 0)=0x18c;
-		WBUFW(buf, 2)=mob_get_viewclass(pd->class);
-		WBUFW(buf, 4)=status_get_lv(&pd->bl);
-		WBUFW(buf, 6)=status_get_size(&pd->bl);
-		WBUFL(buf, 8)=pd->hp;
-		WBUFW(buf,12)=status_get_def2(&pd->bl);
-		WBUFW(buf,14)=status_get_race(&pd->bl);
-		WBUFW(buf,16)=status_get_mdef2(&pd->bl) - (mob_db[pd->class].vit>>1);
-		WBUFW(buf,18)=status_get_elem_type(&pd->bl);
-		for(i=0;i<9;i++)
-			WBUFB(buf,20+i)= battle_attr_fix(100,i+1,mob_db[pd->class].element);
-
-		memcpy(WFIFOP(sd->fd,0),buf,packet_db[0x18c].len);
-		WFIFOSET(sd->fd,packet_db[0x18c].len);
 	}
 	return 0;
 }
@@ -4746,6 +4744,31 @@ void clif_GlobalMessage(struct block_list *bl,char *message)
 	WBUFL(buf,4)=bl->id;
 	strncpy(WBUFP(buf,8),message,len);
 	clif_send(buf,WBUFW(buf,2),bl,AREA_CHAT_WOC);
+}
+
+/*==========================================
+ * 天の声（マルチカラー）を送信
+ *------------------------------------------
+ */
+int clif_announce(struct block_list *bl,char* mes,int len,unsigned long color,int flag)
+{
+	unsigned char *buf = malloc(len+16);
+	WBUFW(buf,0) = 0x1c3;
+	WBUFW(buf,2) = len+16;
+	WBUFL(buf,4) = color;
+	WBUFW(buf,8) = 0x190; //Font style? Type?
+	WBUFW(buf,10) = 0x0c;  //12? Font size?
+	WBUFL(buf,12) = 0;	//Unknown!
+	memcpy(WBUFP(buf,16), mes, len);
+	
+	flag &= 0x07;
+	clif_send(buf, WBUFW(buf,2), bl,
+	          (flag == 1) ? ALL_SAMEMAP:
+	          (flag == 2) ? AREA:
+	          (flag == 3) ? SELF:
+	          ALL_CLIENT);
+	free(buf);
+	return 0;
 }
 
 /*==========================================
@@ -5861,23 +5884,6 @@ int clif_party_hp(struct party *p,struct map_session_data *sd)
 //		printf("clif_party_hp %d\n",sd->status.account_id);
 	return 0;
 }
-
-int clif_pet_hp(struct map_session_data *sd)
-{
-	unsigned char buf[16];
-	nullpo_retr(0, sd);
-	if(!battle_config.pet_hp_display || sd->pd==NULL)
-		return 0;
-	WBUFW(buf,0)=0x106;
-	WBUFL(buf,2)=sd->pd->bl.id;
-	WBUFW(buf,6)=(sd->pd->hp > 0x7fff)? 0x7fff:sd->pd->hp;
-	WBUFW(buf,8)=(sd->pd->max_hp > 0x7fff)? 0x7fff:sd->pd->max_hp;
-	memcpy(WFIFOP(sd->fd,0),buf,packet_db[0x106].len);
-	WFIFOSET(sd->fd,packet_db[0x106].len);
-//	if(battle_config.etc_log)
-//		printf("clif_party_hp %d\n",sd->status.account_id);
-	return 0;
-}
 /*==========================================
  * GMへ場所とHP通知
  *------------------------------------------
@@ -5948,7 +5954,7 @@ int clif_party_move(struct party *p,struct map_session_data *sd,int online)
 int clif_movetoattack(struct map_session_data *sd,struct block_list *bl)
 {
 	int fd;
-
+	
 	nullpo_retr(0, sd);
 	nullpo_retr(0, bl);
 
@@ -7937,7 +7943,6 @@ void clif_parse_ActionRequest(int fd,struct map_session_data *sd, int cmd)
 {
 	unsigned int tick;
 	int action_type,target_id;
-
 	nullpo_retv(sd);
 
 	if(unit_isdead(&sd->bl)) {
@@ -7993,20 +7998,20 @@ void clif_parse_ActionRequest(int fd,struct map_session_data *sd, int cmd)
 		break;
 	case 0x02:	// sitdown
 		if(battle_config.basic_skill_check == 0 || pc_checkskill(sd,NV_BASIC) >= 3) {
-			skill_gangsterparadise(sd,1);/* ギャングスターパラダイス設定 */
 			pc_setsit(sd);
 			clif_sitting(sd);
+			skill_gangsterparadise(sd,1);/* ギャングスターパラダイス設定 */
 		}
 		else
 			clif_skill_fail(sd,1,0,2);
 		break;
 	case 0x03:	// standup
-		skill_gangsterparadise(sd,0);/* ギャングスターパラダイス解除 */
 		pc_setstand(sd);
 		WFIFOW(fd,0)=0x8a;
 		WFIFOL(fd,2)=sd->bl.id;
 		WFIFOB(fd,26)=3;
 		clif_send(WFIFOP(fd,0),packet_db[0x8a].len,&sd->bl,AREA);
+		skill_gangsterparadise(sd,0);/* ギャングスターパラダイス解除 */
 		break;
 	}
 }
@@ -9504,15 +9509,10 @@ void clif_parse_GMReqNoChat(int fd,struct map_session_data *sd, int cmd)
 
 	if(type == 0)
 		limit = 0 - limit;
-//GMによるチャット禁止時間付与
-//ＧＭレベルによる赤エモ制限が可能。Lv50以上でなければ使えない
-//pc_isGM(sd)>50の50の部分を変更すれば好みに合わせる事が出来ます。
-	if(bl->type == BL_PC && (dstsd =(struct map_session_data *)bl)){
-		if( (tid == bl->id && type == 2 && !pc_isGM(sd)) || (pc_isGM(sd) > pc_isGM(dstsd) && pc_isGM(sd)>50) ) {
 
-//GMレベル1の人でも赤エモ使えるようにする場合は上の行を消して下の2行のコメントアウトをはずして下さい。
-//if(bl->type == BL_PC && (dstsd =(struct map_session_data *)bl)){
-//if((tid == bl->id && type == 2 && !pc_isGM(sd)) || (pc_isGM(sd) > pc_isGM(dstsd)) ){
+	if(bl->type == BL_PC && (dstsd =(struct map_session_data *)bl)){
+		if( (tid == bl->id && type == 2 && !pc_isGM(sd))
+		 || (pc_isGM(sd) > pc_isGM(dstsd) && pc_isGM(sd) >= battle_config.gm_nomanner_lv) ) {
 
 			dstfd = dstsd->fd;
 			WFIFOW(dstfd,0)=0x14b;
