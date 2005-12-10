@@ -2565,20 +2565,16 @@ struct Damage battle_calc_magic_attack(
 			}
 			break;
 		case MG_SOULSTRIKE:			/* ソウルストライク （対アンデッドダメージ補正）*/
-			if(target->type != BL_PC && battle_check_undead(t_race,t_ele))
+			if(battle_check_undead(t_race,t_ele))
 				MATK_FIX( 20+skill_lv,20 );//MATKに補正じゃ駄目ですかね？
 			break;
 		case MG_FIREBALL:	// ファイヤーボール
-			{
-				const int drate[]={100,90,70};
-				if(flag>2)
-					matk1=matk2=0;
-				else{
-					MATK_FIX( (95+skill_lv*5) ,100);
-					if(flag>0){
-						MATK_FIX(drate[flag],100);
-					}
-				}
+			if(flag>2)
+				matk1=matk2=0;
+			else{
+				MATK_FIX((70+skill_lv*10),100);
+				if(flag==2)
+					MATK_FIX(3,4);
 			}
 			break;
 		case MG_FIREWALL:	// ファイヤーウォール
