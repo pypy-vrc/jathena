@@ -1,4 +1,45 @@
 ----------------------------------------
+//1689 by Rayce
+・GMメッセージのマルチカラー対応を暫定実装（from eAthena）
+	‐announce/mapannounce/areaannounceをカラーコード拡張
+	　　eg. announce "message",0,0xFF0000;
+
+　※パケット0x01c3の解析がまだ終わってないようなので
+　　一部おかしい部分もあるかもしれません（0x000000の色とか…）
+　※announceをマルチカラーで使う場合、エリアフラグの0x00は未完成です
+　　inter鯖内のパケットがまだ判明してない…？
+　　よってMAP鯖を分割してる場合は別鯖のMAPにマルチカラーアナウンス不可
+
+	(map/)
+	clif.*
+		clif_announce() 追加
+	intif.*
+		intif_announce() 追加
+	script.c
+		announce/mapannounce/areaannounce変更
+
+・NPCチャットの入場条件追加
+	‐waitingroomにお金とBaseLvで制限をかけることができます
+	　（手抜きのため制限条件を使う場合には第6,7,8引数いずれも省略不可）
+	　　eg. waitingroom "chat",10,"",0,10000,30,90;
+
+	(map/)
+	chat.c
+		chat_createchat() 追記
+		chat_joinchat() 変更
+		chat_createnpcchat() 変更
+	chat.h
+		chat_createnpcchat() 変更
+	map.h
+		chat_data構造体にzeny,lowlv,highlv追加
+	script.c
+		buildin_waitingroom() 追記
+		buildin_getwaitingroomstate() チャット制限値を参照できるように
+
+・doc追記
+	(doc/) script_ref.txt/client_packet.txt (0x01c3,0x00da)
+
+----------------------------------------
 //1688 by yukito
 ・ファイアーボールの計算式を修正
 ・ソウルストライクを不死のPCに撃った時にダメージが増加するように修正

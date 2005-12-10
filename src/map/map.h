@@ -810,6 +810,9 @@ struct chat_data {
 	unsigned char trigger;
 	unsigned char users;     /* current users */
 	unsigned char pub;       /* room attribute */
+	unsigned zeny;
+	unsigned lowlv;
+	unsigned highlv;
 	struct map_session_data *usersd[20];
 	struct block_list *owner_;
 	struct block_list **owner;

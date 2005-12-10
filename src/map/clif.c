@@ -4747,6 +4747,31 @@ void clif_GlobalMessage(struct block_list *bl,char *message)
 }
 
 /*==========================================
+ * 天の声（マルチカラー）を送信
+ *------------------------------------------
+ */
+int clif_announce(struct block_list *bl,char* mes,int len,unsigned long color,int flag)
+{
+	unsigned char *buf = malloc(len+16);
+	WBUFW(buf,0) = 0x1c3;
+	WBUFW(buf,2) = len+16;
+	WBUFL(buf,4) = color;
+	WBUFW(buf,8) = 0x190; //Font style? Type?
+	WBUFW(buf,10) = 0x0c;  //12? Font size?
+	WBUFL(buf,12) = 0;	//Unknown!
+	memcpy(WBUFP(buf,16), mes, len);
+	
+	flag &= 0x07;
+	clif_send(buf, WBUFW(buf,2), bl,
+	          (flag == 1) ? ALL_SAMEMAP:
+	          (flag == 2) ? AREA:
+	          (flag == 3) ? SELF:
+	          ALL_CLIENT);
+	free(buf);
+	return 0;
+}
+
+/*==========================================
  * HPSP回復エフェクトを送信する
  *------------------------------------------
  */

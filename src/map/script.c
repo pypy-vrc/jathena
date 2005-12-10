@@ -3010,9 +3010,9 @@ struct script_function buildin_func[] = {
 	{buildin_startnpctimer,"startnpctimer","*"},
 	{buildin_setnpctimer,"setnpctimer","*"},
 	{buildin_getnpctimer,"getnpctimer","i*"},
-	{buildin_announce,"announce","si"},
-	{buildin_mapannounce,"mapannounce","ssi"},
-	{buildin_areaannounce,"areaannounce","siiiisi"},
+	{buildin_announce,"announce","si*"},
+	{buildin_mapannounce,"mapannounce","ssi*"},
+	{buildin_areaannounce,"areaannounce","siiiisi*"},
 	{buildin_getusers,"getusers","i"},
 	{buildin_getmapusers,"getmapusers","s"},
 	{buildin_getareausers,"getareausers","siiii"},
@@ -5434,17 +5434,27 @@ int buildin_setnpctimer(struct script_state *st)
  */
 int buildin_announce(struct script_state *st)
 {
-	char *str;
+	char *str,*color=NULL;
 	int flag;
 	str=conv_str(st,& (st->stack->stack_data[st->start+2]));
 	flag=conv_num(st,& (st->stack->stack_data[st->start+3]));
+	if (st->end>st->start+4)
+		color=conv_str(st,& (st->stack->stack_data[st->start+4]));
 
 	if(flag&0x0f){
 		struct block_list *bl=(flag&0x08)? map_id2bl(st->oid) :
 			(struct block_list *)script_rid2sd(st);
-		clif_GMmessage(bl,str,strlen(str)+1,flag);
-	}else
-		intif_GMmessage(str,strlen(str)+1,flag);
+		if(color)
+			clif_announce(bl,str,strlen(str)+1,strtol(color,(char **)NULL,0),flag);
+		else
+			clif_GMmessage(bl,str,strlen(str)+1,flag);
+	} else {
+		if(color)
+			//0x00ƒtƒ‰ƒO‚Í–¢Š®¬
+			intif_announce(str,strlen(str)+1,strtol(color,(char **)NULL,0),flag);
+		else
+			intif_GMmessage(str,strlen(str)+1,flag);
+	}
 	return 0;
 }
 /*==========================================
@@ -5453,27 +5463,34 @@ int buildin_announce(struct script_state *st)
  */
 int buildin_mapannounce_sub(struct block_list *bl,va_list ap)
 {
-	char *str;
+	char *str,*color;
 	int len,flag;
 	str=va_arg(ap,char *);
 	len=va_arg(ap,int);
 	flag=va_arg(ap,int);
-	clif_GMmessage(bl,str,len,flag|3);
+	color=va_arg(ap,char *);
+
+	if(color)
+		clif_announce(bl,str,len,strtol(color,(char **)NULL,0),flag|3);
+	else
+		clif_GMmessage(bl,str,len,flag|3);
 	return 0;
 }
 int buildin_mapannounce(struct script_state *st)
 {
-	char *mapname,*str;
+	char *mapname,*str,*color=NULL;
 	int flag,m;
 
 	mapname=conv_str(st,& (st->stack->stack_data[st->start+2]));
 	str=conv_str(st,& (st->stack->stack_data[st->start+3]));
 	flag=conv_num(st,& (st->stack->stack_data[st->start+4]));
+	if (st->end>st->start+5)
+		color=conv_str(st,& (st->stack->stack_data[st->start+5]));
 
 	if( (m=map_mapname2mapid(mapname))<0 )
 		return 0;
 	map_foreachinarea(buildin_mapannounce_sub,
-		m,0,0,map[m].xs,map[m].ys,BL_PC, str,strlen(str)+1,flag&0x10);
+		m,0,0,map[m].xs,map[m].ys,BL_PC, str,strlen(str)+1,flag&0x10,color);
 	return 0;
 }
 /*==========================================
@@ -5482,7 +5499,7 @@ int buildin_mapannounce(struct script_state *st)
  */
 int buildin_areaannounce(struct script_state *st)
 {
-	char *map,*str;
+	char *map,*str,*color=NULL;
 	int flag,m;
 	int x0,y0,x1,y1;
 
@@ -5493,12 +5510,15 @@ int buildin_areaannounce(struct script_state *st)
 	y1=conv_num(st,& (st->stack->stack_data[st->start+6]));
 	str=conv_str(st,& (st->stack->stack_data[st->start+7]));
 	flag=conv_num(st,& (st->stack->stack_data[st->start+8]));
+	if (st->end>st->start+9)
+		color=conv_str(st,& (st->stack->stack_data[st->start+9]));
 
 	if( (m=map_mapname2mapid(map))<0 )
 		return 0;
 
 	map_foreachinarea(buildin_mapannounce_sub,
-		m,x0,y0,x1,y1,BL_PC, str,strlen(str)+1,flag&0x10 );
+		m,x0,y0,x1,y1,BL_PC, str,strlen(str)+1,flag&0x10,color);
+	return 0;
 	return 0;
 }
 /*==========================================
@@ -6017,6 +6037,7 @@ int buildin_waitingroom(struct script_state *st)
 {
 	char *name,*ev="";
 	int limit, trigger = 0,pub=1;
+	int zeny=0,lowlv=0,highlv=255;
 	name=conv_str(st,& (st->stack->stack_data[st->start+2]));
 	limit= conv_num(st,& (st->stack->stack_data[st->start+3]));
 	if(limit==0)
@@ -6039,8 +6060,14 @@ int buildin_waitingroom(struct script_state *st)
 		if( st->end > st->start+4 )
 			ev=conv_str(st,& (st->stack->stack_data[st->start+4]));
 	}
+
+	if(st->end>st->start+8) {
+		zeny 	= conv_num(st,& (st->stack->stack_data[st->start+6]));
+		lowlv 	= conv_num(st,& (st->stack->stack_data[st->start+7]));
+		highlv 	= conv_num(st,& (st->stack->stack_data[st->start+8]));
+	}
 	chat_createnpcchat( (struct npc_data *)map_id2bl(st->oid),
-		limit,pub,trigger,name,strlen(name)+1,ev);
+		limit,pub,trigger,name,strlen(name)+1,ev,zeny,lowlv,highlv);
 	return 0;
 }
 
@@ -6149,7 +6176,7 @@ int buildin_getwaitingroomstate(struct script_state *st)
 {
 	struct npc_data *nd;
 	struct chat_data *cd;
-	int val=0,type;
+	int val=-1,type;
 	type=conv_num(st,& (st->stack->stack_data[st->start+2]));
 	if( st->end > st->start+3 )
 		nd=npc_name2id(conv_str(st,& (st->stack->stack_data[st->start+3])));
@@ -6166,6 +6193,9 @@ int buildin_getwaitingroomstate(struct script_state *st)
 	case 1: val=cd->limit; break;
 	case 2: val=cd->trigger&0x7f; break;
 	case 3: val=((cd->trigger&0x80)>0); break;
+	case 6: val=cd->zeny; break;
+	case 7: val=cd->lowlv; break;
+	case 8: val=cd->highlv; break;
 	case 32: val=(cd->users >= cd->limit); break;
 	case 33: val=(cd->users >= cd->trigger); break;
 
