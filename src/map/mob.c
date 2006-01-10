@@ -1836,7 +1836,7 @@ int mob_damage(struct block_list *src,struct mob_data *md,int damage,int type)
 		if(sd)
 			npc_event(sd,md->npc_event);
 	}
-	
+
 	//ŽÀ‚Í•œŠˆ‚µ‚Ä‚¢‚½IH
 	if(md->hp > 0)
 		return 0;
@@ -2876,8 +2876,8 @@ int mobskill_use(struct mob_data *md,unsigned int tick,int event)
 						break;
 				}
 			}
-			if(ms[i].emotion >= 0)
-				clif_emotion(&md->bl,ms[i].emotion);
+			//if(ms[i].emotion >= 0)
+			//	clif_emotion(&md->bl,ms[i].emotion);
 			return 1;
 		}
 	}

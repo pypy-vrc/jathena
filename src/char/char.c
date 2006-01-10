@@ -1,5 +1,3 @@
-// $Id: char.c,v 1.1.1.4 2005/12/10 00:59:44 running_pinata Exp $
-// original : char2.c 2003/03/14 11:58:35 Rev.1.5
 #define DUMP_UNKNOWN_PACKET	1
 
 #include <sys/types.h>
@@ -44,7 +42,7 @@
 struct mmo_map_server server[MAX_MAP_SERVERS];
 int server_fd[MAX_MAP_SERVERS];
 
-int  login_fd,char_fd;
+int  login_fd,char_fd,char_sfd;
 char userid[24];
 char passwd[24];
 char server_name[20];
@@ -54,6 +52,9 @@ int  login_port = 6900;
 char char_ip_str[16];
 int  char_ip;
 int  char_port = 6121;
+char char_sip_str[16];
+unsigned long  char_sip = 0;
+int  char_sport = 0;
 int  char_loginaccess_autorestart;
 int  char_maintenance;
 int  char_new;
@@ -2804,6 +2805,11 @@ int parse_char(int fd)
 				if(server_fd[i]<0)
 					break;
 			}
+			if( char_sport != 0 && char_port != char_sport && session[fd]->server_port != char_sport ) {
+				printf("server login failed: connected port %d\n", session[fd]->server_port);
+				session[fd]->eof = 1;
+				return 0;
+			}
 			if(i==MAX_MAP_SERVERS || strcmp(RFIFOP(fd,2),userid) || strcmp(RFIFOP(fd,26),passwd)){
 				WFIFOB(fd,2)=3;
 				WFIFOSET(fd,3);
@@ -3017,6 +3023,19 @@ int char_config_read(const char *cfgName)
 		else if(strcmpi(w1,"char_port")==0){
 			char_port=atoi(w2);
 		}
+		else if(strcmpi(w1,"char_sip")==0){
+			h = gethostbyname (w2);
+			if(h != NULL) { 
+				printf("Character server sIP address : %s -> %d.%d.%d.%d\n",w2,(unsigned char)h->h_addr[0],(unsigned char)h->h_addr[1],(unsigned char)h->h_addr[2],(unsigned char)h->h_addr[3]);
+				sprintf(char_sip_str,"%d.%d.%d.%d",(unsigned char)h->h_addr[0],(unsigned char)h->h_addr[1],(unsigned char)h->h_addr[2],(unsigned char)h->h_addr[3]);
+			}
+			else
+				memcpy(char_sip_str,w2,16);
+			char_sip  = inet_addr(char_sip_str);
+		}
+		else if(strcmpi(w1,"char_sport")==0){
+			char_sport=atoi(w2);
+		}
 		else if(strcmpi(w1,"char_maintenance")==0){
 			char_maintenance=atoi(w2);
 		}
@@ -3137,6 +3156,8 @@ void do_final(void)
 		numdb_final(gm_account_db,gm_account_db_final);
 	delete_session(login_fd);
 	delete_session(char_fd);
+	if(char_sport != 0 && char_port != char_sport)
+		delete_session(char_sfd);
 	for(i=0;i<MAX_MAP_SERVERS;i++){
 		if(server_fd[i]>0)
 			delete_session(server_fd[i]);
@@ -3180,7 +3201,9 @@ int do_init(int argc,char **argv)
 	set_sock_destruct(parse_char_disconnect);
 	socket_set_httpd_page_connection_func( char_socket_ctrl_panel_func );
 
-	char_fd = make_listen_port(char_port);
+	char_fd = make_listen_port(char_port, 0);
+	if(char_sport != 0 && char_port != char_sport)
+		char_sfd = make_listen_port(char_sport, char_sip);
 
 	add_timer_func_list(check_connect_login_server,"check_connect_login_server");
 	add_timer_func_list(send_users_tologin,"send_users_tologin");

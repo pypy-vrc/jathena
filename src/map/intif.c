@@ -112,34 +112,24 @@ int intif_delete_petdata(int pet_id)
 // GMメッセージを送信
 int intif_GMmessage(char* mes,int len,int flag)
 {
-	
 	int lp=(flag&0x10)?8:4;
 	WFIFOW(inter_fd,0) = 0x3000;
-	WFIFOW(inter_fd,2) = lp+len;
-	WFIFOL(inter_fd,4) = 0x65756c62;
-	memcpy(WFIFOP(inter_fd,lp), mes, len);
-	WFIFOSET(inter_fd, WFIFOW(inter_fd,2) );
-
+	WFIFOW(inter_fd,2) = lp + len + 4;
+	WFIFOL(inter_fd,4) = 0xFF000000;	//non color用ダミーコード
+	WFIFOL(inter_fd,8) = 0x65756c62;
+	memcpy(WFIFOP(inter_fd,4+lp), mes, len);
+	WFIFOSET(inter_fd, WFIFOW(inter_fd,2));
 	return 0;
 }
 
 // GMメッセージ（マルチカラー）を送信
-// ※現在未完成、eAのUpdate待ち？
 int intif_announce(char* mes,int len,unsigned long color,int flag)
 {
-	// Send to the local players
-	clif_announce(NULL, mes, len, color, flag);
-	
-	/* 0x3000使うと文字おかしいんだけど…
-	if (CheckForCharServer())
-		return 0;
 	WFIFOW(inter_fd,0) = 0x3000;
 	WFIFOW(inter_fd,2) = 8+len;
 	WFIFOL(inter_fd,4) = color;
 	memcpy(WFIFOP(inter_fd,8), mes, len);
 	WFIFOSET(inter_fd, WFIFOW(inter_fd,2));
-	*/
-
 	return 0;
 }
 
@@ -1180,7 +1170,12 @@ int intif_parse(int fd)
 	
 	// 処理分岐
 	switch(cmd){
-	case 0x3800:	clif_GMmessage(NULL,RFIFOP(fd,4),packet_len-4,0); break;
+	case 0x3800:	
+		if (RFIFOL(fd,4) == 0xFF000000)
+			clif_GMmessage(NULL,(char*)RFIFOP(fd,8),packet_len-8,0);	//non color
+		else
+			clif_announce(NULL,(char*)RFIFOP(fd,8),packet_len-8,RFIFOL(fd,4),0);	//multi-color
+		break;
 	case 0x3801:	intif_parse_WisMessage(fd); break;
 	case 0x3802:	intif_parse_WisEnd(fd); break;
 	case 0x3804:	intif_parse_AccountReg(fd); break;

@@ -23,6 +23,7 @@
 #include "mob.h"
 #include "db.h"
 #include "vending.h"
+#include "intif.h"
 
 static int dirx[8]={0,-1,-1,-1,0,1,1,1};
 static int diry[8]={1,1,0,-1,-1,-1,0,1};
@@ -158,6 +159,7 @@ static int unit_walktoxy_timer(int tid,unsigned int tick,int id,int data)
 		return 0;
 	}
 	ud->walktimer=-1;
+	if( bl->prev == NULL ) return 0; // block_list から抜けているので移動停止する
 
 	if(ud->walkpath.path_pos>=ud->walkpath.path_len || ud->walkpath.path_pos!=data)
 		return 0;
@@ -746,7 +748,8 @@ int unit_skilluse_id2(struct block_list *src, int target_id, int skill_num, int 
 		}
 		break;
 	case MO_FINGEROFFENSIVE:	/* 指弾 */
-		casttime += casttime * ((skill_lv > src_sd->spiritball)? src_sd->spiritball:skill_lv);
+		if(src_sd)
+			casttime += casttime * ((skill_lv > src_sd->spiritball)? src_sd->spiritball:skill_lv);
 		break;
 	case MO_CHAINCOMBO:		/*連打掌*/
 		if( !src_ud ) return 0;
@@ -1497,12 +1500,15 @@ int unit_mobstopattacked(struct map_session_data *sd,va_list ap)
 
 int unit_remove_map(struct block_list *bl, int clrtype) {
 	struct unit_data *ud = unit_bl2ud( bl );
+	struct status_change *sc_data = status_get_sc_data(bl);
 	nullpo_retr(0, ud);
 
 	if(bl->prev == NULL) {
 		// printf("unit_remove_map: nullpo bl->prev\n");
 		return 1;
 	}
+	map_freeblock_lock();
+
 	unit_stop_walking(bl,1);			// 歩行中断
 	unit_stopattack(bl);				// 攻撃中断
 	unit_skillcastcancel(bl,0);			// 詠唱中断
@@ -1511,6 +1517,28 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 	// tickset 削除
 	linkdb_final( &ud->skilltickset );
 	status_clearpretimer( bl );
+
+	// MAP を離れるときの状態異常関連
+	if( sc_data ) {
+		// ブレードストップを終わらせる
+		if(sc_data[SC_BLADESTOP].timer!=-1) {
+			status_change_end(bl,SC_BLADESTOP,-1);
+		}
+		// バシリカ削除
+		if(sc_data[SC_BASILICA].timer!=-1) {
+			skill_basilica_cancel( bl );
+			status_change_end(bl,SC_BASILICA,-1);
+		}
+		// グラフィティ削除
+		if(sc_data[SC_GRAFFITI].timer != -1) {
+			status_change_end(bl, SC_GRAFFITI, -1);
+		}
+		// アンクルスネア撤去
+		if(sc_data[SC_ANKLE].timer != -1) {
+			status_change_end(bl, SC_ANKLE, -1);
+		}
+		sc_data = NULL;
+	}
 
 	if(bl->type == BL_PC) {
 		struct map_session_data *sd = (struct map_session_data*)bl;
@@ -1549,14 +1577,13 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 			guild_reply_reqalliance(sd,sd->guild_alliance_account,0);
 
 		pc_delinvincibletimer(sd);		// 無敵タイマー削除
-		// ブレードストップを終わらせる
-		if(sd->sc_data[SC_BLADESTOP].timer!=-1)
-			status_change_end(&sd->bl,SC_BLADESTOP,-1);
-		// バシリカ削除
-		if (sd->sc_data[SC_BASILICA].timer!=-1) {
-			skill_basilica_cancel( &sd->bl );
-			status_change_end(&sd->bl,SC_BASILICA,-1);
+
+		// PVP タイマー削除
+		if(sd->pvp_timer!=-1) {
+			delete_timer(sd->pvp_timer,pc_calc_pvprank_timer);
+			sd->pvp_timer = -1;
 		}
+
 		skill_gangsterparadise(sd,0);			// ギャングスターパラダイス削除
 		skill_cleartimerskill(&sd->bl);			// タイマースキルクリア
 		skill_clear_unitgroup(&sd->bl);			// スキルユニットグループの削除
@@ -1568,11 +1595,6 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 
 		linkdb_final( &md->dmglog );
 //		mobskill_deltimer(md);
-		// バシリカ削除
-		if (md->sc_data && md->sc_data[SC_BASILICA].timer!=-1) {
-			skill_basilica_cancel( &md->bl );
-			status_change_end(&md->bl,SC_BASILICA,-1);
-		}
 		md->state.skillstate=MSS_DEAD;
 		md->last_deadtime=gettick();
 		// 死んだのでこのmobへの攻撃者全員の攻撃を止める
@@ -1632,6 +1654,65 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 		if(sd->pet_hungry_timer != -1)
 			pet_hungry_timer_delete(sd);
 		clif_clearchar_area(&pd->bl,0);
+		map_delblock(&pd->bl);
+	}
+	map_freeblock_unlock();
+	return 0;
+}
+
+/*==========================================
+ * マップから離脱後、領域を解放する
+ *------------------------------------------
+ */
+
+int unit_free(struct block_list *bl, int clrtype) {
+	struct unit_data *ud = unit_bl2ud( bl );
+	nullpo_retr(0, ud);
+
+	if(bl->prev == NULL) {
+		// printf("unit_remove_map: nullpo bl->prev\n");
+		return 1;
+	}
+	map_freeblock_lock();
+	if( bl->prev )
+		unit_remove_map(bl, clrtype);
+
+	if( bl->type == BL_PC ) {
+		struct map_session_data *sd = (struct map_session_data*)bl;
+
+		if(unit_isdead(&sd->bl))
+			pc_setrestartvalue(sd,2);
+
+		if(sd->sc_data && sd->sc_data[SC_BERSERK].timer!=-1) //バーサーク中の終了はHPを100に
+			sd->status.hp = 100;
+
+		friend_send_online( sd, 1 );			// 友達リストのログアウトメッセージ送信
+		party_send_logout(sd);					// パーティのログアウトメッセージ送信
+		guild_send_memberinfoshort(sd,0);		// ギルドのログアウトメッセージ送信
+		status_change_clear(&sd->bl,1);			// ステータス異常を解除する
+		skill_stop_dancing(&sd->bl,1);			// ダンス/演奏中断
+		pc_cleareventtimer(sd);					// イベントタイマを破棄する
+		pc_delspiritball(sd,sd->spiritball,1);	// 気功削除
+		storage_storage_save(sd);
+		storage_delete(sd->status.account_id);
+		pc_makesavestatus(sd);
+		sd->state.waitingdisconnect = 1;
+	} else if( bl->type == BL_PET ) {
+		struct pet_data *pd = (struct pet_data*)bl;
+		struct map_session_data *sd = pd->msd;
+		if(sd && sd->status.pet_id > 0 && sd->pd) {
+			if(sd->pet.intimate <= 0) {
+				intif_delete_petdata(sd->status.pet_id);
+				sd->status.pet_id = 0;
+				sd->pd = NULL;
+				sd->petDB = NULL;
+				if(battle_config.pet_status_support)
+					status_calc_pc(sd,2);
+			} else {
+				intif_save_petdata(sd->status.account_id,&sd->pet);
+				sd->pd = NULL;
+			}
+		}
 		if (pd->a_skill)
 		{
 			aFree(pd->a_skill);
@@ -1640,17 +1721,15 @@ int unit_remove_map(struct block_list *bl, int clrtype) {
 		if (pd->s_skill)
 		{
 			if (pd->s_skill->timer != -1)
-				delete_timer(sd->pd->s_skill->timer, pet_skill_support_timer);
+				delete_timer(pd->s_skill->timer, pet_skill_support_timer);
 			aFree(pd->s_skill);
 			pd->s_skill = NULL;
 		}
-		map_delblock(&pd->bl);
 		map_deliddb(&pd->bl);
 		free(pd->lootitem);
 		map_freeblock(pd);
-
-		sd->pd = NULL;
 	}
+	map_freeblock_unlock();
 	return 0;
 }
 

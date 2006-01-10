@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1.1.4 2005/12/10 00:58:40 running_pinata Exp $
+# $Id: Makefile,v 1.1.1.5 2006/01/10 09:33:18 running_pinata Exp $
 
 CC = gcc -pipe
 PACKETDEF = -DPACKETVER=6 -DNEW_006b
@@ -45,14 +45,18 @@ CFLAGS += -g
 #CFLAGS += -O2
 
 #-------High CPU----
-#ptimize(recommended)
+#optimize(recommended)
 CFLAGS += -O3
 
-#change authfifo
-#CFLAGS += -DCMP_AUTHFIFO_IP -DCMP_AUTHFIFO_LOGIN2
+# change authfifo comparing data
+#CFLAGS += -DCMP_AUTHFIFO_IP
+#CFLAGS += -DCMP_AUTHFIFO_LOGIN2
 
 # disable httpd
 #CFLAGS += -DNO_HTTPD
+
+# disable httpd-external-CGI
+CFLAGS += -DNO_HTTPD_CGI
 
 # disable csvdb
 #CFLAGS += -DNO_CSVDB
@@ -61,7 +65,7 @@ CFLAGS += -O3
 #CFLAGS += -DTKSGSL
 #CFLAGS += -DTKSGSLGSNJ
 
-#
+# enable dynamic memory allocation of status change data
 #CFLAGS += -DDYNAMIC_SC_DATA
 
 #-----------------CPU MARCH-------------------

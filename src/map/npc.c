@@ -1,4 +1,4 @@
-// $Id: npc.c,v 1.1.1.3 2005/11/30 00:06:13 running_pinata Exp $
+// $Id: npc.c,v 1.1.1.4 2006/01/10 09:36:30 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -21,6 +21,7 @@
 #include "pet.h"
 #include "battle.h"
 #include "skill.h"
+#include "unit.h"
 
 #ifdef MEMWATCH
 #include "memwatch.h"
@@ -1108,7 +1109,8 @@ static int npc_parse_script(char *w1,char *w2,char *w3,char *w4,char *first_line
 	int dir = 0;
 	int class = 0;
 	char mapname[24];
-	char *srcbuf=NULL,*script;
+	char *srcbuf=NULL;
+	struct script_code *script;
 	unsigned int srcsize=65536;
 	int startline=0;
 	char line[1024];
@@ -1375,7 +1377,8 @@ static int npc_parse_script(char *w1,char *w2,char *w3,char *w4,char *first_line
  */
 static int npc_parse_function(char *w1,char *w2,char *w3,char *w4,char *first_line,FILE *fp,int *lines)
 {
-	char *srcbuf=NULL,*script;
+	char *srcbuf=NULL;
+	struct script_code *script;
 	unsigned int srcsize=65536;
 	int startline=0;
 	char line[1024];
@@ -1768,7 +1771,16 @@ int do_final_npc(void)
 
 	for(i=START_NPC_NUM;i<npc_id;i++){
 		if((bl=map_id2bl(i))){
+			if(bl->type == BL_PET || bl->type == BL_MOB) {
+				unit_remove_map(bl,0);
+			}
+		}
+		if((bl=map_id2bl(i))){
 			if(bl->type == BL_NPC && (nd = (struct npc_data *)bl)){
+				if(bl->prev) {
+					map_delblock( &nd->bl );
+					map_deliddb( &nd->bl );
+				}
 				if(nd->chat_id && (cd=(struct chat_data*)map_id2bl(nd->chat_id))){
 					free(cd);
 					cd = NULL;
@@ -1778,7 +1790,7 @@ int do_final_npc(void)
 						free(nd->u.scr.timer_event);
 				 	if(nd->u.scr.src_id==0){
 						if(nd->u.scr.script){
-							free(nd->u.scr.script);
+							script_free_code(nd->u.scr.script);
 							nd->u.scr.script=NULL;
 						}
 						if(nd->u.scr.label_list){

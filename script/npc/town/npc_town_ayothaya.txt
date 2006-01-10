@@ -2,9 +2,9 @@
 // Ragnarok Online Ayothaya Town Script   2005-07-18     by AthenaDev
 //==============================================================================
 
-ayo_in01.gat,18,182,1 shop 道具商人 840,1750:-1,1753:-1,611:-1,501:-1,502:-1,503:-1,504:-1,506:-1,645:-1,656:-1,601:-1,602:-1,1065:-1
-ayo_in01.gat,90,160,1 shop 防御具商人 842,2211:-1,2401:-1,2403:-1,2501:-1,2503:-1,2101:-1,2103:-1,2305:-1,2321:-1,2332:-1,2328:-1,2627:-1
-ayo_in01.gat,90,192,3 shop 武器商人 843,1207:-1,1216:-1,1107:-1,1122:-1,1116:-1,1154:-1,1407:-1,1457:-1,1354:-1,1519:-1
+ayo_in01.gat,18,182,1 shop 道具商人 840,1750:1,1753:2,611:40,501:50,502:200,503:550,504:1200,506:40,645:800,656:1500,601:60,602:300,1065:100
+ayo_in01.gat,90,160,1 shop 防御具商人 842,2211:400,2401:400,2403:3500,2501:1000,2503:5000,2101:500,2103:14000,2305:1000,2321:8000,2332:7000,2328:5500,2627:20000
+ayo_in01.gat,90,192,3 shop 武器商人 843,1207:2400,1216:19500,1107:2900,1122:24000,1116:2000,1154:22500,1407:3450,1457:27000,1354:15500,1519:23000
 
 // アルベルタ－アユタヤ 転送NPC
 alberta.gat,247,42,3	script	アイバックティン	843,{
@@ -86,7 +86,7 @@ alberta.gat,247,42,3	script	アイバックティン	843,{
 }
 
 // アユタヤ－アルベルタ 転送NPC
-ayothaya.gat,152,68,9	script	アイバックティン	843,{
+ayothaya.gat,152,68,0	script	アイバックティン	843,{
 	mes "[アイバックティン]";
 	mes "きれいな景色、美味しい食べ物!";
 	mes "どう？どう？";
@@ -177,8 +177,7 @@ ayothaya.gat,197,189,5 script 少年 841,{
 }
 
 ayothaya.gat,171,152,4 script 少女 838,{
-	set @rand,rand(3);
-	if(@rand == 1) goto L_Talk;
+	if(rand(3) == 0) goto L_Talk;
 	mes "[ラルリタ]";
 	mes "村を出て、右のほうへまっすぐ行くと";
 	mes "古代遺跡があります。";
@@ -230,7 +229,7 @@ ayothaya.gat,214,142,5 script 青年 843,{
 	close;
 }
 
-ayothaya.gat,189,120,5 script 青年 843,{
+ayothaya.gat,189,120,3 script 青年 843,{
 	mes "[ヒュート]";
 	mes "この村には、古代遺跡みたいな";
 	mes "人々がめったに訪れない場所も";
@@ -293,11 +292,11 @@ ayothaya.gat,83,132,7 script ドッシ 843,{
 		mes "[ドッシ]";
 		mes "ここアユタヤは歴史のある村です。";
 		mes "今はこんなに平和ですが、かつては";
-		mes "悪魔のような物が出歩いていた時代も";
+		mes "悪魔の様な物が出歩いていた時代も";
 		mes "ありました。";
 		next;
 		mes "[ドッシ]";
-		mes "悪魔のような物……";
+		mes "悪魔の様な物……";
 		mes "それは「スミンタイガー」と呼ばれ";
 		mes "古代都市の中心部深くに住み着いて";
 		mes "いたそうです。";
@@ -317,7 +316,7 @@ ayothaya.gat,83,132,7 script ドッシ 843,{
 		next;
 		mes "[ドッシ]";
 		mes "しかし、スミンタイガーも結局は";
-		mes "ただの虎。火がついたものを近づけると";
+		mes "ただの虎。火がついた物を近づけると";
 		mes "人のふりをすることができないそう";
 		mes "です。";
 		next;
@@ -382,19 +381,19 @@ L_Fin:
 	next;
 	mes "[ドッシ]";
 	mes "それでは、気をつけてくださいね。";
-	mes "スミンタイガーはあなたのすぐ隣に";
+	mes "スミンタイガーはあなたのすぐ隣りに";
 	mes "いるかもしれませんよ。";
 	close;
 }
 
 ayo_in01.gat,181,193,4 script シャーマン 840,{
-	if(ayo_Q1 == 1) goto Q1X;
-	if(ayo_Q1 == 2) goto Q2X;
-	if(ayo_Q1 == 3) goto Q3X;
-	if(ayo_Q1 == 9) goto Q4X;
-	if(ayo_Q1 == 10) goto Q5X;
-	if((ayo_Q1 == 11) || (ayo_Q1 == 13)) goto Q6X;
 	if(ayo_Q1 == 12) goto Q7X;
+	if(ayo_Q1 == 11) goto Q6X;
+	if(ayo_Q1 == 10) goto Q5X;
+	if(ayo_Q1 == 9) goto Q4X;
+	if(ayo_Q1 >= 3) goto Q3X;
+	if(ayo_Q1 == 2) goto Q2X;
+	if(ayo_Q1 == 1) goto Q1X;
 	mes "[ブンソム]";
 	mes "オオオオオオオム……ピププ……";
 	mes "クォムクォムクォム!!";
@@ -407,6 +406,9 @@ Q1X:
 	next;
 	mes "[ブンソム]";
 	mes "ふっ…………";
+	next;
+	mes "[ブンソム]";
+	mes "…………………………";
 	next;
 	mes "[ブンソム]";
 	mes "……………………";
@@ -424,13 +426,13 @@ Q1X:
 	mes "ああ、わしにはわかるんじゃよ。";
 	next;
 	mes "[ブンソム]";
-	mes "………………………";
+	mes "…………………………";
 	next;
 	mes "[ブンソム]";
-	mes "…………………";
+	mes "……………………";
 	next;
 	mes "[ブンソム]";
-	mes "…………";
+	mes "………………";
 	next;
 	mes "[ブンソム]";
 	mes "な、スミンタイガーじゃと!?";
@@ -528,7 +530,6 @@ Q1X:
 			mes "宿る物を作るためにはいくつかの";
 			mes "材料が必要じゃがな。";
 			next;
-		L_Item:
 			mes "[ブンソム]";
 			mes "針刺し 1個";
 			mes "糸巻 1個";
@@ -546,9 +547,18 @@ Q2X:
 	mes "「神聖な力」に必要な材料を忘れたの";
 	mes "かね？　ぬしの身を守るのに必要な";
 	mes "「神聖な力」の宿る物の材料じゃ。";
-	mes "しっかりと、あつめてくるんじゃよ。";
+	mes "しっかりと、集めてくるんじゃよ。";
 	next;
-	goto L_Item;
+	mes "[ブンソム]";
+	mes "針刺し 1個";
+	mes "糸巻 1個";
+	mes "非常に硬い皮 1個";
+	mes "聖水 1個";
+	next;
+	mes "[ブンソム]";
+	mes "これらが全て揃ったら、また訪ねて";
+	mes "来るがよい。";
+	close;
 Q2Xok:
 	mes "[ブンソム]";
 	mes "ほう～、よくやったのう～。";
@@ -599,24 +609,73 @@ Q2Xok:
 	set ayo_Q1,3;	//古代遺跡クエストフラグ[3]セット
 	close;
 Q3X:
-	if(countitem(7285) >= 1) goto L_Fin;
-	goto Q2X;
+	if (countitem(7285) >= 1) goto L_Fin;
+	if ((countitem(7213) >= 1) && (countitem(7217) >= 1) && (countitem(7190) >= 1) && (countitem(523) >= 1)) goto Q3Xok;
+	mes "[ブンソム]";
+	mes "おお、神聖な糸巻きを失くしてしまった";
+	mes "のか……仕方ない、また作ってやろう。";
+	mes "材料は前の時と同じじゃ。";
+	next;
+	mes "[ブンソム]";
+	mes "針刺し 1個";
+	mes "糸巻 1個";
+	mes "非常に硬い皮 1個";
+	mes "聖水 1個";
+	next;
+	mes "[ブンソム]";
+	mes "これらが全て揃ったら、また訪ねて";
+	mes "来るがよい。";
+	close;
+Q3Xok:
+	mes "[ブンソム]";
+	mes "…………………………";
+	mes "クォムクォムクォム……";
+	next;
+	mes "[ブンソム]";
+	mes "ヌウウム………………";
+	next;
+	mes "[ブンソム]";
+	mes "…………ピププ……";
+	next;
+	mes "[ブンソム]";
+	mes "クォムクォムクォム……";
+	next;
+	mes "[ブンソム]";
+	mes "……クォムクォムクォム……";
+	mes "ヌウウム……ピププ……";
+	mes "クォムクォムクォム……";
+	next;
+	delitem 7213,1;
+	delitem 7217,1;
+	delitem 7190,1;
+	delitem 523,1;
+	getitem 7285,1;
+	mes "[ブンソム]";
+	mes "おお、完成じゃ。";
+	mes "ほれ、これが神聖な力が込められた";
+	mes "糸巻きじゃ。持っていくがよい。";
+	mes "これさえあれば、ぬしは自由に";
+	mes "古代遺跡の内部へ入ることが";
+	mes "できるはずじゃ。";
+	next;
+	mes "[ブンソム]";
+	mes "万が一これを失くしても、";
+	mes "また材料さえ集めてくれば";
+	mes "作ってやるよ。遠慮なく来なされ。";
+	close;
 Q4X:
 	mes "["+strcharinfo(0)+"]";
 	mes "- ^0000FF2階に行くと上……^000000 -";
 	mes "- ^0000FF……する。下にはス……^000000 -";
 	mes "- ^0000FF……これが未だに住んでいる……^000000 -";
-	mes "- ^0000FF彼……を殺さなければならない。^000000 -";
+	mes "- ^0000FF彼……を殺さなければならない。^000000-";
 	next;
 	mes "["+strcharinfo(0)+"]";
-	mes "-";
-	mes "^0000FFそして……2階……出る……はする。^000000 -";
+	mes "- ^0000FFそして、2階……出る……する。^000000-";
 	mes "- ^0000FF……リョ……行くためには……^000000 -";
-	mes "- ^0000FF……ソン……力が……もっと……^000000 -";
-	mes "-";
-	mes "^0000FF……する。そう、上にも……下がること^000000";
-	mes "-";
-	mes "- ^0000FFさえ……だ。^000000 -";
+	mes "- ^0000FF……ソン……力が……もっと……^000000-";
+	mes "- ^0000FF……する。そう、上にも……^000000";
+	mes "- ^0000FF下がることさえ……だ。^000000-";
 	next;
 	mes "[ブンソム]";
 	mes "……スミンタイガーを生かしておいた";
@@ -650,10 +709,9 @@ Q5X:
 	mes "針刺し 2個";
 	mes "糸巻 2個";
 	mes "イグドラシルの葉 1個";
-	if(ayo_Q1 == 10) mes "聖水 2個。以上じゃ。";
-	if(ayo_Q1 == 10) mes "これらが全て揃ったら、また訪ねて";
-	if(ayo_Q1 == 10) mes "来るがよい。";
-	if(ayo_Q1 >= 11) mes "聖水 2個。必要じゃ。";
+	mes "聖水 2個。以上じゃ。";
+	mes "これらが全て揃ったら、また訪ねて";
+	mes "来るがよい。";
 	close;
 Q5Xok:
 	mes "[ブンソム]";
@@ -689,14 +747,61 @@ Q5Xok:
 	mes "これさえあれば、ぬしは2階へも";
 	mes "入ることができるはずじゃ。";
 	next;
+	mes "[ブンソム]";
 	mes "万が一それを失くしても、";
 	mes "また材料さえ集めてくれば";
 	mes "作ってやろう。遠慮なく来なされ。";
 	set ayo_Q1,11;	//古代遺跡クエストフラグ[11]セット
 	close;
 Q6X:
-	if(countitem(7287) >= 1) goto Fin;
-	goto Q5X;
+	if(countitem(7287) >= 1) goto L_Fin;
+	if ((countitem(7213) >= 2) && (countitem(7217) >= 2) && (countitem(610) >= 1) && (countitem(523) >= 2)) goto Q6Xok;
+	mes "[ブンソム]";
+	mes "おや、材料を忘れたのかね？";
+	mes "より強い神聖な糸巻きの材料は……";
+	next;
+	mes "[ブンソム]";
+	mes "針刺し 2個";
+	mes "糸巻 2個";
+	mes "イグドラシルの葉 1個";
+	mes "聖水 2個、必要じゃ。";
+	close;
+Q6Xok:
+	mes "[ブンソム]";
+	mes "…………………………";
+	mes "クォムクォムクォム……";
+	next;
+	mes "[ブンソム]";
+	mes "ヌウウム………………";
+	next;
+	mes "[ブンソム]";
+	mes "…………ピププ……";
+	next;
+	mes "[ブンソム]";
+	mes "クォムクォムクォム……";
+	next;
+	mes "[ブンソム]";
+	mes "……クォムクォムクォム……";
+	mes "ヌウウム……ピププ……";
+	mes "クォムクォムクォム……";
+	next;
+	delitem 7213,2;
+	delitem 7217,2;
+	delitem 610,1;
+	delitem 523,2;
+	getitem 7287,1;
+	mes "[ブンソム]";
+	mes "おお、完成じゃ。";
+	mes "ほれ、これが神聖な力が込められた";
+	mes "糸巻きじゃ。持っていくがよい。";
+	mes "これさえあれば、ぬしは2階へも";
+	mes "入ることができるはずじゃ。";
+	next;
+	mes "[ブンソム]";
+	mes "万が一それを失くしても、";
+	mes "また材料さえ集めてくれば";
+	mes "作ってやろう。遠慮なく来なされ。";
+	close;
 Q7X:
 	mes "[ブンソム]";
 	mes "オオオオ……!!";
@@ -732,7 +837,6 @@ L_Fin:
 }
 
 ayo_fild01.gat,129,197,7 script プレ 842,{
-
 	if((ayo_Q1 >= 3) && (countitem(7285) >= 1) || (countitem(7287) >= 1)) goto L_Move;
 	mes "[プレ]";
 	mes "あの、下に見える遺跡には近付いちゃ";
@@ -786,7 +890,7 @@ L_Move:
 		mes "好奇心は猫を殺すと言う。";
 		mes "では、行け！";
 		next;
-		mes "- 彼は私を崖下に投げ飛ばした！ -";
+		mes "- 彼は私を崖下に投げ飛ばした！　-";
 		mes "- 私は崖を転がり落ちていった…… -";
 		close2;
 		warp "ayo_fild02.gat",30,135;
@@ -794,8 +898,7 @@ L_Move:
 		end;
 }
 
-ayo_fild02.gat,25,154,7 script エイ 843,{
-
+ayo_fild02.gat,25,154,0 script エイ 843,{
 	mes "[エイ]";
 	mes "探検はどうだった？";
 	mes "なにはともあれ、平和が一番。";
@@ -820,52 +923,73 @@ ayo_fild02.gat,25,154,7 script エイ 843,{
 		end;
 }
 
-ayo_dun01.gat,198,164,5	script	#AyoDun1_1	111,{
+ayo_dun01.gat,272,26,0	script	#AyoDunMes	111,0,0,{
+	mes "- 下を見ると…… -";
+	mes "- 水がたまっていた。 -";
+	mes "- かなり深そうだ。もし落ちたら -";
+	mes "- ^FF0000死は避けられないだろう。^000000 -";
+	close;
+}
+ayo_dun01.gat,272,23,0	duplicate(#AyoDunMes)	AyoDunMes_	139,0,0
+ayo_dun01.gat,273,23,0	duplicate(#AyoDunMes)	AyoDunMes_	139,0,0
+ayo_dun01.gat,272,30,0	duplicate(#AyoDunMes)	AyoDunMes_	139,0,0
+ayo_dun01.gat,273,30,0	duplicate(#AyoDunMes)	AyoDunMes_	139,0,0
+
+ayo_dun01.gat,259,42,0	script	#AyoDunNavi	139,2,0{
+	if ((countitem(7285) >= 1) && (ayo_Q1 >= 3) && (ayo_Q1 <= 9)) goto L_Quest;
+	end;
+L_Quest:
+	if (Rand(3) == 0) end;
+	mes "-神聖な糸巻きが不思議な気を発し-";
+	mes "-始めた。何かが近くにあるようだ。-";
+	viewpoint 1,198,164,1,0xFF0000;
+	viewpoint 1,87,16,2,0xFF0000;
+	viewpoint 1,268,214,3,0xFF0000;
+	viewpoint 1,147,274,4,0xFF0000;
+	viewpoint 1,99,118,5,0xFF0000;
+	viewpoint 1,16,188,6,0xFF0000;
+	close;
+}
+ayo_dun01.gat,259,46,0	duplicate(#AyoDunNavi)	AyoDunNavi_	139,2,0
+ayo_dun01.gat,156,148,0	duplicate(#AyoDunNavi)	AyoDunNavi_	139,0,3
+
+ayo_dun01.gat,198,164,0	script	#AyoDun1_1	111,{
+	mes "- 石版のかけらを見つけた。-";
+	mes "- 何か字が書かれている。-";
+	mes "- 一番目の部分のようだ。-";
 	if(ayo_Q1 == 3) goto L_Order;
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 一番目の部分のようだ。 -";
 	close;
 L_Order:
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 一番目の部分のようだ。 -";
 	next;
 	mes "- ^0000FF2階に行くと上……^000000 -";
 	mes "- 残り部分は破損していて -";
-	mes "- 読み取れない。 -";
+	mes "- 読み取れない。-";
 	set ayo_Q1,4;	//古代遺跡クエストフラグ[4]セット
 	close;
 }
 
-ayo_dun01.gat,87,16,5	script	 #AyoDun1_2	111,{
+ayo_dun01.gat,87,16,0	script	 #AyoDun1_2	111,{
+	mes "- 石版のかけらを見つけた。-";
+	mes "- 何か字が書かれている。-";
+	mes "- 二番目の部分のようだ。-";
 	if(ayo_Q1 == 4) goto L_Order;
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 二番目の部分のようだ。 -";
 	close;
 L_Order:
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 二番目の部分のようだ。 -";
 	next;
 	mes "- ^0000FF……する。下にはス……^000000 -";
 	mes "- 残り部分は破損していて -";
-	mes "- 読み取れない。 -";
+	mes "- 読み取れない。-";
 	set ayo_Q1,5;	//古代遺跡クエストフラグ[5]セット
 	close;
 }
 
-ayo_dun01.gat,268,214,5	script	 #AyoDun1_3	111,{
+ayo_dun01.gat,268,214,0	script	 #AyoDun1_3	111,{
+	mes "- 石版のかけらを見つけた。-";
+	mes "- 何か字が書かれている。-";
+	mes "- 三番目の部分のようだ。-";
 	if(ayo_Q1 == 5) goto L_Order;
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 三番目の部分のようだ。 -";
 	close;
 L_Order:
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 三番目の部分のようだ。 -";
 	next;
 	mes "- ^0000FF……未だに住んでいる……^000000 -";
 	mes "- 残り部分は破損していて -";
@@ -874,37 +998,29 @@ L_Order:
 	close;
 }
 
-ayo_dun01.gat,147,274,5	script	 #AyoDun1_4	111,{
+ayo_dun01.gat,147,274,0	script	 #AyoDun1_4	111,{
+	mes "- 石版のかけらを見つけた。-";
+	mes "- 何か字が書かれている。-";
+	mes "- 四番目の部分のようだ。-";
 	if(ayo_Q1 == 6) goto L_Order;
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 四番目の部分のようだ。 -";
 	close;
 L_Order:
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 四番目の部分のようだ。 -";
 	next;
 	mes "- ^0000FF彼……殺さなければならない。^000000 -";
-	mes "-";
-	mes "^0000FFそして……2階……出る……はする。^000000";
-	mes "-";
+	mes "- ^0000FFそして、2階……出る……する。^000000-";
 	mes "- 残り部分は破損していて -";
-	mes "- 読み取れない。 -";
+	mes "- 読み取れない。-";
 	set ayo_Q1,7;	//古代遺跡クエストフラグ[7]セット
 	close;
 }
 
-ayo_dun01.gat,99,118,5	script	 #AyoDun1_5	111,{
+ayo_dun01.gat,99,118,0	script	 #AyoDun1_5	111,{
+	mes "- 石版のかけらを見つけた。-";
+	mes "- 何か字が書かれている。-";
+	mes "- 五番目の部分のようだ。-";
 	if(ayo_Q1 == 7) goto L_Order;
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 五番目の部分のようだ。 -";
 	close;
 L_Order:
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 五番目の部分のようだ。 -";
 	next;
 	mes "- ^0000FF……リョ……行くためには……^000000 -";
 	mes "- ^0000FF……ソン……力が……もっと……^000000 -";
@@ -914,42 +1030,37 @@ L_Order:
 	close;
 }
 
-ayo_dun01.gat,16,188,5	script	 #AyoDun1_6	111,{
+ayo_dun01.gat,16,188,0	script	 #AyoDun1_6	111,{
+	mes "- 石版のかけらを見つけた。-";
+	mes "- 何か字が書かれている。-";
+	mes "- 最後の部分のようだ。-";
 	if(ayo_Q1 == 8) goto L_Order;
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 最後の部分のようだ。 -";
 	close;
 L_Order:
-	mes "- 石版のかけらを見つけた。 -";
-	mes "- 何か字が書かれている。 -";
-	mes "- 最後の部分のようだ。 -";
 	next;
-	mes "-";
-	mes "- ^0000FF……する。そう、上にも……下がること^000000 -";
-	mes "-";
-	mes "- ^0000FFさえ……だ。^000000 -";
+	mes "- ^0000FF……する。そう、上にも……^000000 -";
+	mes "- ^0000FF下がることさえ……だ。^000000 -";
 	mes "- 残り部分は破損していて -";
 	mes "- 読み取れない。 -";
 	set ayo_Q1,9;	//古代遺跡クエストフラグ[9]セット
 	close;
 }
 
-ayo_dun01.gat,24,282,5	script	 #AyoDun1_11	111,{
+ayo_dun01.gat,24,282,0	script	 #AyoDun1_11	111,{
 	if((ayo_Q1 >= 11) && (countitem(7287) >= 1)) goto L_Order;
-	mes "- 2階へ通じる入口を見つけた。 -";
-	mes "- だが邪悪な気が全身を襲ってくる。 -";
-	mes " 思わずその場に座り込んでしまい、 ";
-	mes " 体の震えが止まらない。 ";
-	mes " 下へ降りることはできなさそうだ。 ";
+	mes "-2階へ通じる入口を見つけた。-";
+	mes "-だが邪悪な気が全身を襲ってくる。-";
+	mes "-思わずその場に座り込んでしまい、-";
+	mes "-体の震えが止まらない。-";
+	mes "-下へ降りることはできなさそうだ。-";
 	close;
 L_Order:
 	mes "- 神聖な糸巻きが邪悪な気を消した -";
-	mes "ようだ。下の階へ降りよう……";
+	mes "- ようだ。下の階へ降りよう…… -";
 	close2;
-	set @rand,rand(3);
-	if(@rand == 1) warp "ayo_dun02.gat",23,26;
-	if(@rand == 2) warp "ayo_dun02.gat",275,26;
+	set @rand,rand(2);
+	if(@rand == 0) warp "ayo_dun02.gat",23,26;
+	if(@rand == 1) warp "ayo_dun02.gat",275,26;
 	end;
 }
 
@@ -959,33 +1070,33 @@ ayo_dun02.gat,268,108,5	script	 #AyoDun2_1	111,{
 	end;
 L_Order:
 	mes "- 木の根元から突き出た骨を -";
-	mes "- 見つけた。 -";
+	mes "- 見つけた。-";
 	next;
 	mes "- ブンソムが話していた -";
-	mes "- 友人のようだ。 -";
+	mes "- 友人のようだ。-";
 	next;
 	mes "- 木の幹に小さくメッセージが -";
-	mes "- 見える。 -";
+	mes "- 見える。-";
 	next;
-	mes "- そしてそばには箱もある。 -";
+	mes "- そしてそばには箱もある。-";
 	next;
-	mes "- あなたはメッセージを読んだ。 -";
+	mes "- あなたはメッセージを読んだ。-";
 	next;
-	mes "- ^0000FFブンソムに……私はもう……^000000 -";
-	mes "- ^0000FFああ……ここにはスミンタイ……^000000 -";
-	mes "- ^0000FF私の遺骨を……いや、これ……を^000000 -";
-	mes "- ^0000FFブンソムに……^000000 -";
+	mes "-^0000FFブンソムに……私はもう……^000000-";
+	mes "-^0000FFああ……ここにはスミンタイ……^000000-";
+	mes "-^0000FF私の遺骨を……いや、これ……を^000000-";
+	mes "-^0000FFブンソムに……^000000-";
 	next;
-	mes "- 青色の箱を手に入れた。 -";
+	mes "- 青色の箱を手に入れた。-";
 	getitem 603,1;
 	set ayo_Q1,12;	//古代遺跡クエストフラグ[12]セット
 	close;
 }
 
 // トムヤンクンクエスト
-ayothaya.gat,196,265,4 script エイノ 842,{
-	if(ayo_Q2 == 1) goto Q1Y;
+ayothaya.gat,196,265,3 script エイノ 842,{
 	if(ayo_Q2 >= 2) goto L_Fin;
+	if(ayo_Q2 == 1) goto Q1Y;
 	mes "[エイノ]";
 	mes "この村の高名な料理を知ってなさる";
 	mes "かね？";
@@ -993,7 +1104,7 @@ ayothaya.gat,196,265,4 script エイノ 842,{
 	mes "[エイノ]";
 	mes "ここは本当に美味しい料理がたくさん";
 	mes "あるが、中でも一番有名なのが";
-	mes "^0000FFトムヤンクン^000000だ。";
+	mes "^3131FFトムヤンクン^000000だ。";
 	next;
 	mes "[エイノ]";
 	mes "このスープ、感動的なくらい辛い！";
@@ -1005,12 +1116,12 @@ ayothaya.gat,196,265,4 script エイノ 842,{
 	mes "みたくないかね？";
 	next;
 	menu "勿論です",-,"辛いものは苦手で……",L_M1_1;
-		emotion 21;
 		mes "[エイノ]";
 		mes "そうじゃのー。トムヤンクンを調理";
 		mes "できる料理人はたくさんいるが、特別に";
-		mes "^0000FFマーリー パイ^000000さんを紹介しよう。";
+		mes "^3131FFマーリー パイ^000000さんを紹介しよう。";
 		next;
+		emotion 21;
 		mes "[エイノ]";
 		mes "トムヤンクンを幻想的に調理する女性";
 		mes "料理人でな。1回は彼女の料理を食べて";
@@ -1023,7 +1134,7 @@ ayothaya.gat,196,265,4 script エイノ 842,{
 		close;
 Q1Y:
 	mes "[エイノ]";
-	mes "^0000FFマーリー パイ^000000？";
+	mes "^3131FFマーリー パイ^000000？";
 	mes "村のどっかにおるよ。ほっほっ。";
 	close;
 L_Fin:
@@ -1034,14 +1145,13 @@ L_Fin:
 }
 
 ayo_in01.gat,145,163,3 script 料理人 839,{
-	if(ayo_Q2 == 1) goto Q1Y;
-	if(ayo_Q2 == 2) goto Q1Ya;
-	if(ayo_Q2 == 3) goto Q2Y;
-	if(ayo_Q2 == 4) goto Q2Ya;
-	if(ayo_Q2 == 5) goto Q3Y;
-	if(ayo_Q2 == 6) goto Q3Ya;
-	if(ayo_Q2 == 7) goto Q4Y;
 	if(ayo_Q2 == 8) goto L_Fin;
+	if(ayo_Q2 == 7) goto Q4Y;
+	if(ayo_Q2 == 6) goto Q3Ya;
+	if(ayo_Q2 == 5) goto Q3Y;
+	if(ayo_Q2 == 4) goto Q2Ya;
+	if(ayo_Q2 == 3) goto Q2Y;
+	if(ayo_Q2 == 2) goto Q1Ya;
 	mes "[マーリー パイ]";
 	mes "こんにちは。私がマーリー";
 	mes "パイです。";
@@ -1050,24 +1160,13 @@ ayo_in01.gat,145,163,3 script 料理人 839,{
 	mes "目指しました。";
 	next;
 	mes "[マーリー パイ]";
-	mes "特に私の特製^0000FFトムヤンクン^000000は、この村";
+	mes "特に私の特製^3131FFトムヤンクン^000000は、この村";
 	mes "最高の味です。";
-	mes "最高の^0000FFトムヤンクン^000000を作ることこそ";
+	mes "最高の^3131FFトムヤンクン^000000を作ることこそ";
 	mes "私の使命です。";
+	if(ayo_Q2 == 1) goto Q1Y;
 	close;
 Q1Y:
-	mes "[マーリー パイ]";
-	mes "こんにちは。私がマーリー";
-	mes "パイです。";
-	mes "私は、お客さん達に幻想的な感動を";
-	mes "プレゼントしたいと思って料理人を";
-	mes "目指しました。";
-	next;
-	mes "[マーリー パイ]";
-	mes "特に私の特製^0000FFトムヤンクン^000000は、この村";
-	mes "最高の味です。";
-	mes "最高の^0000FFトムヤンクン^000000を作ることこそ";
-	mes "私の使命です。";
 	next;
 	mes "[マーリー パイ]";
 	mes "トムヤンクンが食べたい、ですか？";
@@ -1081,7 +1180,7 @@ Q1Y:
 		mes "え、手伝ってくれる？うーん……";
 		mes "でしたら、特製トムヤンクン用の材料を";
 		mes "集めてきてもらえますか？必要な材料は";
-		mes "^FF0000エビ^000000と^FF0000レッドチリ^000000、そして^FF0000レモン^000000です。";
+		mes "^CE0000エビ^000000と^CE0000レッドチリ^000000、そして^CE0000レモン^000000です。";
 		mes "他の材料は私のほうでそろえます。";
 		next;
 		mes "[マーリー パイ]";
@@ -1098,10 +1197,10 @@ Q1Y:
 			next;
 			mes "[マーリー パイ]";
 			mes "私の紹介で来たと言えば、安く売って";
-			mes "くえるはずですし。";
+			mes "くれるはずですし。";
 			next;
 			mes "[マーリー パイ]";
-			mes "その人の名前は^FF0000トンプル^000000さんです。";
+			mes "その人の名前は^3131FFトンプル^000000さんです。";
 			mes "トムヤンクンを作るエビを1kg……";
 			mes "20個欲しいとお願いしてください。";
 			set ayo_Q2,2;	//トムヤンクンクエストフラグ[2]セット
@@ -1113,12 +1212,23 @@ Q1Y:
 		mes "作らせてください。";
 		close;
 Q1Ya:
+	if(countitem(567) >= 20) goto Q1Yb;
 	mes "[マーリー パイ]";
 	mes "トンプルに1kgお願いしますと";
 	mes "言えばわかりますから。";
 	close;
+Q1Yb:
+	mes "[マーリー パイ]";
+	mes "このエビ、あちこち傷がついてません？";
+	mes "これ、トンプルさんのエビですか？";
+	next;
+	mes "[マーリー パイ]";
+	mes "このエビでは最高のトムヤンクンを";
+	mes "作ることは出来ません。";
+	mes "もっと鮮度の高いエビをお願いします。";
+	close;
 Q2Y:
-	if(countitem(567) < 10) goto L_Item;
+	if(countitem(567) < 20) goto L_Item;
 	mes "[マーリー パイ]";
 	mes "おかえりなさい！";
 	mes "エビを見せてくれますか？";
@@ -1138,7 +1248,7 @@ Q2Y:
 	mes "[マーリー パイ]";
 	mes "あら、私ったら！エビだけでは";
 	mes "トムヤンクンは作れないわ。";
-	mes "^FF0000レモン^000000がまだでしたね。";
+	mes "^CE0000レモン^000000がまだでしたね。";
 	next;
 	menu "レモンはどこがおすすめ？",-,"すっぱいのは嫌いです。",L_M2_1;
 		mes "[マーリー パイ]";
@@ -1151,18 +1261,26 @@ Q2Y:
 		set ayo_Q2,4;	//トムヤンクンクエストフラグ[4]セット
 		close;
 	L_M2_1:	//すっぱいのは嫌いです。
-		mes "[マーリー パイ]";
 		emotion 7;
+		mes "[マーリー パイ]";
 		mes "酸っぱさはトムヤンクンに欠かせない";
 		mes "味です！";
 		mes "それがわからないような人は";
 		mes "トムヤンクンを食べる資格ありません！";
 		close;
 Q2Ya:
+	if(countitem(568) >= 10) goto Q2Yb;
 	mes "[マーリー パイ]";
 	mes "信じていますから……";
 	mes "最高のトムヤンクンのため、最高の";
 	mes "レモンを必ず持ってきてくれると……";
+	close;
+Q2Yb:
+	mes "[マーリー パイ]";
+	mes "これが最高のレモン？まさか……";
+	mes "ほら、良く見て。このレモンはツヤも";
+	mes "香りも薄いでしょう。";
+	mes "これは、普通のレモン以下だわ！";
 	close;
 Q3Y:
 	if(countitem(568) < 10) goto L_Item;
@@ -1176,7 +1294,7 @@ Q3Y:
 	mes "[マーリー パイ]";
 	mes "すごい！";
 	mes "こんな立派なレモンは初めて見たわ！";
-	mes "では最後の材料、^FF0000レッドチリ^000000を市場で";
+	mes "では最後の材料、^CE0000レッドチリ^000000を市場で";
 	mes "買ってきてもらえるかしら？";
 	next;
 	menu "はい、いってきます",-,"疲れたから、ちょっと休憩させて……",L_M3_1;
@@ -1191,13 +1309,20 @@ Q3Y:
 		mes "新鮮なエビがダメになってしまうわ…";
 		close;
 Q3Ya:
+	if(countitem(7286) >= 30) goto Q3Yb;
 	mes "[マーリー パイ]";
 	mes "お疲れ様でした。";
 	mes "しばらく村の観光でもしてらしたら？";
 	close;
+Q3Yb:
+	mes "[マーリー パイ]";
+	mes "どこでこんなものを買って来たの？";
+	mes "最高のトムヤンクンには最高の材料を！";
+	mes "でなければ、私も腕を揮う意味がない！";
+	close;
 Q4Y:
 	if(countitem(7286) < 30) goto L_Item;
-	emotion 4;
+	emotion 0;
 	delitem 7286,30;
 	mes "[マーリー パイ]";
 	mes "こちらは準備出来ました。あとは";
@@ -1205,32 +1330,33 @@ Q4Y:
 	mes "いらした材料、見てよろしいですか？";
 	next;
 	mes "[マーリー パイ]";
-	mes "^FF0000エビ^000000に^FF0000レッドチリ^000000、そして^FF0000レモン^000000！";
+	mes "^CE0000エビ^000000に^CE0000レッドチリ^000000、そして^CE0000レモン^000000！";
 	mes "魚醤と各種スパイスはそろってるし……";
 	mes "完璧です！";
 	next;
 	misceffect 125;
 	mes "[マーリー パイ]";
-	mes "- ^FF4500トントン^000000 ^FF00FFトプトプ^000000 ^7CFC00コトコト^000000 -";
+	mes "- ^FF0000トントン　^9C009Cトプトプ　^009C00コトコト^000000 -";
 	next;
-//エフェクト未取得
-//	misceffect ;
+	misceffect 124;
 	mes "[マーリー パイ]";
-	mes "- ^FF0000カタカタ^000000";
-	mes "･^FFD700コトコト^000000";
-	mes "‥^87CEEBシュシュ^000000 - ";
+	mes "- ^FF0031カタカタ";
+	mes "^FF9C00コトコト";
+	mes "^639CFFシュシュ^000000 - ";
 	next;
-//エフェクト未取得
-//	misceffect ;
+	misceffect 98;
+	misceffect 195;
 	mes "[マーリー パイ]";
-	mes "- ^F0E68Cトントン^000000 ･";
-	mes "･^708090キュキュ^000000";
-	mes "‥^FF0000コンコンコン^000000 ^7CFC00クルクルクル^000000";
+	mes "- ^9C6300トントン";
+	mes "^316363キュキュ";
+	mes "^FF0000コンコンコン　^009C00クルクルクル^000000 -";
 	next;
+	emotion 23;
 	misceffect 90;
+	misceffect 99;
 	mes "[マーリー パイ]";
-	mes "- トントントントン ^708090パタパタパタ^000000";
-	mes "^708090チュアー^000000 ^87CEEBカンカン^000000!! -";
+	mes "- トントントントン　^00009Cパタパタパタ";
+	mes "^0000FFチュアー　^0063FFカンカン^000000!! -";
 	next;
 	mes "[マーリー パイ]";
 	mes "…………………………";
@@ -1242,7 +1368,7 @@ Q4Y:
 	mes "トムヤンクンが完成しました！";
 	mes "この濃厚な香りと奥深い味……";
 	mes "あぁ、なんという恍惚感！";
-	getitem 566,30;
+	getitem 566,10;
 	set ayo_Q2,8;	//トムヤンクンクエストフラグ[8]セット
 	next;
 	mes "[マーリー パイ]";
@@ -1280,8 +1406,8 @@ L_Fin:
 }
 
 ayothaya.gat,153,86,5 script トンプル 843,{
-	if(ayo_Q2 == 2) goto Q1Y;
 	if(ayo_Q2 == 3) goto L_Buy;
+	if(ayo_Q2 == 2) goto Q1Y;
 	mes "[トンプル]";
 	mes "らっしゃい～！";
 	mes "らっしゃい～！";
@@ -1298,7 +1424,7 @@ Q1Y:
 	next;
 	menu "トムヤンクンを作りたいんですが",-,"高いな、このエビ！",L_M1_1;
 		mes "[トンプル]";
-		mes "おお!!パイさんの紹介でやんすね！";
+		mes "おお!! パイさんの紹介でやんすね！";
 		mes "いやいや、お客さん目が高い!!";
 		mes "うちのエビは、パイさんの料理に";
 		mes "ピッタリ！";
@@ -1344,7 +1470,6 @@ L_Buy:
 		mes "まいどあり～。";
 		mes "今日のもキラキラツヤツヤ！";
 		mes "最高のエビですぜ！";
-		emotion 21;
 		set Zeny,Zeny - 11000;
 		getitem 567,20;
 		close;
@@ -1361,51 +1486,10 @@ L_Zeny:
 	close;
 }
 
-ayothaya.gat,121,240,0 script チュンおじさん 842,2,2,{
+ayothaya.gat,121,240,0 script チュンおじさん 842,1,1,{
 	if(ayo_Q2 == 5) goto Q2Y;
 	mes "[チュンおじさん]";
 	mes "……………………";
-	close;
-Q2Y:
-	emotion 4;
-	mes "[チュンおじさん]";
-	mes "おや、また何か用かね？";
-	next;
-	menu "いいえ",-,"レモンちょうだい",L_M4_1,"申し訳ないですが、レモンをください…",L_M4_2;
-		mes "[チュンおじさん]";
-		mes "そうか、そうか。";
-		mes "ま、元気そうで何よりじゃ。"; 
-		close;
-	L_M4_1:	//レモンちょうだい
-		emotion 6;
-		mes "[チュンおじさん]";
-		mes "それが人に物を頼む態度かっ!!";
-		mes "そんなにレモンが欲しければ、自分で";
-		mes "育てるが良い!!";
-		close;
-	L_M4_2:	//申し訳ないですが、レモンをください…
-		mes "[チュンおじさん]";
-		mes "もっとレモンが要るのかね？";
-		mes "うーん、さすがに今度は金を";
-		mes "いただかねばならん。";
-		mes "レモン10個、10,000zenyじゃ。";
-		next;
-		menu "お金を払う",-,"お金を払わない",L_M5_1;
-			if(Zeny < 10000) goto L_Zeny;
-			mes "[チュンおじさん]";
-			mes "さぁ、持っていくが良い。";
-			mes "しかし、こんなにたくさんのレモンを";
-			mes "食べるのかね？";
-			set Zeny,Zeny - 10000;
-			getitem 568,10;
-			close;
-		L_M5_1:	//お金を払わない
-			mes "[チュンおじさん]";
-			mes "勝手にしなさい。";
-			close;
-L_Zeny:
-	mes "[チュンおじさん]";
-	mes "金が足りんようじゃ。";
 	close;
 OnTouch:
 	if(ayo_Q2 == 4) goto Q1Y;
@@ -1451,117 +1535,111 @@ Q1Y:
 				mes "するだけじゃよ。簡単じゃろ？";
 				next;
 				mes "[チュンおじさん]";
-				mes "ジャンケンを^0000FF5回^000000して、そちが^0000FF3回^000000勝てば";
+				mes "ジャンケンを^3131FF5回^000000して、そちが^3131FF3回^000000勝てば";
 				mes "レモンをあげよう。よいな？";
 				next;
 				mes "[チュンおじさん]";
 				mes "では始めじゃ！";
 				next;
-				goto L_Game;
- 			L_Game:
- 				if((game == 5) && (gamewin < 3)) goto L_Loseall;
- 				if((game == 5) && (gamewin >= 3)) goto L_Winall;
- 				set game,game + 1;
  				mes "[チュンおじさん]";
  				mes "じゃーんけーん！";
- 				menu "チョキ",-,"グー",L_gu,"パー",L_pa;
- 					set @rand,rand(4);
- 					if (@rand==1) goto L_win;
- 					if (@rand==2) goto L_lose;
- 					if (@rand==3) goto L_draw;
- 					L_win:
- 						emotion 12;
- 						set gamewin,gamewin + 1;
- 						goto L_wins;
- 					L_lose:
- 						emotion 11;
- 						next;
- 						goto L_loses;
- 					L_draw:
- 						emotion 10;
- 						next;
- 						goto L_draws;
- 					close;
- 				L_gu:
- 					set @rand,rand(4);
- 					if (@rand==1) goto L_win1;
- 					if (@rand==2) goto L_lose1;
- 					if (@rand==3) goto L_draw1;
- 					L_win1:
- 						emotion 10;
- 						set gamewin,gamewin + 1;
- 						goto L_wins;
- 					L_lose1:
- 						emotion 12;
- 						next;
- 						goto L_loses;
- 					L_draw1:
- 						emotion 11;
- 						goto L_draws;
- 				L_pa:
- 					set @rand,rand(4);
- 					if (@rand==1) goto L_win2;
- 					if (@rand==2) goto L_lose2;
- 					if (@rand==3) goto L_draw2;
- 					L_win2:
- 						emotion 11;
- 						set gamewin,gamewin + 1;
- 						goto L_wins;
- 					L_lose2:
- 						emotion 10;
- 						next;
- 						goto L_loses;
- 					L_draw2:
- 						emotion 12;
- 						goto L_draws;
- 				L_wins:
- 					next;
- 				 	mes "[チュンおじさん]";
- 				 	mes "クホホ……";
- 					next;
- 					goto L_Game;
- 				L_loses:
- 					next;
- 					mes "[チュンおじさん]";
- 				 	mes "ほっほっほっ";
- 					next;
- 					goto L_Game;
- 				L_draws:
- 					next;
- 					mes "[チュンおじさん]";
- 				 	mes "ううむ、引き分けじゃな。";
- 					mes "では、あいこで！";
- 					next;
- 					goto L_Game;
- 			L_Loseall:
- 				mes "[チュンおじさん]";
- 				mes "ほっほっほっ、わしの勝ちじゃ。";
- 				mes "レモンが欲しかったら、いつでも";
- 				mes "挑戦は受けてたとう！";
- 				set game,0;
- 				set gamewin,0;
- 				close;
- 			L_Winall:
- 				emotion 32;
- 				mes "[チュンおじさん]";
- 				mes "ぬしの勝ちじゃな、ほっほっ。";
- 				mes "若いのは良いの～、ほっほっほっ。";
- 				next;
- 				mes "[チュンおじさん]";
- 				mes "約束どおり、わしのレモンをあげよう。";
- 				mes "さぁ、好きなだけ持って行きなされ。";
- 				next;
- 				mes "- あなたはレモン10個を取った -";
- 				getitem 568,10;
- 				set game,0;
- 				set gamewin,0;
- 				set ayo_Q2,5;	//トムヤンクンクエストフラグ[5]セット
- 				next;
- 				emotion 9;
- 				mes "[チュンおじさん]";
- 				mes "ずいぶんと、たくさん持っていくの。";
- 				mes "ま。良きかな良きかな、ほっほっほっ。";
- 				close;
+				set @game,0;
+				set @gamewin,0;
+				next;
+				goto L_Game;
+			L_Game:
+				if(@gamewin == 3) goto L_Winall;
+				if(@game == 5) goto L_Loseall;
+				menu "チョキ",-,"グー",L_gu,"パー",L_pa;
+					gmcommand "@emotion 10";
+					set @rand,rand(3);
+					if (@rand==0) goto L_win;
+					if (@rand==1) goto L_lose;
+					if (@rand==2) goto L_draw;
+					L_win:
+						emotion 12;
+						goto L_wins;
+					L_lose:
+						emotion 11;
+						goto L_loses;
+					L_draw:
+						emotion 10;
+						goto L_draws;
+				L_gu:
+					gmcommand "@emotion 11";
+					set @rand,rand(3);
+					if (@rand==0) goto L_win1;
+					if (@rand==1) goto L_lose1;
+					if (@rand==2) goto L_draw1;
+					L_win1:
+						emotion 10;
+						goto L_wins;
+					L_lose1:
+						emotion 12;
+						goto L_loses;
+					L_draw1:
+						emotion 11;
+						goto L_draws;
+				L_pa:
+					gmcommand "@emotion 12";
+					set @rand,rand(3);
+					if (@rand==0) goto L_win2;
+					if (@rand==1) goto L_lose2;
+					if (@rand==2) goto L_draw2;
+					L_win2:
+						emotion 11;
+						goto L_wins;
+					L_lose2:
+						emotion 10;
+						goto L_loses;
+					L_draw2:
+						emotion 12;
+						goto L_draws;
+				L_wins:
+				 	mes "[チュンおじさん]";
+				 	mes "クホホ……";
+					next;
+					set @game,@game+1;
+					set @gamewin,@gamewin+1;
+					goto L_Game;
+				L_loses:
+					mes "[チュンおじさん]";
+				 	mes "ほっほっほっ";
+					next;
+					set @game,@game+1;
+					goto L_Game;
+				L_draws:
+					mes "[チュンおじさん]";
+				 	mes "ううむ、引き分けじゃな。";
+					mes "では、あいこで！";
+					next;
+					goto L_Game;
+			L_Loseall:
+				emotion 10;
+				mes "[チュンおじさん]";
+				mes "ほっほっほっ、わしの勝ちじゃ。";
+				mes "レモンが欲しかったら、いつでも";
+				mes "挑戦は受けてたとう！";
+				close;
+			L_Winall:
+				emotion 32;
+				mes "[チュンおじさん]";
+				mes "ぬしの勝ちじゃな、ほっほっ。";
+				mes "若いのは良いの～、ほっほっほっ。";
+				next;
+				mes "[チュンおじさん]";
+				mes "約束どおり、わしのレモンをあげよう。";
+				mes "さぁ、好きなだけ持って行きなされ。";
+				next;
+				mes "- あなたはレモン10個を取った -";
+				getitem 568,10;
+				set ayo_Q2,5;	//トムヤンクンクエストフラグ[5]セット
+				next;
+				emotion 9;
+				mes "[チュンおじさん]";
+				mes "ずいぶんと、たくさん持っていくの。";
+				mes "ま。良きかな良きかな、ほっほっほっ。";
+				close;
 			L_M3_1:	//やめておきます
 				mes "[チュンおじさん]";
 				mes "何か用かね？";
@@ -1575,11 +1653,53 @@ Q1Y:
 		mes "[チュンおじさん]";
 		mes "そうかそうか。";
 		close;
+Q2Y:
+	emotion 4;
+	mes "[チュンおじさん]";
+	mes "おや、また何か用かね？";
+	next;
+	menu "いいえ",-,"レモンちょうだい",L_M4_1,"申し訳ないですが、レモンをください…",L_M4_2;
+		emotion 2;
+		mes "[チュンおじさん]";
+		mes "そうか、そうか。";
+		mes "ま、元気そうで何よりじゃ。"; 
+		close;
+	L_M4_1:	//レモンちょうだい
+		emotion 6;
+		mes "[チュンおじさん]";
+		mes "それが人に物を頼む態度かっ!!";
+		mes "そんなにレモンが欲しければ、自分で";
+		mes "育てるが良い!!";
+		close;
+	L_M4_2:	//申し訳ないですが、レモンをください…
+		mes "[チュンおじさん]";
+		mes "もっとレモンが要るのかね？";
+		mes "うーん、さすがに今度は金を";
+		mes "いただかねばならん。";
+		mes "レモン10個、10,000zenyじゃ。";
+		next;
+		menu "お金を払う",-,"お金を払わない",L_M5_1;
+			if(Zeny < 10000) goto L_Zeny;
+			mes "[チュンおじさん]";
+			mes "さぁ、持っていくが良い。";
+			mes "しかし、こんなにたくさんのレモンを";
+			mes "食べるのかね？";
+			set Zeny,Zeny - 10000;
+			getitem 568,10;
+			close;
+		L_M5_1:	//お金を払わない
+			mes "[チュンおじさん]";
+			mes "勝手にしなさい。";
+			close;
+L_Zeny:
+	mes "[チュンおじさん]";
+	mes "金が足りんようじゃ。";
+	close;
 }
 
-ayothaya.gat,212,95,7 script 商人 841,{
-	if(ayo_Q2 == 6) goto Q1Y;
+ayothaya.gat,213,94,7 script 商人 841,{
 	if(ayo_Q2 == 7) goto L_Buy;
+	if(ayo_Q2 == 6) goto Q1Y;
 	mes "[商人トン ド]";
 	mes "お客さん、お客さん！";
 	mes "レッドチリ、食べてみたことあります";
@@ -1589,7 +1709,7 @@ ayothaya.gat,212,95,7 script 商人 841,{
 	mes "[商人トン ド]";
 	mes "アユタヤは、唐辛子や塩を使った辛くて";
 	mes "刺激的な料理が好まれてやしてね。";
-	mes "他にもレッドチリやニンイク、生姜に";
+	mes "他にもレッドチリやニンニク、生姜に";
 	mes "胡椒は欠かせない香辛料なんっすよ。";
 	next;
 	mes "[商人トン ド]";
@@ -1639,7 +1759,6 @@ L_Buy:
 		close;
 	L_M2_1:	//また買います
 		if(Zeny < 2000) goto L_Zeny;
-		emotion 15;
 		mes "[商人トン ド]";
 		mes "へい、まいどあり！";
 		set Zeny,Zeny - 2000;
@@ -1653,19 +1772,19 @@ L_Zeny:
 }
 
 //婚約指輪クエスト
-ayothaya.gat,233,105,6 script 強そうな女性 838,{
-	if(ayo_Q3 == 1) goto Q1Za;
-	if(ayo_Q3 == 2) goto Q2Z;
-	if(ayo_Q3 == 3) goto Q2Za;
+ayothaya.gat,233,105,3 script 強そうな女性 838,{
 	if(ayo_Q3 == 13) goto L_Fin;
+	if(ayo_Q3 >= 3) goto Q2Za;
+	if(ayo_Q3 == 2) goto Q2Z;
+	if(ayo_Q3 == 1) goto Q1Za;
 	set @rand,rand(4);
-	if(@rand == 1) goto Q1Z;
 	mes "[強そうな女性]";
 	mes "なんですか？";
 	mes "ああ……最近増えている旅行客ですね。";
 	mes "ここには面白いものなどありませんよ。";
 	mes "私の愚痴を聞きたいなら別ですけど。";
 	next;
+	if(Rand(4) == 0) goto Q1Z;
 	mes "[強そうな女性]";
 	mes "ふう……";
 	mes "やっぱり、浮かんでこないかしら……";
@@ -1680,12 +1799,6 @@ ayothaya.gat,233,105,6 script 強そうな女性 838,{
 	close;
 Q1Z:
 	mes "[強そうな女性]";
-	mes "なんですか？";
-	mes "ああ……最近増えている旅行客ですね。";
-	mes "ここには面白いものなどありませんよ。";
-	mes "私の愚痴を聞きたいなら別ですけど。";
-	next;
-	mes "[強そうな女性]";
 	mes "今、とっても忙しいんです。";
 	mes "え、立ってるだけで忙しそうに";
 	mes "見えない？まぁ、まぁ、まぁ!!";
@@ -1699,7 +1812,7 @@ Q1Z:
 		mes "[強そうな女性]";
 		mes "なによ、その態度は?!";
 		next;
-		gmcommand "@emotion 29";	//自キャラに出る
+		gmcommand "@emotion 29";
 		mes "["+strcharinfo(0)+"]";
 		mes "いや、だって君みたいな人が婚約してる";
 		mes "だなんて、ちょっと信じられないよ。";
@@ -1747,8 +1860,11 @@ Q1Z:
 		menu "あ、ごめんなさい",-,"人の不幸って見てて楽しい",L_M2_1;
 			mes "[強そうな女性]";
 			mes "くす、変な人ね。";
-			mes "ああ、でも私はもう婚約してる身だから";
-			mes "諦めてね。";
+			if (Sex == 0) mes "…………";
+			if (Sex == 0) mes "あ、勘違いしないでっ！";
+			if (Sex == 0) mes "面白い人って意味で言ったんだから！";
+			if (Sex == 1) mes "ああ、でも私はもう婚約してる身だから";
+			if (Sex == 1) mes "諦めてね。";
 			next;
 			mes "[シューリ]";
 			mes "自己紹介がまだでしたね。";
@@ -1911,7 +2027,7 @@ L_Find:
 		mes "出来ないわよね。";
 		mes "おほほほほほほ。";
 		next;
-		gmcommand "@emotion 9";	//自キャラに出る
+		gmcommand "@emotion 9";
 		mes "["+strcharinfo(0)+"]";
 		mes "……こんな女に関わるんじゃなかった。";
 		mes "あー、ついてないな……";
@@ -1973,9 +2089,9 @@ L_Fin:
 	close;
 }
 
-ayothaya.gat,253,99,6 script 釣り人 843,{
-	if(ayo_Q3 == 1) goto Q1Z;
+ayothaya.gat,253,99,3 script 釣り人 843,{
 	if(ayo_Q3 >= 2) goto L_Fin;
+	if(ayo_Q3 == 1) goto Q1Z;
 	mes "[ダナイ]";
 	mes "ここに住んでる魚は、落ちてきたものを";
 	mes "何でも食べちまうよ。時々、釣れた魚の";
@@ -1994,8 +2110,8 @@ Q1Z:
 	next;
 	mes "[ダナイ]";
 	mes "釣りがしたいなら、餌は自前で";
-	mes "よろしくな。お代は^0000FF1回 50zeny^000000。";
-	mes "それと^0000FF化け物のエサ 1個^000000だ。";
+	mes "よろしくな。お代は^3152FF1回 50zeny^000000。";
+	mes "それと^3152FF化け物のエサ 1個^000000だ。";
 	next;
 	mes "[ダナイ]";
 	mes "釣りをするかい？";
@@ -2007,45 +2123,47 @@ Q1Z:
 		close;
 	L_M1_1:
 		if((countitem(528) == 0) || (Zeny < 50)) goto L_Zeny;
-		mes "[ダナイ]";
-		mes "- あなたは釣り竿を水に垂らした。 -";
+		delitem 528,1;
+		set Zeny,Zeny - 50;
+		mes "- あなたは釣り竿を水に垂らした。-";
 		next;
 		mes "……………………………………";
 		next;
-		mes "手ごたえが!!何か釣れたようだ！";
+		mes "- 手ごたえが!!何か釣れたようだ！ -";
 		next;
 		set @rand,rand(20);
-		if(@rand == 1) goto L_Find;
-		if(@rand == 2) mes "- 魚を調べてみたら、ダイヤの指輪が出てきた。 -";
-		if(@rand == 2) getitem 2613,1;
-		if((@rand >= 3) && (@rand <= 4)) mes "- 魚を調べてみたら、花の指輪が出てきた。 -";
-		if((@rand >= 3) && (@rand <= 4)) getitem 2612,1;
-		if((@rand >= 5) && (@rand <= 7)) mes "- 魚を調べてみたら、黄色ポーションが出てきた。 -";
-		if((@rand >= 5) && (@rand <= 7)) getitem 503,1;
-		if((@rand >= 8) && (@rand <= 11)) mes "- 魚を調べてみたら、赤色ポーションが出てきた。 -";
-		if((@rand >= 8) && (@rand <= 11)) getitem 501,1;
-		if((@rand >= 12) && (@rand <= 15)) mes "- 魚を調べてみたら、おさしみが出てきた。 -";
-		if((@rand >= 12) && (@rand <= 15)) getitem 544,1;
-		if((@rand >= 16) && (@rand <= 19)) mes "- 魚を調べてみたら、石が出てきた。 -";
-		if((@rand >= 16) && (@rand <= 19)) getitem 7049,1;
-		delitem 528,1;
-		set Zeny,Zeny - 50;
+		if(@rand == 0) goto L_Find;
+		if(@rand == 1) mes "-魚を調べてみたら、ダイヤの指輪-";
+		if(@rand == 1) mes "-が出てきた。-";
+		if(@rand == 1) getitem 2613,1;
+		if((@rand >= 2) && (@rand <= 3)) mes "-魚を調べてみたら、花の指輪-";
+		if((@rand >= 2) && (@rand <= 3)) mes "-が出てきた。-";
+		if((@rand >= 2) && (@rand <= 3)) getitem 2612,1;
+		if((@rand >= 4) && (@rand <= 6)) mes "-魚を調べてみたら、黄ポーション-";
+		if((@rand >= 4) && (@rand <= 6)) mes "-が出てきた。-";
+		if((@rand >= 4) && (@rand <= 6)) getitem 503,1;
+		if((@rand >= 7) && (@rand <= 10)) mes "-魚を調べてみたら、赤ポーション-";
+		if((@rand >= 7) && (@rand <= 10)) mes "-が出てきた。-";
+		if((@rand >= 7) && (@rand <= 10)) getitem 501,1;
+		if((@rand >= 11) && (@rand <= 14)) mes "-魚を調べてみたら、おさしみ-";
+		if((@rand >= 11) && (@rand <= 14)) mes "-が出てきた。-";
+		if((@rand >= 11) && (@rand <= 14)) getitem 544,1;
+		if((@rand >= 15) && (@rand <= 19)) mes "-魚を調べてみたら、石が出てきた。-";
+		if((@rand >= 15) && (@rand <= 19)) getitem 7049,1;
 		close;
 	L_Find:
 		mes "- 魚を調べてみたら、名前が -";
-		mes "- 刻まれた指輪が出てきた。 -";
+		mes "- 刻まれた指輪が出てきた。-";
 		next;
 		mes "- 婚約指輪をみつけた！ -";
-		delitem 528,1;
-		set Zeny,Zeny - 50;
 		getitem 7288,1;
 		set ayo_Q3,2;	//婚約指輪クエストフラグ[2]セット
 		close;
 L_Zeny:
 	mes "[ダナイ]";
 	mes "こっちも生活がかかってんだ。";
-	mes "釣りしたいなら、^0000FF1回 50zeny^000000。";
-	mes "^0000FF化け物のエサ 1個^000000は自前な。";
+	mes "釣りしたいなら、^3152FF1回 50zeny^000000。";
+	mes "^3152FF化け物のエサ 1個^000000は自前な。";
 	close;
 L_Fin:
 	mes "[ダナイ]";
@@ -2063,8 +2181,7 @@ L_Fin:
 
 ayothaya.gat,193,171,4 script 老人 842,{
 	if(ayo_Q3 == 3) goto Q1Z;
-	set @rand,rand(3);
-	if(@rand == 1) goto L_Talk;
+	if(rand(3) == 0) goto L_Talk;
 	mes "[亘じいさん]";
 	mes "外の地からいらした方ですな。";
 	mes "よくぞ参られた。";
@@ -2124,67 +2241,61 @@ Q1Z:
 	close;
 }
 
-ayo_dun01.gat,255,62,5	script	 #AyoDun1_7	111,1,1,{
-OnTouch:
+ayo_dun01.gat,255,62,0	script	 #AyoDun1_7	139,1,1,{
 	if(ayo_Q3 == 4) goto L_Find;
 	close;
 L_Find:
-	gmcommand "@emotion 0";
-	mes "^903535老人の言った通りだ！^000000";
-	mes "^FF0000北^000000^353515に向かった足跡発見！^000000";
-	mes "^353590誰か急いで駆け抜けたようだ。^000000";
+	emotion 0;
+	mes "^A52929老人の言った通りだ！^000000";
+	mes "^FF0000北^5A3110に向かった足跡発見！";
+	mes "誰か急いで駆け抜けたようだ。^000000";
 	set ayo_Q3,5;	//婚約クエストフラグ[5]セット
 	close;
 }
 
-ayo_dun01.gat,74,142,5	script	 #AyoDun1_8	111,1,1,{
-OnTouch:
+ayo_dun01.gat,74,142,0	script	 #AyoDun1_8	139,1,1,{
 	if(ayo_Q3 == 5) goto L_Find;
 	close;
 L_Find:
-	gmcommand "@emotion 5";
+	emotion 9;
 	mes "ここにも足跡が……";
-	mes "^FF0000東^000000^353515に向かった足跡発見！^000000";
+	mes "^FF0000東^5A3110に向かった足跡発見！^000000";
 	mes "よし、追跡しよう。";
 	set ayo_Q3,6;	//婚約指輪クエストフラグ[6]セット
 	close;
 }
 
-ayo_dun01.gat,244,257,5	script	 #AyoDun1_9	111,1,1,{
-OnTouch:
+ayo_dun01.gat,244,257,0	script	 #AyoDun1_9	139,1,1,{
 	if(ayo_Q3 == 6) goto L_Find;
 	close;
 L_Find:
-	gmcommand "@emotion 22";
-	mes "^FF0000ここから足跡が薄くなってる……^000000";
-	mes "^FF0000疲れているのか？^000000";
-	mes "^FF0000よし、もっと調べてみるか。^000000";
-	mes "^FF0000アーノンの足跡かもしれないし……^000000";
+	emotion 22;
+	mes "^8C1010ここから足跡が薄くなってる……";
+	mes "疲れているのか？";
+	mes "よし、もっと調べてみるか。";
+	mes "アーノンの足跡かもしれないし……^000000";
 	set ayo_Q3,7;	//婚約指輪クエストフラグ[7]セット
 	close;
 }
 
-ayo_dun01.gat,17,257,5	script	#AyoDun1_10 	111,1,1,{
-OnTouch:
+ayo_dun01.gat,17,257,0	script	#AyoDun1_10 	139,1,1,{
 	if(ayo_Q3 == 7) goto L_Find;
 	close;
 L_Find:
-	gmcommand "@emotion 5";
-	mes "^353515足跡を追って来たら^000000";
-	mes "^353515村の人が言っていた、神殿の^000000";
-	mes "^FF0000下層部へ続く入口まで来て^000000";
-	mes "^353515しまった。^000000";
+	emotion 5;
+	mes "^5A3110足跡を追って来たら";
+	mes "村の人が言っていた、神殿の";
+	mes "^FF0000下層部へ続く入口まで来て";
+	mes "^5A3110しまった。^000000";
 	mes "……あの中に間違いない。";
 	set ayo_Q3,8;	//婚約指輪クエストフラグ[8]セット
 	close;
 }
 
-ayo_dun02.gat,146,120,5	script	 #AyoDun2_2	111,1,1,{
-OnTouch:
+ayo_dun02.gat,146,120,0	script	 #AyoDun2_2	139,1,1,{
 	if(ayo_Q3 == 8) goto L_Find;
 	close;
 L_Find:
-	gmcommand "@emotion 0";
 	mes "やはりここにも跡がある。";
 	mes "^FF0000北^000000に行ったのか……";
 	mes "かなり危ない場所みたいなのに、";
@@ -2193,42 +2304,40 @@ L_Find:
 	close;
 }
 
-ayo_dun02.gat,146,120,5	script	#AyoDun2_3 	111,1,1,{
-OnTouch:
+ayo_dun02.gat,135,167,0	script	#AyoDun2_3 	139,1,1,{
 	if(ayo_Q3 == 9) goto L_Find;
 	close;
 L_Find:
-	gmcommand "@emotion 0";
-	mes "^353515足跡が続いている^000000";
+	emotion 0;
+	mes "^5A3110足跡が続いている^000000";
 	mes "お、あっちに何かある！";
 	next;
-	menu "無視しよう",-,"^353515調べよう^000000",L_M1_1;
-//↓データ未取得
-		mes "データなし";
+	menu "無視しよう",-,"^5A3110調べよう^000000",L_M1_1;
+		mes "放っておこう。";
+		mes "それより、足跡が消えてしまっている。";
+		mes "どうしよう……もう少し";
+		mes "捜し歩いてみるか。";
+		set ayo_Q3,10;	//婚約指輪クエストフラグ[10]セット
 		close;
-//ここまで↑
 	L_M1_1:	//調べよう
 		gmcommand "@emotion 23";
 		mes "^FF0000チューチュー!!^000000";
 		mes "^FF0000チューチューチュー!!^000000";
 		next;
-		gmcommand "@emotion 0";
-		mes "^903535うわぁ!!!!^000000";
-		mes "^903535ビックリした……はぁ、はぁ……^000000";
-		mes "^903535うん？これは……^000000";
-		mes "^903535西に向かう足跡が……^000000";
-		mes "^903535行ってみよう。^000000";
+		emotion 0;
+		mes "^5A3110うわぁ!!!!";
+		mes "ビックリした……はぁ、はぁ……";
+		mes "うん？これは……";
+		mes "西に向かう足跡が……";
+		mes "行ってみよう。^000000";
 		set ayo_Q3,10;	//婚約指輪クエストフラグ[10]セット
 		close;
-
 }
 
-ayo_dun02.gat,78,214,5	script	 #AyoDun2_4	111,1,1,{
-OnTouch:
+ayo_dun02.gat,77,213,0	script	 #AyoDun2_4	139,1,1,{
 	if(ayo_Q3 == 10) goto L_Find;
 	close;
 L_Find:
-	gmcommand "@emotion 0";
 	mes "かなり奥まで来てしまった……";
 	mes "どこまで続くんだろう……";
 	mes "疲れたなぁ……";
@@ -2236,12 +2345,11 @@ L_Find:
 	close;
 }
 
-ayo_dun02.gat,84,255,5	script	 #AyoDun2_5	111,1,1,{
-OnTouch:
+ayo_dun02.gat,86,254,0	script	 #AyoDun2_5	139,1,1,{
 	if(ayo_Q3 == 11) goto L_Find;
 	close;
 L_Find:
-	gmcommand "@emotion 0";
+	emotion 0;
 	mes "これは！　血?!";
 	mes "なんでこんな所に血が？";
 	mes "血の跡が^FF0000北^000000に点々と……";
@@ -2249,16 +2357,17 @@ L_Find:
 	close;
 }
 
-ayo_dun02.gat,92,262,5	script	 #AyoDun2_6	111,{
-	if(ayo_Q3 == 13) goto Q1X;
+ayo_dun02.gat,91,264,0	script	 #AyoDun2_6	111,2,2{
 	if(ayo_Q3 >= 14) goto L_Fin;
+	if(ayo_Q3 == 13) goto Q1X;
 	mes "- 大きな木の下に、うっそうとした -";
-	mes "- 草むらが茂っている。 -";
+	mes "- 草むらが茂っている。-";
 	close;
 OnTouch:
 	if(ayo_Q3 == 12) goto L_Find;
+	end;
 L_Find:
-	gmcommand "@emotion 0";
+	emotion 0;
 	mes "おや、これは？";
 	mes "微かだけど、血痕がある……";
 	mes "こんな所に血痕？";
@@ -2272,9 +2381,9 @@ Q1X:
 	mes "よし、調べてみよう。";
 	next;
 	mes "- 大きな木の下に、血がうっすら -";
-	mes "- ついた草むらが見える。 -";
+	mes "- ついた草むらが見える。-";
 	mes "- 草の倒れ方からみて、何かが -";
-	mes "- 通ったばかりのようだ。 -";
+	mes "- 通ったばかりのようだ。-";
 	next;
 	mes "["+strcharinfo(0)+"]";
 	mes "どうしようか？";
@@ -2282,19 +2391,21 @@ Q1X:
 	menu "叩く",L_Knock,"掘る",-;
 		mes "- 草むらを掘ろうとしたら、一部が -";
 		mes "- 簡単に崩れて、短く小さい悲鳴が -";
-		mes "- 聞こえた。 -";
+		mes "- 聞こえた。-";
 		next;
-		mes "["+strcharinfo(0)+"]";
-		mes "……あれ？空耳かな？";
-		mes "声が聞こえたと思ったんだけど";
-		mes "……う～ん。";
-		close;
-	L_Knock:
-		set @rand,rand(3);
-		if(@rand == 1) goto L_Success;
+		if(rand(5) == 0) goto L_Success2;
 		 else {
-			mes "- 草むらを力一杯叩くと -";
-			mes "- おびただしい土埃が舞い上がった！ -";
+			mes "["+strcharinfo(0)+"]";
+			mes "……あれ？空耳かな？";
+			mes "声が聞こえたと思ったんだけど";
+			mes "……う～ん。";
+			close;
+		 }
+	L_Knock:
+		if(rand(5) == 0) goto L_Success;
+		 else {
+			mes "-草むらを力一杯叩くと-";
+			mes "-おびただしい土埃が舞い上がった！-";
 			next;
 			mes "["+strcharinfo(0)+"]";
 			mes "げほ、げほ、げほ!!!!";
@@ -2316,21 +2427,19 @@ Q1X:
 		mes "- 土埃の中から、小柄な青年が -";
 		mes "- 現れた！ -";
 		next;
-//アーノン出現
-		gmcommand "@emotion 23";	//自キャラに出る
+		hideoffnpc "痩せた青年#ayo";
+		gmcommand "@emotion 23";
 		mes "[痩せた青年]";
 		mes "シューリ?! シューリか?!?!?!";
-		mes "痛い痛い痛い痛い痛い痛い痛い痛い!!!!!!";
+		mes "痛い痛い痛い痛い痛い痛い痛い!!!!!!";
 		mes "わあああああー、許してくれーー!!";
 		next;
 		menu "びっくりした！",-,"つかまえた！",L_M1_1;
 			mes "[痩せた青年]";
 			mes "え、僕が驚かせたの？";
 			close2;
-//アーノン消える
-			misceffect 16;
+			hideonnpc "痩せた青年#ayo";
 			end;
-			close;
 		L_M1_1:	//つかまえた！
 			mes "[痩せた青年]";
 			mes "わぁ、放して放して許してー!!!";
@@ -2340,14 +2449,32 @@ Q1X:
 			mes "と、とにかく！";
 			mes "いったいなんなのさ！";
 			close;
+		L_Success2:
+			hideoffnpc "痩せた青年#ayo";
+			mes "[痩せた青年]";
+			mes "うわ、うわうあうわ、";
+			mes "だ、だだだだだ、だれだ?!?!?";
+			close;
 L_Fin:
 	mes "- アーノンが隠れていた場所に -";
-	mes "- 小さな窪みが残っている。 -";
+	mes "- 小さな窪みが残っている。-";
 	mes "- どうやら隠れ家を移した後の -";
-	mes "- ようだ。 -";
+	mes "- ようだ。-";
+	close;
 }
 
-ayo_dun02.gat,93,262,5 script 痩せた青年 841,{
+ayo_dun02.gat,91,264,4 script 痩せた青年#ayo 841,{
+	if(ayo_Q3 == 13) goto Q1X;
+	mes "[痩せた青年]";
+	mes "何だ君は？";
+	mes "ここは危ないから早く帰れってば！";
+	close2;
+	hideonnpc "痩せた青年#ayo";
+	end;
+OnInit:
+	hideonnpc "痩せた青年#ayo";
+	end;
+Q1X:
 	mes "[痩せた青年]";
 	mes "……き、ききき、君は誰だ?!";
 	mes "ど、どどど、どうして僕の隠れ家を";
@@ -2373,8 +2500,7 @@ ayo_dun02.gat,93,262,5 script 痩せた青年 841,{
 		mes "は、ははは、は、早く隠れなきゃ。";
 		mes "シュ、シューリが、シューリがっ!!";
 		close2;
-//アーノン消える
-		misceffect 16;
+		hideonnpc "痩せた青年#ayo";
 		end;
 	L_M1_1:	//治療するよ
 		mes "[痩せた青年]";
@@ -2397,14 +2523,13 @@ ayo_dun02.gat,93,262,5 script 痩せた青年 841,{
 		mes "お、お願いです。僕のことは忘れて";
 		mes "ください！誰にも教えないでください！";
 		next;
-		gmcommand "@emotion 21";	//自キャラに出る
+		gmcommand "@emotion 21";
 		mes "["+strcharinfo(0)+"]";
 		mes "このまま放っておくのも";
 		mes "なんか悪いし、仕方ないな。";
 		mes "白ポーションでも持って出直すか。";
 		close2;
-//アーノン消える
-		misceffect 16;
+		hideonnpc "痩せた青年#ayo";
 		end;
 	L_Heal:
 		mes "["+strcharinfo(0)+"]";
@@ -2429,10 +2554,12 @@ ayo_dun02.gat,93,262,5 script 痩せた青年 841,{
 		mes "感謝します！えと、えと、ぼ、ぼぼぼ、";
 		mes "僕はこれで!!";
 		next;
+		disablenpc "痩せた青年#ayo";
 		mes "[アーノン]";
 		mes "だ、だだ、だだだ、ダメです！";
 		mes "せっかくここまで逃げて来たのに!!";
 		next;
+		enablenpc "痩せた青年#ayo";
 		mes "[アーノン]";
 		mes "シューリの話はしないで!!!!";
 		mes "ぼ、ぼぼぼ、僕は二度とシューリの";
@@ -2452,10 +2579,21 @@ ayo_dun02.gat,93,262,5 script 痩せた青年 841,{
 		mes "…………………………………";
 		next;
 		menu "逃げてばっかりじゃダメだ",L_Escape,"私に出来ることはある？",-;
-//↓データ未取得
-			mes "データなし";
-			close;
-//ここまで↑
+			mes "[アーノン]";
+			mes "も、もも、もちろんです！";
+			mes "僕がここに隠れていること、";
+			mes "秘密にしてください！";
+			mes "シューリには絶対に教えないで";
+			mes "ください！";
+			mes "もちろん、お礼はします！";
+			next;
+			mes "[アーノン]";
+			mes "え、どんなお礼が出来るって？";
+			mes "ええとですね、例えば……";
+			mes "この腕を、こう伸ばして……";
+			mes "このツボを押せば……";
+			next;
+			goto Q1Xa;
 		L_Escape:
 			mes "["+strcharinfo(0)+"]";
 			mes "世の中は、思い通りにならないことの";
@@ -2504,6 +2642,7 @@ ayo_dun02.gat,93,262,5 script 痩せた青年 841,{
 			mes "この腕を、こう伸ばして……";
 			mes "このツボを押せば……";
 			next;
+		Q1Xa:
 			mes "["+strcharinfo(0)+"]";
 			mes "ぎゃあああ痛い!!!!";
 			mes "な、なにをするんだー!!";
@@ -2518,11 +2657,20 @@ ayo_dun02.gat,93,262,5 script 痩せた青年 841,{
 			mes "- ドカンドカン、ギュムギュム -";
 			mes "- ゴリッ！ -";
 			next;
-			mes "- アーノンは体中の関節を外した後 -";
-			mes "- 一箇所一箇所丁寧に繋げていった。 -";
-			mes "- その後、全身マッサージされると -";
-			mes "- 体がスーっと軽くなって、疲れが -";
-			mes "消えていくのがわかった！";
+			if (BaseLevel < 50) set BASEEXP,BASEEXP+8909;
+			if ((BaseLevel >= 50) && (BaseLevel < 60)) set BASEEXP,BASEEXP+10050;
+			if ((BaseLevel >= 60) && (BaseLevel < 70)) set BASEEXP,BASEEXP+27411;
+			if ((BaseLevel >= 70) && (BaseLevel < 75)) set BASEEXP,BASEEXP+70757;
+			if ((BaseLevel >= 75) && (BaseLevel < 80)) set BASEEXP,BASEEXP+130246;
+			if ((BaseLevel >= 80) && (BaseLevel < 85)) set BASEEXP,BASEEXP+150340;
+			if ((BaseLevel >= 85) && (BaseLevel < 90)) set BASEEXP,BASEEXP+182052;
+			if (BaseLevel >= 90) set BASEEXP,BASEEXP+406786;
+			set ayo_Q3,14;	//婚約指輪クエストフラグ[14]セット
+			mes "-アーノンは体中の関節を外した後-";
+			mes "-一箇所一箇所丁寧に繋げていった。-";
+			mes "-その後、全身マッサージされると-";
+			mes "-体がスーっと軽くなって、疲れが-";
+			mes "-消えていくのがわかった！-";
 			next;
 			mes "["+strcharinfo(0)+"]";
 			mes "わぁ、体が軽い！";
@@ -2536,8 +2684,24 @@ ayo_dun02.gat,93,262,5 script 痩せた青年 841,{
 			mes "逃げられるんだ……でも念のためだ。";
 			mes "ここも引っ越すことにするよ。";
 			mes "じゃあね、ありがとうー！";
-//どれだけあがるか未取得
-//			set BASELEVEL,BASELEVEL + 0.5%;
-			set ayo_Q3,14;	//婚約指輪クエストフラグ[14]セット
-			close;
+			close2;
+			hideonnpc "痩せた青年#ayo";
+			end;
 }
+
+ayo_dun01.gat,26,26,0	script	AyoDunTrap	139,1,1,{
+	percentheal -100,0;
+}
+ayo_dun01.gat,26,27,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+ayo_dun01.gat,27,26,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+ayo_dun01.gat,27,27,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+
+ayo_dun01.gat,272,272,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+ayo_dun01.gat,272,273,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+ayo_dun01.gat,273,272,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+ayo_dun01.gat,273,273,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+
+ayo_dun01.gat,26,272,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+ayo_dun01.gat,26,273,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+ayo_dun01.gat,27,272,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1
+ayo_dun01.gat,27,273,0	duplicate(AyoDunTrap)	AyoDunTrap_	139,1,1

@@ -54,10 +54,10 @@ Lsn:	if (Upper == 1)	goto Lcantchange;
 	jobchange Job_SuperNovice;	goto Lend;
 Ltk:	if (Upper != 0 || Class!=Job_Novice)	goto Lcantchange;
 	jobchange Job_TaeKwonBoy;	goto Lend;
-Lgs:	if (Upper == 1)	goto Lcantchange;
+Lgs:	if (Upper != 0 || Class!=Job_Novice)	goto Lcantchange;
 	if (BaseLevel < 45) goto Lcantsnovi;
 	jobchange Job_Gunslinger;	goto Lend;
-Lnj:	if (Upper == 1)	goto Lcantchange;
+Lnj:	if (Upper != 0 || Class!=Job_Novice)	goto Lcantchange;
 	if (BaseLevel < 45) goto Lcantsnovi;
 	jobchange Job_Ninja;	goto Lend;
 //2-1

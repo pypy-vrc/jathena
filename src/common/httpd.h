@@ -9,6 +9,12 @@
 
 #include <time.h>
 
+#ifdef _WIN32
+#	include <windows.h>
+#else
+#	include <sys/types.h>
+#endif
+
 enum {
 	HTTPD_METHOD_UNKNOWN = 0, HTTPD_METHOD_GET , HTTPD_METHOD_POST
 };
@@ -27,9 +33,15 @@ struct httpd_session_data {
 	unsigned int tick;
 	unsigned char* url;
 	unsigned char* query;
+	unsigned char* content_type;
+	unsigned char* referer;
+	unsigned char* user_agent;
+	unsigned char* cookie;
+	int query_len;
 	unsigned char* auth;
 	unsigned char user[33];
 	unsigned char request_line[1024];
+	unsigned char* req_head[32];
 	struct httpd_access *access;
 	int auth_digest_stale;
 	unsigned int precond;
@@ -38,6 +50,15 @@ struct httpd_session_data {
 	int file_pos;
 	unsigned char* filename;
 	int range_start, range_end, inst_len;	// 範囲開始位置、終了位置、エンティティ全体のサイズ
+
+	int cgi_state;
+#ifdef _WIN32
+	HANDLE	cgi_hCIn, cgi_hPIn, cgi_hOut, cgi_hErr, cgi_hProcess;
+	DWORD cgi_dwProcessID;
+#else
+	int cgi_in, cgi_out, cgi_err;
+	pid_t cgi_cpid;
+#endif
 };
 
 void httpd_pages(const char* url,void(*httpd_func)(struct httpd_session_data* sd,const char* url));
@@ -53,7 +74,8 @@ void httpd_pages(const char* url,void(*httpd_func)(struct httpd_session_data* sd
 // 3. httpd_send_file を指定すると、httpd/ 以下にあるファイルを出力する。ファイルに
 //    空文字が指定された時は、index.htmlが指定されたものとみなされる。
 
-
+void httpd_erase_pages(const char* url);
+// 指定されたURL に対するコールバック関数を削除する
 
 char* httpd_get_value(struct httpd_session_data* sd,const char* val);
 

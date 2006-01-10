@@ -279,14 +279,14 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 	sc_count= status_get_sc_count(bl);
 
 	if(sc_count!=NULL && *sc_count>0){
-		if(sc_data[SC_ASSUMPTIO].timer != -1) { //アスムプティオ
+		if(sc_data[SC_ASSUMPTIO].timer != -1 && damage > 0) { //アスムプティオ
 			if(map[bl->m].flag.pvp || map[bl->m].flag.gvg)
 				damage=damage*2/3;
 			else
 				damage=damage/2;
 		}
 		
-		if (sc_data[SC_BASILICA].timer!=-1 && !(status_get_mode(src)&0x20))
+		if (sc_data[SC_BASILICA].timer!=-1 && !(status_get_mode(src)&0x20) && damage > 0)
 			damage = 0;
 
 		if (sc_data[SC_FOGWALL].timer!=-1 && damage>0 && flag&BF_WEAPON && flag&BF_LONG)
@@ -299,7 +299,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 			}
 		}
 
-		if (sc_data[SC_SAFETYWALL].timer!=-1 && damage>0 && flag&BF_WEAPON &&
+		if (sc_data[SC_SAFETYWALL].timer!=-1 && flag&BF_WEAPON &&
 					flag&BF_SHORT && skill_num != NPC_GUIDEDATTACK) {
 			// セーフティウォール
 			struct skill_unit *unit;
@@ -318,27 +318,27 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 			damage=0;
 		}
 
-		if(sc_data[SC_AETERNA].timer!=-1 && damage>0){	// レックスエーテルナ
+		if(sc_data[SC_AETERNA].timer!=-1 && damage>0 && skill_num!=PA_PRESSURE){	// レックスエーテルナ
 			damage<<=1;
 			status_change_end( bl,SC_AETERNA,-1 );
 		}
 
 		//属性場のダメージ増加
-		if(sc_data[SC_VOLCANO].timer!=-1){	// ボルケーノ
+		if(sc_data[SC_VOLCANO].timer!=-1 && damage>0){	// ボルケーノ
 			if(flag&BF_SKILL && skill_get_pl(skill_num)==3)
 				damage += damage*sc_data[SC_VOLCANO].val4/100;
 			else if(!flag&BF_SKILL && status_get_attack_element(bl)==3)
 				damage += damage*sc_data[SC_VOLCANO].val4/100;
 		}
 
-		if(sc_data[SC_VIOLENTGALE].timer!=-1){	// バイオレントゲイル
+		if(sc_data[SC_VIOLENTGALE].timer!=-1 && damage>0){	// バイオレントゲイル
 			if(flag&BF_SKILL && skill_get_pl(skill_num)==4)
 				damage += damage*sc_data[SC_VIOLENTGALE].val4/100;
 			else if(!flag&BF_SKILL && status_get_attack_element(bl)==4)
 				damage += damage*sc_data[SC_VIOLENTGALE].val4/100;
 		}
 
-		if(sc_data[SC_DELUGE].timer!=-1){	// デリュージ
+		if(sc_data[SC_DELUGE].timer!=-1 && damage>0){	// デリュージ
 			if(flag&BF_SKILL && skill_get_pl(skill_num)==1)
 				damage += damage*sc_data[SC_DELUGE].val4/100;
 			else if(!flag&BF_SKILL && status_get_attack_element(bl)==1)
@@ -433,7 +433,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 		struct guild *g;
 
 		if(class == 1288) {	// 1288:エンペリウム
-			if(flag&BF_SKILL)
+			if(flag&BF_SKILL && skill_num!=PA_PRESSURE)//プレッシャー
 				return 0;
 			if(src->type == BL_PC) {
 				g=guild_search(((struct map_session_data *)src)->status.guild_id);
@@ -450,7 +450,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 			else
 				return 0;
 		}
-		if(map[bl->m].flag.gvg){
+		if(map[bl->m].flag.gvg && skill_num!=PA_PRESSURE){
 			if(gc && bl->type == BL_MOB){	//defenseがあればダメージが減るらしい？
 				damage -= damage*(gc->defense/100)*(battle_config.castle_defense_rate/100);
 			}
@@ -464,11 +464,11 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 				damage = damage*battle_config.gvg_magic_damage_rate/100;
 			if(flag&BF_MISC)
 				damage=damage*battle_config.gvg_misc_damage_rate/100;
-			if(damage < 1) damage  = 1;
+			if(damage < 1) damage = (!battle_config.skill_min_damage && flag&BF_MAGIC && src->type==BL_PC)? 0: 1;
 		}
 		
 		//PK
-		if(map[bl->m].flag.pk && bl->type == BL_PC){
+		if(map[bl->m].flag.pk && bl->type == BL_PC && skill_num!=PA_PRESSURE){
 			if(flag&BF_WEAPON) {
 				if(flag&BF_SHORT)
 					damage=damage*battle_config.pk_short_damage_rate/100;
@@ -479,17 +479,13 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,int damage,i
 				damage = damage*battle_config.pk_magic_damage_rate/100;
 			if(flag&BF_MISC)
 				damage=damage*battle_config.pk_misc_damage_rate/100;
-			if(damage < 1) damage  = 1;
+			if(damage < 1) damage = (!battle_config.skill_min_damage && flag&BF_MAGIC && src->type==BL_PC)? 0: 1;
 		}
 	}
 
-	if(battle_config.skill_min_damage || flag&BF_MISC) {
-		if(div_ < 255) {
-			if(damage > 0 && damage < div_)
-				damage = div_;
-		}
-		else if(damage > 0 && damage < 3)
-			damage = 3;
+	if((battle_config.skill_min_damage || flag&BF_MISC)
+	   && damage > 0 && damage < div_) {
+		damage = div_;
 	}
 
 	if( md!=NULL && md->hp>0 && damage > 0 )	// 反撃などのMOBスキル判定
@@ -1235,32 +1231,18 @@ struct Damage battle_calc_weapon_attack(
 		}
 
 		if(src_sd && skill_num != MO_INVESTIGATE && t_def1 < 1000000) {
-			if(src_sd->def_ratio_atk_ele & (1<<t_ele) || src_sd->def_ratio_atk_race & (1<<t_race)) {
+			if( src_sd->def_ratio_atk_ele & (1<<t_ele) ||
+				src_sd->def_ratio_atk_race & ((1<<t_race) | ((t_mode&0x20)?(1<<10):(1<<11)))) {
 				damage = (damage * (t_def1 + t_def2))/100;
 				idef_flag = 1;
 			}
-			if(src_sd->def_ratio_atk_ele_ & (1<<t_ele) || src_sd->def_ratio_atk_race_ & (1<<t_race)) {
+			if( src_sd->def_ratio_atk_ele_ & (1<<t_ele) ||
+				src_sd->def_ratio_atk_race_ & ((1<<t_race) | ((t_mode&0x20)?(1<<10):(1<<11)))) {
 				damage2 = (damage2 * (t_def1 + t_def2))/100;
 				idef_flag_ = 1;
-			}
-			if(t_mode & 0x20) {
-				if(!idef_flag && src_sd->def_ratio_atk_race & (1<<10)) {
+				if(!idef_flag && battle_config.left_cardfix_to_right){
 					damage = (damage * (t_def1 + t_def2))/100;
 					idef_flag = 1;
-				}
-				if(!idef_flag_ && src_sd->def_ratio_atk_race_ & (1<<10)) {
-					damage2 = (damage2 * (t_def1 + t_def2))/100;
-					idef_flag_ = 1;
-				}
-			}
-			else {
-				if(!idef_flag && src_sd->def_ratio_atk_race & (1<<11)) {
-					damage = (damage * (t_def1 + t_def2))/100;
-					idef_flag = 1;
-				}
-				if(!idef_flag_ && src_sd->def_ratio_atk_race_ & (1<<11)) {
-					damage2 = (damage2 * (t_def1 + t_def2))/100;
-					idef_flag_ = 1;
 				}
 			}
 		}
@@ -1917,21 +1899,14 @@ struct Damage battle_calc_weapon_attack(
 				t_def = t_def2*8/10;
 				vitbonusmax = (t_vit/20)*(t_vit/20)-1;
 				if(src_sd) {
-					if(src_sd->ignore_def_ele & (1<<t_ele) || src_sd->ignore_def_race & (1<<t_race))
+					if( src_sd->ignore_def_ele & (1<<t_ele) ||
+						src_sd->ignore_def_race & ((1<<t_race) | ((t_mode&0x20)?(1<<10):(1<<11))))
 						idef_flag = 1;
-					if(src_sd->ignore_def_ele_ & (1<<t_ele) || src_sd->ignore_def_race_ & (1<<t_race))
+					if( src_sd->ignore_def_ele_ & (1<<t_ele) ||
+						src_sd->ignore_def_race_ & ((1<<t_race) | ((t_mode&0x20)?(1<<10):(1<<11)))) {
 						idef_flag_ = 1;
-					if(t_mode & 0x20) {
-						if(src_sd->ignore_def_race & (1<<10))
+						if(battle_config.left_cardfix_to_right)
 							idef_flag = 1;
-						if(src_sd->ignore_def_race_ & (1<<10))
-							idef_flag_ = 1;
-					}
-					else {
-						if(src_sd->ignore_def_race & (1<<11))
-							idef_flag = 1;
-						if(src_sd->ignore_def_race_ & (1<<11))
-							idef_flag_ = 1;
 					}
 				}
 
@@ -2039,7 +2014,7 @@ struct Damage battle_calc_weapon_attack(
 	}
 
 	// 回避修正
-	hitrate = (hitrate<5)?5:hitrate;
+	hitrate = (hitrate<battle_config.min_hitrate)?battle_config.min_hitrate:hitrate;
 	if(	hitrate < 1000000 && // 必中攻撃
 		(t_sc_data != NULL && (t_sc_data[SC_SLEEP].timer!=-1 ||	// 睡眠は必中
 		t_sc_data[SC_STAN].timer!=-1 ||		// スタンは必中
@@ -2357,9 +2332,9 @@ struct Damage battle_calc_weapon_attack(
 	}
 
 	//MobのModeに頑強フラグが立っているときの処理
-	if(t_mode&0x40){
+	if(t_mode&0x40 && skill_num!=PA_PRESSURE){
 		if(damage > 0)
-			damage = 1;
+			damage = (div_<255)? 1: 3; // 三段掌のみ3ダメージ
 		if(damage2 > 0)
 			damage2 = 1;
 	}
@@ -2368,7 +2343,7 @@ struct Damage battle_calc_weapon_attack(
 	if( target_sd && target_sd->special_state.no_weapon_damage &&(skill_num != CR_GRANDCROSS||skill_num !=NPC_DARKGRANDCROSS))
 		damage = damage2 = 0;
 
-	if((skill_num != CR_GRANDCROSS||skill_num !=NPC_DARKGRANDCROSS) && (damage > 0 || damage2 > 0) ) {
+	if(skill_num != CR_GRANDCROSS||skill_num !=NPC_DARKGRANDCROSS) {
 		if(damage2<1)		// ダメージ最終修正
 			damage=battle_calc_damage(src,target,damage,div_,skill_num,skill_lv,flag);
 		else if(damage<1)	// 右手がミス？
@@ -2528,6 +2503,7 @@ struct Damage battle_calc_magic_attack(
 			normalmagic_flag=0;
 			break;
 		case PR_SANCTUARY:	// サンクチュアリ
+			ele = 6;
 			damage = (skill_lv>6)?388:skill_lv*50;
 			normalmagic_flag=0;
 			blewcount|=0x10000;
@@ -2554,7 +2530,7 @@ struct Damage battle_calc_magic_attack(
 			normalmagic_flag=0;
 			break;
 
-//		case HW_NAPALMVULCAN:	// ナパームバルカン
+		case HW_NAPALMVULCAN:	// ナパームバルカン
 		case MG_NAPALMBEAT:	// ナパームビート（分散計算込み）
 			MATK_FIX(70+ skill_lv*10,100);
 			if(flag>0){
@@ -2694,8 +2670,8 @@ struct Damage battle_calc_magic_attack(
 				damage = (damage*(100-mdef1))/100 - mdef2;
 			}
 		}
-		if(damage<1)
-			damage=1;
+		if(damage<1) // プレイヤーの魔法スキルは1ダメージ保証無し
+			damage=(!battle_config.skill_min_damage && bl->type == BL_PC)?0:1;
 	}
 
 	if(sd) {
@@ -2761,16 +2737,20 @@ struct Damage battle_calc_magic_attack(
 			 damage=damage/2;	//反動は半分
 		}
 	}
-	div_=skill_get_num( skill_num,skill_lv );
 
 	if (skill_num==WZ_WATERBALL)
 		div_ = 1;
+	else
+		div_=skill_get_num( skill_num,skill_lv );
 
-	if(div_>1 && skill_num != WZ_VERMILION)
-		damage*=div_;
-
-	if(t_mode&0x40 && damage > 0)
-		damage = 1;
+	if(damage != 0) {
+	  if(t_mode&0x40) { // 草・きのこ等
+	    // ロードオブヴァーミリオンはノーダメージ。それ以外は連打数ダメージ
+	    damage = (!battle_config.skill_min_damage && skill_num == WZ_VERMILION)? 0: div_;
+	  }
+	  else if(div_>1 && skill_num != WZ_VERMILION)
+	    damage*=div_;
+	}
 
 	if( tsd && tsd->special_state.no_magic_damage )
 		damage=0;	// 黄金蟲カード（魔法ダメージ０)
@@ -2881,16 +2861,18 @@ struct Damage  battle_calc_misc_attack(
 	case HT_BLITZBEAT:	// ブリッツビート
 		if( sd==NULL || (skill = pc_checkskill(sd,HT_STEELCROW)) <= 0)
 			skill=0;
-		damage=(dex/10+int_/2+skill*6+40)*2;
+		damage=((int)dex/10 + (int)int_/2 + skill*3 + 40)*2;
 		if(flag > 1)
 			damage /= flag;
-		aflag |= (flag&~BF_RANGEMASK)|BF_LONG;
+		flag &= ~(BF_SKILLMASK|BF_RANGEMASK|BF_WEAPONMASK);
+		aflag = flag|(aflag&~BF_RANGEMASK)|BF_LONG;
 		break;
 
 	case TF_THROWSTONE:	// 石投げ
 		damage=50;
 		damagefix=0;
-		aflag |= (flag&~BF_RANGEMASK)|BF_LONG;
+		flag &= ~(BF_SKILLMASK|BF_RANGEMASK|BF_WEAPONMASK);
+		aflag = flag|(aflag&~BF_RANGEMASK)|BF_LONG;
 		break;
 
 	case BA_DISSONANCE:	// 不協和音
@@ -2924,13 +2906,10 @@ struct Damage  battle_calc_misc_attack(
 	case SN_FALCONASSAULT:			/* ファルコンアサルト */
 		if( sd==NULL || (skill = pc_checkskill(sd,HT_STEELCROW)) <= 0)
 			skill=0;
-		{
-			int skill_blitzbeat = pc_checkskill(sd,HT_BLITZBEAT);
-			if(skill_blitzbeat < 1) skill_blitzbeat = 1;
-			damage=(dex/10+int_/2+skill*6+40)*2*(150+skill_blitzbeat*70)/100*(150+skill_lv*70)/100;
-			if(sd && battle_config.allow_falconassault_elemet) ele = sd->atk_ele;
-		}
-		aflag |= (flag&~BF_RANGEMASK)|BF_LONG;
+		damage=(((int)dex/10+(int)int_/2+skill*3+40)*2*(150+skill_lv*70)/100)*5;
+		if(sd && battle_config.allow_falconassault_elemet) ele = sd->atk_ele;
+		flag &= ~(BF_WEAPONMASK|BF_RANGEMASK|BF_WEAPONMASK);
+		aflag = flag|(aflag&~BF_RANGEMASK)|BF_LONG;
 		break;
 	default:
 		damage = status_get_baseatk(bl);
@@ -2961,7 +2940,7 @@ struct Damage  battle_calc_misc_attack(
 		damage = div_;
 	}
 
-	if(status_get_mode(target)&0x40 && damage>0)
+	if(status_get_mode(target)&0x40 && damage>0) // 草・きのこ等
 		damage = 1;
 
 	// カード効果による特定スキルのダメージ増幅（その他のスキル）
@@ -4252,6 +4231,7 @@ int battle_config_read(const char *cfgName)
 		battle_config.natural_heal_weight_rate_icon=0;
 		battle_config.item_name_override_grffile=1;
 		battle_config.arrow_decrement=1;
+		battle_config.allow_any_weapon_autoblitz=0;
 		battle_config.max_aspd = 199;
 		battle_config.max_hp = 32500;
 		battle_config.max_sp = 32500;
@@ -4267,6 +4247,7 @@ int battle_config_read(const char *cfgName)
 		battle_config.undead_detect_type = 0;
 		battle_config.pc_auto_counter_type = 1;
 		battle_config.monster_auto_counter_type = 1;
+		battle_config.min_hitrate = 5;
 		battle_config.agi_penaly_type = 0;
 		battle_config.agi_penaly_count = 3;
 		battle_config.agi_penaly_num = 0;
@@ -4464,6 +4445,10 @@ int battle_config_read(const char *cfgName)
 		battle_config.baby_status_max  = 80;
 		battle_config.baby_hp_rate	   = 70;
 		battle_config.baby_sp_rate	   = 70;
+		battle_config.upper_hp_rate    =125;
+		battle_config.upper_sp_rate    =125;
+		battle_config.normal_hp_rate   =100;
+		battle_config.normal_sp_rate   =100;
 		battle_config.baby_weight_rate = 100;
 		battle_config.no_emergency_call = 1;
 		battle_config.save_am_pharmacy_success = 0;
@@ -4612,6 +4597,7 @@ int battle_config_read(const char *cfgName)
 			{ "natural_heal_weight_rate_icon",		&battle_config.natural_heal_weight_rate_icon		},
 			{ "item_name_override_grffile",			&battle_config.item_name_override_grffile			},
 			{ "arrow_decrement",					&battle_config.arrow_decrement						},
+			{ "allow_any_weapon_autoblitz",			&battle_config.allow_any_weapon_autoblitz			},
 			{ "max_aspd",							&battle_config.max_aspd								},
 			{ "max_hp",								&battle_config.max_hp								},
 			{ "max_sp",								&battle_config.max_sp								},
@@ -4627,6 +4613,7 @@ int battle_config_read(const char *cfgName)
 			{ "undead_detect_type",					&battle_config.undead_detect_type					},
 			{ "player_auto_counter_type",			&battle_config.pc_auto_counter_type					},
 			{ "monster_auto_counter_type",			&battle_config.monster_auto_counter_type			},
+			{ "min_hitrate",						&battle_config.min_hitrate							},
 			{ "agi_penaly_type",					&battle_config.agi_penaly_type						},
 			{ "agi_penaly_count",					&battle_config.agi_penaly_count						},
 			{ "agi_penaly_num",						&battle_config.agi_penaly_num						},
@@ -4825,6 +4812,10 @@ int battle_config_read(const char *cfgName)
 			{ "baby_status_max",					&battle_config.baby_status_max						},
 			{ "baby_hp_rate",						&battle_config.baby_hp_rate							},
 			{ "baby_sp_rate",						&battle_config.baby_sp_rate							},
+			{ "upper_hp_rate",						&battle_config.upper_hp_rate						},
+			{ "upper_sp_rate",						&battle_config.upper_sp_rate						},
+			{ "normal_hp_rate",						&battle_config.normal_hp_rate						},
+			{ "normal_sp_rate",						&battle_config.normal_sp_rate						},
 			{ "baby_weight_rate",					&battle_config.baby_weight_rate						},
 			{ "no_emergency_call",					&battle_config.no_emergency_call					},
 			{ "save_am_pharmacy_success",			&battle_config.save_am_pharmacy_success				},

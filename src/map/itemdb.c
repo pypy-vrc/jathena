@@ -1,4 +1,4 @@
-// $Id: itemdb.c,v 1.1.1.3 2005/11/30 00:06:10 running_pinata Exp $
+// $Id: itemdb.c,v 1.1.1.4 2006/01/10 09:36:23 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -936,9 +936,9 @@ static int itemdb_final(void *key,void *data,va_list ap)
 	nullpo_retr(0, id=data);
 
 	if(id->use_script)
-		free(id->use_script);
+		script_free_code(id->use_script);
 	if(id->equip_script)
-		free(id->equip_script);
+		script_free_code(id->equip_script);
 	free(id);
 
 	return 0;

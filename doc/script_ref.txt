@@ -240,13 +240,52 @@ AthenaNPCScript
 				$@	マップサーバー		一時的
 				#	アカウント		永続的
 				##	アカウント(全ワールド)	永続的
+				'	スクリプト		一時的(下記参照)
+				'@	スクリプト		一時的(下記参照)
 
 		つまり、普通の一時的な変数は@, 保存する必要のある変数は
 		プレフィックスなし、全てのキャラクターで共有すべき変数は $、
 		同一アカウントで共有すべき変数は # や ## を使用することになります。
 
+		プレフィックス' 系統は、スクリプト内部にスコープを持つ変数です。
+		他の変数と比べて、他のスクリプトと変数名の重複を気にせずに使用でき、
+		プレイヤーのアタッチなどに関係なく使用できるなどの利点が挙げられます。
+
+		' 変数はスクリプト依存の変数で、スクリプトの実行が終了しても値は
+		保存されます（サーバーの再起動でクリアされます）。callfunc命令を
+		用いた場合、呼び出し先の変数は呼び出し元とは関係ない別の変数に
+		なりますが、getarg()関数と組み合わせる事で、呼び出し先から呼び出し
+		元の値を操作出来ます。
+
+		function	script	func1	{
+			set 'var1, 'var1 + 1;			// func1::'var1 に１を加算
+			set getarg(0), getarg(0) + 1;	// func2::'var1 に１を加算
+		}
+		function	script	func2	{
+			callfunc "func1", 'var1;
+		}
+
+		'@変数は関数固有の変数で、callfunc, callsubが実行されるごとに
+		新たな領域が確保され、returnで戻ると元の値に戻ります。C 言語の
+		ローカル変数に似ているので、NPC 用の一時変数や、再帰処理に使用
+		出来ます。この変数もgetarg()関数を用いて呼び出し先から元の値を
+		操作出来ます。
+
+		function	script	func3	{
+			set '@n, rand(5);
+			if( '@n == 0 ) {
+				return ;
+			} else {
+				// '@n は他の変数と違い、callfunc先の変数は別物になるので、
+				// mes の結果が全て０になる現象は起きない。
+				callfunc "func3";
+			}
+			mes '@n;
+			return;
+		}
+
 		また、変数の型はポストフィックスにより指定します。
-		ただし、文字列型はキャラクター一時変数、および、
+		ただし、文字列型はキャラクター一時変数、スクリプト依存変数および、
 		永続的/一時的マップサーバー変数でのみ使用できます。
 		（プレフィックス @、$、$@ ）
 
@@ -274,7 +313,8 @@ AthenaNPCScript
 		配列の要素番号は0～127が指定できますが、番号0は同名の変数と
 		値を共有します。たとえば、hoge[0] と hoge は同じ変数です。
 
-		配列変数は一時的キャラクター変数、一時的/永続的マップサーバー変数で使用できます。
+		配列変数は一時的キャラクター変数、一時的/永続的マップサーバー変数、
+		およびスクリプト依存変数で使用できます。
 		変数の型は数値、文字列両方とも利用できます。
 
 	＊ラベル
@@ -633,9 +673,9 @@ AthenaNPCScript
 			viewpoint <type>,<x>,<y>,<id>,<color>;
 
 			type,x,y,id	数値
-			color		不明
+			color		数値
 
-			資料不足なので詳しい説明はできませんが、ミニMAPに点滅する点を表示、削除します。
+			ミニMAPに点滅する点を表示、削除します。
 			type:1,表示、2,削除
 
 		heal命令
@@ -768,9 +808,6 @@ AthenaNPCScript
 			<color>を指定した場合、その色でＧＭアナウンスします。
 			このとき色フラグは無視されます。
 
-　			※現在エリアフラグの0x00は未完成です。
-　　			　よってMAP鯖を分割してる場合は別鯖のMAPにマルチカラーアナウンスすることはできません。
-
 		killmonster命令
 			killmonster <gatname>[,<event>];
 
@@ -779,14 +816,16 @@ AthenaNPCScript
 
 			<gatname>に存在するモンスターをすべて殺します。
 			マップ名を"this"にすると、命令を実行したNPCのMAPを参照します。
-			<event>によって呼び出されたモンスターのみ殺すことも可能です。<event>をAllにするとそのマップにある一時的に召喚されたモンスターを全て殺します。
+			<event>によって呼び出されたモンスターのみ殺すことも可能です。
+			<event>をAllにするとそのマップにある一時的に召喚されたモンスターを全て殺します。
 
 		killmonsterall命令
 			killmonsterall <gatname>
 
 			gatname		文字列
 
-			<gatname>に存在するモンスターをすべて殺します。killmonsterとは違ってそのマップに始めから配置されていたモンスターまで全て殺すことができます。
+			<gatname>に存在するモンスターをすべて殺します。
+			killmonsterとは違ってそのマップに始めから配置されていたモンスターまで全て殺すことができます。
 			マップ名を"this"にすると、命令を実行したNPCのMAPを参照します。
 
 		areakillmonster命令
@@ -795,7 +834,8 @@ AthenaNPCScript
 			gatname		文字列
 			x0,y0,x1,y1		数値
 
-			<gatname>の、x0,y0を中心に、x1,y1の範囲に存在するモンスターをすべて殺します。そのマップに始めから配置されていたモンスターまで全て殺すことができます。
+			<gatname>の、x0,y0を中心に、x1,y1の範囲に存在するモンスターをすべて殺します。
+			そのマップに始めから配置されていたモンスターまで全て殺すことができます。
 			マップ名を"this"にすると、命令を実行したNPCのMAPを参照します。
 
 		addtimer命令
@@ -984,22 +1024,25 @@ AthenaNPCScript
 			<skilllv>を0にするとこでそのスキルを忘れさせることも可能です。
 			
 		waitingroom命令
-			waitingroom <title>,<limit>[,<event>[,<trigger>[,<zeny>,<lowlv>,<highlv>]]];
+			waitingroom <title>,<limit>[,<event>[,<trigger>[,<zeny>,<lowlv>,<highlv>,[<job>,<upper>]]]];
 
-			title		文字列
-			limit		数値
-			event		文字列、省略可
-			trigger		数値、省略可
-			zeny		数値、省略可 ┓
-			lowlv		数値、省略可 ┃ 制限条件、これを使う場合にはいずれも省略不可
-			highlv		数値、省略可 ┛
+			title			文字列
+			limit			数値
+			event			文字列、省略可
+			trigger			数値、省略可
+			zeny, lowlv, highlv	数値、省略可、利用する場合はいずれも必須
+			job, upper		数値、省略可、利用する場合はいずれも必須
 
 			<title>をタイトルとしてチャットルームを表示させます。
 			<trigger>を満たしたとき、<event>を動作させることが可能です。
 			<trigger>を省略すると<limit>の数値が使用されます。
 			所持金が<zeny>未満の場合はチャットルームに入場できません。
 			またBaseLvが<lowlv>より低い、あるいは<highlv>より高い場合もチャットルームに入場できません。
-			制限条件省略時には、<zeny>=0, <lowlv>=0, <highlv>=255が適用されます。
+			制限条件省略時には、<zeny>=0, <lowlv>=0, <highlv>=MAX_LEVEL が適用されます。
+
+			さらに<job>と<upper>を利用する場合、指定した職業と転生コードを満たすときのみ入場可能となります。
+			<job>はitem_db.txtのJOB値を、<upper>はitem_upper.txtの値を指定してください。
+			（手抜きのため<upper>は個別にかかりません。 eg.LKとBSのみという設定は不可）
 
 		delwaitingroom命令
 			delewaitingroom [<name>]
@@ -1205,6 +1248,11 @@ AthenaNPCScript
 			文字列に@コマンドを入れると、GMレベル99のキャラが実行したのと
 			同じ動作をします。
 
+		getusersname命令
+			getusersname;
+
+			接続者の名前を列挙します。@whoと似た関数です。
+
 		globalmes命令
 			globalmes <mes>[,<npcname>];
 
@@ -1259,6 +1307,14 @@ AthenaNPCScript
 			exp	数値
 
 			ギルドにexpの経験値を取得します。
+
+		getpartymember命令
+			getpartymember <n>;
+			
+			n		数値
+			
+			<n>で指定したIDを持つパーティーの人数を $@partymembercount に返します。
+			配列 $@partymembername$ にパーティメンバーの名前をセットします。
 
 		itemskill命令
 			itemskill <num1>,<num2>,<str>;
@@ -1436,6 +1492,35 @@ AthenaNPCScript
 			wedding;
 
 			結婚式のエフェクトを表示します
+
+		getinventorylist命令
+			getinventorylist;
+
+			現在アタッチされているプレイヤーの装備品含むアイテムデータを
+			配列変数@inventorylist_***にロードします。
+			以下変数の説明
+			@inventorylist_id : アイテムのID
+			@inventorylist_amount : アイテムの量
+			@inventorylist_equip : 装備している場合の装備箇所
+			@inventorylist_refine : アイテムの精錬値
+			@inventorylist_identify : アイテムの鑑定状態
+			@inventorylist_attribute : アイテムの破損の有無
+			@inventorylist_card1 : アイテムに挿しているカードデータ(1枚目)
+			@inventorylist_card2 : アイテムに挿しているカードデータ(2枚目)
+			@inventorylist_card3 : アイテムに挿しているカードデータ(3枚目)
+			@inventorylist_card4 : アイテムに挿しているカードデータ(4枚目)
+			@inventorylist_count : プレイヤーの所持している総アイテム種類数
+
+		getskilllist命令
+			getskilllist;
+
+			現在アタッチされているプレイヤーのスキルデータを
+			配列変数@skilllist_***にロードします。
+			以下変数の説明
+			@skilllist_id : スキルのID
+			@skilllist_lv : スキルの最大レベル
+			@skilllist_flag : スキルの種別フラグ
+			@skilllist_count : プレイヤーの覚えているスキルの最大数
 
 		clearitem命令
 			clearitem;
@@ -1655,14 +1740,6 @@ AthenaNPCScript
 			キャラクタ名が無い場合charサーバに名前を問い合わせして、
 			next;等の時間を置いた後に、もう一度スクリプトを呼び出す事で、名前を返してきます。
 
-		getpartymember関数
-			getpartymember(<n>)
-			
-			n		数値
-			
-			<n>で指定したIDを持つパーティーの人数を $@partymembercount に返します。
-			配列 $@partymembername$ にパーティメンバーの名前をセットします。
-
 		getpartyname関数
 			getpartyname(<n>)
 
@@ -1729,38 +1806,11 @@ AthenaNPCScript
 			num=6	チャットルームの必要Zeny（数値）
 			num=7	チャットルームの下限BaseLv（数値）
 			num=8	チャットルームの上限BaseLv（数値）
+			num=9	チャットルームの入場可能職業（数値）
+			num=10	チャットルームの入場可能転生コード（数値）
 			num=16	チャットルームのイベント名（文字列）
 			num=32	チャットルームが満員かどうか（数値）
 			num=33	チャットルームでイベントが起こる人数かどうか（数値）
-
-		getinventorylist関数
-			getinventorylist(引数無し)
-
-			現在アタッチされているプレイヤーの装備品含むアイテムデータを
-			配列変数@inventorylist_***にロードします。
-			以下変数の説明
-			@inventorylist_id : アイテムのID
-			@inventorylist_amount : アイテムの量
-			@inventorylist_equip : 装備している場合の装備箇所
-			@inventorylist_refine : アイテムの精錬値
-			@inventorylist_identify : アイテムの鑑定状態
-			@inventorylist_attribute : アイテムの破損の有無
-			@inventorylist_card1 : アイテムに挿しているカードデータ(1枚目)
-			@inventorylist_card2 : アイテムに挿しているカードデータ(2枚目)
-			@inventorylist_card3 : アイテムに挿しているカードデータ(3枚目)
-			@inventorylist_card4 : アイテムに挿しているカードデータ(4枚目)
-			@inventorylist_count : プレイヤーの所持している総アイテム種類数
-
-		getskilllist関数
-			getskilllist(引数無し)
-
-			現在アタッチされているプレイヤーのスキルデータを
-			配列変数@skilllist_***にロードします。
-			以下変数の説明
-			@skilllist_id : スキルのID
-			@skilllist_lv : スキルの最大レベル
-			@skilllist_flag : スキルの種別フラグ
-			@skilllist_count : プレイヤーの覚えているスキルの最大数
 
 		getnpctimer関数
 			getnpctimer(<num>[,<name>])
@@ -1828,6 +1878,21 @@ AthenaNPCScript
 			<例> 配列@hogeが 1,2,3,4,5だとすると
 				getelementofarray(@hoge,0) = 1
 
+		getvariableofnpc 関数
+			getvariableofnpc(<variable>, <npc name>)
+
+			variable	' 変数名
+			npc name	NPC 名
+
+			指定したNPC が持つ' 変数を返します（参照渡し）。この関数は
+			getelementofarray関数と組み合わせて使用することが出来ます。
+
+			<例> NPC "てすと"固有の変数'flag[1]を2に書き換える方法
+
+			[1]: set getelementofarray(getvariableofnpc('flag,"てすと"),1), 2;
+			[2]: set getvariableofnpc(getelementofarray('flag,1),"てすと"), 2;
+			[3]: set getvariableofnpc('flag[1],"てすと"), 2;
+
 		callsub関数
 			callsub(<label>[,<arg0>[,<arg1>…]])
 
@@ -1847,11 +1912,6 @@ AthenaNPCScript
 			数値は0からです。
 			<例> callsub L_SUB01,"hoge",500,999; と呼ばれた場合、
 			     getarg(0)="hoge", getarg(1)=500, getarg(2)=999 になります。
-
-		getusersname関数
-			getusersname
-
-			接続者の名前を、putstrで列挙します。@whoと似た関数です。
 
 		dispbottom関数
 			dispbottom(<message>)
@@ -1883,9 +1943,9 @@ AthenaNPCScript
 			
 			num		数字
 			
-			numで指定したidを持つアイテムを装備しているか調べます。
-			装備品、カードも判定します。
-			見つかった場合1を。見つからなかった場合は0を返します。
+			numで指定したidを持つアイテムを装備している個数を返します。
+			装備品に挿入されているカードも判定します。
+			見つからなかった場合は0を返します。
 
 		select関数
 			select(<string1>[,<string2>,<string3>...])
@@ -2162,12 +2222,18 @@ AthenaNPCScript
 			値は不定となります。
 
 		checkcart関数
+			checkcart(0)
+
 			カートを所持していたら１を、そうでなければ０を返します
 
 		checkfalcon関数
+			checkfalcon(0)
+
 			鷲といっしょにいたら１を、そうでなければ０を返します
 
 		checkriding関数
+			checkriding(0)
+
 			ペコペコに乗っていたいら１を、そうでなければ０を返します
 
 		adoption関数
@@ -2193,7 +2259,7 @@ AthenaNPCScript
 			指定した文字列で NPCの職位を変更します.
 
 		sleep2 関数
-			sleep2 <ms>;
+			sleep2(<ms>)
 			
 			ms		待機時間(ms)
 
@@ -2202,7 +2268,7 @@ AthenaNPCScript
 			注意：この関数の実行中は、プレイヤーの行動に制限を受けることがあります。
 
 		sc_ison 関数
-			sc_ison <type>
+			sc_ison(<type>)
 
 			type	状態異常
 

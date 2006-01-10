@@ -474,7 +474,7 @@ int clif_send_sub(struct block_list *bl,va_list ap)
 
 	src_option = status_get_option(src_bl);
 	//看破
-	if(src_option && bl != src_bl&&
+	if(src_option && bl != src_bl && ((*src_option)&6) &&
 		(sd->sc_data[SC_TIGEREYE].timer!=-1 || sd->infinite_tigereye || sd->race==4 || sd->race==6)
 		&&(src_bl->type==BL_PC || src_bl->type==BL_MOB || src_bl->type==BL_PET) )
 	{
@@ -483,15 +483,22 @@ int clif_send_sub(struct block_list *bl,va_list ap)
 		{
 			case 0x119:
 			case 0x229:
-				WBUFW(buf,10) &= ~6;
+				WBUFW(buf,6)  =  1;
+				WBUFW(buf,10) &=~6;
 				break;
 
 #if PACKETVER < 4
 			case 0x78;
+			case 0x79;
+			case 0x7b;
+				WBUFW(buf,8)  =  1;
 				WBUFW(buf,12) &=~6;
 				break;
 #else
+			case 0x1d8:
+			case 0x1d9:
 			case 0x1da:
+				WBUFW(buf,8)  =  1;
 				WBUFW(buf,12) &=~6;
 				break;
 #endif
@@ -3028,7 +3035,6 @@ int clif_changeoption(struct block_list* bl)
 		WBUFB(buf,12) = 0;	// ??
 		WBUFB(buf,13) = 0;	// ??
 		WBUFB(buf,14) = 0;	// ??
-
 		clif_send(buf,packet_db[0x229].len,bl,AREA);
 	}else{
 		WBUFW(buf,0) = 0x119;
@@ -3333,9 +3339,7 @@ int clif_tradestart(struct map_session_data *sd,int type)
 	struct map_session_data *target_sd;
 
 	nullpo_retr(0, sd);
-
-	if((target_sd=map_id2sd(sd->trade_partner)) == NULL)
-		return -1;
+	target_sd = map_id2sd(sd->trade_partner);
 
 	fd=sd->fd;
 #if PACKETVER < 6
@@ -3345,8 +3349,8 @@ int clif_tradestart(struct map_session_data *sd,int type)
 #else
 	WFIFOW(fd,0)=0x1f5;
 	WFIFOB(fd,2)=type;
-	WFIFOL(fd,3)=target_sd->status.char_id;	//良く分からないからとりあえずchar_id
-	WFIFOW(fd,7)=target_sd->status.base_level;
+	WFIFOL(fd,3)=(target_sd!=NULL)?target_sd->status.char_id:0;	//良く分からないからとりあえずchar_id
+	WFIFOW(fd,7)=(target_sd!=NULL)?target_sd->status.base_level:0;
 	WFIFOSET(fd,packet_db[0x1f5].len);
 #endif
 	return 0;
@@ -4212,10 +4216,12 @@ int clif_skillinfo(struct map_session_data *sd,int skillid,int type,int range)
 int clif_skillinfoblock(struct map_session_data *sd)
 {
 	int fd;
-	int i,c,len=4,id,range,skill_lv;
+	int i,c,len=4,id,range,skill_lv,tk_ranker_bonus=0;
 
 	nullpo_retr(0, sd);
-
+	if(sd->status.class==PC_CLASS_TK && pc_checkskill2(sd,TK_MISSION)>0 && sd->status.base_level>=90 &&
+			sd->status.skill_point==0 && ranking_get_pc_rank(sd,RK_TAEKWON)>0)
+		tk_ranker_bonus=1;
 	fd=sd->fd;
 	WFIFOW(fd,0)=0x10f;
 	for ( i = c = 0; i < MAX_SKILL; i++){
@@ -4223,7 +4229,9 @@ int clif_skillinfoblock(struct map_session_data *sd)
 			WFIFOW(fd,len  ) = id;
 			WFIFOW(fd,len+2) = skill_get_inf(id);
 			WFIFOW(fd,len+4) = 0;
-			if(i==sd->cloneskill_id)
+			if(tk_ranker_bonus)
+				skill_lv = skill_get_max(id);
+			else if(i==sd->cloneskill_id)
 				skill_lv = sd->status.skill[i].lv>sd->cloneskill_lv?sd->status.skill[i].lv:sd->cloneskill_lv;
 			else
 				skill_lv = sd->status.skill[i].lv;
@@ -8043,30 +8051,10 @@ void clif_parse_Restart(int fd,struct map_session_data *sd, int cmd)
 			WFIFOSET(fd,packet_db[0x18b].len);
 			return;
 		}
-		if(sd->status.pet_id && sd->pd) {
-			pet_lootitem_drop(sd->pd,sd);
-			unit_remove_map(&sd->pd->bl, 0);
-			if(sd->pet.intimate <= 0) {
-				intif_delete_petdata(sd->status.pet_id);
-				sd->status.pet_id = 0;
-				sd->pd = NULL;
-				sd->petDB = NULL;
-			}
-			else
-				intif_save_petdata(sd->status.account_id,&sd->pet);
-		}
-		friend_send_online( sd, 1 );			// 友達リストのログアウトメッセージ送信
-		party_send_logout(sd);					// パーティのログアウトメッセージ送信
-		guild_send_memberinfoshort(sd,0);		// ギルドのログアウトメッセージ送信
-		status_change_clear(&sd->bl,1);			// ステータス異常を解除する
-		skill_stop_dancing(&sd->bl,1);			// ダンス/演奏中断
-		pc_cleareventtimer(sd);					// イベントタイマを破棄する
-		pc_delspiritball(sd,sd->spiritball,1);	// 気功削除
-		unit_remove_map(&sd->bl,0);
+		if( sd->pd )
+			unit_free( &sd->pd->bl, 0);
+		unit_free(&sd->bl, 0);
 		chrif_save(sd);
-		sd->state.waitingdisconnect = 1;
-		storage_storage_save(sd);
-		storage_delete(sd->status.account_id);
 		chrif_charselectreq(sd);
 		break;
 	}
@@ -8396,7 +8384,7 @@ void clif_parse_ChatRoomStatusChange(int fd,struct map_session_data *sd, int cmd
  */
 void clif_parse_ChangeChatOwner(int fd,struct map_session_data *sd, int cmd)
 {
-	chat_changechatowner(sd,RFIFOP(fd,GETPACKETPOS(cmd,0)));
+	chat_changechatowner(sd,RFIFOP(fd,GETPACKETPOS(cmd,1)));
 }
 
 /*==========================================
@@ -10132,7 +10120,7 @@ int do_init_clif(void)
 	set_defaultparse(clif_parse);
 	set_sock_destruct(clif_disconnect);
 	for(i=0;i<10;i++){
-		if((map_fd=make_listen_port(map_port)))
+		if((map_fd=make_listen_port(map_port, 0)))
 			break;
 #ifdef _WIN32
 		Sleep(20);

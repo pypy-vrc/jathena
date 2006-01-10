@@ -1,4 +1,4 @@
-// $Id: socket.c,v 1.1.1.3 2005/11/30 00:05:42 running_pinata Exp $
+// $Id: socket.c,v 1.1.1.4 2006/01/10 09:35:52 running_pinata Exp $
 // original : core.c 2003/02/26 18:03:12 Rev 1.7
 
 #include <stdio.h>
@@ -56,6 +56,8 @@ void socket_enable_httpd( int flag ){ if( flag>=0 ) httpd_enable = flag; }
 
 static int socket_ctrl_panel_httpd = 1;
 void socket_enable_ctrl_panel_httpd( int flag ){ socket_ctrl_panel_httpd = flag; }
+static char socket_ctrl_panel_url[256]="/socketctrl";
+const char* get_socket_ctrl_panel_url(void) { return socket_ctrl_panel_url; }
 
 static int unauth_timeout = 10*1000;
 static int auth_timeout = 10*60*1000;
@@ -273,6 +275,7 @@ static int connect_client(int listen_fd)
 	session[fd]->rlr_tick = gettick();
 	session[fd]->rlr_bytes= 0;
 	session[fd]->rlr_disc = 0;
+	session[fd]->server_port = session[listen_fd]->server_port;
 	
 	session[fd]->func_destruct = default_func_destruct;
 	realloc_fifo(fd,rfifo_size,wfifo_size);
@@ -283,7 +286,7 @@ static int connect_client(int listen_fd)
   return fd;
 }
 
-int make_listen_port(int port)
+int make_listen_port(int port,unsigned long sip)
 {
 	struct sockaddr_in server_address;
 	int fd;
@@ -313,7 +316,7 @@ int make_listen_port(int port)
 #endif
 
 	server_address.sin_family      = AF_INET;
-	server_address.sin_addr.s_addr = htonl( INADDR_ANY );
+	server_address.sin_addr.s_addr = sip;		// 1710:INADDR_ANYから変更
 	server_address.sin_port        = htons((unsigned short)port);
 
 	result = bind(fd, (struct sockaddr*)&server_address, sizeof(server_address));
@@ -341,6 +344,7 @@ int make_listen_port(int port)
 	session[fd] = (struct socket_data *)aCalloc(1,sizeof(*session[fd]));
 	session[fd]->func_recv = connect_client;
 	session[fd]->auth = -1;
+	session[fd]->server_port = port;
 #ifdef _WIN32
 	session[fd]->socket = sock;
 #endif
@@ -348,6 +352,7 @@ int make_listen_port(int port)
 
 	return fd;
 }
+
 
 int make_connection(long ip,int port)
 {
@@ -487,6 +492,9 @@ int WFIFORESERVE(int fd,int len)
 		if( s->auth >= 0 && new_size > send_limit_buffer_size )
 		{
 			printf("socket: %d wdata (%d) exceed limited size.\n", fd, new_size );
+			s->wdata_pos = s->wdata_size = s->wdata;	// データを消してとりあえず空きを作る
+			// 空きスペースが足りないかもしれないので、再確保
+			realloc_fifo(fd, 0, len);
 			s->eof = 1;
 			return 0;
 		}
@@ -500,11 +508,14 @@ int WFIFORESERVE(int fd,int len)
 int WFIFOSET(int fd,int len)
 {
 	struct socket_data *s = session[fd];
-	if(fd <= 0) return 0; 
+	if(fd <= 0 || s->eof ) return 0; 
 	if( s->wdata_size + len <= s->max_wdata ) {
 		s->wdata_size += len;
 	} else {
 		printf("socket: %d wdata lost !!\n",fd);
+		s->wdata_pos = s->wdata_size = s->wdata;
+		s->eof = 1;
+		return 0;	// アクセス違反してるはずなのでサーバー落としたほうがいいかも？
 	}
 	WFIFORESERVE( fd, s->wdata_size - s->wdata );
 	return 0;
@@ -1143,9 +1154,11 @@ int socket_config_read2( const char *filename ) {
 		{
 			httpd_config_read( w2 );
 		}
-		else if(!strcmpi(w1,"socket_ctrl_panel"))
+		else if(!strcmpi(w1,"socket_ctrl_panel_url"))
 		{
-			socket_enable_ctrl_panel_httpd( atoi(w2) );
+			httpd_erase_pages( socket_ctrl_panel_url );
+			strcpy( socket_ctrl_panel_url, w2 );
+			httpd_pages( socket_ctrl_panel_url, socket_httpd_page );
 		}
 		else if(!strcmpi(w1,"import"))
 		{
@@ -1161,6 +1174,7 @@ int socket_config_read2( const char *filename ) {
 				list[] = 
 			{
 				{	"debug",						&access_debug				}, 
+				{	"socket_ctrl_panel",			&socket_ctrl_panel_httpd	}, 
 				{	"ddos_interval",				&ddos_interval				}, 
 				{	"ddos_count",					&ddos_count					}, 
 				{	"ddos_autoreset",				&ddos_autoreset				}, 
@@ -1274,10 +1288,12 @@ static void socket_httpd_page_header( struct httpd_session_data *sd )
 // ------------------------------------------
 static void socket_httpd_page_footer( int fd )
 {
-	socket_httpd_page_send( fd, 
-		"<p><a href=\"/\">[site top]</a>"
-		"<a href=\"/socketctrl\">[socket control panel top]</a></p>\n"
-		"</body>\n</html>\n" );
+	int len;
+	len = sprintf( WFIFOP(fd,0),
+				"<p><a href=\"/\">[site top]</a>"
+				"<a href=\"%s\">[socket control panel top]</a></p>\n"
+				"</body>\n</html>\n", socket_ctrl_panel_url );
+	WFIFOSET( fd, len );
 }
 
 // ==========================================
@@ -1360,13 +1376,15 @@ static void socket_httpd_page_dos_attack( struct httpd_session_data *sd, const c
 	socket_httpd_page_header( sd );
 
 	// DoS アタックのブロックリスト
-	socket_httpd_page_send( sd->fd,
+	len = sprintf( WFIFOP(fd,0 ),
 		"<h2>Anti-DoS Attack : blocking IP address list</h2>\n"
-		"<form action=\"/socketctrl\" method=\"post\">\n"
+		"<form action=\"%s\" method=\"post\">\n"
 		"<input type=\"hidden\" name=\"mode\" value=\"dosattack\">\n"
 		"<input type=\"hidden\" name=\"dosdelete\" value=\"1\">\n"
 		"<table border=1><tr><th>IP address</th><th>remain(sec.)</th>"
-		"<th><input type=\"submit\" value=\"delete\"></th></tr>\n" );
+		"<th><input type=\"submit\" value=\"delete\"></th></tr>\n", socket_ctrl_panel_url );
+	WFIFOSET( fd, len );
+	
 	for( i=0, n=0; i<0x10000; i++ )
 	{
 		struct _connect_history *hist = connect_history[i];
@@ -1389,7 +1407,7 @@ static void socket_httpd_page_dos_attack( struct httpd_session_data *sd, const c
 			hist = hist->next;
 		}
 	}
-	len = sprintf( WFIFOP(fd,0), "</table>\n%d ip(s) blocking... </form>\n", n );
+	len = sprintf( WFIFOP(fd,0), "</table>\nblocking %d ip(s) ... </form>\n", n );
 	WFIFOSET( fd, len );
 	
 	socket_httpd_page_footer( sd->fd );
@@ -1429,14 +1447,15 @@ static void socket_httpd_page_connection( struct httpd_session_data *sd, const c
 	
 	socket_httpd_page_header( sd );
 
-	socket_httpd_page_send( sd->fd,
+	len = sprintf( WFIFOP(fd,0),
 		"<h2>Connection list</h2>\n"
-		"<form action=\"/socketctrl\" method=\"post\">"
+		"<form action=\"%s\" method=\"post\">"
 		"<input type=\"hidden\" name=\"mode\" value=\"connection\">\n"
 		"<input type=\"hidden\" name=\"disconnect\" value=\"1\">\n"
 		"<table border=1>\n"
 		"<tr><th>IP</th><th>usage</th><th>user</th><th>status</th>"
-		"<th><input type=\"submit\" value=\"disconnect\"></th></tr>\n" );
+		"<th><input type=\"submit\" value=\"disconnect\"></th></tr>\n", socket_ctrl_panel_url );
+	WFIFOSET( fd, len );
 
 	for( i=1, n=0; i<fd_max; i++){
 		struct socket_data *sd = session[i];
@@ -1487,7 +1506,7 @@ static void socket_httpd_page_connection( struct httpd_session_data *sd, const c
 // socket コントロールパネル（do_init_httpd で httpd に登録される）
 void socket_httpd_page(struct httpd_session_data* sd,const char* url)
 {
-	int i;
+	int i, len;
 	char *p;
 	
 	struct
@@ -1521,12 +1540,13 @@ void socket_httpd_page(struct httpd_session_data* sd,const char* url)
 	
 	socket_httpd_page_header( sd );
 	
-	socket_httpd_page_send( sd->fd,
+	len = sprintf( WFIFOP( sd->fd, 0),
 		"<ul>\n"
-		"<li><a href=\"/socketctrl?mode=access\">View Access Control Settings</a>\n"
-		"<li><a href=\"/socketctrl?mode=dosattack\">Anti-DoS Attack Status</a>\n"
-		"<li><a href=\"/socketctrl?mode=connection\">Connection Status</a>\n"
-		"</ul>\n" );
+		"<li><a href=\"%s?mode=access\">View Access Control Settings</a>\n"
+		"<li><a href=\"%s?mode=dosattack\">Anti-DoS Attack Status</a>\n"
+		"<li><a href=\"%s?mode=connection\">Connection Status</a>\n"
+		"</ul>\n", socket_ctrl_panel_url, socket_ctrl_panel_url, socket_ctrl_panel_url );
+	WFIFOSET( sd->fd, len );
 	
 	socket_httpd_page_footer( sd->fd );
 }

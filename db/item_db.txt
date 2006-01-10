@@ -537,7 +537,7 @@
 1234,Moonlight_Sword,月光剣,4,20,,700,50,,1,0,136273646,2,2,4,36,1,1,{},{ bonus2 bSPDrainValue,100,3; bonus bMaxSPrate,10; }
 1235,Azoth,アゾート,4,20,,700,110,,1,0,262144,2,2,4,36,1,1,{},{ bonus bMobClassChange,100; }
 1236,Sucsamad,スクサマッド,4,20,,800,140,,1,0,136273646,2,2,4,36,1,1,{},{ bonus2 bAddEle,2,10; bonus2 bAddEle,4,10; bonus bUnbreakableWeapon,0; }
-1237,Grimtooth_,オーガトゥース,4,20,,800,180,,1,0,136273646,2,2,4,36,1,1,{},{ bonus bFlee,10; bonus bFlee2,5; bonus bDefRate,-50; bonus bDef2Rate,-50; }
+1237,Grimtooth_,オーガトゥース,4,20,,800,180,,1,0,136273646,2,2,4,36,1,1,{},{ bonus bFlee,10; bonus bFlee2,5; if(equippeditem(1237)<2) { bonus bDefRate,-50; bonus bDef2Rate,-50; } else { bonus bDefRate,-37; bonus bDef2Rate,-37; } }
 1238,Zeny_Knife,ゼニーナイフ,4,20,,1200,64,,1,0,136273646,2,2,3,70,1,1,{},{ bonus bGetZenyNum,100; }
 1239,Poison_Knife,ポイズンナイフ,4,20,,800,64,,1,0,136273646,2,2,3,65,1,1,{},{ bonus bAtkEle,5; bonus2 bAddEff,Eff_Poison,30; }
 1240,Princess_Knife,プリンセスナイフ,4,20,,400,84,,1,0,136273646,2,2,4,1,1,1,{},{ bonus bStr,1; bonus bAgi,1; bonus bVit,1; bonus bInt,1; bonus bDex,1; bonus bLuk,1; }

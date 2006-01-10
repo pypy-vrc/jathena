@@ -294,7 +294,7 @@ int pet_return_egg(struct map_session_data *sd)
 	if(sd->status.pet_id && sd->pd) {
 		// ルートしたItemを落とさせる
 		pet_lootitem_drop(sd->pd,sd);
-		unit_remove_map(&sd->pd->bl,0);
+		unit_free(&sd->pd->bl,0);
 		sd->status.pet_id = 0;
 		sd->pd = NULL;
 
@@ -949,7 +949,7 @@ static int pet_ai_sub_hard(struct pet_data *pd,unsigned int tick)
 	}
 	else {
 		if(battle_config.pet_leave){	// 新密度0で即刻消えるか
-			unit_remove_map(&sd->pd->bl,0);
+			unit_free(&sd->pd->bl,0);
 			sd->status.pet_id = 0;
 			sd->pd = NULL;
 			intif_delete_petdata(sd->pet.pet_id);
@@ -1212,7 +1212,7 @@ int do_final_pet(void) {
 	int i;
 	for(i = 0;i < MAX_PET_DB; i++) {
 		if(pet_db[i].script) {
-			free(pet_db[i].script);
+			script_free_code(pet_db[i].script);
 		}
 	}
 	return 0;

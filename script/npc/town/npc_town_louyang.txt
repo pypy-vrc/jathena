@@ -523,56 +523,56 @@ lou_fild01.gat,195,177,4	script	クエン ホ	819,{
 	mes "本当に何考えてるのかわからないよ!!";
 	next;
 	menu "あの店？",-,"無視する",L_CANCEL1;
-		mes "[クエン ホ]";
-		mes "町の東に池があって、その上に";
-		mes "建てられた大きいレストランが";
-		mes "あるんだ。";
-		mes "けどね。";
-		next;
-		mes "[クエン ホ]";
-		mes "ただ古くて、ちょこっとおいしいって";
-		mes "理由だけで凄く高い値段で";
-		mes "料理を出してるんだよ。";
-		next;
-		mes "[クエン ホ]";
-		mes "町を愛する僕として、";
-		mes "それは絶対に許すことができない!!";
-		mes "でも……あの店の人は僕の顔を";
-		mes "知ってるから、下手に動けないんだ……";
-		next;
-		mes "[クエン ホ]";
-		mes "この前も、あの怖いおじさんに";
-		mes "見つかりそうになっちゃって……";
-		mes "まったく……ぶつぶつ……";
-		mes "あ、そうだ。ねぇ君、";
-		mes "ちょっと手伝ってくれないかな？";
-		next;
-		mes "[クエン ホ]";
-		mes "僕の代わりにレストランに忍び込んで";
-		mes "^3333FF蛇龍のスープの出汁^000000を盗んできてよ!!";
-		next;
-		mes "[クエン ホ]";
-		mes "蛇龍のスープは、あの店で代々";
-		mes "受け継がれてきた秘伝の料理なんだ。";
-		mes "ただ、今の店主はそれを水に";
-		mes "ちょこっとまぜただけで";
-		mes "「何百年ものの蛇龍のスープ」だって";
-		mes "騙してるんだよ！";
-		next;
-		mes "[クエン ホ]";
-		mes "手伝ってくれたら、";
-		mes "僕のとっておきの秘密を教えてあげる。";
-		mes "どう？";
-		next;
-		menu "手伝う",-,"手伝わない",L_CANCEL2;
-			mes "[クエン ホ]";
-			mes "良かったー!!!";
-			mes "レストランは町の東だよ。";
-			mes "そこのおじさん、ちょっと怖いから";
-			mes "見つからないように気をつけてね!!";
-			mes "健闘を祈ってるよ!!";
-			set Lou_que1,1;
-			close;
+	mes "[クエン ホ]";
+	mes "町の東に池があって、その上に";
+	mes "建てられた大きいレストランが";
+	mes "あるんだ。";
+	mes "けどね。";
+	next;
+	mes "[クエン ホ]";
+	mes "ただ古くて、ちょこっとおいしいって";
+	mes "理由だけで凄く高い値段で";
+	mes "料理を出してるんだよ。";
+	next;
+	mes "[クエン ホ]";
+	mes "町を愛する僕として、";
+	mes "それは絶対に許すことができない!!";
+	mes "でも……あの店の人は僕の顔を";
+	mes "知ってるから、下手に動けないんだ……";
+	next;
+	mes "[クエン ホ]";
+	mes "この前も、あの怖いおじさんに";
+	mes "見つかりそうになっちゃって……";
+	mes "まったく……ぶつぶつ……";
+	mes "あ、そうだ。ねぇ君、";
+	mes "ちょっと手伝ってくれないかな？";
+	next;
+	mes "[クエン ホ]";
+	mes "僕の代わりにレストランに忍び込んで";
+	mes "^3333FF蛇龍のスープの出汁^000000を盗んできてよ!!";
+	next;
+	mes "[クエン ホ]";
+	mes "蛇龍のスープは、あの店で代々";
+	mes "受け継がれてきた秘伝の料理なんだ。";
+	mes "ただ、今の店主はそれを水に";
+	mes "ちょこっとまぜただけで";
+	mes "「何百年ものの蛇龍のスープ」だって";
+	mes "騙してるんだよ！";
+	next;
+	mes "[クエン ホ]";
+	mes "手伝ってくれたら、";
+	mes "僕のとっておきの秘密を教えてあげる。";
+	mes "どう？";
+	next;
+	menu "手伝う",-,"手伝わない",L_CANCEL2;
+	mes "[クエン ホ]";
+	mes "良かったー!!!";
+	mes "レストランは町の東だよ。";
+	mes "そこのおじさん、ちょっと怖いから";
+	mes "見つからないように気をつけてね!!";
+	mes "健闘を祈ってるよ!!";
+	set Lou_que1,1;
+	close;
 L_QUEST1:
 	mes "[クエン ホ]";
 	mes "どう？";
@@ -616,11 +616,11 @@ L_GO:
 	mes "そうだ、またあの場所に行くかい？";
 	next;
 	menu "うん",-,"ううん",L_CANCEL3;
-		mes "[クエン ホ]";
-		mes "じゃ、ついて来て。";
-		close2;
-		warp "lou_fild01.gat",180,170;
-		end;
+	mes "[クエン ホ]";
+	mes "じゃ、ついて来て。";
+	close2;
+	warp "lou_fild01.gat",180,170;
+	end;
 L_CANCEL1:
 	mes "[クエン ホ]";
 	mes "ブツブツ……ブツブツ……";
@@ -691,7 +691,7 @@ L_OK1:
 	mes "叫んでみて！";
 	next;
 	input @annouce$;
-	announce "「"+strcharinfo(0)+"」の叫び : "+@annouce$,0x01;
+	announce "「"+strcharinfo(0)+"」の叫び : "+@annouce$,0x01,0x9BFD00;
 	mes "["+strcharinfo(0)+"]";
 	mes @annouce$;
 	next;
@@ -710,7 +710,7 @@ L_OK2:
 	mes "おし、叫んでみて！";
 	next;
 	input @annouce$;
-	announce "「"+strcharinfo(0)+"」の叫び : "+@annouce$,0x01;
+	announce "「"+strcharinfo(0)+"」の叫び : "+@annouce$,0x01,0x9BFD00;
 	mes "["+strcharinfo(0)+"]";
 	mes @annouce$;
 	next;
@@ -728,6 +728,7 @@ L_CANCEL:
 
 function	script	かめ#quest	{
 	if(Lou_que1 >= 3) goto L_END;
+	if(gettime(3)>=10 && gettime(3)<22) goto L_DAYTIME;
 	mes "^3333FF- 物陰に大きなかめが見える -^000000";
 	mes "^3333FF- かめの中には赤黒い液体が -^000000";
 	mes "^3333FF- いっぱい入っている -^000000";
@@ -741,23 +742,27 @@ L_QUEST:
 	mes "^3333FF- どうする？ -^000000";
 	next;
 	menu "かめを持ち出す",-,"他のかめを捜す",L_CANCEL;
+	if(gettime(3)>=10 && gettime(3)<22) {
 		mes "^3333FF- あなたは周りを見回した -^000000";
 		mes "^3333FF- 店は客でいっぱいで、 -^000000";
 		mes "^3333FF- 従業員も押し寄せる注文に -^000000";
 		mes "^3333FF- 精一杯で -^000000";
 		mes "^3333FF- だれもあなたの方を見ていない -^000000";
-//		mes "^3333FF- 今日の営業も終わり、 -^000000";
-//		mes "^3333FF- 幕が降りた舞台のように -^000000";
-//		mes "^3333FF- 店は静まりかえっている -^000000";
-		next;
-		mes "^3333FF- あなたはコッソリと -^000000";
-		mes "^3333FF- かめに近付いた -^000000";
-		mes "^3333FF- ちょっと重そうだが、なんとか -^000000";
-		mes "^3333FF- 持ち出すことは出来そうだ -^000000";
-		mes "^3333FF- あなたはかめを両腕で抱えた -^000000";
-		mes "^3333FF- あとはこのまま店を出るだけだ -^000000";
-		set Lou_que1,2;
-		close;
+	}
+	if(gettime(3)<10 || gettime(3)>=22) {
+		mes "^3333FF- 今日の営業も終わり、 -^000000";
+		mes "^3333FF- 幕が降りた舞台のように -^000000";
+		mes "^3333FF- 店は静まりかえっている -^000000";
+	}
+	next;
+	mes "^3333FF- あなたはコッソリと -^000000";
+	mes "^3333FF- かめに近付いた -^000000";
+	mes "^3333FF- ちょっと重そうだが、なんとか -^000000";
+	mes "^3333FF- 持ち出すことは出来そうだ -^000000";
+	mes "^3333FF- あなたはかめを両腕で抱えた -^000000";
+	mes "^3333FF- あとはこのまま店を出るだけだ -^000000";
+	set Lou_que1,2;
+	close;
 L_CANCEL:
 	mes "^3333FF- あなたは他のかめを探すことにした -^000000";
 	close;
@@ -806,7 +811,7 @@ L_END:
 	close;
 }
 
-lou_in02.gat,62,183,2	script	料理長	820,{
+lou_in02.gat,62,183,2	script	料理長	820,2,2{
 	if(Lou_que1 >= 3) goto L_END;
 	mes "[ワン サリュン]";
 	mes "おー？ お客さんかな？";
@@ -849,7 +854,12 @@ L_QUEST:
 	mes "………………";
 	mes "気のせいか？";
 	close;
+OnTouch:
+	if((Lou_que1 == 2) && (gettime(3)>=10 && gettime(3)<22)) goto L_DAYTIME_NG;
+	if((Lou_que1 == 2) && (gettime(3)<10 || gettime(3)>=22)) goto L_NIGHT_NG;
+	end;
 L_DAYTIME_NG:
+	if (rand(4) > 0 ) end;
 	mes "[ワン サリュン]";
 	mes "おい、あんた!!!!";
 	mes "それをどこに持ってくつもりだ?!";
@@ -858,6 +868,7 @@ L_DAYTIME_NG:
 	set Lou_que1,1;
 	close;
 L_NIGHT_NG:
+	if (rand(4) > 0 ) end;
 	mes "[ワン サリュン]";
 	mes "フガフガ……";
 	mes "うーん？ ん、なんだ？ 誰だ？";
@@ -885,7 +896,8 @@ L_END:
 	close;
 }
 
-lou_in02.gat,61,175,2	script	従業員	818,{
+lou_in02.gat,61,175,2	script	従業員#lou1	818,2,2{
+	if(gettime(3)<10 || gettime(3)>=22) goto L_NIGHT;
 	mes "[アファ]";
 	mes "いらっしゃいませ～!!";
 	mes "ささ、どうぞどうぞ。";
@@ -896,7 +908,12 @@ L_NIGHT:
 	mes "[アファ]";
 	mes "フニャフニャ……";
 	close;
+OnTouch:
+	if((Lou_que1 == 2) && (gettime(3)>=10 && gettime(3)<22)) goto L_DAYTIME_NG;
+	if((Lou_que1 == 2) && (gettime(3)<10 || gettime(3)>=22)) goto L_NIGHT_NG;
+	end;
 L_DAYTIME_NG:
+	if (rand(4) > 0 ) end;
 	mes "[アファ]";
 	mes "ちょっと、あんた!!!!";
 	mes "それをどこに持ってくつもり?!";
@@ -905,6 +922,7 @@ L_DAYTIME_NG:
 	set Lou_que1,1;
 	close;
 L_NIGHT_NG:
+	if (rand(4) > 0 ) end;
 	mes "[アファ]";
 	mes "あぁ～眠い……";
 	mes "は、誰っ!?";
@@ -914,6 +932,7 @@ L_NIGHT_NG:
 	set Lou_que1,1;
 	close;
 L_END:
+	next;
 	emotion 4;
 	mes "[アファ]";
 	mes "あ、当店自慢の十全大補湯でしたら";
@@ -928,7 +947,8 @@ L_END:
 	close;
 }
 
-lou_in02.gat,53,174,6	script	従業員	822,{
+lou_in02.gat,53,174,6	script	従業員#lou2	822,2,2{
+	if(gettime(3)<10 || gettime(3)>=22) goto L_NIGHT;
 	mes "[ソウ ハ]";
 	mes "いらっしゃいませ～！";
 	mes "こちらは満席ですので、";
@@ -938,7 +958,12 @@ L_NIGHT:
 	mes "[ソウ ハ]";
 	mes "ぐー……フニャフニャ……";
 	close;
+OnTouch:
+	if((Lou_que1 == 2) && (gettime(3)>=10 && gettime(3)<22)) goto L_DAYTIME_NG;
+	if((Lou_que1 == 2) && (gettime(3)<10 || gettime(3)>=22)) goto L_NIGHT_NG;
+	end;
 L_DAYTIME_NG:
+	if (rand(4) > 0 ) end;
 	mes "[ソウ ハ]";
 	mes "ちょっと、あんた!!!!";
 	mes "それをどこに持ってくつもり?!";
@@ -947,6 +972,7 @@ L_DAYTIME_NG:
 	set Lou_que1,1;
 	close;
 L_NIGHT_NG:
+	if (rand(4) > 0 ) end;
 	mes "[ソウ ハ]";
 	mes "ううん……眠い……";
 	mes "はっ?! だれ?!?!";
@@ -957,7 +983,8 @@ L_NIGHT_NG:
 	close;
 }
 
-lou_in02.gat,76,181,2	script	従業員	822,{
+lou_in02.gat,76,181,2	script	従業員#lou3	822,2,2{
+	if(gettime(3)<10 || gettime(3)>=22) goto L_NIGHT;
 	mes "[コウ カサン]";
 	mes "いらっしゃいませー。";
 	mes "ささ、どうぞ御くつろぎください。";
@@ -977,7 +1004,12 @@ L_NIGHT:
 	mes "……………………";
 	mes "……ぐうぐう……ぐうぐう";
 	close;
+OnTouch:
+	if((Lou_que1 == 2) && (gettime(3)>=10 && gettime(3)<22)) goto L_DAYTIME_NG;
+	if((Lou_que1 == 2) && (gettime(3)<10 || gettime(3)>=22)) goto L_NIGHT_NG;
+	end;
 L_DAYTIME_NG:
+	if (rand(4) > 0 ) end;
 	mes "[コウ カサン]";
 	mes "おい、あんた!!!!";
 	mes "それをどこに持ってくつもりだ?!";
@@ -986,6 +1018,7 @@ L_DAYTIME_NG:
 	set Lou_que1,1;
 	close;
 L_NIGHT_NG:
+	if (rand(4) > 0 ) end;
 	mes "[コウ カサン]";
 	mes "はわわわ～……眠い……";
 	mes "ん、なんだお前!!!!";
@@ -2645,6 +2678,7 @@ lou_in02.gat,123,39,4	script	毒薬王	824,{
 	mes "……今は好きな詩について";
 	mes "考えているだけだがね。";
 	next;
+	cutin "poison",0;
 	mes "[アルゼス]";
 	mes "牀前看月光";
 	mes "疑是地上霜";
@@ -2657,6 +2691,7 @@ lou_in02.gat,123,39,4	script	毒薬王	824,{
 		if (@rand == 1) goto L_RAND2;
 	}
 L_RAND1:
+	cutin "poison",255;
 	menu "くすくす笑う",L_MENU1_1,"地を叩きながら泣きわめく",L_MENU1_2,"怒りながら責める",L_MENU1_3,"詩をもう一度聞く",L_MENU1_4,"悲しい顔をする",L_MENU1_5;
 	L_MENU1_1:
 		mes "[アルゼス]";
@@ -2680,13 +2715,16 @@ L_RAND1:
 		mes "怒る資格があるのか！";
 		close;
 	L_MENU1_4:
+		cutin "poison",0;
 		mes "[アルゼス]";
 		mes "牀前看月光";
 		mes "疑是地上霜";
 		mes "挙頭望山月";
 		mes "低頭思故郷";
 		mes "…………";
-		close;
+		close2;
+		cutin "poison",255;
+		end;
 	L_MENU1_5:
 		mes "[アルゼス]";
 		mes "お前も月を眺めていると故郷が";
@@ -2734,6 +2772,8 @@ L_RAND2:
 		if (@rand == 2) goto L_QUESTION3;
 		if (@rand == 3) goto L_QUESTION4;
 		L_QUESTION1:
+			set @LouQSuccess,6;
+			cutin "poison_q1-1",0;
 			mes "[アルゼス]";
 			mes "「牀前看月光」";
 			mes "の一文字目、「牀」はどんな意味だ？";
@@ -2741,12 +2781,14 @@ L_RAND2:
 			menu "むしろ",L_QUESTION1_1,"形象",L_QUESTION1_1,"寝床",-,"上",L_QUESTION1_1;
 			set @LouQ,@LouQ+1;
 		L_QUESTION1_1:
+			cutin "poison_q1-2",0;
 			mes "[アルゼス]";
 			mes "二文字目、「前」はどんな意味だ？";
 			next;
 			menu "完全な",L_QUESTION1_2,"争う",L_QUESTION1_2,"震える",L_QUESTION1_2,"矢",L_QUESTION1_2,"前",-;
 			set @LouQ,@LouQ+1;
 		L_QUESTION1_2:
+			cutin "poison_q1-3",0;
 			mes "[アルゼス]";
 			mes "では三文字目、「看」が使われた";
 			mes "故事成語を知っているか？";
@@ -2760,6 +2802,7 @@ L_RAND2:
 			menu "盾",L_QUESTION1_4,"手紙",L_QUESTION1_4,"見る",-;
 			set @LouQ,@LouQ+1;
 		L_QUESTION1_4:
+			cutin "poison_q1-4",0;
 			mes "[アルゼス]";
 			mes "月光は……思い出したぞ。";
 			mes "日の光だったか？";
@@ -2767,6 +2810,7 @@ L_RAND2:
 			menu "はい、日の光です。",L_QUESTION1_5,"違います、月明かりです。",-;
 			set @LouQ,@LouQ+1;
 		L_QUESTION1_5:
+			cutin "poison_q1-5",0;
 			mes "[アルゼス]";
 			mes "そうか！よく分かったな！";
 			mes "私が忘れていたのはここだった。";
@@ -2777,95 +2821,144 @@ L_RAND2:
 			set @LouQ,@LouQ+1;
 			goto L_QUESTIONEND;
 		L_QUESTION2:
+			set @LouQSuccess,5;
+			cutin "poison_q2-1",0;
 			mes "[アルゼス]";
 			mes "「疑是地上霜」";
 			mes "の「疑是」はどんな意味だ？";
 			next;
-			menu "～かと思った",-,"～で合っている",-,"～で正しい",-,"～は正しくない",-;
+			menu "～かと思った",-,"～で合っている",L_QUESTION2_1,"～で正しい",L_QUESTION2_1,"～は正しくない",L_QUESTION2_1;
+			set @LouQ,@LouQ+1;
+		L_QUESTION2_1:
+			cutin "poison_q2-2",0;
 			mes "[アルゼス]";
 			mes "三文字目、「地」はどんな意味だ？";
 			next;
-			menu "空",-,"風",-,"水",-,"地",-;
+			menu "空",L_QUESTION2_2,"風",L_QUESTION2_2,"水",L_QUESTION2_2,"地",-;
+			set @LouQ,@LouQ+1;
+		L_QUESTION2_2:
+			cutin "poison_q2-3",0;
 			mes "[アルゼス]";
 			mes "では四文字目、「上」の意味も";
 			mes "わかるか？";
 			next;
-			menu "下の",-,"増した",-,"上がった",-,"塗った",-,"上",-;
+			menu "下の",L_QUESTION2_3,"増した",L_QUESTION2_3,"上がった",L_QUESTION2_3,"塗った",L_QUESTION2_3,"上",-;
+			set @LouQ,@LouQ+1;
+		L_QUESTION2_3:
+			cutin "poison_q2-4",0;
 			mes "[アルゼス]";
 			mes "この意味は？「霜」だ、「霜」。";
 			next;
-			menu "涼しい",-,"霜",-,"霧",-,"雨",-;
+			menu "涼しい",L_QUESTION2_4,"霜",-,"霧",L_QUESTION2_4,"雨",L_QUESTION2_4;
+			set @LouQ,@LouQ+1;
+		L_QUESTION2_4:
+			cutin "poison_q2-5",0;
 			mes "[アルゼス]";
 			mes "そうか！よく分かったな！";
 			mes "私が忘れていたのはここだった。";
 			mes "で……「疑是地上霜」の";
 			mes "句の意味はわかるか？";
 			next;
-			menu "地に降りた霜かと思った",-,"地上に霧がたちこめている",-,"まさに涼しさが増した",-,"涼しさが地の上に降りた",-;
+			menu "地に降りた霜かと思った",-,"地上に霧がたちこめている",L_QUESTIONEND,"まさに涼しさが増した",L_QUESTIONEND,"涼しさが地の上に降りた",L_QUESTIONEND;
+			set @LouQ,@LouQ+1;
 			goto L_QUESTIONEND;
 		L_QUESTION3:
+			set @LouQSuccess,5;
+			cutin "poison_q3-1",0;
 			mes "[アルゼス]";
 			mes "「挙頭望山月」";
 			mes "ここの「拳」はどんな意味だ？";
 			next;
-			menu "行く",-,"あげる",-,"大きい",-,"暮らす",-;
+			menu "行く",L_QUESTION3_1,"あげる",-,"大きい",L_QUESTION3_1,"暮らす",L_QUESTION3_1;
+			set @LouQ,@LouQ+1;
+		L_QUESTION3_1:
+			cutin "poison_q3-2",0;
 			mes "[アルゼス]";
 			mes "二文字目、「頭」の意味は？";
 			next;
-			menu "胴",-,"足",-,"頭",-,"腕",-;
+			menu "胴",L_QUESTION3_2,"足",L_QUESTION3_2,"頭",-,"腕",L_QUESTION3_2;
+			set @LouQ,@LouQ+1;
+		L_QUESTION3_2:
+			cutin "poison_q3-3",0;
 			mes "[アルゼス]";
 			mes "三文字目、「望」の意味もわかるか？";
 			next;
-			menu "忘れる",-,"生い茂る",-,"網",-,"希望",-,"眺める",-;
+			menu "忘れる",L_QUESTION3_3,"生い茂る",L_QUESTION3_3,"網",L_QUESTION3_3,"希望",-,"眺める",L_QUESTION3_3;
+			set @LouQ,@LouQ+1;
+		L_QUESTION3_3:
+			cutin "poison_q3-4",0;
 			mes "[アルゼス]";
 			mes "「山月」は山にかかる月で";
 			mes "合っているか？";
 			next;
-			menu "はい、山にかかる月です。",-,"いいえ、月に映った山です。",-;
+			menu "はい、山にかかる月です。",-,"いいえ、月に映った山です。",L_QUESTION3_4;
+			set @LouQ,@LouQ+1;
+		L_QUESTION3_4:
+			cutin "poison_q3-5",0;
 			mes "[アルゼス]";
 			mes "そうか！よく分かったな！";
 			mes "私が忘れていたのはここだった。";
 			mes "で……「挙頭望山月」の";
 			mes "句の意味はわかるか？";
 			next;
-			menu "月に映る山を持ち上げて",-,"頭をあげて山にかかる月を眺め",-,"大きい山の頂上の月を眺め",-,"頭をあげて山の月を忘れ",-;
+			menu "月に映る山を持ち上げて",L_QUESTIONEND,"頭をあげて山にかかる月を眺め",-,"大きい山の頂上の月を眺め",L_QUESTIONEND,"頭をあげて山の月を忘れ",L_QUESTIONEND;
+			set @LouQ,@LouQ+1;
 			goto L_QUESTIONEND;
 		L_QUESTION4:
+			cutin "poison_q4-1",0;
 			mes "[アルゼス]";
 			mes "「低頭思故郷」";
 			mes "の「低」はどんな意味だ？";
 			next;
-			menu "低い",-,"ぼんやり",-,"行き違う",-,"下がる",-;
+			menu "低い",-,"ぼんやり",L_QUESTION4_1,"行き違う",L_QUESTION4_1,"下がる",L_QUESTION4_1;
+			set @LouQ,@LouQ+1;
+		L_QUESTION4_1:
+			cutin "poison_q4-2",0;
 			mes "[アルゼス]";
 			mes "二文字目、「頭」の意味は？";
 			next;
-			menu "頭",-,"足",-,"胴",-,"腕",-;
+			menu "頭",-,"足",L_QUESTION4_2,"胴",L_QUESTION4_2,"腕",L_QUESTION4_2;
+			set @LouQ,@LouQ+1;
+		L_QUESTION4_2:
+			cutin "poison_q4-3",0;
 			mes "[アルゼス]";
 			mes "では三文字目、";
 			mes "「思」の意味もわかるか？";
 			next;
-			menu "覚える",-,"士",-,"使う",-,"希望",-;
+			menu "覚える",L_QUESTION4_3,"士",L_QUESTION4_3,"使う",L_QUESTION4_3,"希望",-;
+			set @LouQ,@LouQ+1;
+		L_QUESTION4_3:
+			cutin "poison_q4-4",0;
 			mes "[アルゼス]";
 			mes "「故郷」はそのままだな。";
 			mes "昔の田舎のことだろう？";
 			next;
-			menu "はい、田舎つまり故郷です。",-,"ちがいます。今の場所です。",-;
+			menu "はい、田舎つまり故郷です。",-,"ちがいます。今の場所です。",L_QUESTION4_4;
+			set @LouQ,@LouQ+1;
+		L_QUESTION4_4:
+			cutin "poison_q4-5",0;
 			mes "[アルゼス]";
 			mes "そうか！よく分かったな！";
 			mes "私が忘れていたのはここだった。";
 			mes "で……「低頭思故郷」の";
 			mes "句の意味はわかるか？";
 			next;
-			menu "故郷を思って頭を下げる",-,"故郷が思い出されて自然に頭が下がる",-,"故郷を考えると頭が痛い",-,"今の私には故郷より今の場所",-;
+			menu "故郷を思って頭を下げる",-,"故郷が思い出されて自然に頭が下がる",L_QUESTIONEND,"故郷を考えると頭が痛い",L_QUESTIONEND,"今の私には故郷より今の場所",L_QUESTIONEND;
+			set @LouQ,@LouQ+1;
 			goto L_QUESTIONEND;
 		L_QUESTIONEND:
+			cutin "poison_q1-5",255;
+			cutin "poison_q2-5",255;
+			cutin "poison_q3-5",255;
+			cutin "poison_q4-5",255;
 			mes "[アルゼス]";
 			mes "ありがとう……若者よ。";
 			mes "これはある有名な詩人の詩だったな。";
 			mes "おかげで思い出したよ……";
-			if((@LouQ == 6) && (@LouQ3 < 4)) set @LouQ3,@LouQ3+1;
+			if((@LouQ == @LouQSuccess) && (@LouQ3 < 4)) set @LouQ3,@LouQ3+1;
 			close;
 	L_MENU2_2:
+		cutin "poison",255;
 		mes "[アルゼス]";
 		mes "私の故郷か……";
 		mes "それは「モロク」と呼ばれる地";
@@ -2932,6 +3025,7 @@ L_RAND2:
 			if(@LouQ3 < 4) set @LouQ3,@LouQ3+1;
 			close;
 	L_MENU2_3:
+		cutin "poison",255;
 		mes "[アルゼス]";
 		mes "毒薬だと？";
 		mes "それを学んで何に使うのだ？";
@@ -2940,6 +3034,7 @@ L_RAND2:
 		if (Lou_que3 >= 3) goto L_QUEST3;
 		close;
 	L_MENU2_4:
+		cutin "poison",255;
 		if (Lou_que3 == 2) goto L_QUEST2;
 		mes "[アルゼス]";
 		mes "あまり……話すようなことではない。";

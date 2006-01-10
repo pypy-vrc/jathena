@@ -7,24 +7,35 @@ struct script_data {
 		int num;
 		char *str;
 	} u;
+	struct linkdb_node** ref; // ƒŠƒtƒ@ƒŒƒ“ƒX
+};
+
+struct script_code {
+	int script_size;
+	unsigned char* script_buf;
+	struct linkdb_node* script_vars;
 };
 
 struct script_state {
 	struct script_stack {
-		int sp,sp_max,defsp,new_defsp;
+		int sp,sp_max,defsp;
 		struct script_data *stack_data;
+		struct linkdb_node **var_function;	// ŠÖ”ˆË‘¶•Ï”
 	} *stack;
 	int start,end;
 	int pos,state;
 	int rid,oid;
-	char *script, *scriptroot;
+	struct script_code *script, *scriptroot;
 	int  sleep;
 };
 
 #define SCRIPT_CONF_NAME	"conf/script_athena.conf"
 
-unsigned char * parse_script(unsigned char *,int);
-void run_script(unsigned char *,int,int,int);
+struct script_code* parse_script(unsigned char *,int);
+void run_script(struct script_code*,int,int,int);
+
+void script_free_stack(struct script_stack *stack);
+void script_free_code(struct script_code* code);
 
 struct dbt* script_get_label_db(void);
 struct dbt* script_get_userfunc_db(void);

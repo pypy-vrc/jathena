@@ -32,6 +32,9 @@ set __base__=-DTXT_ONLY
 @rem httpd を完全に無効にする場合コメントアウトをはずす(通常はコメントアウト)
 :set __NO_HTTPD__=-DNO_HTTPD
 
+@rem httpd で外部 CGI を使う場合はコメントアウトする
+set __NO_HTTPD_CGI__=-DNO_HTTPD_CGI
+
 @rem csvdb を完全に無効にする場合コメントアウトをはずす(通常はコメントアウト)
 :set __NO_CSVDB__=-DNO_CSVDB
 
@@ -83,7 +86,7 @@ if "%_model_%"=="Pentium4C" set __cpu__=-5 -Ov -Oi
 if "%_model_%"=="AMD32" set __cpu__=-5 -Oc -Ov -f -ff
 if "%_model_%"=="AMD64" set __cpu__=-6 -Oc -Ov -f -ff -tWM
 
-set __define__=%__cpu__% -DPACKETVER=6 -DNEW_006b -DFD_SETSIZE=4096 %__base__% %__NO_HTTPD__% %__NO_CSVDB__% %__ZLIB__% %__SKIP__% %__EXCLASS__% %__DYNAMIC_STATUS_CHANGE__%
+set __define__=%__cpu__% -DPACKETVER=6 -DNEW_006b -DFD_SETSIZE=4096 %__base__% %__NO_HTTPD__% %__NO_HTTPD_CGI__% %__NO_CSVDB__% %__ZLIB__% %__SKIP__% %__EXCLASS__% %__DYNAMIC_STATUS_CHANGE__%
 set __include__=-I../common/
 
 @echo ■コンパイルオプション表示■

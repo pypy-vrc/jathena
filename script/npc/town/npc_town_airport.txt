@@ -218,40 +218,40 @@ OnInit:
 OnTimer1000:
 	disablenpc "airplanewarp#yuno1";
 	disablenpc "airplanewarp#yuno2";
-	mapannounce "airplane.gat","飛行船、離陸します。次の目的地はアインブロックです。",0;
+	mapannounce "airplane.gat","飛行船、離陸します。次の目的地はアインブロックです。",0,0x00FF00;
 	end;
 OnTimer31000:
-	mapannounce "airplane.gat","当船は現在、アインブロックに向かっております。",0;
+	mapannounce "airplane.gat","当船は現在、アインブロックに向かっております。",0,0x00FF00;
 	end;
 OnTimer51000:
-	mapannounce "airplane.gat","まもなく、アインブロックに着陸いたします。",0;
+	mapannounce "airplane.gat","まもなく、アインブロックに着陸いたします。",0,0x00FF00;
 	end;
 OnTimer61000:
 	enablenpc "airplanewarp#einbroch1";
 	enablenpc "airplanewarp#einbroch2";
-	mapannounce "airplane.gat","アインブロックに到着しました。またのご利用をお待ちしております。",0;
+	mapannounce "airplane.gat","アインブロックに到着しました。またのご利用をお待ちしております。",0,0x00FF00;
 	end;
 OnTimer71000:
-	mapannounce "airplane.gat","現在、アインブロックに停船中です。出発まで、もうしばらくお待ちください。",0;
+	mapannounce "airplane.gat","現在、アインブロックに停船中です。出発まで、もうしばらくお待ちください。",0,0x00FF00;
 	end;
 OnTimer81000:
 	disablenpc "airplanewarp#einbroch1";
 	disablenpc "airplanewarp#einbroch2";
-	mapannounce "airplane.gat","当船は離陸します。次の目的地はジュノーです。",16;
+	mapannounce "airplane.gat","当船は離陸します。次の目的地はジュノーです。",0,0x73DEDE;
 	end;
 OnTimer111000:
-	mapannounce "airplane.gat","当船は現在、ジュノーに向かっております。",16;
+	mapannounce "airplane.gat","当船は現在、ジュノーに向かっております。",0,0x73DEDE;
 	end;
 OnTimer131000:
-	mapannounce "airplane.gat","まもなく、ジュノーに着陸いたします。",16;
+	mapannounce "airplane.gat","まもなく、ジュノーに着陸いたします。",0,0x73DEDE;
 	end;
 OnTimer141000:
 	enablenpc "airplanewarp#yuno1";
 	enablenpc "airplanewarp#yuno2";
-	mapannounce "airplane.gat","ジュノーに到着しました。またのご利用をお待ちしております。",16;
+	mapannounce "airplane.gat","ジュノーに到着しました。またのご利用をお待ちしております。",0,0x73DEDE;
 	end;
 OnTimer151000:
-	mapannounce "airplane.gat","現在、ジュノーに停船中です。出発まで、もうしばらくお待ちください。",16;
+	mapannounce "airplane.gat","現在、ジュノーに停船中です。出発まで、もうしばらくお待ちください。",0,0x73DEDE;
 	end;
 OnTimer160000:
 	initnpctimer;

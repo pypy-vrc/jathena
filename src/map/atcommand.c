@@ -1020,10 +1020,7 @@ atcommand_jobchange(
 		return -1;
 
 	if ((job >= 0 && job < MAX_VALID_PC_CLASS)) {
-		if(job >= 24){			//—{Žq‚Ì‚Ý‚Ì‘Î‰ž‚Ì‚½‚ß‚ÌˆêŽž‘Îˆ
-			upper = 2;
-		}
-		if(job==28 || job==29)
+		if(job >= 24)
 			upper = 0;
 		if(pc_jobchange(sd, job, upper) == 0)
 			clif_displaymessage(fd, msg_table[12]);
@@ -1443,15 +1440,7 @@ atcommand_joblevelup(
 	if (!message || !*message)
 		return -1;
 	level = atoi(message);
-	/*
-	if (s_class.job == 0)
-		up_level -= 40;
-
-	if (s_class.upper == 1 && s_class.type == 2) //“]¶E‚ÍJobƒŒƒxƒ‹‚ÌÅ‚‚ª70
-			up_level += 20;
-	if(s_class.job == 23) //ƒXƒpƒmƒr‚ÍjobƒŒƒxƒ‹‚ÌÅ‚‚ª99
-			up_level += 49;
-	*/
+	
 	up_level = max_job_table[s_class.upper][s_class.job];
 
 	if (level > 1000 || level < -1000)
@@ -2691,10 +2680,7 @@ atcommand_character_job(
 	if ((pl_sd = map_nick2sd(character)) != NULL) {
 		if (pc_isGM(sd) > pc_isGM(pl_sd)) {
 			if ((job >= 0 && job < MAX_VALID_PC_CLASS)) {
-				if(job >= 24){			//—{Žq‚Ì‚Ý‚Ì‘Î‰ž‚Ì‚½‚ß‚ÌˆêŽž‘Îˆ
-					upper = 2;
-				}
-				if(job==28 || job==29)
+				if(job >= 24)
 					upper = 0;
 				pc_jobchange(pl_sd, job, upper);
 				clif_displaymessage(fd, msg_table[48]);
@@ -3086,14 +3072,7 @@ atcommand_character_joblevel(
 	if ((pl_sd = map_nick2sd(character)) != NULL) {
 		pl_s_class = pc_calc_base_job(pl_sd->status.class);
 		if (pc_isGM(sd) > pc_isGM(pl_sd)) {
-			if (pl_s_class.job == 0)
-				max_level -= 40;
-			if (pl_s_class.upper == 1 && pl_s_class.type == 2) //“]¶E‚ÍJobƒŒƒxƒ‹‚ÌÅ‚‚ª70
-				max_level += 20;
-			//ƒXƒpƒmƒr‚ÍjobƒŒƒxƒ‹‚ÌÅ‚‚ª99
-			if(pl_s_class.job == 23)
-				max_level += 49;
-
+			max_level = max_job_table[pl_s_class.upper][pl_s_class.job];
 			if (pl_sd->status.job_level == max_level && level > 0) {
 				clif_displaymessage(fd, msg_table[67]);
 			} else if (level >= 1) {

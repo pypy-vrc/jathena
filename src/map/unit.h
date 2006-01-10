@@ -28,7 +28,6 @@ int unit_stopattack(struct block_list *bl);
 int unit_attack(struct block_list *src,int target_id,int type);
 
 // int unit_setpos( struct block_list *bl, const char* map, int x, int y);
-// int unit_remove_map( struct block_list *bl);
 
 // スキル使用
 int unit_skilluse_id(struct block_list *src, int target_id, int skill_num, int skill_lv);
@@ -53,6 +52,7 @@ int unit_isdead(struct block_list *bl);
 struct unit_data* unit_bl2ud(struct block_list *bl);
 int unit_remove_map(struct block_list *bl, int clrtype);
 int unit_distance(int x0,int y0,int x1,int y1);
+int unit_free(struct block_list *bl, int clrtype);
 
 // 初期化ルーチン
 int do_init_unit(void);

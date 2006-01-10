@@ -764,8 +764,9 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 	switch(skillid){
 	case 0:
 		/* 自動鷹 */
-		if(sd && pc_isfalcon(sd) && sd->status.weapon == 11 && (skill=pc_checkskill(sd,HT_BLITZBEAT))>0 &&
-			atn_rand()%1000 <= sd->paramc[5]*10/3+1 ) {
+		if(sd && pc_isfalcon(sd) && (skill=pc_checkskill(sd,HT_BLITZBEAT))>0 &&
+			(sd->status.weapon == 11 || battle_config.allow_any_weapon_autoblitz) &&
+			atn_rand()%10000 < sd->paramc[5]*30+100 ) {
 			int lv=(sd->status.job_level+9)/10;
 			skill_castend_damage_id(src,bl,HT_BLITZBEAT,(skill<lv)?skill:lv,tick,0xf00000);
 		}
@@ -859,6 +860,9 @@ int skill_additional_effect( struct block_list* src, struct block_list *bl,int s
 		break;
 
 	case WZ_STORMGUST:		/* ストームガスト */
+#ifdef DYNAMIC_SC_DATA
+		status_calloc_sc_data(bl);
+#endif
 		{
 			struct status_change *sc_data = status_get_sc_data(bl);
 			if(sc_data) {
@@ -1195,7 +1199,9 @@ int skill_blown( struct block_list *src, struct block_list *target,int count)
 			return 0;
 	}else if(target->type==BL_MOB){
 		md=(struct mob_data *)target;
-		if(battle_config.boss_no_knockbacking && mob_db[md->class].mode&0x20)
+		if(battle_config.boss_no_knockbacking==1 && mob_db[md->class].mode&0x20)
+			return 0;
+		if(battle_config.boss_no_knockbacking==2 && mob_db[md->class].mexp > 0)
 			return 0;
 	}else if(target->type==BL_PET){
 		pd=(struct pet_data *)target;
@@ -1689,6 +1695,7 @@ int skill_cleartimerskill(struct block_list *src)
 int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int skillid,int skilllv,unsigned int tick,int flag )
 {
 	struct map_session_data *sd=NULL;
+	struct mob_data *md=NULL;
 	struct unit_data        *ud=unit_bl2ud(src);
 	int i;
 
@@ -1697,6 +1704,8 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 
 	if(src->type==BL_PC)
 		sd=(struct map_session_data *)src;
+	else if(src->type==BL_MOB)
+		md=(struct mob_data *)src;
 	if(sd && unit_isdead(&sd->bl))
 		return 1;
 
@@ -1706,6 +1715,15 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 		return 1;
 	if( unit_isdead(bl))
 		return 1;
+	//エモ
+	if(md)
+	{
+		struct mob_skill *ms=NULL;
+		ms = mob_db[md->class].skill;
+		if(ms && md->skillidx!=-1 && ms[md->skillidx].emotion >= 0)
+			clif_emotion(&md->bl,ms[md->skillidx].emotion);
+	}
+	
 	map_freeblock_lock();
 	switch(skillid)
 	{
@@ -1967,6 +1985,8 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 		break;
 	/* 武器系範囲攻撃スキル */
 	case AC_SHOWER:			/* アローシャワー */
+		battle_skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,0x0500);
+		break;
 	case SM_MAGNUM:			/* マグナムブレイク */
 	case AS_GRIMTOOTH:		/* グリムトゥース */
 	case MC_CARTREVOLUTION:	/* カートレヴォリューション */
@@ -1983,8 +2003,6 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 				case SM_MAGNUM:			/* マグナムブレイク */
 					x = src->x;
 					y = src->y;
-					break;
-				case AC_SHOWER:			/* アローシャワー */
 					break;
 				case NPC_SPLASHATTACK:	/* スプラッシュアタック */
 					ar=3;
@@ -2132,7 +2150,6 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 	case NPC_DARKJUPITEL:		/* 闇ユピテル */
 	case NPC_MAGICALATTACK:		/* MOB:魔法打撃攻撃 */
 	case PR_ASPERSIO:			/* アスペルシオ */
-	case HW_NAPALMVULCAN:		/* ナパームバルカン */
 	case SL_SMA: //エスマ
 	case SL_STUN: //エスタン
 	case SL_STIN: //エスティン
@@ -2191,6 +2208,7 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 	case MG_FIREBALL:			/* ファイヤーボール */
 	case WZ_SIGHTRASHER:		/* サイトラッシャー */
 	case WZ_FROSTNOVA:			/* フロストノヴァ */
+	case HW_NAPALMVULCAN:		/* ナパームバルカン */
 		if (flag&1) {
 			/* 個別にダメージを与える */
 			if(bl->id!=skill_area_temp[1]){
@@ -2201,7 +2219,7 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 					skill_area_temp[0]=((dx>dy)?dx:dy);
 				}
 				battle_skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,
-						skill_area_temp[0]| 0x0500);
+						skill_area_temp[0]|((skillid!=HW_NAPALMVULCAN)?0x0500:0));
 			}
 		} else {
 			int ar;
@@ -2209,8 +2227,9 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 			skill_area_temp[1]=bl->id;
 			switch (skillid) {
 				case MG_NAPALMBEAT:
+				case HW_NAPALMVULCAN:
 					ar = 1;
-					/* ナパームビートは分散ダメージなので敵の数を数える */
+					/* ナパームビート・ナパームバルカンは分散ダメージなので敵の数を数える */
 					map_foreachinarea(skill_area_sub,
 							bl->m,bl->x-ar,bl->y-ar,bl->x+ar,bl->y+ar,0,
 							src,skillid,skilllv,tick,flag|BCT_ENEMY,
@@ -2440,7 +2459,14 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		return 1;
 	if(status_get_class(bl) == 1288)
 		return 1;
-
+	//エモ
+	if(md)
+	{
+		struct mob_skill *ms=NULL;
+		ms = mob_db[md->class].skill;
+		if(ms && md->skillidx!=-1 && ms[md->skillidx].emotion >= 0)
+			clif_emotion(&md->bl,ms[md->skillidx].emotion);
+	}
 	map_freeblock_lock();
 	switch(skillid)
 	{
@@ -2559,7 +2585,7 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 					}
 				}
 				if(dstsd->sc_data[SC_REDEMPTIO].timer!=-1)
-					status_change_end(bl,SC_REDEMPTIO,0);
+					status_change_end(bl,SC_REDEMPTIO,-1);
 			}
 		}
 		break;
@@ -3079,9 +3105,10 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 		if(i){
 			sd->status.sp += i;
 			clif_heal(sd->fd,SP_SP,i);
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
-		else
-			clif_skill_nodamage(src,bl,skillid,skilllv,0);
+		//else
+		//	clif_skill_nodamage(src,bl,skillid,skilllv,0);
 		break;
 
 	case AC_MAKINGARROW:		/* 矢作成 */
@@ -3777,6 +3804,9 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 			tbl.m = src->m;
 			tbl.x = src->x;
 			tbl.y = src->y;
+			sc_data=status_get_sc_data(bl);
+			if(sc_data && sc_data[SC_BERSERK].timer!=-1)
+				hp = sp = 0;
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			if(hp > 0 || (hp <= 0 && sp <= 0))
 				clif_skill_nodamage(&tbl,bl,AL_HEAL,hp,1);
@@ -4118,6 +4148,8 @@ int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int
 
 	case NPC_SUICIDE:			/* 自決 */
 		if(md){
+			md->state.noexp = 1;
+			md->state.nodrop = 1;
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			mob_damage(NULL,md,md->hp,0);
 		}
@@ -4916,13 +4948,15 @@ int skill_castend_id( int tid, unsigned int tick, int id,int data )
 int skill_castend_pos2( struct block_list *src, int x,int y,int skillid,int skilllv,unsigned int tick,int flag)
 {
 	struct map_session_data *sd=NULL;
+	struct mob_data *md=NULL;
 	int i,tmpx = 0,tmpy = 0, x1 = 0, y1 = 0;
 
 	nullpo_retr(0, src);
 
 	if(src->type==BL_PC){
 		nullpo_retr(0, sd=(struct map_session_data *)src);
-	}
+	}else if(src->type==BL_MOB)
+		nullpo_retr(0, md=(struct mob_data *)src);
 	if( skillid != WZ_METEOR &&
 		skillid != WZ_ICEWALL &&
 		skillid != HT_DETECTING &&
@@ -4932,8 +4966,27 @@ int skill_castend_pos2( struct block_list *src, int x,int y,int skillid,int skil
 		skillid != TK_HIGHJUMP)
 		clif_skill_poseffect(src,skillid,skilllv,x,y,tick);
 
+	//エモ
+	if(md)
+	{
+		struct mob_skill *ms=NULL;
+		ms = mob_db[md->class].skill;
+		if(ms && md->skillidx!=-1 && ms[md->skillidx].emotion >= 0)
+			clif_emotion(&md->bl,ms[md->skillidx].emotion);
+	}
+	
 	switch(skillid)
 	{
+	case AC_SHOWER:				/* アローシャワー */
+		skill_area_temp[1] = src->id;
+		skill_area_temp[2] = x;
+		skill_area_temp[3] = y;
+		map_foreachinarea(skill_area_sub,
+			src->m,x-1,y-1,x+1,y+1,0,
+			src,skillid,skilllv,tick,flag|BCT_ENEMY|1,
+			skill_castend_damage_id);
+		break;
+
 	case PR_BENEDICTIO:			/* 聖体降福 */
 		skill_area_temp[1]=src->id;
 		map_foreachinarea(skill_area_sub,
@@ -5907,7 +5960,7 @@ int skill_unit_onplace_timer(struct skill_unit *src,struct block_list *bl,unsign
 			int sec=(int)(skill_get_time2(sg->skill_id,sg->skill_lv) - (double)status_get_agi(bl)*0.1);
 			if(status_get_mode(bl)&0x20)
 				sec = sec/5;
-			status_change_start(bl,SC_ANKLE,sg->skill_lv,0,0,0,sec,0);
+			status_change_start(bl,SC_ANKLE,sg->skill_lv,(int)sg,0,0,sec,0);
 			unit_movepos( bl, src->bl.x, src->bl.y);
 			clif_01ac(&src->bl);
 			sg->limit=DIFF_TICK(tick,sg->tick) + sec;

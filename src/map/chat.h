@@ -12,7 +12,7 @@ int chat_kickchat(struct map_session_data *,char *);
 
 int chat_createnpcchat(
 	struct npc_data *nd,int limit,int pub,int trigger,char* title,int titlelen,const char *ev,
-	int zeny,int lowlv,int highlv);
+	int zeny,int lowlv,int highlv,int job,int upper);
 int chat_deletenpcchat(struct npc_data *nd);
 int chat_enableevent(struct chat_data *cd);
 int chat_disableevent(struct chat_data *cd);

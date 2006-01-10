@@ -262,6 +262,7 @@ L_QuestEnd:
 	mes "この世にあなたの意思を伝える者";
 	mes "今ここに生まれる…";
 	next;
+	set @joblv, JobLevel;
 	unequip;
 	jobchange 8;
 	mes "[トーマス司教]";
@@ -271,7 +272,8 @@ L_QuestEnd:
 	mes "新たな心構えとともに困窮する";
 	mes "人々を良く導き救ってあげてください。";
 	next;
-	getitem 1550,1;
+	if (@joblv < 50) getitem 1550,1;
+	if (@joblv >= 50) getitem 1551,1;
 	mes "[トーマス司教]";
 	mes "そして転職記念にこれをさしあげます。";
 	mes "信義について記されており、これからの";

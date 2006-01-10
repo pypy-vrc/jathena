@@ -68,6 +68,7 @@ struct socket_data{
 	unsigned int rlr_tick, rlr_bytes, rlr_disc;	// ë—àÊêßå¿óp
 	void* session_data;
 	void* session_data2;
+	int server_port;
 #ifdef _WIN32
 	SOCKET socket;
 #endif
@@ -82,7 +83,7 @@ extern int fd_max;
 
 // Function prototype declaration
 
-int make_listen_port(int);
+int make_listen_port(int,unsigned long);
 int make_connection(long,int);
 int delete_session(int);
 int realloc_fifo(int fd,int rfifo_size,int wfifo_size);
@@ -101,6 +102,7 @@ void socket_enable_httpd(int);
 
 struct httpd_session_data;
 void socket_httpd_page(struct httpd_session_data* sd,const char* url);
+const char* get_socket_ctrl_panel_url(void);
 
 void socket_set_httpd_page_connection_func( void (*func)(int fd,char*,char*,char*) );
 

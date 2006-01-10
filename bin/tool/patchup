@@ -1,24 +1,34 @@
 #!/usr/bin/perl
 
-# パッチ当て支援プログラム 2005/10/22 by ID:7QLFJSM
+# パッチ当て支援プログラム by ID:7QLFJSM
+
+# 更新履歴
+#
+# version up  2005/12/11
+#	fix パッチをリネームしなくてもいいように修正
+#	fix パッチで一部処理がまずい部分を修正
+#	xcopy に対応
+#
+# first release  2005/10/22
+#
 
 # --- 使用方法 ---
 
 # 環境チェック
 #
 # 1. プラットフォーム
-#   + Cygwin
-#   + たぶん UNIX 系 ( Linux, BSD, Solaris など？）
+#   * Cygwin + Perl
+#   * たぶん UNIX 系 + Perl ( Linux, BSD, Solaris など？）
+#   * たぶん Windows + ActivePerl
 #
 # 2. 必須プログラム
-#   + Perl (Perl 5 系列)
-#   + cp (ファイルコピーコマンド)
-#   つまり Windows と ActivePerl だけじゃ cp がないので動きません。
-#   気力がある人は xcopy.exe などに置き換えてください。
+#   * Perl (Perl 5 系列)
+#   * cp / xcopy のどちらか(ファイルコピーコマンド)
 #
 # 3. 作者の環境
-#   Windows XP professional SP2 + cygwin
-#   なんというか、UNIX 系の OS ではテストすらしてません。
+#   * Windows XP professional SP2 + cygwin
+#     なんというか、UNIX 系の OS ではテストすらしてません。
+#     ActivePerl でも動くと思いますが、テストしてません。
 
 # 準備
 #
@@ -30,16 +40,16 @@
 #      UNIX 系統はわからないけど unzip とかでできる？
 #    + ディレクトリは Readme のあるディレクトリに 1500 などの
 #      パッチディレクトリがくるように。bin とか src と同じ階層。
-#    + fix パッチがあるときは、最新の fix を 4 桁の数字にリネームする。
-#      たとえば、 1541_fix2 は 1541 にする。
+#    + fix パッチがあるときは、最新の fix のみを入れる。
 #
 #     こんな感じになれば OK
 #       /athena-dev-2.1.1-modXXXX/ReadmeXXXX
 #                                /bin/*
 #                                /src/*
 #                                /1500/*
-#                                /1501/*
+#                                /1501_fix/*
 #                                /1502/*
+#                                /1503fix2/*
 #				あとのファイルとかディレクトリは省略。
 #
 # 3. ReadmeXXXX （XXXX は数字）に該当するファイルが複数あると
@@ -91,7 +101,7 @@
 #    + ディスク容量に問題ないか、書込み禁止になってないか
 #    + cp コマンドがあるか（DOS では Cygwin などがないと動作しません）
 #
-# 7. "OK" とでてプログラムが終了したならパッチが当たりました。
+# 7. "完了" とでてプログラムが終了したならパッチが当たりました。
 #    make するなり、conf や db を設定するなりして、調整したら
 #    新バージョンの athena ができあがるでしょう。
 
@@ -134,7 +144,7 @@ die "Error: ファイル ReadmeXXXX が見つかりません.\n" unless $filename;
 open FH,"<$filename" or die "Error: ファイル $filename が開けません.\n";
 foreach $x ( <FH> )
 {
-	if( $x =~m/^\/\/(\d\d\d\d)\s+by\s+/i )
+	if( $x =~m/^\/\/(\d\d\d\d)[\w_\-\s]+by\s+/i )
 	{
 		$currentpatch = $1;
 		last;
@@ -149,28 +159,41 @@ print "\nパッチのバージョンをチェックしています ...\n";
 my ( $maxpatch, $minpatch, $warn )=( 0, $currentpatch, 0);
 foreach $x( <$fromdir/*> )
 {
-	if( $x =~m/[\A\/\\](\d\d\d\d)$/ && -d $x )
+	if( $x =~m/[\A\/\\]((\d\d\d\d)[\w_\-]*)$/ && -d $x )
 	{
-		$maxpatch = $1 if( $1 > $maxpatch );
-		$minpatch = $1 if( $1 < $minpatch );
-		$e_patch{$1}=1;
+		$maxpatch = $2 if( $2 > $maxpatch );
+		$minpatch = $2 if( $2 < $minpatch );
+		if( exists $patch_dir{$2} )
+		{
+			print "Warning: パッチ $2 が複数存在します.\n";
+			$err++;
+		}
+		
+		$patch_dir{$2}=$1;
 		if( $1 <= $currentpatch )
 		{
-			print "Warning: パッチ $1 は現在の Athena ($currentpatch) と同じか古いバージョンです.\n";
+			print "Warning: パッチ $2 ($1) は現在と同じか古いバージョンです.\n";
 			$warn++;
 		}
 	}
 }
 
-if($warn)
+if($warn || $err )
 {
-	print	"古いパッチディレクトリは削除してください. \n".
-			"無視して続行（パッチの当て直し）することもできます.\n".
-			"続行しますか？ ( yes=Enter, no=Ctrl+C ) ?";
+	if( $warn )
+	{
+		print	"古いパッチディレクトリは削除してください. \n".
+				"無視して続行（パッチの当て直し）することもできます.\n";
+	}
+	if( $err )
+	{
+		die		"Error: 複数の fix があるパッチは、最新の fix のみにしてください.\n";
+	}
+	print	"続行しますか？ ( yes=Enter, no=Ctrl+C ) ?";
 	$x=<STDIN>;
 	
 	$currentpatch = $minpatch-1;
-	$warn=0;
+	$warn = $warn2 = 0;
 }
 
 die "Error: 当てることのできるパッチがありません.\n" if $currentpatch>=$maxpatch;
@@ -181,7 +204,7 @@ print "\nパッチの連続性をチェックしています...\n";
 
 for( $i = $currentpatch+1; $i < $maxpatch; $i++ )
 {
-	unless( exists $e_patch{$i} )
+	unless( exists $patch_dir{$i} )
 	{
 		print "Warning: パッチ $i が見つかりません. 以降のパッチを当てるために必要です.\n";
 		$warn++;
@@ -212,7 +235,7 @@ while(scalar(@cdirs))
 		{
 			my $name = substr($x,$len+1);
 			
-			next if( $name=~m/^\/?\d\d\d\d$/ );
+			next if( $name=~m/^\/?\d\d\d\d/ );
 			
 			if( -d $x )
 			{
@@ -232,7 +255,7 @@ print "パッチのディレクトリ情報をチェックしています ...\n";
 $warn=0;
 for( $i = $currentpatch+1; $i <= $maxpatch; $i++ )
 {
-	my $dir = "$fromdir/$i";
+	my $dir = "$fromdir/$patch_dir{$i}";
 	$len = length( $dir );
 	@cdirs=("");
 	
@@ -250,7 +273,7 @@ for( $i = $currentpatch+1; $i <= $maxpatch; $i++ )
 				{
 					if( !exists $dirs{$name} )
 					{
-						print "Warning: パッチ $i のディレクトリ [$name] : 新規ディレクトリ？\n";
+						print "Warning: パッチ $i ($patch_dir{$i}) のディレクトリ [$name] : 新規？\n";
 						$warn++; 
 					}
 					push @ncdirs, $name;
@@ -259,7 +282,7 @@ for( $i = $currentpatch+1; $i <= $maxpatch; $i++ )
 				{
 					if( !exists $files{$name} )
 					{
-						print "Warning: パッチ $i のファイル [$name] : 新規ファイル？\n";
+						print "Warning: パッチ $i ($patch_dir{$i}) のファイル [$name] : 新規？\n";
 						$warn++; 
 					}
 				}
@@ -278,17 +301,48 @@ if($warn)
 	$warn=0;
 }
 
+
+print "\nコピーに使用するプログラムを探しています...\n";
+$cp_flag = 0;
+if( grep { -x "$_/cp" } split (/\s*[;\:]\s*/, $ENV{PATH} ) )
+{
+	$cp_flag=1;
+	print "cp を使います.\n";
+}
+elsif( grep { -e "$_/xcopy.exe" } split (/\s*[;\:]\s*/, $ENV{PATH}) )
+{
+	$cp_flag=2;
+	print "xcopy を使います.\n";
+}
+else
+{
+	die "コピーに使用できるプログラム cp または xcopy がありません.\n";
+}
+
+
 print	"\n\nパッチ当ての準備ができました. これ以降は中止することができません.\n".
 		"バックアップはとりましたか？ ディレクトリやファイルは完全に正しいですか？\n".
 		"続行しますか ( yes=Enter, no=Ctrl+C ) ?";
 $x=<STDIN>;
 
 print "\n";
+
 $err=0;
 for( $i = $currentpatch+1; $i <= $maxpatch; $i++ )
 {
-	print "パッチを当てています ... $i\n";
-	$err += system( "cp $fromdir/$i/* $todir/ -rfp " ); 
+	print "パッチを当てています ... $i ($patch_dir{$i})\n";
+	my( $src, $dest ) = ( "$fromdir/$patch_dir{$i}/*", "$todir/" );
+
+	if( $cp_flag == 1 )
+	{
+		$err += system( "cp $src $dest -rfp " );
+	}
+	else
+	{
+		$src =~s{/+}{\\}g;
+		$dest=~s{/+}{\\}g;
+		$err += system( "xcopy.exe", $src, $dest, "/Y", "/Q", "/E" );	# シェルの介入を避ける
+	}
 }
 
 if($err)

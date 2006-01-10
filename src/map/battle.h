@@ -167,6 +167,7 @@ extern struct Battle_Config {
 	int natural_heal_weight_rate_icon;
 	int item_name_override_grffile;
 	int arrow_decrement;
+	int allow_any_weapon_autoblitz;
 	int max_aspd;
 	int max_hp;
 	int max_sp;
@@ -182,6 +183,7 @@ extern struct Battle_Config {
 	int undead_detect_type;
 	int pc_auto_counter_type;
 	int monster_auto_counter_type;
+	int min_hitrate;
 	int agi_penaly_type;
 	int agi_penaly_count;
 	int agi_penaly_num;
@@ -360,6 +362,10 @@ extern struct Battle_Config {
 	int baby_status_max;
 	int baby_hp_rate;
 	int baby_sp_rate;
+	int upper_hp_rate;
+	int upper_sp_rate;
+	int normal_hp_rate;
+	int normal_sp_rate;
 	int baby_weight_rate;
 	int no_emergency_call;
 	int save_am_pharmacy_success;

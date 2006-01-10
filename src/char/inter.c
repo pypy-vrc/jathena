@@ -457,14 +457,15 @@ int inter_mapif_init(int fd)
 //--------------------------------------------------------
 
 // GMメッセージ送信
-int mapif_GMmessage(unsigned char *mes,int len)
+int mapif_GMmessage(unsigned char *mes,int len,unsigned long color)
 {
 	unsigned char *buf = (unsigned char*)malloc(len);
-	WBUFW(buf,0)=0x3800;
-	WBUFW(buf,2)=len;
-	memcpy(WBUFP(buf,4),mes,len-4);
+	WBUFW(buf,0) = 0x3800;
+	WBUFW(buf,2) = len;
+	WBUFL(buf,4) = color;
+	memcpy(WBUFP(buf,8), mes, len-8);
 	mapif_sendall(buf,len);
-//	printf("inter server: GM:%d %s\n",len,mes);
+	//printf("inter server: GM:%d %s\n", len, mes);
 	free(buf);
 	return 0;
 }
@@ -530,7 +531,7 @@ int mapif_account_reg_reply(int fd,int account_id)
 // GMメッセージ送信
 int mapif_parse_GMmessage(int fd)
 {
-	mapif_GMmessage(RFIFOP(fd,4),RFIFOW(fd,2));
+	mapif_GMmessage(RFIFOP(fd,8), RFIFOW(fd,2), RFIFOL(fd,4));
 	return 0;
 }
 

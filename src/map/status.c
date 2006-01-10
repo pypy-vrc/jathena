@@ -1094,10 +1094,10 @@ L_RECALC:
 	//最大HP計算
 	//転生職の場合最大HP25%UP
 	if(pc_isupper(sd))
-		sd->status.max_hp += ((3500 + bl*hp_coefficient2[s_class.job] + hp_sigma_val[s_class.job][(bl > 0)? bl-1:0])/100 * (100 + sd->paramc[2])/100 + (sd->parame[2] - sd->paramcard[2])) * 125/100;
+		sd->status.max_hp += ((3500 + bl*hp_coefficient2[s_class.job] + hp_sigma_val[s_class.job][(bl > 0)? bl-1:0])/100 * (100 + sd->paramc[2])/100 + (sd->parame[2] - sd->paramcard[2])) * battle_config.upper_hp_rate/100;
 	else if(pc_isbaby(sd))//養子の場合最大HP70%
 		sd->status.max_hp += ((3500 + bl*hp_coefficient2[s_class.job] + hp_sigma_val[s_class.job][(bl > 0)? bl-1:0])/100 * (100 + sd->paramc[2])/100 + (sd->parame[2] - sd->paramcard[2])) * battle_config.baby_hp_rate/100;
-	else sd->status.max_hp += (3500 + bl*hp_coefficient2[s_class.job] + hp_sigma_val[s_class.job][(bl > 0)? bl-1:0])/100 * (100 + sd->paramc[2])/100 + (sd->parame[2] - sd->paramcard[2]);
+	else sd->status.max_hp +=((3500 + bl*hp_coefficient2[s_class.job] + hp_sigma_val[s_class.job][(bl > 0)? bl-1:0])/100 * (100 + sd->paramc[2])/100 + (sd->parame[2] - sd->paramcard[2])) * battle_config.normal_hp_rate/100;
 
 	if(sd->hprate!=100)
 		sd->status.max_hp = sd->status.max_hp*sd->hprate/100;
@@ -1115,10 +1115,10 @@ L_RECALC:
 	// 最大SP計算
 	//転生職の場合最大SP125%
 	if(pc_isupper(sd))
-		sd->status.max_sp += (((sp_coefficient[s_class.job] * bl) + 1000)/100 * (100 + sd->paramc[3])/100 + (sd->parame[3] - sd->paramcard[3])) * 125/100;
+		sd->status.max_sp += (((sp_coefficient[s_class.job] * bl) + 1000)/100 * (100 + sd->paramc[3])/100 + (sd->parame[3] - sd->paramcard[3])) * battle_config.upper_sp_rate/100;
 	else if(pc_isbaby(sd)) //養子の場合最大SP70%
 		sd->status.max_sp += (((sp_coefficient[s_class.job] * bl) + 1000)/100 * (100 + sd->paramc[3])/100 + (sd->parame[3] - sd->paramcard[3])) * battle_config.baby_sp_rate/100;
-	else sd->status.max_sp += ((sp_coefficient[s_class.job] * bl) + 1000)/100 * (100 + sd->paramc[3])/100 + (sd->parame[3] - sd->paramcard[3]);
+	else sd->status.max_sp +=(((sp_coefficient[s_class.job] * bl) + 1000)/100 * (100 + sd->paramc[3])/100 + (sd->parame[3] - sd->paramcard[3])) * battle_config.normal_sp_rate/100;
 
 	if(sd->sprate!=100)
 		sd->status.max_sp = sd->status.max_sp*sd->sprate/100;
@@ -3290,7 +3290,7 @@ int status_free_sc_data(struct block_list *bl)
 	if(bl->type == BL_MOB && status_check_dummy_sc_data(bl)==0)
 	{
 		struct mob_data *md = (struct mob_data *)bl;
-		aFree(md->sc_data);
+		map_freeblock(md->sc_data);
 		md->sc_data = dummy_sc_data;
 		md->sc_count = 0;
 	}
@@ -3490,7 +3490,7 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 		case SC_ANGELUS:			/* アンゼルス */
 			calc_flag = 1;
 			break;
-		case SC_INCREASEAGI:		/* 速度上昇 */
+		case SC_INCREASEAGI:		/* 速度増加 */
 			calc_flag = 1;
 			if(sc_data[SC_DECREASEAGI].timer!=-1 )
 				status_change_end(bl,SC_DECREASEAGI,-1);
@@ -3499,6 +3499,12 @@ int status_change_start(struct block_list *bl,int type,int val1,int val2,int val
 			calc_flag = 1;
 			if(sc_data[SC_INCREASEAGI].timer!=-1 )
 				status_change_end(bl,SC_INCREASEAGI,-1);
+			if(sc_data[SC_TWOHANDQUICKEN].timer!=-1 )
+				status_change_end(bl,SC_TWOHANDQUICKEN,-1);
+			if(sc_data[SC_SPEARSQUICKEN].timer!=-1 )
+				status_change_end(bl,SC_SPEARSQUICKEN,-1);
+			if(sc_data[SC_ADRENALINE].timer!=-1 )
+				status_change_end(bl,SC_ADRENALINE,-1);
 			break;
 		case SC_SIGNUMCRUCIS:		/* シグナムクルシス */
 			calc_flag = 1;
@@ -5174,8 +5180,18 @@ int status_change_end( struct block_list* bl , int type,int tid)
 					}
 				}
 				break;
-
-		/* option1 */
+			case SC_ANKLE:
+				{
+					struct skill_unit_group *sg = (struct skill_unit_group *)sc_data[SC_ANKLE].val2;
+					// skill_delunitgroupからstatus_change_end が呼ばれない為に、
+					// 一端発動していない事にしてからグループ削除する。
+					if(sg) {
+						sg->val2 = 0;
+						skill_delunitgroup(sg);
+					}
+				}
+				break;
+			/* option1 */
 			case SC_FREEZE:
 				sc_data[type].val3 = 0;
 				break;
@@ -5697,17 +5713,19 @@ int status_change_timer(int tid, unsigned int tick, int id, int data)
 		break;
 	case SC_POISON:
 		if (sc_data[SC_SLOWPOISON].timer == -1 && (--sc_data[type].val3) > 0) {
-			int hp = status_get_max_hp(bl);
-			if (status_get_hp(bl) > hp>>2) {
+			int hp = status_get_hp(bl),p_dmg = status_get_max_hp(bl);
+			if (hp > p_dmg>>2) { // 最大HPの25%以上
 				if(bl->type == BL_PC) {
-					hp = 3 + hp*3/200;
-					pc_heal((struct map_session_data *)bl,-hp,0);
+					p_dmg = 3 + (int)p_dmg*3/200;
+					if(p_dmg >= hp) p_dmg = hp-1; // 毒では死なない
+					pc_heal((struct map_session_data *)bl,-p_dmg,0);
 				} else if (bl->type == BL_MOB) {
 					struct mob_data *md;
 					if ((md=((struct mob_data *)bl)) == NULL)
 						break;
-					hp = 3 + hp/200;
-					md->hp -= hp;
+					p_dmg = 3 + (int)p_dmg/200;
+					md->hp -= p_dmg;
+					if(md->hp<1) md->hp = 1; //毒では死なない
 				}
 			}
 		}
@@ -6427,6 +6445,9 @@ int status_readdb(void) {
 		dummy_sc_data[i].val1 = dummy_sc_data[i].val2 = dummy_sc_data[i].val3 = dummy_sc_data[i].val4 =0;
 	}
 	
+#ifdef DYNAMIC_SC_DATA
+	puts("status_readdb: enable dynamic sc_data.");
+#endif
 	return 0;
 }
 

@@ -923,6 +923,10 @@ arrow_decrement
 	矢が消耗されません。(矢を装備する必要はあります。)
 	デフォルトはyesです。
 
+allow_any_weapon_autoblitz
+	弓以外の武器を装備していても、自動鷹が発動するかどうかです。
+	コモドパッチ以前を再現するときはyes、デフォルトはnoです。
+
 max_aspd
 	プレイヤーの最大攻撃速度を設定します。
 	デフォルトは199です。最大は199で最小は100です。
@@ -996,6 +1000,11 @@ agi_penaly_type
 	agi_penaly_count以上の敵に攻撃された時のagiペナルティの仕様を設定します。
 	0でなし、1でagi_penaly_num%ずつ減って、2でagi_penaly_numだけ減ります。
 	デフォルトは0です。
+
+min_hitrate
+	最低命中率を設定します。
+	0にすると最大回避率が100%になり、100に設定すると敵味方問わず全て必中になります。
+	デフォルトは5です。
 
 agi_penaly_count
 	agiペナルティを適用する敵の数を設定します。
@@ -1282,7 +1291,7 @@ once_autospell
 allow_same_autospell
 	同じカードのオートスペルを許可する。デフォルトはnoです
 	アイテムIDによる追加判定を行います
- 	yes : 同じIDのオートスペルは追加されません。(他のボーナスは処理されます)
+	yes : 同じIDのオートスペルは追加されません。(他のボーナスは処理されます)
 	no  : 全てのオートスペルは追加されます。発動率は加算ではなく個別です
 
 
@@ -1593,7 +1602,7 @@ max_marionette_agi: 99
 	マリオネットコントロールのagi上限を設定。
 
 max_marionette_vit: 99
-	マリオネットコントロールのvit上限を設定。）
+	マリオネットコントロールのvit上限を設定。
 
 max_marionette_int: 99
 	マリオネットコントロールのint上限を設定。
@@ -1684,8 +1693,11 @@ redemptio_penalty_type: 0
 	//+4:HP1で生き残る
 	//+8:ペナルティ無し
 
-boss_no_knockbacking: no
+boss_no_knockbacking: 0
 	//ボスはノックバックしない
+	//0:ノックバックする
+	//1:ボス属性のMobは全てノックバックしない
+	//2:MVPのMobのみノックバックしない
 
 allow_create_scroll: no
 	//スクロール製造を許す
@@ -1705,17 +1717,12 @@ extended_abracadabra: no
 	noの場合、セージは使用できないが、プロフェッサーでは使用できる。
 	デフォルトはno。
 
-can_attack_pet:no
-	ペットに飼い主以外のプレイヤーとモンスターが攻撃できるかどうか
-	デフォルトはno。
+dropitem_itemrate_fix: no
+	// カード・装備によるドロップに倍率を適用するか
+	// 2以上の数値を指定すると%適用(100で等倍、200で2倍…)
 
-pet_damage_delay:no
-	デフォルトはnoですが、yesにすると、ペットが攻撃を受けたとき、
-	一定時間移動できなくなります。
-
-pet_damage_delay_rate:100
-	ペットが攻撃を受けたとき、移動できなくなる時間の割合を設定します
-	100がデフォルトの値で、200にすると倍に、0にするとディレイがなくなります
+gm_nomanner_lv: 50
+	// チャット・スキル禁止(赤エモ)付与可能なGMのレベル
 
 import
 	その行を別ファイルの中身と置き換えます。
@@ -1811,6 +1818,7 @@ natural_heal_weight_rate: 50
 natural_heal_weight_rate_icon: no
 item_name_override_grffile: yes
 arrow_decrement: yes
+allow_any_weapon_autoblitz: no
 max_aspd: 199
 max_hp: 32500
 max_sp: 32500
@@ -1826,6 +1834,7 @@ save_clothcolor: no
 undead_detect_type: 2
 player_auto_counter_type: 1
 monster_auto_counter_type: 0
+min_hitrate: 5
 agi_penaly_type: 0
 agi_penaly_count: 3
 agi_penaly_num: 0
@@ -2298,6 +2307,14 @@ mesweb: 1
 httpd_config
 	全サーバー共通の httpd の設定が書かれたファイルを指定します。
 
+socket_ctrl_panel
+	httpd で socket コントロールパネルを使用できるかどうか ( 0 で使用しない)
+	URL は socket_ctrl_panel_url で指定。
+	httpd.conf でアクセス制限をかけることを強く推奨。
+
+socket_ctrl_panel_url
+	socket コントロールパネルの URL
+
 
  ** ddos攻撃と判断する為のルール設定 **
  ddos_interval msec以内の接続要求がddos_count回続いた場合に、
@@ -2386,6 +2403,8 @@ import
 < 例 >
 
 httpd_config: conf/httpd.conf
+socket_ctrl_panel: 0
+socket_ctrl_panel_url: /socketctrl
 ddos_interval: 1000
 ddos_count: 5
 ddos_autoreset: 600000
@@ -2444,25 +2463,58 @@ timezone
 	auto で警告がでるなら手動設定が必要です。
 	英国は 0 , 日本は +9 …etc。
 	
-log_no_flush: 0
+log_no_flush
 	ログをフラッシュしないかどうか(0でフラッシュする)
 
 
  ** 秒間リクエスト数の制限 **
  
-server_max_requests_per_second: 10
+server_max_requests_per_second
 	サーバー全体で処理する秒間リクエスト数をこの個数に制限する
 
-server_max_requests_period: 2000
+server_max_requests_period
 	サーバー全体で処理数を制限する場合のチェック間隔（ミリ秒）
 	この値が小さい場合、アクセスの集中度合いに時間的なムラがあると 503 を返しやすくなる。
 	大きい場合、一度制限がかかると解除に時間(設定したミリ秒)がかかる。
 
 
- ** url 単位でのアクセス制御 **
+ ** 外部 CGI に関する設定 **
+
+cgi_enable
+	外部 CGI を利用可能にするかどうか ( 0 にするとサーバー全体で CGI を無効にする )
+
+cgi_ext_list
+	外部 CGI の拡張子リスト ( target と組み合わせて URL ごとに設定することもできる ）
+	  スペースで区切って複数指定。拡張子前のドット "." は省略できない。
+	  "none" (クォート文字は要らない) にすると CGI を無効にする。
+	  <例>
+	   cgi_ext_list: .cgi .exe .pl .php .rb
+	   cgi_ext_list: none
+
+max_cgi_process
+	同時に処理できる外部 CGI プロセスの数をこの個数に制限する
+
+cgi_process_timeout
+	外部 CGI プロセスの最大実行時間（CGI のタイムアウトまでの時間：ミリ秒）
+
+cgi_kill_timeout
+	外部 CGI プロセスの中断の最大待ち時間（終了要求から強制終了までの時間：ミリ秒 ）
+
+cgi_temp_dir
+	外部 CGI 実行用のテンポラリファイルを作るディレクトリ
+	athena_httpd_ から始まるファイルが作られます。
+
+cgi_server_name
+	外部 CGI にメタ変数 SERVER_NAME で渡すサーバーのホスト名
+	（通常、グローバルアドレスか DNS 名を設定する）
+	Athena 自体はこの値を使いません。外部 CGI に直接渡します。
+	一部の CGI が自分自身への URL を生成するために利用することがあります。
+
+ ** url 単位での設定 **
 
  このあたりは apache の .htaccess の構文と似ているのでそちらの解説を
  参照するとかなりわかりやすいとおもいます。
+ IP アドレス／認証によるアクセス制御ができます。
 
 target
 	以後の文で、アクセス制御を設定する URL を指定します。
@@ -2471,6 +2523,11 @@ target
 satisfy
 	IP チェックとユーザー認証の "any"(どちらか) か "all"(全て) を
 	満たす必要があるかを設定します。省略すると all になります。
+
+cgi_ext_list
+	外部 CGI の拡張子リストです。前述の「外部 CGI に関する設定」を参考にしてください。
+
+ *-- IP アドレスによるアクセス制御 --*
 
 order
 	IP チェックの評価順序を設定します。
@@ -2487,6 +2544,8 @@ allow
 deny
 	禁止する IP をリストに追加します。allow を参照してください。
 	clear を指定すると、全ての禁止 IP を削除します。
+
+ *-- 認証によるアクセス制御 --*
 
 authtype
 	認証タイプを指定します。"basic" か "digest" か "none" です。
@@ -2555,6 +2614,16 @@ max_uri_length: 255
 timezone: auto
 auth_digest_period: 600000
 log_no_flush: 0
+server_max_requests_per_second: 10
+server_max_requests_period: 5000
+
+cgi_enable: 1
+cgi_ext_list: .cgi .exe .pl .php .rb
+max_cgi_process: 3
+cgi_process_timeout: 5000
+cgi_kill_timeout: 500
+cgi_temp_dir: ./log/
+cgi_server_name: localhost
 
 target: /memberspage/
 satisfy: any

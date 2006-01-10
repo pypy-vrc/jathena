@@ -1,4 +1,4 @@
-// $Id: map.c,v 1.1.1.4 2005/12/10 01:00:04 running_pinata Exp $
+// $Id: map.c,v 1.1.1.5 2006/01/10 09:36:25 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -245,9 +245,7 @@ int map_delblock(struct block_list *bl)
 {
 	int b;
 	nullpo_retr(0, bl);
-#ifdef	DYNAMIC_SC_DATA
-	status_free_sc_data(bl);
-#endif
+
 	// 既にblocklistから抜けている
 	if(bl->prev==NULL){
 		if(bl->next!=NULL){
@@ -1088,42 +1086,16 @@ int map_quit(struct map_session_data *sd)
 
 	nullpo_retr(0, sd);
 	if(!sd->state.waitingdisconnect && sd->new_fd != -1) {
-		if(sd->sc_data && sd->sc_data[SC_BERSERK].timer!=-1) //バーサーク中の終了はHPを100に
-			sd->status.hp = 100;
-
-		friend_send_online( sd, 1 );			// 友達リストのログアウトメッセージ送信
-		party_send_logout(sd);					// パーティのログアウトメッセージ送信
-		guild_send_memberinfoshort(sd,0);		// ギルドのログアウトメッセージ送信
-		status_change_clear(&sd->bl,1);			// ステータス異常を解除する
-		skill_stop_dancing(&sd->bl,1);			// ダンス/演奏中断
-		pc_cleareventtimer(sd);					// イベントタイマを破棄する
-		pc_delspiritball(sd,sd->spiritball,1);	// 気功削除
-
-		if(sd->status.pet_id && sd->pd) {
+		if( sd->pd ) {
 			pet_lootitem_drop(sd->pd,sd);
-			unit_remove_map(&sd->pd->bl,0);
-			if(sd->pet.intimate <= 0) {
-				intif_delete_petdata(sd->status.pet_id);
-				sd->status.pet_id = 0;
-				sd->pd = NULL;
-				sd->petDB = NULL;
-			}
-			else
-				intif_save_petdata(sd->status.account_id,&sd->pet);
+			unit_free( &sd->pd->bl, 0);
 		}
-
-		if(unit_isdead(&sd->bl))
-			pc_setrestartvalue(sd,2);
-
-		unit_remove_map(&sd->bl,2);
+		unit_free(&sd->bl, 0);
 		chrif_save(sd);
-		storage_storage_save(sd);
-		storage_delete(sd->status.account_id);
 	}
 
 	if( sd->stack ) {
-		free(sd->stack->stack_data);
-		free(sd->stack);
+		script_free_stack( sd->stack );
 	}
 
 	// ２重ログイン時、後にログインしたキャラのid_dbは削除しない
@@ -2230,8 +2202,16 @@ static int charid_db_final(void *key,void *data,va_list ap)
 void do_final(void)
 {
 	int i;
+	unsigned int tick = gettick();
 
 	chrif_mapactive(0); //マップサーバー停止中
+
+	for(i=0;i<MAX_FLOORITEM;i++) {
+		if( object[i] == NULL ) continue;
+		if( object[i]->type == BL_ITEM ) {
+			map_clearflooritem_timer(-1, tick, i, 1);
+		}
+	}
 
 	do_final_chrif(); // この内部でキャラを全て切断する
 	do_final_npc();

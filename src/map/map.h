@@ -264,7 +264,7 @@ struct map_session_data {
 	int npc_menu;
 	int npc_amount;
 	struct script_stack *stack;
-	unsigned char *npc_script,*npc_scriptroot;
+	struct script_code *npc_script,*npc_scriptroot;
 	int npc_scriptstate;
 	char npc_str[256];
 	unsigned int chatID;
@@ -524,7 +524,7 @@ struct npc_data {
 	short flag;
 	union {
 		struct {
-			char *script;
+			struct script_code *script;
 			short xs,ys;
 			int guild_id;
 			int timer,timerid,timeramount,nexttimer;
@@ -813,6 +813,8 @@ struct chat_data {
 	unsigned zeny;
 	unsigned lowlv;
 	unsigned highlv;
+	unsigned job;
+	unsigned upper;
 	struct map_session_data *usersd[20];
 	struct block_list *owner_;
 	struct block_list **owner;

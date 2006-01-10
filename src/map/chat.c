@@ -1,4 +1,4 @@
-// $Id: chat.c,v 1.1.1.4 2005/12/10 00:59:58 running_pinata Exp $
+// $Id: chat.c,v 1.1.1.5 2006/01/10 09:36:13 running_pinata Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,7 +51,9 @@ int chat_createchat(struct map_session_data *sd,int limit,int pub,char* pass,cha
 	cd->bl.type = BL_CHAT;
 	cd->zeny = 0;
 	cd->lowlv = 0;
-	cd->highlv = 255;
+	cd->highlv = MAX_LEVEL;
+	cd->job = ~(1<<MAX_PC_CLASS);
+	cd->upper = 0;
 
 	cd->bl.id = map_addobject(&cd->bl);	
 	if(cd->bl.id==0){
@@ -76,36 +78,48 @@ int chat_createchat(struct map_session_data *sd,int limit,int pub,char* pass,cha
 int chat_joinchat(struct map_session_data *sd,int chatid,char* pass)
 {
 	struct chat_data *cd;
+	struct pc_base_job s_class;
 
 	nullpo_retr(0, sd);
 
+	s_class = pc_calc_base_job(sd->status.class);
 	cd=(struct chat_data*)map_id2bl(chatid);
 	if(cd==NULL)
 		return 1;
 
 	if(cd->bl.m != sd->bl.m || sd->vender_id || sd->joinchat){
-		clif_joinchatfail(sd,3);	//何も表示しない
+		clif_joinchatfail(sd,3);
 		return 0;
 	}
 	if(cd->limit <= cd->users) {
-		clif_joinchatfail(sd,0);	//人数超過メッセージ
+		clif_joinchatfail(sd,0);
 		return 0;
 	}
 	if(cd->pub==0 && strncmp(pass,cd->pass,8)){
-		clif_joinchatfail(sd,1);	//パスワードエラーメッセージ
+		clif_joinchatfail(sd,1);
 		return 0;
 	}
 	if(cd->zeny > sd->status.zeny){
-		clif_joinchatfail(sd,4);	//お金不足メッセージ
+		clif_joinchatfail(sd,4);
 		return 0;
 	}
 	if(cd->lowlv > sd->status.base_level){
-		clif_joinchatfail(sd,5);	//Lv不足メッセージ
+		clif_joinchatfail(sd,5);
 		return 0;
 	}
 	if(cd->highlv < sd->status.base_level){
-		clif_joinchatfail(sd,6);	//Lv超過メッセージ
+		clif_joinchatfail(sd,6);
 		return 0;
+	}
+	if(((1<<s_class.job)&cd->job) == 0){
+		clif_joinchatfail(sd,7);
+		return 0;
+	}
+	if(cd->upper) {
+		if(((1<<s_class.upper)&cd->upper) == 0){
+			clif_joinchatfail(sd,7);
+			return 0;
+		}
 	}
 
 	cd->usersd[cd->users] = sd;
@@ -285,7 +299,7 @@ int chat_kickchat(struct map_session_data *sd,char *kickusername)
  */
 int chat_createnpcchat(
 	struct npc_data *nd,int limit,int pub,int trigger,char* title,int titlelen,const char *ev,
-	int zeny,int lowlv,int highlv)
+	int zeny,int lowlv,int highlv,int job,int upper)
 {
 	struct chat_data *cd;
 
@@ -312,6 +326,8 @@ int chat_createnpcchat(
 	cd->zeny = zeny;
 	cd->lowlv = lowlv;
 	cd->highlv = highlv;
+	cd->job = job;
+	cd->upper = upper;
 	memcpy(cd->npc_event,ev,sizeof(cd->npc_event));
 
 	cd->bl.id = map_addobject(&cd->bl);	

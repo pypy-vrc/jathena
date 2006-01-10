@@ -1208,15 +1208,6 @@ L_Rogue:
 	close;
 }
 
-in_rogue.gat,243,61,0	script	怪しい男	748,{
-	mes "[クアーク･ドノン]";
-	mes "な、何なんだお前！";
-	mes "どうやってここに入ってきた?!";
-	mes "あ、あ、あっちに行け！行けったら!!";
-	mes "う、ううう、うあぁあぁぁぁぁぁ!!!!";
-	close;
-}
-
 in_rogue.gat,160,34,2	script	ホルグレン Jr	85,{
 	if (Class == 17) goto L_Rogue;
 	mes "[ホルグレンJr.]";

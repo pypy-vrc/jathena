@@ -1,5 +1,3 @@
-// $Id: login.c,v 1.1.1.3 2005/11/30 00:05:58 running_pinata Exp $
-// original : login2.c 2003/01/28 02:29:17 Rev.1.1.1.1
 #define DUMP_UNKNOWN_PACKET	1
 
 #include <sys/types.h>
@@ -46,11 +44,15 @@ static int server_num;
 static int new_account_flag = 0;
 static int httpd_new_account_flag = 0;
 static int login_port = 6900;
+char login_sip_str[16];
+unsigned long  login_sip = 0;
+static int login_sport = 0;
 static int login_autosave_time = 600;
 
 struct mmo_char_server server[MAX_SERVERS];
 static int server_fd[MAX_SERVERS];
 static int login_fd;
+static int login_sfd;
 
 static struct {
   int account_id,login_id1,login_id2;
@@ -1368,6 +1370,11 @@ int parse_login(int fd)
 		case 0x2710:	// Charサーバー接続要求
 			if(RFIFOREST(fd)<84)
 				return 0;
+			if( login_sport != 0 && login_port != login_sport && session[fd]->server_port != login_sport ) {
+				printf("server login failed: connected port %d\n", session[fd]->server_port);
+				session[fd]->eof = 1;
+				return 0;
+			}
 			{
 				unsigned char *p=(unsigned char *)&session[fd]->client_addr.sin_addr;
 				login_log(
@@ -1425,7 +1432,11 @@ int parse_login(int fd)
 				struct login_session_data *ld=session[fd]->session_data;
 				if(RFIFOREST(fd)<4 || RFIFOREST(fd)<RFIFOW(fd,2))
 					return 0;
-	
+				if( login_sport != 0 && login_port != login_sport && session[fd]->server_port != login_sport ) {
+					printf("server login failed: connected port %d\n", session[fd]->server_port);
+					session[fd]->eof = 1;
+					return 0;
+				}
 				WFIFOW(fd,0)=0x7919;
 				WFIFOB(fd,2)=1;
 				
@@ -1513,6 +1524,13 @@ int login_config_read(const char *cfgName)
 		}
 		else if(strcmpi(w1,"login_port")==0){
 			login_port=atoi(w2);
+		}
+		else if(strcmpi(w1,"login_sip")==0){
+			memcpy(login_sip_str,w2,16);
+			login_sip  = inet_addr(login_sip_str);
+		}
+		else if(strcmpi(w1,"login_sport")==0){
+			login_sport=atoi(w2);
 		}
 		else if(strcmpi(w1,"order")==0 || strcmpi(w1,"deny")==0 || strcmpi(w1,"allow")==0) {
 			// login_athena.conf のアクセス制限は、socket.conf に統合しました。
@@ -1708,6 +1726,8 @@ void do_final(void)
 		}
 	}
 	delete_session(login_fd);
+	if(login_sport != 0 && login_port != login_sport)
+		delete_session(login_sfd);
 	do_final_timer();
 }
 
@@ -1737,7 +1757,9 @@ int do_init(int argc,char **argv)
 	for(i=0;i<MAX_SERVERS;i++){
 		server_fd[i]=-1;
 	}
-	login_fd = make_listen_port(login_port);
+	login_fd = make_listen_port(login_port, 0);
+	if(login_sport != 0 && login_port != login_sport)
+		login_sfd = make_listen_port(login_sport, login_sip);
 	login_init();
 	set_defaultparse(parse_login);
 	set_sock_destruct(parse_login_disconnect);
