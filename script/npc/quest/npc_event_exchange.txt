@@ -1,0 +1,301 @@
+//商人
+function	script	novice_exchange	{
+
+	set @WEIGHT,(Weight*100/MaxWeight);
+	if (@WEIGHT >= 90) goto L_Error;
+	mes "[商人]";
+	mes "こんにちは！";
+	if (getarg(0) == "prontera") mes "あのさ「かたい皮」や「綿毛」";
+	if (getarg(0) == "geffen") mes "あのさ「かたい皮」や「さなぎの皮」";
+	if (getarg(0) == "payon") mes "あのさ「木の根」や「ゼロピー」";
+	if (getarg(0) == "morocc") mes "あのさ「かたい皮」や「鳥の羽毛」";
+	if (getarg(0) == "aldebaran") mes "あのさ「蟲の皮」や「鳥の羽毛」";
+	mes "というアイテムを持っていないか？";
+	if (getarg(0) != "payon") mes "あ、「ゼロピー」でもいいぞ。";
+	mes "もし持ってたら、俺に少し";
+	mes "分けてくれないか。";
+	next;
+	mes "[商人]";
+	mes "もちろん、ただでもらおうなんて";
+	mes "わけじゃない。そうだな……";
+	if (getarg(0) == "prontera") mes "「かたい皮5個」か「綿毛10個」";
+	if (getarg(0) == "geffen") mes "「かたい皮5個」か「さなぎの皮6個」";
+	if (getarg(0) == "payon") mes "「木の根6個」か「ゼロピー10個」と";
+	if (getarg(0) == "morocc") mes "「かたい皮5個」か「鳥の羽毛7個」";
+	if (getarg(0) == "aldebaran") mes "「蟲の皮1個」か「鳥の羽毛7個」";
+	if (getarg(0) != "payon") mes "または「ゼロピー10個」と";
+	mes "「赤ポーション1個」を";
+	mes "交換するのはどうだ？";
+	next;
+	menu "いいですよ！",L_Menu1,"何か損してる気が……",L_Menu2,"嫌です！",L_Menu3;
+	L_Menu1:
+		mes "[商人]";
+		if (getarg(0) == "prontera") mes "「かたい皮」か「綿毛」";
+		if (getarg(0) == "geffen") mes "「かたい皮」か「さなぎの皮」";
+		if (getarg(0) == "payon") mes "「木の根」か「ゼロピー」。";
+		if (getarg(0) == "morocc") mes "「かたい皮」か「綿毛」";
+		if (getarg(0) == "aldebaran") mes "「蟲の皮」か「鳥の羽毛」";
+		if (getarg(0) != "payon") mes "もしくは「ゼロピー」。";
+		mes "さあ、どれと交換するんだ？";
+		next;
+		if (getarg(0) == "prontera") menu "「かたい皮」を「赤ポーション」に",L_Menu1_1,"「ゼロピー」を「赤ポーション」に",L_Menu1_2,"「綿毛」を「赤ポーション」に",L_Menu1_3,"やめておきます",L_Menu1_End;
+		if (getarg(0) == "geffen") menu "「かたい皮」を「赤ポーション」に",L_Menu1_1,"「さなぎの皮」を「赤ポーション」に",L_Menu1_4,"「ゼロピー」を「赤ポーション」に",L_Menu1_2,"やめておきます",L_Menu1_End;
+		if (getarg(0) == "payon") menu "「木の根」を「赤ポーション」に",L_Menu1_5,"「ゼロピー」を「赤ポーション」に",L_Menu1_2,"やめておきます",L_Menu1_End;
+		if (getarg(0) == "morocc") menu "「かたい皮」を「赤ポーション」に",L_Menu1_1,"「鳥の羽毛」を「赤ポーション」に",L_Menu1_6,"「ゼロピー」を「赤ポーション」に",L_Menu1_2,"やめておきます",L_Menu1_End;
+		if (getarg(0) == "aldebaran") menu "「蟲の皮」を「赤ポーション」に",L_Menu1_7,"「鳥の羽毛」を「赤ポーション」に",L_Menu1_6,"「ゼロピー」を「赤ポーション」に",L_Menu1_2,"やめておきます",L_Menu1_End;
+		L_Menu1_1:
+			set @CHANGE_ITEM,935;	//かたい皮
+			set @COUNT_ITEM,5;	//5個
+			goto L_Change;
+		L_Menu1_2:
+			set @CHANGE_ITEM,909;	//ゼロピー
+			set @COUNT_ITEM,10;	//10個
+			goto L_Change;
+		L_Menu1_3:
+			set @CHANGE_ITEM,914;	//綿毛
+			set @COUNT_ITEM,10;	//10個
+			goto L_Change;
+		L_Menu1_4:
+			set @CHANGE_ITEM,915;	//さなぎの皮
+			set @COUNT_ITEM,6;	//6個
+			goto L_Change;
+		L_Menu1_5:
+			set @CHANGE_ITEM,902;	//木の根
+			set @COUNT_ITEM,6;	//6個
+			goto L_Change;
+		L_Menu1_6:
+			set @CHANGE_ITEM,916;	//鳥の羽毛
+			set @COUNT_ITEM,7;	//7個
+			goto L_Change;
+		L_Menu1_7:
+			set @CHANGE_ITEM,955;	//蟲の皮
+			set @COUNT_ITEM,1;	//1個
+			goto L_Change;
+		L_Menu1_End:
+			mes "[商人]";
+			mes "そうか……";
+			mes "まあ、気が向いたらまた来な。";
+			close;
+L_Change:
+	if (countitem(@CHANGE_ITEM) >= @COUNT_ITEM) goto L_Change_OK;
+	mes "[商人]";
+	mes "おい！";
+	mes getitemname(@CHANGE_ITEM)+"はどこにあるんだ？";
+	mes "いくらなんでも"+getitemname(@CHANGE_ITEM)+"が"+@COUNT_ITEM+"個ないと";
+	mes "赤ポーションは渡せないぞ。";
+	close;
+	L_Change_OK:
+		mes "[商人]";
+		mes "ありがてぇ！";
+		mes "それじゃ、何個交換しようか？";
+		mes "ちょいと見せてみな。";
+		next;
+		set @CHANGE_HAVE,countitem(@CHANGE_ITEM);	//交換アイテム所持数
+		set @CHANGE_OK,@CHANGE_HAVE / @COUNT_ITEM;	//交換可能数
+		mes "[商人]";
+		mes getitemname(@CHANGE_ITEM)+"は"+@CHANGE_HAVE+"個";
+		mes "あるのか……そうすると";
+		mes "赤ポーションは"+@CHANGE_OK+"個まで";
+		mes "交換できるぞ。";
+		next;
+		mes "[商人]";
+		mes getitemname(@CHANGE_ITEM)+"を赤ポーションと交換するか？";
+		next;
+		menu "交換します",-,"やっぱりやめておきます",L_Cancel;
+			mes "[商人]";
+			mes "赤ポーションは最大何個もらえるかは";
+			mes "さっき教えたから、わかってるな？";
+			next;
+			mes "[商人]";
+			mes "一度に交換できる赤ポーションの数は";
+			mes "最小は1個、最大は100個だ。";
+			mes "もし交換する気がないなら「0」と";
+			mes "言ってくれ。";
+			next;
+		L_Input:
+			input @CHANGE_NUMBER;
+			if ((@CHANGE_NUMBER < 0) || (@CHANGE_NUMBER > 100)) goto L_Error1;
+			if (@CHANGE_NUMBER > @CHANGE_OK) goto L_Error2;
+			if (@CHANGE_NUMBER == 0) goto L_Close;
+			delitem @CHANGE_ITEM,@CHANGE_NUMBER * @COUNT_ITEM;
+			getitem 501,@CHANGE_NUMBER;
+			mes "[商人]";
+			mes "おし！これが赤ポーションだ。";
+			mes "確認してくれ。ありがとよ。";
+			mes "がははー！";
+			close;
+		L_Error1:
+			mes "[商人]";
+			mes "一度に交換できるのは";
+			mes "100個までだって言っただろ！";
+			mes "仕方ねぇな、もう一回聞いてやる。";
+			mes "何個にするんだ？";
+			next;
+			goto L_Input;
+		L_Error2:
+			mes "[商人]";
+			mes "おい！それじゃあ、"+getitemname(@CHANGE_ITEM)+"が";
+			mes "足りないだろ？赤ポーションが";
+			mes "何個まで交換できるか、きちんと";
+			mes "確認してから来いよ。";
+			close;
+		L_Close:
+			mes "[商人]";
+			mes "おいおい、そりゃないだろ。";
+			mes "期待させるだけさせておいて……";
+			mes "仕方ねぇな。気が向いたら";
+			mes "また来てくれよ。";
+			close;
+		L_Cancel:
+			mes "[商人]";
+			mes "……仕方ねぇな。";
+			mes "また、気が向いたら来てくれよ。";
+			close;
+	L_Menu2:
+		mes "[商人]";
+		mes "損してるかもだって？がははー。";
+		mes "全然そんなことはないはずだぞ。";
+		mes "どちらかと言えば、俺の方が";
+		mes "損になる。まぁ、俺の条件が";
+		mes "気にくわないなら仕方ないが。";
+		close;
+	L_Menu3:
+		mes "[商人]";
+		mes "……チッ。仕方ねぇな。";
+		mes "また気が向いたら来てくれよ。";
+		close;
+L_Error:
+	mes "[商人]";
+	mes "おいおい！";
+	mes "怪力じゃないくせに";
+	mes "何でそんなに持ち歩いてるんだ？";
+	mes "カプラの倉庫にでも預けてこい。";
+	close;
+}
+
+prontera.gat,123,102,5	script	商人	85,{
+	callfunc "novice_exchange","prontera";
+}
+geffen.gat,173,88,5	script	商人	85,{
+	callfunc "novice_exchange","geffen";
+}
+payon.gat,200,134,5	script	商人	85,{
+	callfunc "novice_exchange","payon";
+}
+morocc.gat,180,259,3	script	商人	85,{
+	callfunc "novice_exchange","morocc";
+}
+aldebaran.gat,152,63,5	script	商人	85,{
+	callfunc "novice_exchange","aldebaran";
+}
+
+//ペリックス
+alberta.gat,190,173,3	script	ペリックス	85,{
+	if (@Change_Jellopy == 1) goto L_Start;
+	mes "[ペリックス]";
+	mes "なんだ、俺に何か用か？";
+	mes "いくら物欲しそうな顔したって";
+	mes "何もやらんぞ。";
+	next;
+	mes "[ペリックス]";
+	mes "何か欲しいなら仕事をしろ、仕事を！";
+	mes "ん？仕事がないだって？";
+	mes "仕方ねぇな……";
+	next;
+	mes "[ペリックス]";
+	mes "じゃあ、ゼロピーを10個集めてこい。";
+	mes "きちんと集めてきたらその報酬として";
+	mes "赤ポーションをやろう。";
+	next;
+	mes "[ペリックス]";
+	mes "10個がきついなら、3個でもいいぞ。";
+	mes "ゼロピーを3個集めてきたら";
+	mes "いもをやろう。";
+	next;
+	mes "[ペリックス]";
+	mes "ゼロピーを手に入れたら";
+	mes "またここに来な。";
+	if (countitem(909) >= 1) set @Change_Jellopy,1;
+	close;
+L_Start:
+	mes "[ペリックス]";
+	mes "おお、ゼロピーを集めてきたのか。";
+	mes "よし！赤ポーションかいも";
+	mes "どっちと交換するんだ？";
+	next;
+	menu "赤ポーションをください",L_Menu1,"いもをください",L_Menu2;
+	L_Menu1:
+		set @CHANGE_ITEM,501;	//赤ポーション
+		set @COUNT_ITEM,10;	//10個
+		goto L_Change;
+	L_Menu2:
+		set @CHANGE_ITEM,516;	//いも
+		set @COUNT_ITEM,3;	//3個
+		goto L_Change;
+L_Change:
+	mes "[ペリックス]";
+	mes "わかった。じゃあ、持ってきた物を";
+	mes "見せてくれ。";
+	next;
+	if (countitem(909) >= @COUNT_ITEM) goto L_Change_OK;
+	mes "[ペリックス]";
+	mes "おい！"+getitemname(@CHANGE_ITEM)+"が欲しかったら";
+	mes "ゼロピーを"+@COUNT_ITEM+"個集めてこいと";
+	mes "言っただろ？";
+	close;
+	L_Change_OK:
+		set @CHANGE_OK,countitem(909) / @COUNT_ITEM;	//交換可能数
+		mes "[ペリックス]";
+		mes "よし、"+getitemname(@CHANGE_ITEM)+"と交換してやろう。";
+		mes getitemname(@CHANGE_ITEM)+"はいくつ欲しいんだ？";
+		next;
+		menu "できる限り欲しいです",L_All,"数を指定したいです",L_Number,"やっぱりやめておきます",L_Cancel;
+		L_All:
+			delitem 909,@CHANGE_OK * @COUNT_ITEM;
+			getitem @CHANGE_ITEM,@CHANGE_OK;
+			mes "[ペリックス]";
+			mes "ほらよ！";
+			mes "約束の"+getitemname(@CHANGE_ITEM)+"だ。";
+			mes "大事に使うんだぞ。";
+			close;
+		L_Number:
+			mes "[ペリックス]";
+			mes "なら100個以下にしてくれ。";
+			mes "もしやめるなら「0」と言えばいい。";
+			mes "お前の持ってる数だと……";
+			mes "最大"+@CHANGE_OK+"個まで";
+			mes getitemname(@CHANGE_ITEM)+"をあげられるぞ。";
+			next;
+		L_Input:
+			input @CHANGE_NUMBER;
+			if ((@CHANGE_NUMBER < 0) || (@CHANGE_NUMBER > 100)) goto L_Error1;
+			if (@CHANGE_NUMBER > @CHANGE_OK) goto L_Error2;
+			if (@CHANGE_NUMBER == 0) goto L_Close;
+			delitem 909,@CHANGE_NUMBER * @COUNT_ITEM;
+			getitem @CHANGE_ITEM,@CHANGE_NUMBER;
+			mes "[ペリックス]";
+			mes "ほらよ！";
+			mes "約束の"+getitemname(@CHANGE_ITEM)+"だ。";
+			mes "大事に使うんだぞ。";
+			close;
+		L_Error1:
+			mes "[ペリックス]";
+			mes "100個より多いと渡せないだろ。";
+			mes "もう一度考えてくれ。";
+			next;
+			goto L_Input;
+		L_Error2:
+			mes "[ペリックス]";
+			mes "おや？それだとゼロピーが足りないぞ。";
+			mes "もう少し集めてから来るんだな。";
+			close;
+		L_Close:
+			mes "[ペリックス]";
+			mes "そうか。";
+			mes "じゃあ、また気が向いたら来な。";
+			close;
+		L_Cancel:
+			mes "[ペリックス]";
+			mes "じゃあ、また今度な。";
+			close;
+}
