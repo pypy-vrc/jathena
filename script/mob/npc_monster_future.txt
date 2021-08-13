@@ -1,0 +1,303 @@
+//npc_monster.txt＠Athena 2006/05/31 19:42:51 (JST)
+
+//エルメスプレート(yuno_fild05.gat)
+yuno_fild05.gat,0,0,0,0	monster	ビートル	1494,20,0,0,0
+yuno_fild05.gat,0,0,0,0	monster	ダスティネス	1114,20,0,0,0
+
+//古代神殿内部(ayo_dun02.gat)
+ayo_dun02.gat,0,0,0,0	monster	レディタニー	1688,1,7200000,3600000,0
+
+//ゲフェンフィールド 10(gef_fild10.gat)
+gef_fild10.gat,0,0,0,0	monster	オークベベ	1686,1,0,0,0
+
+//ヒュゲルフィールド(hu_fild04.gat)
+hu_fild04.gat,0,0,0,0	monster	プティット	1156,15,0,0,0
+hu_fild04.gat,0,0,0,0	monster	プティット	1155,15,0,0,0
+hu_fild04.gat,0,0,0,0	monster	ノーバス	1715,10,0,0,0
+hu_fild04.gat,0,0,0,0	monster	ノーバス	1718,10,0,0,0
+hu_fild04.gat,0,0,0,0	monster	グリーンイグアナ	1687,15,0,0,0
+hu_fild04.gat,0,0,0,0	monster	ブリーズ	1692,15,0,0,0
+hu_fild04.gat,0,0,0,0	monster	スリーパー	1386,25,0,0,0
+hu_fild04.gat,0,0,0,0	monster	ウィレス	1627,25,0,0,0
+hu_fild04.gat,0,0,0,0	monster	黄色草	1081,10,360000,180000,1
+hu_fild04.gat,0,0,0,0	monster	緑色草	1080,5,180000,90000,0
+
+//アビス湖(hu_fild05.gat)
+hu_fild05.gat,0,0,0,0	monster	プティット	1156,15,0,0,0
+hu_fild05.gat,0,0,0,0	monster	プティット	1155,15,0,0,0
+hu_fild05.gat,0,0,0,0	monster	ミュータントドラゴン	1262,1,7200000,3600000,0
+hu_fild05.gat,0,0,0,0	monster	ノーバス	1715,10,0,0,0
+hu_fild05.gat,0,0,0,0	monster	ノーバス	1718,10,0,0,0
+hu_fild05.gat,0,0,0,0	monster	ドラゴンの卵	1721,10,0,0,0
+hu_fild05.gat,0,0,0,0	monster	ウィレス	1627,25,0,0,0
+
+//タナトスタワー下層部(tha_t01.gat)
+tha_t01.gat,0,0,0,0	monster	ミミック	1191,20,0,0,0
+tha_t01.gat,0,0,0,0	monster	プラズマ	1695,30,0,0,0
+tha_t01.gat,0,0,0,0	monster	ライドワード	1195,40,0,0,0
+tha_t01.gat,0,0,0,0	monster	アリス	1275,3,0,0,0
+tha_t01.gat,0,0,0,0	monster	慰める者	1703,40,0,0,0
+
+//タナトスタワー下層部(tha_t02.gat)
+tha_t02.gat,0,0,0,0	monster	プラズマ	1697,20,0,0,0
+tha_t02.gat,0,0,0,0	monster	エンシェントミミック	1699,15,0,0,0
+tha_t02.gat,0,0,0,0	monster	デスワード	1698,30,0,0,0
+tha_t02.gat,0,0,0,0	monster	神罰の代行者	1702,20,0,0,0
+tha_t02.gat,0,0,0,0	monster	ミミック	1191,10,0,0,0
+tha_t02.gat,0,0,0,0	monster	ライドワード	1195,20,0,0,0
+tha_t02.gat,0,0,0,0	monster	エルダー	1377,10,0,0,0
+tha_t02.gat,0,0,0,0	monster	アリス	1275,3,0,0,0
+
+//タナトスタワー下層部(tha_t03.gat)
+tha_t03.gat,0,0,0,0	monster	プラズマ	1696,20,0,0,0
+tha_t03.gat,0,0,0,0	monster	ミミック	1191,10,0,0,0
+tha_t03.gat,0,0,0,0	monster	ライドワード	1195,15,0,0,0
+tha_t03.gat,0,0,0,0	monster	エンシェントミミック	1699,20,0,0,0
+tha_t03.gat,0,0,0,0	monster	エルダー	1377,10,0,0,0
+tha_t03.gat,0,0,0,0	monster	安息を与える者	1701,20,0,0,0
+tha_t03.gat,0,0,0,0	monster	デスワード	1698,20,0,0,0
+
+//タナトスタワー下層部(tha_t04.gat)
+tha_t04.gat,0,0,0,0	monster	プラズマ	1694,20,0,0,0
+tha_t04.gat,0,0,0,0	monster	ミミック	1191,10,0,0,0
+tha_t04.gat,0,0,0,0	monster	ライドワード	1195,15,0,0,0
+tha_t04.gat,0,0,0,0	monster	エンシェントミミック	1699,20,0,0,0
+tha_t04.gat,0,0,0,0	monster	エルダー	1377,15,0,0,0
+tha_t04.gat,0,0,0,0	monster	オウルデューク	1320,5,0,0,0
+tha_t04.gat,0,0,0,0	monster	オウルバロン	1295,5,0,0,0
+tha_t04.gat,0,0,0,0	monster	監視する者	1700,7,0,0,0
+
+//タナトスタワー上層部(tha_t05.gat)
+tha_t05.gat,0,0,0,0	monster	プラズマ	1694,20,0,0,0
+tha_t05.gat,0,0,0,0	monster	プラズマ	1695,15,0,0,0
+tha_t05.gat,0,0,0,0	monster	プラズマ	1696,10,0,0,0
+tha_t05.gat,0,0,0,0	monster	プラズマ	1697,15,0,0,0
+tha_t05.gat,0,0,0,0	monster	エルダー	1377,20,0,0,0
+tha_t05.gat,0,0,0,0	monster	エンシェントミミック	1699,20,0,0,0
+tha_t05.gat,0,0,0,0	monster	デスワード	1698,15,0,0,0
+tha_t05.gat,0,0,0,0	monster	オウルデューク	1320,2,0,0,0
+tha_t05.gat,0,0,0,0	monster	オウルバロン	1295,2,0,0,0
+tha_t05.gat,0,0,0,0	monster	タナトスの苦悩	1706,1,0,600000,0
+
+//タナトスタワー最上階(thana_boss.gat)
+thana_boss.gat,135,119,0,0	monster	魔剣士タナトスの記憶	1708,1,7200000,3600000,0
+
+//生体実験研究所(lhz_dun01.gat)
+lhz_dun01.gat,0,0,0,0	monster	ジェミニ-S58	1681,1,3600000,1800000,0
+lhz_dun01.gat,0,0,0,0	monster	イグニゼム=セニア	1652,20,0,0,0
+lhz_dun01.gat,0,0,0,0	monster	ヒュッケバイン=トリス	1653,20,0,0,0
+lhz_dun01.gat,0,0,0,0	monster	アルマイア=ディンゼ	1654,20,0,0,0
+lhz_dun01.gat,0,0,0,0	monster	イレンド=エベシ	1655,20,0,0,0
+lhz_dun01.gat,0,0,0,0	monster	カヴァク=イカルス	1656,20,0,0,0
+lhz_dun01.gat,0,0,0,0	monster	ラウレル=ヴィンダー	1657,20,0,0,0
+
+//生体実験研究所(lhz_dun02.gat)
+lhz_dun02.gat,0,0,0,0	monster	リムーバ	1682,60,0,0,0
+lhz_dun02.gat,0,0,0,0	monster	イグニゼム=セニア	1652,35,0,0,0
+lhz_dun02.gat,0,0,0,0	monster	イレンド=エベシ	1655,35,0,0,0
+lhz_dun02.gat,0,0,0,0	monster	カヴァク=イカルス	1656,35,0,0,0
+lhz_dun02.gat,0,0,0,0	monster	ラウレル=ヴィンダー	1657,35,0,0,0
+lhz_dun02.gat,0,0,0,0	monster	ヒュッケバイン=トリス	1653,35,0,0,0
+lhz_dun02.gat,0,0,0,0	monster	アルマイア=ディンゼ	1654,35,0,0,0
+lhz_dun02.gat,0,0,0,0	monster	ジェミニ-S58	1681,1,3600000,1800000,0
+lhz_dun02.gat,0,0,0,0	monster	エレメス=ガイル	1635,1,3600000,1800000,0
+lhz_dun02.gat,0,0,0,0	monster	イグニゼム=セニア	1658,1,7200000,3600000,0
+
+//生体実験研究所(lhz_dun03.gat)
+lhz_dun03.gat,0,0,0,0	monster	セイレン=ウィンザー	1634,15,0,0,0
+lhz_dun03.gat,0,0,0,0	monster	エレメス=ガイル	1635,15,0,0,0
+lhz_dun03.gat,0,0,0,0	monster	ハワード=アルトアイゼン	1636,25,0,0,0
+lhz_dun03.gat,0,0,0,0	monster	マーガレッタ=ソリン	1637,15,0,0,0
+lhz_dun03.gat,0,0,0,0	monster	セシル=ディモン	1638,15,0,0,0
+lhz_dun03.gat,0,0,0,0	monster	カトリーヌ=ケイロン	1639,15,0,0,0
+
+//タナトスタワー上層部(tha_t06.gat)
+tha_t06.gat,0,0,0,0	monster	ミミック	1191,20,0,0,0
+tha_t06.gat,0,0,0,0	monster	ライドワード	1195,20,0,0,0
+tha_t06.gat,0,0,0,0	monster	オウルデューク	1320,10,0,0,0
+tha_t06.gat,0,0,0,0	monster	エルダー	1377,15,0,0,0
+tha_t06.gat,0,0,0,0	monster	プラズマ	1694,5,0,0,0
+tha_t06.gat,0,0,0,0	monster	プラズマ	1695,5,0,0,0
+tha_t06.gat,0,0,0,0	monster	プラズマ	1696,5,0,0,0
+tha_t06.gat,0,0,0,0	monster	プラズマ	1697,5,0,0,0
+tha_t06.gat,0,0,0,0	monster	デスワード	1698,20,0,0,0
+tha_t06.gat,0,0,0,0	monster	エンシェントミミック	1699,20,0,0,0
+tha_t06.gat,0,0,0,0	monster	タナトスの苦悩	1706,2,0,0,0
+tha_t06.gat,0,0,0,0	monster	タナトスの悲哀	1707,2,0,0,0
+
+//タナトスタワー上層部(tha_t07.gat)
+tha_t07.gat,0,0,0,0	monster	デスワード	1698,20,0,0,0
+tha_t07.gat,0,0,0,0	monster	エンシェントミミック	1699,20,0,0,0
+tha_t07.gat,0,0,0,0	monster	監視する者	1700,10,0,0,0
+tha_t07.gat,0,0,0,0	monster	安息を与える者	1701,10,0,0,0
+tha_t07.gat,0,0,0,0	monster	神罰の代行者	1702,10,0,0,0
+tha_t07.gat,0,0,0,0	monster	慰める者	1703,10,0,0,0
+tha_t07.gat,0,0,0,0	monster	タナトスの悲哀	1706,10,0,0,0
+
+//タナトスタワー上層部(tha_t08.gat)
+tha_t08.gat,0,0,0,0	monster	デスワード	1698,20,0,0,0
+tha_t08.gat,0,0,0,0	monster	エンシェントミミック	1699,20,0,0,0
+tha_t08.gat,0,0,0,0	monster	監視する者	1700,10,0,0,0
+tha_t08.gat,0,0,0,0	monster	安息を与える者	1701,10,0,0,0
+tha_t08.gat,0,0,0,0	monster	神罰の代行者	1702,10,0,0,0
+tha_t08.gat,0,0,0,0	monster	慰める者	1703,10,0,0,0
+tha_t08.gat,0,0,0,0	monster	タナトスの悲哀	1706,20,0,0,0
+
+//アビス湖地下洞窟(abyss_01.gat)
+abyss_01.gat,0,0,0,0	monster	ノーバス	1715,10,0,0,0
+abyss_01.gat,0,0,0,0	monster	ドラゴンの卵	1721,10,0,0,0
+abyss_01.gat,0,0,0,0	monster	ミミック	1191,20,0,0,0
+abyss_01.gat,0,0,0,0	monster	エンシェントミミック	1699,1,0,0,0
+abyss_01.gat,0,0,0,0	monster	ペノメナ	1216,20,30000,0,0
+abyss_01.gat,0,0,0,0	monster	フェルス	1717,5,0,0,0
+abyss_01.gat,0,0,0,0	monster	ノーバス	1718,10,0,0,0
+abyss_01.gat,0,0,0,0	monster	フェルス	1717,5,0,0,0
+
+//アビス湖地下洞窟(abyss_02.gat)
+abyss_02.gat,0,0,0,0	monster	ノーバス	1715,10,0,0,0
+abyss_02.gat,0,0,0,0	monster	ノーバス	1718,10,0,0,0
+abyss_02.gat,0,0,0,0	monster	ドラゴンの卵	1721,5,0,0,0
+abyss_02.gat,0,0,0,0	monster	ミミック	1191,10,0,0,0
+abyss_02.gat,0,0,0,0	monster	アシダス	1713,30,0,0,0
+abyss_02.gat,0,0,0,0	monster	アシダス	1716,30,0,0,0
+abyss_02.gat,0,0,0,0	monster	エンシェントミミック	1699,10,0,0,0
+abyss_02.gat,0,0,0,0	monster	フェルス	1714,30,0,0,0
+
+//アビス湖地下洞窟(abyss_03.gat)
+abyss_03.gat,0,0,0,0	monster	ドラゴンの卵	1721,5,0,0,0
+abyss_03.gat,0,0,0,0	monster	アシダス	1713,20,0,0,0
+abyss_03.gat,0,0,0,0	monster	アシダス	1716,20,0,0,0
+abyss_03.gat,0,0,0,0	monster	エンシェントミミック	1699,20,0,0,0
+abyss_03.gat,0,0,0,0	monster	フェルス	1714,20,0,0,0
+abyss_03.gat,0,0,0,0	monster	ノーバス	1715,10,0,0,0
+abyss_03.gat,0,0,0,0	monster	ノーバス	1718,10,0,0,0
+abyss_03.gat,0,0,0,0	monster	ハイドロランサー	1720,2,1800000,0,0
+abyss_03.gat,0,0,0,0	monster	データルザウルス	1719,1,7200000,3600000,0
+abyss_03.gat,0,0,0,0	monster	フェルス	1717,10,0,0,0
+
+//国境検問所(yuno_fild12.gat)
+yuno_fild12.gat,0,0,0,0	monster	デーモンパンク	1378,2,180000,90000,0
+
+//ゲフェニアダンジョン(gef_dun03.gat)
+gef_dun03.gat,0,0,0,0	monster	ヘリオン	1626,1,600000,300000,0
+gef_dun03.gat,0,0,0,0	monster	レイス	1192,5,180000,90000,0
+gef_dun03.gat,0,0,0,0	monster	ウィンドゴースト	1263,5,180000,90000,0
+gef_dun03.gat,0,0,0,0	monster	デッドリーレイス	1291,1,1800000,900000,0
+
+//ヒュゲルフィールド(hu_fild07.gat)
+hu_fild07.gat,0,0,0,0	monster	デリーター	1384,15,120000,60000,0
+hu_fild07.gat,0,0,0,0	monster	デリーター	1385,15,120000,60000,0
+hu_fild07.gat,0,0,0,0	monster	ノーバス	1715,20,0,0,0
+hu_fild07.gat,0,0,0,0	monster	ノーバス	1718,20,0,0,0
+hu_fild07.gat,0,0,0,0	monster	グリーンイグアナ	1687,35,0,0,0
+hu_fild07.gat,0,0,0,0	monster	ウィレス	1627,15,0,0,0
+hu_fild07.gat,0,0,0,0	monster	ジオグラファー	1368,20,0,0,0
+hu_fild07.gat,0,0,0,0	monster	デーモンパンク	1378,20,0,0,0
+hu_fild07.gat,0,0,0,0	monster	ブリーズ	1692,20,0,0,0
+hu_fild07.gat,0,0,0,0	monster	黄色草	1081,10,360000,180000,1
+
+//オーディン神殿(odin_tem01.gat)
+odin_tem01.gat,0,0,0,0	monster	スケッギョルド	1755,10,0,0,0
+odin_tem01.gat,0,0,0,0	monster	スケッギョルド	1754,10,0,0,0
+odin_tem01.gat,0,0,0,0	monster	慰める者	1703,10,0,0,0
+odin_tem01.gat,0,0,0,0	monster	ブリーズ	1692,25,0,0,0
+odin_tem01.gat,0,0,0,0	monster	プラズマ	1693,5,0,0,0
+odin_tem01.gat,0,0,0,0	monster	プラズマ	1694,5,0,0,0
+odin_tem01.gat,0,0,0,0	monster	プラズマ	1695,5,0,0,0
+odin_tem01.gat,0,0,0,0	monster	プラズマ	1696,5,0,0,0
+odin_tem01.gat,0,0,0,0	monster	プラズマ	1697,5,0,0,0
+odin_tem01.gat,0,0,0,0	monster	黄色草	1081,10,180000,90000,0
+odin_tem01.gat,0,0,0,0	monster	青い草	1079,10,180000,90000,0
+
+//オーディン神殿(odin_tem02.gat)
+odin_tem02.gat,0,0,0,0	monster	スケッギョルド	1754,10,0,0,0
+odin_tem02.gat,0,0,0,0	monster	スケッギョルド	1755,10,0,0,0
+odin_tem02.gat,0,0,0,0	monster	スケグル	1752,10,0,0,0
+odin_tem02.gat,0,0,0,0	monster	プラズマ	1693,30,0,0,0
+odin_tem02.gat,0,0,0,0	monster	神罰の代行者	1702,10,0,0,0
+odin_tem02.gat,0,0,0,0	monster	青い草	1079,10,180000,90000,0
+
+//オーディン神殿(odin_tem03.gat)
+odin_tem03.gat,0,0,0,0	monster	スケッギョルド	1754,5,0,0,0
+odin_tem03.gat,0,0,0,0	monster	スケッギョルド	1755,5,0,0,0
+odin_tem03.gat,0,0,0,0	monster	スケグル	1752,20,0,0,0
+odin_tem03.gat,0,0,0,0	monster	監視する者	1700,10,0,0,0
+odin_tem03.gat,0,0,0,0	monster	神罰の代行者	1702,10,0,0,0
+odin_tem03.gat,0,0,0,0	monster	プラズマ	1693,15,0,0,0
+odin_tem03.gat,0,0,0,0	monster	青い草	1079,10,180000,90000,0
+odin_tem03.gat,0,0,0,0	monster	輝く草	1083,1,0,0,0
+odin_tem03.gat,0,0,0,0	monster	ランドグリーズ	1751,1,3600000,1800000,0
+
+//機械人形工場 1F(kh_dun01.gat)
+kh_dun01.gat,0,0,0,0	monster	アリセル	1735,40,0,0,0
+kh_dun01.gat,0,0,0,0	monster	アリス	1275,1,0,0,0
+kh_dun01.gat,0,0,0,0	monster	アリオット	1736,35,0,0,0
+kh_dun01.gat,0,0,0,0	monster	アリザ	1737,1,0,0,0
+kh_dun01.gat,0,0,0,0	monster	コンスタント	1738,30,0,0,0
+
+//機械人形工場 2F(kh_dun02.gat)
+kh_dun02.gat,0,0,0,0	monster	アリセル	1735,50,0,0,0
+kh_dun02.gat,0,0,0,0	monster	アリオット	1736,45,0,0,0
+kh_dun02.gat,0,0,0,0	monster	アリザ	1737,1,0,0,0
+kh_dun02.gat,0,0,0,0	monster	コンスタント	1738,40,0,0,0
+kh_dun02.gat,0,0,0,0	monster	キルハイル-D-01	1734,1,7200000,3600000,0
+
+//アインブロックフィールド(ein_fild01.gat)
+ein_fild01.gat,0,0,0,0	monster	デーモンパンク	1378,40,0,0,0
+ein_fild01.gat,0,0,0,0	monster	パンク	1199,40,0,0,0
+
+//アインブロックフィールド(ein_fild02.gat)
+ein_fild02.gat,0,0,0,0	monster	ドリラー	1380,40,0,0,0
+ein_fild02.gat,0,0,0,0	monster	デーモンパンク	1378,40,0,0,0
+ein_fild02.gat,0,0,0,0	monster	ウンゴリアント	1618,1,3600000,1800000,0
+
+//ジュノーフィールド(yuno_fild10.gat)
+yuno_fild10.gat,0,0,0,0	monster	ダスティネス	1114,20,0,0,0
+yuno_fild10.gat,0,0,0,0	monster	ハンターフライ	1035,10,0,0,0
+yuno_fild10.gat,0,0,0,0	monster	ジオグラファー	1368,20,0,0,0
+
+//タナトスタワー(hu_fild01.gat)
+hu_fild01.gat,0,0,0,0	monster	ジオグラファー	1368,30,0,0,0
+hu_fild01.gat,0,0,0,0	monster	デーモンパンク	1378,20,0,0,0
+hu_fild01.gat,0,0,0,0	monster	ブリーズ	1692,20,0,0,0
+hu_fild01.gat,0,0,0,0	monster	プラズマ	1693,1,0,0,0
+hu_fild01.gat,0,0,0,0	monster	プラズマ	1694,3,0,0,0
+hu_fild01.gat,0,0,0,0	monster	プラズマ	1695,3,0,0,0
+hu_fild01.gat,0,0,0,0	monster	プラズマ	1696,3,0,0,0
+hu_fild01.gat,0,0,0,0	monster	プラズマ	1697,3,0,0,0
+
+//タナトスタワー上層部(tha_t09.gat)
+tha_t09.gat,0,0,0,0	monster	監視する者	1700,10,0,0,0
+tha_t09.gat,0,0,0,0	monster	神罰の代行者	1702,10,0,0,0
+tha_t09.gat,0,0,0,0	monster	プラズマ	1694,10,0,0,0
+tha_t09.gat,0,0,0,0	monster	安息を与える者	1701,10,0,0,0
+tha_t09.gat,0,0,0,0	monster	エンシェントミミック	1699,10,0,0,0
+tha_t09.gat,0,0,0,0	monster	慰める者	1703,10,0,0,0
+tha_t09.gat,0,0,0,0	monster	タナトスの絶望	1705,10,0,0,0
+
+//タナトスタワー上層部(tha_t10.gat)
+tha_t10.gat,0,0,0,0	monster	監視する者	1700,10,0,0,0
+tha_t10.gat,0,0,0,0	monster	神罰の代行者	1702,10,0,0,0
+tha_t10.gat,0,0,0,0	monster	プラズマ	1697,10,0,0,0
+tha_t10.gat,0,0,0,0	monster	安息を与える者	1701,10,0,0,0
+tha_t10.gat,0,0,0,0	monster	エンシェントミミック	1699,10,0,0,0
+tha_t10.gat,0,0,0,0	monster	慰める者	1703,10,0,0,0
+tha_t10.gat,0,0,0,0	monster	タナトスの絶望	1705,20,0,0,0
+
+//タナトスタワー上層部(tha_t11.gat)
+tha_t11.gat,0,0,0,0	monster	監視する者	1700,10,0,0,0
+tha_t11.gat,0,0,0,0	monster	神罰の代行者	1702,10,0,0,0
+tha_t11.gat,0,0,0,0	monster	プラズマ	1695,10,0,0,0
+tha_t11.gat,0,0,0,0	monster	安息を与える者	1701,10,0,0,0
+tha_t11.gat,0,0,0,0	monster	タナトスの憎悪	1704,10,0,0,0
+tha_t11.gat,0,0,0,0	monster	エンシェントミミック	1699,10,0,0,0
+tha_t11.gat,0,0,0,0	monster	慰める者	1703,10,0,0,0
+
+//タナトスタワー上層部(tha_t12.gat)
+tha_t12.gat,0,0,0,0	monster	監視する者	1700,10,0,0,0
+tha_t12.gat,0,0,0,0	monster	神罰の代行者	1702,10,0,0,0
+tha_t12.gat,0,0,0,0	monster	安息を与える者	1701,10,0,0,0
+tha_t12.gat,0,0,0,0	monster	プラズマ	1693,10,0,0,0
+tha_t12.gat,0,0,0,0	monster	タナトスの憎悪	1704,20,0,0,0
+tha_t12.gat,0,0,0,0	monster	エンシェントミミック	1699,10,0,0,0
+tha_t12.gat,0,0,0,0	monster	慰める者	1703,10,0,0,0

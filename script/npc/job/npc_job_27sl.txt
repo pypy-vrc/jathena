@@ -1,0 +1,63 @@
+//===============================================================================================
+//Ragnarok Online ソウルリンカー jobchange script 不完全
+//===============================================================================================
+payon.gat,157,147,6	script	ソウルリンカー関係者	753,{
+	if (Class == 24) goto Lteko;
+	if (Class == 27) goto Lsl;
+//一般Mes
+	mes "NO MES";
+	close;
+Lteko:
+	if (Upper == 1) goto LUpper;
+	mes "[ソウルリンカー]";
+	mes "君もテコンであることに満足して";
+	mes "いないで、我らとソウルリンカーに身を";
+	mes "投じてみないかい？";
+	mes "そこの転職申込書にお名前と";
+	mes "JobLvを書いてくれ。ふふふ。";
+	next;
+	menu "転職申し込みをする",L1,"転職条件は？",L2,"また今度…",-;
+		mes "[ソウルリンカー]";
+		mes "うむ、また今度な。";
+		close;
+L2:
+		mes "[ソウルリンカー]";
+		mes "転職条件のことかい？";
+		mes "商人JobLvを40以上にする事。";
+		close;
+L1:
+	if (JobLevel < 40) goto Llowlv;
+	if (SkillPoint > 0) goto LError;
+	mes "[ソウルリンカー]";
+	mes "うむ…";
+	mes "一応JobLvは大丈夫みたいだな。";
+	next;
+	unequip;
+	jobchange 27;
+	mes "[ソウルリンカー]";
+	mes "転職おめでとう。";
+	mes "これからもソウルリンカーの";
+	mes "繁栄のために頑張ってくれたまえ";
+	close;
+Llowlv:/*脳内*/
+	mes "[ソウルリンカー]";
+	mes "Lvが足りないようだな";
+	mes "JobLvを40以上にしてから";
+	mes "来てくれ";
+	close;
+LError:/*脳内*/
+	mes "[ソウルリンカー]";
+	mes "スキルポイントを";
+	mes "使い切ってから来てくれ";
+	close;
+LUpper:/*脳内*/
+	mes "[ソウルリンカー]";
+	mes "おっと君は転生しているね";
+	mes "ここでは転職案内できないんだ";
+	mes "すまないな。";
+	close;
+Lsl:
+	mes "[ソウルリンカー]";
+	mes "お！久しぶりだな！";
+	close;
+}

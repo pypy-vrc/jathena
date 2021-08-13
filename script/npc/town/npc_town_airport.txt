@@ -1,0 +1,485 @@
+//==============================================================================
+// Ragnarok Online Airport Script    by Blaze
+//==============================================================================
+
+//==========================================
+// ガイド職員
+//------------------------------------------
+
+-	script	飛行船職員#guide	91,{
+	mes "[飛行船職員]";
+	mes "こんにちは。";
+	mes "当船では、いつも";
+	mes "お客様の快適な旅行のために";
+	mes "最善を尽くしております。";
+	next;
+	mes "[飛行船職員]";
+	mes "飛行船に乗りたい場合は、";
+	mes "こちらの入り口からお入りください。";
+	mes "空港を出たい場合は、";
+	mes "あちらの階段をお降りください。";
+	close;
+}
+
+//アインブログ
+einbroch.gat,94,267,3	duplicate(飛行船職員#guide)	飛行船職員	91
+
+//ジュノー
+yuno.gat,88,263,3	duplicate(飛行船職員#guide)	飛行船職員	91
+yuno.gat,14,262,5	duplicate(飛行船職員#guide)	飛行船職員	91
+
+
+//==========================================
+// 空港ゲート内職員
+//------------------------------------------
+
+-	script	空港職員#AirportIn	90,{
+	mes "[空港職員]";
+	mes "こんにちは。";
+	mes "我々は、お客様に快適な空の旅を";
+	mes "提供できるよう、心掛けております。";
+	mes "何をお手伝いいたしましょう？";
+	next;
+	set '@dummy,getmapxy('@map$,'@dummy,'@dummy,1);		//map以外はダミー
+	if('@map$ == "izlude.gat")
+		set '@word$,"ジュノー行き飛行船に乗る";
+	else
+		set '@word$,"空港に入る";
+
+	if(select('@word$,"取り消し")==1) {
+		mes "[空港職員]";
+		mes "飛行船の利用料金は1200zenyです。";
+		mes "飛行船無料利用券をお持ちの場合は";
+		mes "無料でご利用できます。";
+		if('@map$ == "izlude.gat")
+			mes "飛行船に乗りますか？";
+		else
+			mes "空港に入りますか？";
+		next;
+		if(select("はい","いいえ")==1) {
+			if(countitem(7311))
+				delitem 7311,1;
+			else if(Zeny<1200) {
+				mes "[空港職員]";
+				mes "飛行船の利用料金は";
+				mes "1200zenyです。";
+				close;
+			}
+			else {
+				set Zeny,Zeny-1200;
+			}
+			if('@map$ == "izlude.gat")
+				warp "airplane_01.gat",244,58;
+			else
+				warp '@map$,148,51;
+			end;
+		}
+	}
+	mes "[空港職員]";
+	mes "またのご利用をお待ちしております。";
+	close;
+}
+
+//アインブログ
+airport.gat,126,43,5		duplicate(空港職員#AirportIn)	空港職員	90
+airport.gat,143,43,5		duplicate(空港職員#AirportIn)	空港職員	90
+airport.gat,158,43,5		duplicate(空港職員#AirportIn)	空港職員	90
+
+//ジュノー
+y_airport.gat,126,43,5		duplicate(空港職員#AirportIn)	空港職員	90
+y_airport.gat,143,43,5		duplicate(空港職員#AirportIn)	空港職員	90
+y_airport.gat,158,43,5		duplicate(空港職員#AirportIn)	空港職員	90
+
+//リヒタルゼン
+lhz_airport.gat,126,43,5	duplicate(空港職員#AirportIn)	空港職員	90
+lhz_airport.gat,143,43,5	duplicate(空港職員#AirportIn)	空港職員	90
+lhz_airport.gat,158,43,5	duplicate(空港職員#AirportIn)	空港職員	90
+
+//イズルード
+izlude.gat,206,55,2		duplicate(空港職員#AirportIn)	空港職員	90
+
+
+//==========================================
+// 空港ゲート外職員
+//------------------------------------------
+
+-	script	空港職員#AirportOut	90,{
+	mes "[空港職員]";
+	mes "こんにちは。";
+	mes "我々は、お客様に快適な空の旅を";
+	mes "提供できるよう、心掛けております。";
+	mes "何をお手伝いいたしましょう？";
+	next;
+	if(select("空港から出る","取り消し")==1) {
+		mes "[空港職員]";
+		mes "一度出てしまうと、再入場の際は";
+		mes "ご料金を頂くこととなります。";
+		mes "出ますか？";
+		next;
+		if(select("はい","いいえ")==1) {
+			set '@dummy,getmapxy('@map$,'@dummy,'@dummy,1);		//map以外はダミー
+			warp '@map$,142,40;
+			end;
+		}
+	}
+	mes "[空港職員]";
+	mes "またのご利用をお待ちしております。";
+	close;
+}
+
+//アインブログ
+airport.gat,126,51,3		duplicate(空港職員#AirportOut)	空港職員	90
+airport.gat,143,49,3		duplicate(空港職員#AirportOut)	空港職員	90
+airport.gat,158,50,3		duplicate(空港職員#AirportOut)	空港職員	90
+
+//ジュノー
+y_airport.gat,126,51,3		duplicate(空港職員#AirportOut)	空港職員	90
+y_airport.gat,143,49,3		duplicate(空港職員#AirportOut)	空港職員	90
+y_airport.gat,158,50,3		duplicate(空港職員#AirportOut)	空港職員	90
+
+//リヒタルゼン
+lhz_airport.gat,126,51,3	duplicate(空港職員#AirportOut)	空港職員	90
+lhz_airport.gat,143,49,3	duplicate(空港職員#AirportOut)	空港職員	90
+lhz_airport.gat,158,50,3	duplicate(空港職員#AirportOut)	空港職員	90
+
+
+//==========================================
+// アインブログ空港NPC
+//------------------------------------------
+
+airport.gat,174,41,6	script	青年	99,{
+	mes "[ルンアン]";
+	mes "私は世界中から珍しい物を";
+	mes "集めているんですが……";
+	mes "最近の金持ちは、いわゆる";
+	mes "珍品に対する目が肥えていて、";
+	mes "もっともっと珍しい物を";
+	mes "探してこいってうるさいんですよ……";
+	next;
+	mes "[ルンアン]";
+	mes "昔は、ゼロピーですら珍しがられたのに";
+	mes "今じゃありふれた物……";
+	mes "はぁ～……ん？　あ、あなた！";
+	mes "その身につけている派手な物は";
+	mes "どこで手に入れたのですか？";
+	close;
+}
+
+airport.gat,176,41,4	script	おじさん	88,{
+	mes "[チンアン]";
+	mes "ここら辺にいるモンスターから、";
+	mes "花瓶の材料となる派手な光を出す鉱物が";
+	mes "たくさん取れるという話を聞きました。";
+	next;
+	mes "[チンアン]";
+	mes "けれど、それは本当に、";
+	mes "花瓶にしか使えないのでしょうか？";
+	next;
+	mes "[チンアン]";
+	mes "……私の友達に聞いた話なんですが、";
+	mes "人形ってのは、手入れした動物の皮に";
+	mes "羽毛を詰めて、目にサイファーや";
+	mes "ジャルゴンを入れているそうです。";
+	mes "そして、重心を整えるため、";
+	mes "お尻の方にゼロピーを詰めるそうです！";
+	next;
+	mes "[チンアン]";
+	mes "……気づきましたか？　つまり、物が";
+	mes "多いのは悪いことではありません。";
+	mes "結局、全て何かに使えるのですから。";
+	mes "だから、私の様な収集品商人は、";
+	mes "倉庫の規模が商売の規模を決める。";
+	mes "そう思いませんか？";
+	close;
+}
+
+
+//==========================================
+// ジュノー空港路線変更職員
+//------------------------------------------
+
+y_airport.gat,145,63,4	script	空港職員	91,{
+	mes "[空港職員]";
+	mes "シュバルツバルド共和国内の";
+	mes "各地域を行き来する";
+	mes "飛行船をご利用なさいますか？";
+	next;
+	if(select("はい","いいえ")==1) {
+		warp "yuno.gat",59,244;
+		end;
+	}
+	mes "[空港職員]";
+	mes "快適な旅になりますように。";
+	close;
+}
+
+y_airport.gat,140,63,4	script	空港職員	91,{
+	mes "[空港職員]";
+	mes "ジュノー・イズルード間を往復する";
+	mes "飛行船をご利用なさいますか？";
+	next;
+	if(select("はい","いいえ")==1) {
+		warp "yuno.gat",47,244;
+		end;
+	}
+	mes "[空港職員]";
+	mes "快適な旅になりますように。";
+	close;
+}
+
+
+//==============================================================================
+// シュバルツバルド国内線 飛行船NPC
+//==============================================================================
+airplane.gat,250,58,2	script	飛行船案内員	67,{
+	mes "[飛行船案内員]";
+	mes "こんにちは。";
+	mes "当船では、いつも";
+	mes "お客様の快適な旅行のために";
+	mes "最善を尽くしております。";
+	mes "何をご案内いたしましょうか？";
+	next;
+	switch(select("飛行船の利用方法","船長室の位置","内部施設","けっこうです")) {
+	case 1:
+		mes "[飛行船案内員]";
+		mes "飛行船で目的地へ行かれる場合は、";
+		mes "案内放送をよくお聞きください。";
+		mes "そして、目的地の到着案内が";
+		mes "ありましたら、甲板にある";
+		mes "出口からお降りください。";
+		next;
+		mes "[飛行船案内員]";
+		mes "万が一、降りるタイミングを";
+		mes "逃がしてしまったとしても、大丈夫です。";
+		mes "飛行船はずっと循環運行を";
+		mes "しておりますので。";
+		mes "少しお待ちになって、次の到着時に";
+		mes "降りるようにしてください。";
+		close;
+	case 2:
+		mes "[飛行船案内員]";
+		mes "船長室は飛行船の一番前方にあります。";
+		mes "その中には、飛行船を指揮する船長と";
+		mes "舵をとっている操縦士がおります。";
+		mes "船長は本当によいお方なので、";
+		mes "是非、一度会ってみてください。";
+		close;
+	case 3:
+		mes "[飛行船案内員]";
+		mes "飛行船には、お客様がご旅行の間、";
+		mes "退屈なさらないように";
+		mes "ミニゲームをご用意しております。";
+		mes "長旅に疲れた時、気分転換したい時、";
+		mes "少し休みたい時にくつろげる場所なので";
+		mes "遠慮なくご利用ください。";
+		close;
+	case 4:
+		mes "[飛行船案内員]";
+		mes "では、よい旅になりますように。";
+		close;
+	}
+}
+
+airplane.gat,65,63,4	script	少女	714,{
+	mes "[少女]";
+	mes "この飛行船は、";
+	mes "いつルティエに着くのかしら？";
+	mes "いくら待っても、";
+	mes "「ルティエに到着した」という";
+	mes "放送がないのよね……";
+	close;
+}
+
+airplane.gat,80,71,2	script	ゼルタ	834,{
+	mes "[ゼルタ]";
+	mes "私は、ある教えを広めるために";
+	mes "巡業している者です。";
+	mes "この教えにより、";
+	mes "ルーンミッドガッツ王国全体を";
+	mes "団結させることが、私の願いです。";
+	close;
+}
+
+airplane.gat,72,34,6	script	アノース	702,{
+	mes "[アノース]";
+	mes "空から眺める景色は、";
+	mes "本当に良いですね。";
+	mes "鳥になって、自由に飛び回れたら";
+	mes "どんなに良いだろうな。";
+	close;
+}
+
+airplane.gat,71,91,6	script	ウンバラの男性	789,{
+	mes "[お父さん]";
+	mes "ウムババ、フムババ。";
+	next;
+	emotion 32;
+	mes "[お父さん]";
+	mes "ウムバ、ウバフムバ、ウムババ。";
+	mes "ウババ、ウムババ、フムババ、";
+	mes "ウムバ、フムバウムバ、ウムバ。";
+	close;
+}
+
+airplane.gat,66,93,2	script	ウンバラの女性	783,{
+	emotion 9;
+	mes "[お母さん]";
+	mes "ウムバウムバ……";
+	mes "ウムウムバ、ウムバフムバ、ウムババ？";
+	mes "ウムバ、ウムバババ。ウムバウムバ。";
+	close;
+}
+
+airplane.gat,64,94,0	script	ウンバラの子供	787,{
+	emotion 19;
+	mes "[子供]";
+	mes "ウムバウムバ!!";
+	mes "ウムババ、ウムバウムバ、";
+	mes "フムバ!!!";
+	close;
+}
+
+airplane.gat,0,0,0	script	airplane	-1,{
+OnInit:
+	disablenpc "airplanewarp#ein1";
+	disablenpc "airplanewarp#ein2";
+	disablenpc "airplanewarp#yuno1";
+	disablenpc "airplanewarp#yuno2";
+	initnpctimer;
+	end;
+OnTimer1000:
+	disablenpc "airplanewarp#lhz1";
+	disablenpc "airplanewarp#lhz2";
+	announce "当船は離陸します。次の目的地はアインブロックです。",9,0x00FF00;
+	end;
+OnTimer31000:
+	announce "当船は現在、アインブロックに向かっております。",9,0x00FF00;
+	end;
+OnTimer51000:
+	announce "まもなく、アインブロックに着陸いたします。",9,0x00FF00;
+	end;
+OnTimer61000:
+	enablenpc "airplanewarp#ein1";
+	enablenpc "airplanewarp#ein2";
+	announce "アインブロックに到着しました。またのご利用をお待ちしております。",9,0x00FF00;
+	end;
+OnTimer71000:
+	announce "現在、アインブロックに停船中です。出発まで、しばらくお待ちください。",9,0x00FF00;
+	end;
+OnTimer81000:
+	disablenpc "airplanewarp#ein1";
+	disablenpc "airplanewarp#ein2";
+	announce "当船は離陸します。次の目的地はジュノーです。",9,0x73DEDE;
+	end;
+OnTimer111000:
+	announce "当船は現在、ジュノーに向かっております。",9,0x73DEDE;
+	end;
+OnTimer131000:
+	announce "まもなく、ジュノーに着陸いたします。",9,0x73DEDE;
+	end;
+OnTimer141000:
+	enablenpc "airplanewarp#yuno1";
+	enablenpc "airplanewarp#yuno2";
+	announce "ジュノーに到着しました。またのご利用をお待ちしております。",9,0x73DEDE;
+	end;
+OnTimer151000:
+	announce "現在、ジュノーに停船中です。出発まで、しばらくお待ちください。",9,0x73DEDE;
+	end;
+OnTimer161000:
+	disablenpc "airplanewarp#yuno1";
+	disablenpc "airplanewarp#yuno2";
+	announce "飛行船、離陸します。次の目的地はリヒタルゼンです。",9,0xFF8400;
+	end;
+OnTimer191000:
+	announce "当船は現在、リヒタルゼンに向かっております。",9,0xFF8400;
+	end;
+OnTimer211000:
+	announce "まもなく、リヒタルゼンに着陸いたします。",9,0xFF8400;
+	end;
+OnTimer221000:
+	enablenpc "airplanewarp#lhz1";
+	enablenpc "airplanewarp#lhz2";
+	announce "リヒタルゼンに到着しました。またのご利用をお待ちしております。",9,0xFF8400;
+	end;
+OnTimer231000:
+	announce "現在、リヒタルゼンに停船中です。出発まで、しばらくお待ちください。",9,0xFF8400;
+	end;
+OnTimer240000:
+	initnpctimer;
+	end;
+}
+
+airplane.gat,243,29	warp	airplanewarp#yuno1	1,1,yuno.gat,92,260
+airplane.gat,243,73	warp	airplanewarp#yuno2	1,1,yuno.gat,92,260
+airplane.gat,243,29	warp	airplanewarp#ein1	1,1,einbroch.gat,92,278
+airplane.gat,243,73	warp	airplanewarp#ein2	1,1,einbroch.gat,92,278
+airplane.gat,243,29	warp	airplanewarp#lhz1	1,1,lighthalzen.gat,302,75
+airplane.gat,243,73	warp	airplanewarp#lhz2	1,1,lighthalzen.gat,302,75
+
+airplane.gat,240,64,5	script	出口	857,{}
+airplane.gat,247,64,5	script	出口	857,{}
+airplane.gat,240,40,0	script	出口	857,{}
+airplane.gat,247,40,0	script	出口	857,{}
+
+
+//==============================================================================
+// ルーンミッドガッツ間線 飛行船NPC
+//==============================================================================
+airplane_01.gat,0,0,0	script	airplane_01	-1,{
+OnInit:
+	disablenpc "airplanewarp#iz1";
+	disablenpc "airplanewarp#iz2";
+	initnpctimer;
+	end;
+OnTimer1000:
+	disablenpc "airplanewarp#yuno1_";
+	disablenpc "airplanewarp#yuno2_";
+	announce "当船は離陸します。次の目的地はイズルードです。",9,0x00FF00;
+	end;
+OnTimer31000:
+	announce "当船は現在、イズルードに向かっております。",9,0x00FF00;
+	end;
+OnTimer51000:
+	announce "まもなく、イズルードに着陸いたします。",9,0x00FF00;
+	end;
+OnTimer61000:
+	enablenpc "airplanewarp#iz1";
+	enablenpc "airplanewarp#iz2";
+	announce "イズルードに到着しました。またのご利用をお待ちしております。",9,0x00FF00;
+	end;
+OnTimer71000:
+	announce "現在、イズルードに停船中です。出発まで、しばらくお待ちください。",9,0x00FF00;
+	end;
+OnTimer81000:
+	disablenpc "airplanewarp#iz1";
+	disablenpc "airplanewarp#iz2";
+	announce "当船は離陸します。次の目的地はジュノーです。",9,0x73DEDE;
+	end;
+OnTimer111000:
+	announce "当船は現在、ジュノーに向かっております。",9,0x73DEDE;
+	end;
+OnTimer131000:
+	announce "まもなく、ジュノーに着陸いたします。",9,0x73DEDE;
+	end;
+OnTimer141000:
+	enablenpc "airplanewarp#yuno1_";
+	enablenpc "airplanewarp#yuno2_";
+	announce "ジュノーに到着しました。またのご利用をお待ちしております。",9,0x73DEDE;
+	end;
+OnTimer151000:
+	announce "現在、ジュノーに停船中です。出発まで、しばらくお待ちください。",9,0x73DEDE;
+	end;
+OnTimer160000:
+	initnpctimer;
+	end;
+}
+
+airplane_01.gat,243,29	warp	airplanewarp#yuno1_	1,1,yuno.gat,12,261
+airplane_01.gat,243,73	warp	airplanewarp#yuno2_	1,1,yuno.gat,12,261
+airplane_01.gat,243,29	warp	airplanewarp#iz1	1,1,izlude.gat,200,56
+airplane_01.gat,243,73	warp	airplanewarp#iz2	1,1,izlude.gat,200,56
+
+airplane_01.gat,240,64,5	script	出口	857,{}
+airplane_01.gat,247,64,5	script	出口	857,{}
+airplane_01.gat,240,40,0	script	出口	857,{}
+airplane_01.gat,247,40,0	script	出口	857,{}

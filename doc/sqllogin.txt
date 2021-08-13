@@ -1,0 +1,138 @@
+★SQLのススメ★
+
+【Windows版MySQL導入ガイド　2005年10月7日　逆毛鰻＆リカルド】
+
+・まずMysqlのWindows版を落としてくる
+mysql-essential-4.1.14-win32.msi
+例：http://ftp.iasi.roedu.net/mirrors/ftp.mysql.com/MySQL-4.1/mysql-essential-4.1.14-win32.msi
+
+・インストールを始める
+　MySQL.comのサインアップとかでてきますが、必要無いです。一番下選択。
+→カスタム　一番下を洗濯。
+→全部インストールするようにチェック入れる。C Include Files / Lib Filesチェック忘れないように
+→ファイルがコピーされます
+→ServerMachine
+→一番上のマルチファンクショナルって奴。
+→空いてるドライブへ。（どうでもいい）
+→DSS/OLAP
+→3306．別に変えてもAthena鯖側変更すれば良いのでどっちでもOK
+→SJIS使えそうな「日本語」とかかれた「BestSupportforなんたら」
+→そのまま
+→パスワードは自由だが、MySQLのルートパスなので必ず覚えておこう。ここは「sakage」で
+→IncludeBinDireなんたらに一応チェック　リモート何たらにもチェック。
+　MySQLのままでOK
+→Execute
+→インスコ完了。エラーが出たらサービスが起動できない理由があるかもしれない。
+　3306か指定したポートまたはサービスが既に使用されているかもしれない。
+　アンインストールなり色々やってみよう。
+・次。SQLにラグナのデータベースを作る。
+　スタートメニューからMySQLのコマンドラインを選ぶか
+　コマンドプロンプトをたちあげて
+　mysql -u root -p　とうちこみます。パスワードを聞かれるので
+　「sakage」と入力。接続完了後は
+mysql>
+となります。ポートがステルス状態に(外側から)見えてればパスワードの変更の必要性はありませんが、念の為に変更しましょう。また
+２ワールド運営時にはＤＢの名前も変更しましょう。
+
+次に
+create database `wwwnarok` default character set sjis;
+と入力後Enter押します。するとデータベースのフォルダと中身がちょこっと作成されます。
+Athenaでログインさせ、セーブさせたりする為にログインユーザーを作成します。
+
+GRANT SELECT,INSERT,UPDATE,DELETE ON `wwwnarok`.* TO 'wwwwwdb'@'localhost' IDENTIFIED BY 'wwwwww';
+こいつはコンバータがデータをコンバートする時や、データの参照をする時に必要。
+ゲーム鯖として稼動させる場合も必要。
+
+データベース名が　wwwnaroks
+アカウント名が　wwwwwdb 
+パスワードが　wwwwww
+
+localhostでのアクセスでしか許可されていないので、外部からの進入は不能のはずですが
+Hookのようなソフトは相手側のChar,mapIPがループバックなのを騙してログインしているので、
+出来るかもしれません。(内部公開しかしていない場合でもポートさえ開いてればログイン可能)
+のでポートを外から見えないようにするか
+難しいID,PASSにするか対策をしてください。
+
+
+次。Athenaを解凍して、中にある「sql-files」を
+Dataフォルダにもってくる。
+Mysqlは何処からでも実行できますが（環境変数に入れてれば)
+
+mysql -D wwwnaroks -h localhost -u root -p < sql-files\main.sql
+
+C:\Program Files\MySQL\MySQL Server 4.1\data
+このディレクトリの状態で上のコマンドをコピペで実行
+すると良いと思います。
+sql-filesフォルダもDataフォルダのなかにいれておいてください。
+ポート番号を変更した場合は、大文字半角　-P ポート番号　とオプション付けてください。
+
+この後パスワードを聞かれるのでルートパス入力「sakage」
+
+
+こうする事でAthenaで使う予定のwwwnaroksの中身がAthenaで使うDBになります。
+終了！ 後はテキストデータをSQLに流すだけです。
+
+古すぎるデータだと失敗する場合があります。
+
+
+・コンバーター
+Windows上でコンバートしてしまおう。
+bccが利用できる環境(コンパイルできる環境)にする。
+
+bcc32_consqlmake.bat
+を使用し
+src\converter\
+にconverter.exeを作成。コンバータを作成する前に
+libmysql.libのライブラリファイルは何故かリンク指定しても読み取ってくれないので
+直接読ませていますので、各ソースフォルダにlibmysql.lib（BCC用に変換した物)
+を置いてください　変換ツールはBCCについています。MySQLにある
+libmysql.dllから取り出してください。
+
+それを実行するとconfフォルダのconverter_athena.confが読み取られる。
+converter_athena.conf
+char_athena.conf
+login_athena.conf
+のそれぞれの// MySQL Login SQL Server部分を書き換えておこう
+Zlib.dllも入れておく。
+
+
+アカウントはhttp://127.0.0.1:6900/　等で作成。
+VC++でのやり方は
+
+MYSQL,MicrosoftSDK,VCToolKit2003をインストール後
+
+vc07_make.batを以下のように編集する
+編集前→編集後
+ set __TXT_MODE__=/D "TXT_ONLY"　→　rem set __TXT_MODE__=/D "TXT_ONLY"
+するとtxt-converter.exeがBinフォルダに作成されます
+
+
+http://www.usamimi.info/%7Esakage/datah/kouchiku.html
+を参考にして下さい。
+
+
+【情報】
+○main.sql実行時、まれに数箇所のテーブルにてプライマリーキーが設定されないことが
+あり、作成したデータが削除できない場合があります。その際は「sql-files」フォルダ内に
+ある　drop_table.sql　を実行した後、再度main.sqlを実行してください。
+
+
+○Windows環境下やリモートでデータベースを弄る場合下記のソフトが使い勝手がいいです。
+Common SQL Environment（CSE）
+http://www.hi-ho.ne.jp/tsumiki/
+なお、上記サイトでAthena関係の質問はやめてください。全く関係がないですので。
+
+
+
+
+【わかりにくい表現などがあれば修正お願いします】
+
+
+
+
+【変更履歴】（敬称略）
+2005年10月7日　逆毛鰻＆リカルド
+初版
+
+2005年12月2日　よらん
+DropTabelSprict追加による説明文追加
